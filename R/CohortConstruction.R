@@ -109,10 +109,10 @@ createEmptyCohortSet <- function() {
   return(setNames(data.frame(matrix(ncol = 4, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortFullName", "sql", "json")))
 }
 
-#' Instantiate a set of cohorts
+#' Generate a set of cohorts
 #'
 #' @description
-#' This function instantiates a set of cohorts in the cohort table and where
+#' This function generates a set of cohorts in the cohort table and where
 #' specified the inclusion rule statistics are computed and stored in the
 #' \code{inclusionStatisticsFolder}.
 #'
@@ -138,18 +138,18 @@ createEmptyCohortSet <- function() {
 #'                                    kept of which definition has been executed.
 #'
 #' @export
-instantiateCohortSet <- function(connectionDetails = NULL,
-                                 connection = NULL,
-                                 numThreads = 1,
-                                 cdmDatabaseSchema,
-                                 tempEmulationSchema = NULL,
-                                 cohortDatabaseSchema = cdmDatabaseSchema,
-                                 cohortTable = "cohort",
-                                 cohortSet = NULL,
-                                 inclusionStatisticsFolder = NULL,
-                                 createCohortTable = FALSE,
-                                 incremental = FALSE,
-                                 incrementalFolder = NULL) {
+generateCohortSet <- function(connectionDetails = NULL,
+                              connection = NULL,
+                              numThreads = 1,
+                              cdmDatabaseSchema,
+                              tempEmulationSchema = NULL,
+                              cohortDatabaseSchema = cdmDatabaseSchema,
+                              cohortTable = "cohort",
+                              cohortSet = NULL,
+                              inclusionStatisticsFolder = NULL,
+                              createCohortTable = FALSE,
+                              incremental = FALSE,
+                              incrementalFolder = NULL) {
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
   }
@@ -440,5 +440,9 @@ saveAndDropTempInclusionStatsTables <- function(connection,
 #'              inclusion rule statistics in addition to the cohort.
 sqlContainsInclusionRuleStats <- function(sql) {
   sql <- SqlRender::render(sql, warnOnMissingParameters = FALSE)
-  return (grepl("(@results_database_schema.cohort_censor_stats)", sql))
+  hasCohortCensorStatsTable <- grepl("(@results_database_schema.cohort_censor_stats)", sql)
+  hasOtherInclusionRuleTables <- grepl("(@results_database_schema.cohort_inclusion_result)", sql) &&
+    grepl("(@results_database_schema.cohort_inclusion_stats)", sql) &&
+    grepl("(@results_database_schema.cohort_summary_stats)", sql)
+  return (hasCohortCensorStatsTable || hasOtherInclusionRuleTables)
 }

@@ -1,8 +1,8 @@
 Package: CohortGenerator
 Type: Package
-Title: An R package for cohort generation against the OMOP CDM
-Version: 0.0.1
-Date: 2021-07-29
+Title: An R Package for Cohort Generation Against the OMOP CDM
+Version: 0.1.0
+Date: 2021-08-10
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Gowtham", "Rao", email = "gowthamrao@gmail.com", role = c("aut")),
@@ -33,7 +33,6 @@ Suggests:
 Remotes:
   ohdsi/CirceR
 License: Apache License
-VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
 BugReports: https://github.com/anthonysena/CohortGenerator/issues
 RoxygenNote: 7.1.1

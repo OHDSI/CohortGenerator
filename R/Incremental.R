@@ -57,7 +57,7 @@ computeChecksum <- function(val) {
 #' @export
 isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
   if (file.exists(recordKeepingFile)) {
-    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols())
+    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols(), lazy = FALSE)
     task <- recordKeeping[getKeyIndex(list(...), recordKeeping), ]
     if (nrow(task) == 0) {
       return(TRUE)
@@ -103,7 +103,7 @@ isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
 getRequiredTasks <- function(..., checksum, recordKeepingFile) {
   tasks <- list(...)
   if (file.exists(recordKeepingFile) && length(tasks[[1]]) > 0) {
-    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols())
+    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols(), lazy = FALSE)
     tasks$checksum <- checksum
     tasks <- tibble::as_tibble(tasks)
     if (all(names(tasks) %in% names(recordKeeping))) {
@@ -145,7 +145,7 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
     return()
   }
   if (file.exists(recordKeepingFile)) {
-    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols())
+    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols(), lazy = FALSE)
     idx <- getKeyIndex(list(...), recordKeeping)
     if (length(idx) > 0) {
       recordKeeping <- recordKeeping[-idx, ]
@@ -181,7 +181,7 @@ saveIncremental <- function(data, fileName, ...) {
     return()
   }
   if (file.exists(fileName)) {
-    previousData <- readr::read_csv(fileName, col_types = readr::cols())
+    previousData <- readr::read_csv(fileName, col_types = readr::cols(), lazy = FALSE)
     idx <- getKeyIndex(list(...), previousData)
     if (length(idx) > 0) {
       previousData <- previousData[-idx, ]

@@ -42,38 +42,38 @@ for (i in 1:length(cohortJsonFiles)) {
 }
 
 # Exception Handling -------------
-# instantiateCohortSet ---------
-test_that("Call instantiateCohortSet without connection or connectionDetails", {
-  expect_error(instantiateCohortSet(),
+# generateCohortSet ---------
+test_that("Call generateCohortSet without connection or connectionDetails", {
+  expect_error(generateCohortSet(),
                message = "(connection details)")
 })
 
-test_that("Call instantiateCohortSet with default parameters", {
-  expect_error(instantiateCohortSet(connectionDetails = c()),
+test_that("Call generateCohortSet with default parameters", {
+  expect_error(generateCohortSet(connectionDetails = c()),
                message = "(cohorts parameter)")
 })
 
 test_that("Call instatiateCohortSet with malformed cohort parameter", {
-  expect_error(instantiateCohortSet(connectionDetails = connectionDetails,
+  expect_error(generateCohortSet(connectionDetails = connectionDetails,
                                     cohortSet = data.frame()),
                message = "(must contain the following columns)")
 })
 
 test_that("Call instatiateCohortSet with vector as cohort parameter", {
-  expect_error(instantiateCohortSet(connectionDetails = connectionDetails,
+  expect_error(generateCohortSet(connectionDetails = connectionDetails,
                                     cohortSet = c()),
                message = "(data frame)")
 })
 
 test_that("Call instatiateCohortSet with incremental = TRUE and no folder specified", {
-  expect_error(instantiateCohortSet(connectionDetails = connectionDetails,
+  expect_error(generateCohortSet(connectionDetails = connectionDetails,
                                     cohortSet = createEmptyCohortSet(),
                                     incremental = TRUE),
                message = "Must specify incrementalFolder")
 })
 
 test_that("Ensure instatiateCohortSet is single threaded", {
-  expect_error(instantiateCohortSet(connectionDetails = connectionDetails,
+  expect_error(generateCohortSet(connectionDetails = connectionDetails,
                                     cohortSet = createEmptyCohortSet(),
                                     numThreads = 2),
                message = "numThreads must be set to 1 for now.")
@@ -108,7 +108,7 @@ test_that("Create cohort table with connectionDetails", {
   createCohortTable(connectionDetails = connectionDetails,
                     cohortTable = "test_cohort_table",
                     cohortDatabaseSchema = "main")
-  
+
   conn = DatabaseConnector::connect(connectionDetails = connectionDetails)
   results <- DatabaseConnector::querySql(conn, sql = "SELECT * FROM test_cohort_table;")
   expect_equal(nrow(results), 0)
@@ -132,7 +132,7 @@ test_that("Create cohort table and inclusion stats table with connection", {
                     cohortInclusionStatsTable = tableList$cohortInclusionStatsTable,
                     cohortSummaryStatsTable = tableList$cohortSummaryStatsTable,
                     cohortCensorStatsTable = tableList$cohortCensorStatsTable)
-  
+
   for(i in colnames(tableList)) {
     sql <- paste("SELECT * FROM", tableList[[i]], ";")
     results <- DatabaseConnector::querySql(conn, sql = sql)
@@ -145,7 +145,7 @@ test_that("Create cohorts - Gen Stats = T, Incremental = F, Gather Results", {
   outputFolder <- tempdir()
 
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  cohortsGenerated <- instantiateCohortSet(connectionDetails = connectionDetails,
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTable = "temp_cohort",
@@ -161,20 +161,20 @@ test_that("Create cohorts - Gen Stats = T, Incremental = F, Gather Results", {
 
 test_that("Create cohorts - Gen Stats = T, Incremental = T", {
   outputFolder <- tempdir()
-  # Run first to ensure that all cohorts are generated
+  # 1st run first to ensure that all cohorts are generated
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  cohortsGenerated <- instantiateCohortSet(connectionDetails = connectionDetails,
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTable = "temp_cohort",
                                            cohortSet = cohortsWithStats,
                                            createCohortTable = TRUE,
-                                           incremental = FALSE,
+                                           incremental = TRUE,
                                            incrementalFolder = file.path(outputFolder, "RecordKeeping"),
                                            inclusionStatisticsFolder = outputFolder)
-  # Next run using incremental mode to verify that all cohorts are created
+  # 2nd run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
-  cohortsGenerated <- instantiateCohortSet(connectionDetails = connectionDetails,
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTable = "temp_cohort",
@@ -192,7 +192,7 @@ test_that("Create cohorts - Gen Stats = F, Incremental = F", {
   outputFolder <- tempdir()
   # Run first to ensure that all cohorts are generated
   cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
-  cohortsGenerated <- instantiateCohortSet(connectionDetails = connectionDetails,
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTable = "temp_cohort",
@@ -210,18 +210,18 @@ test_that("Create cohorts - Gen Stats = F, Incremental = T", {
   outputFolder <- tempdir()
   # Run first to ensure that all cohorts are generated
   cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
-  cohortsGenerated <- instantiateCohortSet(connectionDetails = connectionDetails,
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTable = "temp_cohort",
                                            cohortSet = cohortsWithoutStats,
                                            createCohortTable = TRUE,
-                                           incremental = FALSE,
+                                           incremental = TRUE,
                                            incrementalFolder = file.path(outputFolder, "RecordKeeping"),
                                            inclusionStatisticsFolder = outputFolder)
   # Next run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
-  cohortsGenerated <- instantiateCohortSet(connectionDetails = connectionDetails,
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTable = "temp_cohort",

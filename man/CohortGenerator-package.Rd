@@ -4,7 +4,7 @@
 \name{CohortGenerator-package}
 \alias{CohortGenerator}
 \alias{CohortGenerator-package}
-\title{CohortGenerator: An R package for cohort generation against the OMOP CDM}
+\title{CohortGenerator: An R Package for Cohort Generation Against the OMOP CDM}
 \description{
 An R package for that encapsulates the functions for generating cohorts against the OMOP CDM. This package allow for the use of SQL generated using CIRCE-compliant JSON or custom SQL.
 }
@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Anthony Sena \email{asena5@its.jnj.com}
+\strong{Maintainer}: Anthony Sena \email{sena@ohdsi.org}
 
 Authors:
 \itemize{
