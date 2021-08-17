@@ -11,5 +11,5 @@ Returns an empty cohort set data.frame
 }
 \description{
 This function creates an empty cohort set data.frame for use
-with \code{instantiateCohortSet}.
+with \code{generateCohortSet}.
 }

@@ -2,7 +2,7 @@
 #'                    the following columns: \describe{\item{cohortId}{The 
 #'                    unique integer identifier of the cohort} 
 #'                    \item{cohortFullName}{The cohort's full name}
-#'                    \item{sql}{The OHDSI-SQL used to instantiate the cohort}
+#'                    \item{sql}{The OHDSI-SQL used to generate the cohort}
 #'                    \item{json}{The json column must represent a Circe cohort 
 #'                    definition. This field is only required when you would 
 #'                    like to generate a cohort that includes inclusion statistics

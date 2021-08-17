@@ -25,7 +25,7 @@ generateCohort(
 the following columns: \describe{\item{cohortId}{The 
 unique integer identifier of the cohort} 
 \item{cohortFullName}{The cohort's full name}
-\item{sql}{The OHDSI-SQL used to instantiate the cohort}
+\item{sql}{The OHDSI-SQL used to generate the cohort}
 \item{json}{The json column must represent a Circe cohort 
 definition. This field is only required when you would 
 like to generate a cohort that includes inclusion statistics
@@ -66,6 +66,6 @@ left NULL if you do not wish to export the inclusion rule statistics}
 information on cohorts already generated}
 }
 \description{
-This function is used by \code{instantiateCohortSet} to generate a cohort
+This function is used by \code{generateCohortSet} to generate a cohort
 against the CDM.
 }

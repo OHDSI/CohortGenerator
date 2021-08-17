@@ -81,14 +81,8 @@ createCohortTable <- function(connectionDetails = NULL,
                                   cohort_censor_stats_table = cohortCensorStatsTable)
     DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
     ParallelLogger::logDebug("- Created table ", cohortDatabaseSchema, ".", cohortInclusionTable)
-    ParallelLogger::logDebug("- Created table ",
-                             cohortDatabaseSchema,
-                             ".",
-                             cohortInclusionResultTable)
-    ParallelLogger::logDebug("- Created table ",
-                             cohortDatabaseSchema,
-                             ".",
-                             cohortInclusionStatsTable)
+    ParallelLogger::logDebug("- Created table ", cohortDatabaseSchema, ".", cohortInclusionResultTable)
+    ParallelLogger::logDebug("- Created table ", cohortDatabaseSchema, ".", cohortInclusionStatsTable)
     ParallelLogger::logDebug("- Created table ", cohortDatabaseSchema, ".", cohortSummaryStatsTable)
   }
   delta <- Sys.time() - start
@@ -99,7 +93,7 @@ createCohortTable <- function(connectionDetails = NULL,
 #'
 #' @description
 #' This function creates an empty cohort set data.frame for use
-#' with \code{instantiateCohortSet}.
+#' with \code{generateCohortSet}.
 #'
 #' @return
 #' Returns an empty cohort set data.frame
@@ -202,7 +196,7 @@ generateCohortSet <- function(connectionDetails = NULL,
 
   if (incremental) {
     cohortSet$checksum <- computeChecksum(cohortSet$sql)
-    recordKeepingFile <- file.path(incrementalFolder, "InstantiatedCohorts.csv")
+    recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
   }
 
   # Revisit parallel generation later
@@ -234,14 +228,14 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                    progressBar = TRUE)
 
   delta <- Sys.time() - start
-  writeLines(paste("Instantiating cohort set took", round(delta, 2), attr(delta, "units")))
+  writeLines(paste("Generating cohort set took", round(delta, 2), attr(delta, "units")))
   return(cohortsGenerated)
 }
 
 #' Generates a cohort
 #'
 #' @description
-#' This function is used by \code{instantiateCohortSet} to generate a cohort
+#' This function is used by \code{generateCohortSet} to generate a cohort
 #' against the CDM.
 #'
 #' @param cohortId   The cohortId in the list of \code{cohortSet}
@@ -285,11 +279,7 @@ generateCohort <- function(cohortId = NULL,
     }
 
     # Log the operation
-    ParallelLogger::logInfo(i,
-                            "/",
-                            nrow(cohortSet),
-                            ": Instantiation cohort ",
-                            cohortSet$cohortFullName[i])
+    ParallelLogger::logInfo(i, "/", nrow(cohortSet), "- Generating cohort: ", cohortSet$cohortFullName[i])
     sql <- cohortSet$sql[i]
     generateInclusionStats <- sqlContainsInclusionRuleStats(sql)
     if (generateInclusionStats) {
@@ -434,7 +424,7 @@ saveAndDropTempInclusionStatsTables <- function(connection,
 #' This function also assumes that the SQL passed into the function has not been
 #' translated to a specific SQL dialect. 
 #'
-#' @param sql   A string containing the SQL used to instantiate a cohort. This
+#' @param sql   A string containing the SQL used to generate the cohort. This
 #'              code assumes that the SQL has not been rendered using SqlRender
 #'              in order to detect tokens that indicate the generation of
 #'              inclusion rule statistics in addition to the cohort.

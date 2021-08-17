@@ -7,7 +7,7 @@
 sqlContainsInclusionRuleStats(sql)
 }
 \arguments{
-\item{sql}{A string containing the SQL used to instantiate a cohort. This
+\item{sql}{A string containing the SQL used to generate the cohort. This
 code assumes that the SQL has not been rendered using SqlRender
 in order to detect tokens that indicate the generation of
 inclusion rule statistics in addition to the cohort.}

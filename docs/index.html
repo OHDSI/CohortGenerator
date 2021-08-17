@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -79,15 +79,15 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>This R package contains functions for instantiating cohorts using data in the CDM.</p>
+<p>This R package contains functions for generating cohorts using data in the CDM.</p>
 </div>
 <div id="features" class="section level1">
 <h1 class="hasAnchor">
 <a href="#features" class="anchor"></a>Features</h1>
 <ul>
-<li>Instantiates cohorts cohorts against a CDM.</li>
+<li>Create a cohort table and generate <a href="https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html">cohorts</a> against an OMOP CDM.</li>
 <li>Provides functions for generating SQL from <a href="https://github.com/OHDSI/CirceR">CirceR</a> compliant JSON definitions.</li>
-<li>Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully instantiated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.</li>
+<li>Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully generated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.</li>
 </ul>
 </div>
 <div id="example" class="section level1">
@@ -106,24 +106,25 @@
   <span class="va">cohortExpression</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/createCirceExpressionFromFile.html">createCirceExpressionFromFile</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span>
   <span class="va">cohortsToCreate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">cohortsToCreate</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>cohortId <span class="op">=</span> <span class="va">i</span>,
                                                        cohortFullName <span class="op">=</span> <span class="va">cohortFullName</span>, 
-                                                       sql <span class="op">=</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/buildCohortQuery.html">buildCohortQuery</a></span><span class="op">(</span><span class="va">cohortExpression</span>, options <span class="op">=</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/createGenerateOptions.html">createGenerateOptions</a></span><span class="op">(</span>generateStats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,
+                                                       sql <span class="op">=</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/buildCohortQuery.html">buildCohortQuery</a></span><span class="op">(</span><span class="va">cohortExpression</span>, 
+                                                                                      options <span class="op">=</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/createGenerateOptions.html">createGenerateOptions</a></span><span class="op">(</span>generateStats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,
                                                        json <span class="op">=</span> <span class="va">cohortJson</span>,
                                                        stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="co"># Instantiate the cohort set against Eunomia. </span>
-<span class="co"># cohortGenerated contains a list of the cohortIds </span>
+<span class="co"># Generate the cohort set against Eunomia. </span>
+<span class="co"># cohortsGenerated contains a list of the cohortIds </span>
 <span class="co"># successfully generated against the CDM</span>
 <span class="va">outputFolder</span> <span class="op">&lt;-</span> <span class="st">"C:/TEMP"</span>
-<span class="va">cohortsGenerated</span> <span class="op">&lt;-</span> <span class="fu">instantiateCohortSet</span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>,
-                                         cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                         cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                         cohortTable <span class="op">=</span> <span class="st">"temp_cohort"</span>,
-                                         cohortSet <span class="op">=</span> <span class="va">cohortsToCreate</span>,
-                                         createCohortTable <span class="op">=</span> <span class="cn">TRUE</span>,
-                                         incremental <span class="op">=</span> <span class="cn">TRUE</span>,
-                                         incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">outputFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span>,
-                                         inclusionStatisticsFolder <span class="op">=</span> <span class="va">outputFolder</span><span class="op">)</span></code></pre></div>
+<span class="va">cohortsGenerated</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>,
+                                                       cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
+                                                       cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
+                                                       cohortTable <span class="op">=</span> <span class="st">"temp_cohort"</span>,
+                                                       cohortSet <span class="op">=</span> <span class="va">cohortsToCreate</span>,
+                                                       createCohortTable <span class="op">=</span> <span class="cn">TRUE</span>,
+                                                       incremental <span class="op">=</span> <span class="cn">FALSE</span>,
+                                                       incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">outputFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span>,
+                                                       inclusionStatisticsFolder <span class="op">=</span> <span class="va">outputFolder</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="technology" class="section level1">
 <h1 class="hasAnchor">

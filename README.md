@@ -6,13 +6,13 @@ CohortGenerator is part of [HADES](https://ohdsi.github.io/Hades/).
 
 # Introduction
 
-This R package contains functions for instantiating cohorts using data in the CDM.
+This R package contains functions for generating cohorts using data in the CDM.
 
 # Features
 
--   Instantiates cohorts cohorts against a CDM.
+-   Create a cohort table and generate [cohorts](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html) against an OMOP CDM.
 -   Provides functions for generating SQL from [CirceR](https://github.com/OHDSI/CirceR) compliant JSON definitions.
--   Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully instantiated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.
+-   Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully generated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.
 
 # Example
 
@@ -29,24 +29,25 @@ for (i in 1:length(cohortJsonFiles)) {
   cohortExpression <- CohortGenerator::createCirceExpressionFromFile(cohortJsonFileName)
   cohortsToCreate <- rbind(cohortsToCreate, data.frame(cohortId = i,
                                                        cohortFullName = cohortFullName, 
-                                                       sql = CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = FALSE)),
+                                                       sql = CirceR::buildCohortQuery(cohortExpression, 
+                                                                                      options = CirceR::createGenerateOptions(generateStats = FALSE)),
                                                        json = cohortJson,
                                                        stringsAsFactors = FALSE))
 }
 
-# Instantiate the cohort set against Eunomia. 
-# cohortGenerated contains a list of the cohortIds 
+# Generate the cohort set against Eunomia. 
+# cohortsGenerated contains a list of the cohortIds 
 # successfully generated against the CDM
 outputFolder <- "C:/TEMP"
-cohortsGenerated <- instantiateCohortSet(connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-                                         cdmDatabaseSchema = "main",
-                                         cohortDatabaseSchema = "main",
-                                         cohortTable = "temp_cohort",
-                                         cohortSet = cohortsToCreate,
-                                         createCohortTable = TRUE,
-                                         incremental = TRUE,
-                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"),
-                                         inclusionStatisticsFolder = outputFolder)
+cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+                                                       cdmDatabaseSchema = "main",
+                                                       cohortDatabaseSchema = "main",
+                                                       cohortTable = "temp_cohort",
+                                                       cohortSet = cohortsToCreate,
+                                                       createCohortTable = TRUE,
+                                                       incremental = FALSE,
+                                                       incrementalFolder = file.path(outputFolder, "RecordKeeping"),
+                                                       inclusionStatisticsFolder = outputFolder)
 ```
 
 # Technology
