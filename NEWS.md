@@ -1,3 +1,8 @@
+CohortGenerator 0.2.0
+=======================
+
+Add getCohortCounts function
+
 CohortGenerator 0.1.1
 =======================
 

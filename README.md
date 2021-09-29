@@ -11,6 +11,7 @@ This R package contains functions for generating cohorts using data in the CDM.
 # Features
 
 -   Create a cohort table and generate [cohorts](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html) against an OMOP CDM.
+-   Get the count of subjects and events in a cohort.
 -   Provides functions for generating SQL from [CirceR](https://github.com/OHDSI/CirceR) compliant JSON definitions.
 -   Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully generated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.
 
@@ -39,7 +40,8 @@ for (i in 1:length(cohortJsonFiles)) {
 # cohortsGenerated contains a list of the cohortIds 
 # successfully generated against the CDM
 outputFolder <- "C:/TEMP"
-cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = connectionDetails,
                                                        cdmDatabaseSchema = "main",
                                                        cohortDatabaseSchema = "main",
                                                        cohortTable = "temp_cohort",
@@ -48,6 +50,12 @@ cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = Eunom
                                                        incremental = FALSE,
                                                        incrementalFolder = file.path(outputFolder, "RecordKeeping"),
                                                        inclusionStatisticsFolder = outputFolder)
+                                                       
+# Get the cohort counts
+cohortCounts <- CohortGenerator::getCohortCounts(connectionDetails = connectionDetails,
+                                                 cohortDatabaseSchema = "main",
+                                                 cohortTable = "temp_cohort")
+print(cohortCounts)
 ```
 
 # Technology
