@@ -23,7 +23,6 @@ Imports:
   SqlRender (>= 1.7.0),
   methods,
   dplyr,
-  tibble,
   stats
 Suggests:
   CirceR (>= 1.1.1),
