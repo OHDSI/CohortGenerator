@@ -6,7 +6,7 @@ connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 
 # Helper Functions
 generateSql <- function(cohortJsonFileName, generateStats = FALSE) {
-  cohortExpression <- CohortGenerator::createCirceExpressionFromFile(cohortJsonFileName)
+  cohortExpression <- createCirceExpressionFromFile(cohortJsonFileName)
   cohortSql <- CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = generateStats))
   return(cohortSql)
 }
@@ -32,8 +32,7 @@ cohorts <- setNames(data.frame(matrix(ncol = 4, nrow = 0), stringsAsFactors = FA
 for (i in 1:length(cohortJsonFiles)) {
   cohortJsonFileName <- cohortJsonFiles[i]
   cohortFullName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
-  cohortJson <- CohortGenerator::readCirceExpressionJsonFile(cohortJsonFileName)
-  cohortExpression <- CohortGenerator::createCirceExpressionFromFile(cohortJsonFileName)
+  cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
   cohorts <- rbind(cohorts, data.frame(cohortId = i, 
                                        cohortFullName = cohortFullName, 
                                        json = cohortJson,

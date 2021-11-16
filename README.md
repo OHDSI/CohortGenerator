@@ -26,8 +26,8 @@ cohortJsonFiles <- list.files(path = system.file("cohorts", package = "CohortGen
 for (i in 1:length(cohortJsonFiles)) {
   cohortJsonFileName <- cohortJsonFiles[i]
   cohortFullName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
-  cohortJson <- CohortGenerator::readCirceExpressionJsonFile(cohortJsonFileName)
-  cohortExpression <- CohortGenerator::createCirceExpressionFromFile(cohortJsonFileName)
+  cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
+  cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
   cohortsToCreate <- rbind(cohortsToCreate, data.frame(cohortId = i,
                                                        cohortFullName = cohortFullName, 
                                                        sql = CirceR::buildCohortQuery(cohortExpression, 
