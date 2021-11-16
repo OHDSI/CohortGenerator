@@ -62,23 +62,26 @@ createCohortTable <- function(connectionDetails = NULL,
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  sql <- loadRenderTranslateSql("CreateCohortTable.sql",
-                                dbms = connection@dbms,
-                                cohort_database_schema = cohortDatabaseSchema,
-                                cohort_table = cohortTable)
+  sql <- SqlRender::readSql(system.file("sql/sql_server/CreateCohortTable.sql", package = "CohortGenerator", mustWork = TRUE))
+  sql <- SqlRender::render(sql = sql, 
+                           cohort_database_schema = cohortDatabaseSchema,
+                           cohort_table = cohortTable,
+                           warnOnMissingParameters = TRUE)
+  sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms)
   DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
   ParallelLogger::logDebug("- Created table ", cohortDatabaseSchema, ".", cohortTable)
 
   if (createInclusionStatsTables) {
     ParallelLogger::logInfo("Creating inclusion rule statistics tables")
-    sql <- loadRenderTranslateSql("CreateInclusionStatsTables.sql",
-                                  dbms = connection@dbms,
-                                  cohort_database_schema = resultsDatabaseSchema,
-                                  cohort_inclusion_table = cohortInclusionTable,
-                                  cohort_inclusion_result_table = cohortInclusionResultTable,
-                                  cohort_inclusion_stats_table = cohortInclusionStatsTable,
-                                  cohort_summary_stats_table = cohortSummaryStatsTable,
-                                  cohort_censor_stats_table = cohortCensorStatsTable)
+    sql <- SqlRender::readSql(system.file("sql/sql_server/CreateInclusionStatsTables.sql", package = "CohortGenerator", mustWork = TRUE))
+    sql <- SqlRender::render(sql = sql,
+                             cohort_database_schema = resultsDatabaseSchema,
+                             cohort_inclusion_table = cohortInclusionTable,
+                             cohort_inclusion_result_table = cohortInclusionResultTable,
+                             cohort_inclusion_stats_table = cohortInclusionStatsTable,
+                             cohort_summary_stats_table = cohortSummaryStatsTable,
+                             cohort_censor_stats_table = cohortCensorStatsTable)
+    sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms)
     DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
     ParallelLogger::logDebug("- Created table ", cohortDatabaseSchema, ".", cohortInclusionTable)
     ParallelLogger::logDebug("- Created table ", cohortDatabaseSchema, ".", cohortInclusionResultTable)
@@ -287,7 +290,7 @@ generateCohort <- function(cohortId = NULL,
     }
     
     if (generateInclusionStats) {
-      sql <- SqlRender::render(sql,
+      sql <- SqlRender::render(sql = sql,
                                cdm_database_schema = cdmDatabaseSchema,
                                vocabulary_database_schema = cdmDatabaseSchema,
                                target_database_schema = cohortDatabaseSchema,
@@ -299,14 +302,14 @@ generateCohort <- function(cohortId = NULL,
                                results_database_schema.cohort_summary_stats = "#cohort_summary_stats",
                                results_database_schema.cohort_censor_stats = "#cohort_censor_stats")
     } else {
-      sql <- SqlRender::render(sql,
+      sql <- SqlRender::render(sql = sql,
                                cdm_database_schema = cdmDatabaseSchema,
                                vocabulary_database_schema = cdmDatabaseSchema,
                                target_database_schema = cohortDatabaseSchema,
                                target_cohort_table = cohortTable,
                                target_cohort_id = cohortSet$cohortId[i])
     }
-    sql <- SqlRender::translate(sql,
+    sql <- SqlRender::translate(sql = sql,
                                 targetDialect = connectionDetails$dbms,
                                 tempEmulationSchema = tempEmulationSchema)
     DatabaseConnector::executeSql(connection, sql)
@@ -333,9 +336,8 @@ generateCohort <- function(cohortId = NULL,
 
 createTempInclusionStatsTables <- function(connection, tempEmulationSchema, cohortJson, cohortId) {
   ParallelLogger::logInfo("Creating temporary inclusion statistics tables")
-  sql <- loadRenderTranslateSql("CreateInclusionStatsTempTables.sql",
-                                dbms = connection@dbms,
-                                tempEmulationSchema = tempEmulationSchema)
+  sql <- SqlRender::readSql(system.file("sql/sql_server/CreateInclusionStatsTempTables.sql", package = "CohortGenerator", mustWork = TRUE))
+  sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms, tempEmulationSchema = tempEmulationSchema)
   DatabaseConnector::executeSql(connection, sql)
 
   inclusionRules <- data.frame(cohortDefinitionId = as.double(),
@@ -429,7 +431,7 @@ saveAndDropTempInclusionStatsTables <- function(connection,
 #'              in order to detect tokens that indicate the generation of
 #'              inclusion rule statistics in addition to the cohort.
 sqlContainsInclusionRuleStats <- function(sql) {
-  sql <- SqlRender::render(sql, warnOnMissingParameters = FALSE)
+  sql <- SqlRender::render(sql = sql, warnOnMissingParameters = FALSE)
   hasCohortCensorStatsTable <- grepl("(@results_database_schema.cohort_censor_stats)", sql)
   hasOtherInclusionRuleTables <- grepl("(@results_database_schema.cohort_inclusion_result)", sql) &&
     grepl("(@results_database_schema.cohort_inclusion_stats)", sql) &&

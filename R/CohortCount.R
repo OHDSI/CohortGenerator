@@ -26,11 +26,12 @@ getCohortCounts <- function(connectionDetails = NULL,
     on.exit(DatabaseConnector::disconnect(connection))
   }
   
-  sql <- loadRenderTranslateSql(sqlFilename = "CohortCounts.sql",
-                                dbms = connection@dbms,
-                                cohort_database_schema = cohortDatabaseSchema,
-                                cohort_table = cohortTable,
-                                cohort_ids = cohortIds)
+  sql <- SqlRender::readSql(system.file("sql/sql_server/CohortCounts.sql", package = "CohortGenerator", mustWork = TRUE))
+  sql <- SqlRender::render(sql = sql,
+                           cohort_database_schema = cohortDatabaseSchema,
+                           cohort_table = cohortTable,
+                           cohort_ids = cohortIds)
+  sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms)
   tablesInServer <- tolower(DatabaseConnector::dbListTables(conn = connection, schema = cohortDatabaseSchema))
   if (tolower(cohortTable) %in% tablesInServer) {
     counts <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
