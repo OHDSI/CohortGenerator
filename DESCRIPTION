@@ -2,7 +2,7 @@ Package: CohortGenerator
 Type: Package
 Title: An R Package for Cohort Generation Against the OMOP CDM
 Version: 0.2.0
-Date: 2021-08-10
+Date: 2021-11-17
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Gowtham", "Rao", email = "gowthamrao@gmail.com", role = c("aut")),
@@ -10,7 +10,7 @@ Authors@R: c(
   person("Observational Health Data Science and Informatics", role = c("cph"))
   )
 Maintainer: Anthony Sena <sena@ohdsi.org>
-Description: An R package for that encapsulates the functions for generating cohorts against the OMOP CDM. This package allow for the use of SQL generated using CIRCE-compliant JSON or custom SQL.
+Description: An R package for that encapsulates the functions for generating cohorts against the OMOP CDM.
 Depends:
   DatabaseConnector (>= 4.0.0),
   R (>= 3.6.0)
