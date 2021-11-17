@@ -12,26 +12,31 @@ This R package contains functions for generating cohorts using data in the CDM.
 
 -   Create a cohort table and generate [cohorts](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html) against an OMOP CDM.
 -   Get the count of subjects and events in a cohort.
--   Provides functions for generating SQL from [CirceR](https://github.com/OHDSI/CirceR) compliant JSON definitions.
 -   Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully generated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.
 
 # Example
 
 ``` r
-# First construct a data frame with the cohorts to generate
+# First construct cohort set: an empty data frame with the
+# cohorts to generate
 cohortsToCreate <- CohortGenerator::createEmptyCohortSet()
 
-# Use the cohorts included in this package as an example
+# Fill the cohort set using  cohorts included in this 
+# package as an example
 cohortJsonFiles <- list.files(path = system.file("cohorts", package = "CohortGenerator"), full.names = TRUE)
 for (i in 1:length(cohortJsonFiles)) {
   cohortJsonFileName <- cohortJsonFiles[i]
   cohortFullName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
+  # Here we read in the JSON in order to create the SQL
+  # using [CirceR](https://ohdsi.github.io/CirceR/)
+  # If you have your JSON and SQL stored differenly, you can
+  # modify this to read your JSON/SQL files however you require
   cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
   cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
+  cohortSql <- CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = FALSE))
   cohortsToCreate <- rbind(cohortsToCreate, data.frame(cohortId = i,
                                                        cohortFullName = cohortFullName, 
-                                                       sql = CirceR::buildCohortQuery(cohortExpression, 
-                                                                                      options = CirceR::createGenerateOptions(generateStats = FALSE)),
+                                                       sql = cohortSql,
                                                        json = cohortJson,
                                                        stringsAsFactors = FALSE))
 }
@@ -60,11 +65,11 @@ print(cohortCounts)
 
 # Technology
 
-This an R package with some dependencies requiring Java.
+CohortGenerator is an R package.
 
 # System requirements
 
-Requires R and Java.
+Requires R (version 3.6.0 or higher).
 
 # Getting Started
 

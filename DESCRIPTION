@@ -13,7 +13,7 @@ Maintainer: Anthony Sena <sena@ohdsi.org>
 Description: An R package for that encapsulates the functions for generating cohorts against the OMOP CDM. This package allow for the use of SQL generated using CIRCE-compliant JSON or custom SQL.
 Depends:
   DatabaseConnector (>= 4.0.0),
-  R (>= 3.5.0)
+  R (>= 3.6.0)
 Imports:
   digest,
   ParallelLogger (>= 2.0.2),
