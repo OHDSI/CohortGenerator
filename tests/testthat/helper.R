@@ -1,3 +1,5 @@
+connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+
 #' Create the Circe cohort expression from a JSON file for generating
 #' SQL dynamically
 #'

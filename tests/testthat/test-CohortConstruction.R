@@ -2,7 +2,6 @@ library(testthat)
 library(CohortGenerator)
 
 # Test Prep ----------------
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 
 # Helper Functions
 generateSql <- function(cohortJsonFileName, generateStats = FALSE) {
@@ -79,12 +78,6 @@ test_that("Ensure instatiateCohortSet is single threaded", {
 })
 
 
-# createCohortTable ---------
-test_that("Call createCohortTable without connection or connectionDetails", {
-  expect_error(createCohortTable(),
-               message = "(connection details)")
-})
-
 # getInclusionStatistics ------
 test_that("Call getInclusionStatistics without connection or connectionDetails", {
   expect_error(getInclusionStatistics(),
@@ -92,54 +85,6 @@ test_that("Call getInclusionStatistics without connection or connectionDetails",
 })
 
 # Functional Tests ----------------
-test_that("Create cohort table with connection", {
-  conn = DatabaseConnector::connect(connectionDetails = connectionDetails)
-  createCohortTable(connection = conn,
-                    cohortTable = "test_cohort_table",
-                    cohortDatabaseSchema = "main")
-
-  results <- DatabaseConnector::querySql(conn, sql = "SELECT * FROM test_cohort_table;")
-  expect_equal(nrow(results), 0)
-  DatabaseConnector::disconnect(conn)
-})
-
-test_that("Create cohort table with connectionDetails", {
-  createCohortTable(connectionDetails = connectionDetails,
-                    cohortTable = "test_cohort_table",
-                    cohortDatabaseSchema = "main")
-
-  conn = DatabaseConnector::connect(connectionDetails = connectionDetails)
-  results <- DatabaseConnector::querySql(conn, sql = "SELECT * FROM test_cohort_table;")
-  expect_equal(nrow(results), 0)
-  DatabaseConnector::disconnect(conn)
-})
-
-test_that("Create cohort table and inclusion stats table with connection", {
-  conn = DatabaseConnector::connect(connectionDetails = connectionDetails)
-  tableList <- data.frame(cohortTable = "test_cohort_table",
-                          cohortInclusionTable = "test_cohort_inc",
-                          cohortInclusionResultTable = "test_cohort_inc_result",
-                          cohortInclusionStatsTable = "test_cohort_inc_stats",
-                          cohortSummaryStatsTable = "test_cohort_summary",
-                          cohortCensorStatsTable = "test_cohort_censor_stats")
-  createCohortTable(connection = conn,
-                    cohortTable = tableList$cohortTable,
-                    cohortDatabaseSchema = "main",
-                    createInclusionStatsTables = TRUE,
-                    cohortInclusionTable = tableList$cohortInclusionTable,
-                    cohortInclusionResultTable = tableList$cohortInclusionResultTable,
-                    cohortInclusionStatsTable = tableList$cohortInclusionStatsTable,
-                    cohortSummaryStatsTable = tableList$cohortSummaryStatsTable,
-                    cohortCensorStatsTable = tableList$cohortCensorStatsTable)
-
-  for(i in colnames(tableList)) {
-    sql <- paste("SELECT * FROM", tableList[[i]], ";")
-    results <- DatabaseConnector::querySql(conn, sql = sql)
-    expect_equal(nrow(results), 0)
-  }
-  DatabaseConnector::disconnect(conn)
-})
-
 test_that("Create cohorts - Gen Stats = T, Incremental = F, Gather Results", {
   outputFolder <- tempdir()
 
