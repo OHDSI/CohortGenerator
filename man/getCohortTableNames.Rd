@@ -31,15 +31,12 @@ inclusion rule statistics.}
 
 \item{cohortCensorStatsTable}{Name of the censor stats table, one of the tables for storing
 inclusion rule statistics.}
-
-\item{cohortDatabaseSchema}{Schema name where your cohort table resides. Note that for SQL Server,
-this should include both the database and schema name, for example
-'scratch.dbo'.}
 }
 \value{
 A list of table names as specified in the parameters of this function.
 }
 \description{
 This function creates a list of table names used by \code{\link{createCohortTables}} to specify
-the table names to create
+the table names to create. Use this function to specify the names of the main cohort table
+and cohort statistics tables.
 }

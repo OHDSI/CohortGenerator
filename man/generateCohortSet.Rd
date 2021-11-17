@@ -7,14 +7,12 @@
 generateCohortSet(
   connectionDetails = NULL,
   connection = NULL,
-  numThreads = 1,
   cdmDatabaseSchema,
   tempEmulationSchema = NULL,
   cohortDatabaseSchema = cdmDatabaseSchema,
   cohortTable = "cohort",
   cohortSet = NULL,
-  inclusionStatisticsFolder = NULL,
-  createCohortTable = FALSE,
+  numThreads = 1,
   incremental = FALSE,
   incrementalFolder = NULL
 )
@@ -30,9 +28,6 @@ provided.}
 DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
-
-\item{numThreads}{Specify the number of threads for cohort generation. Currently
-this only supports single threaded operations.}
 
 \item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
 Note that for SQL Server, this should include both the database and
@@ -59,16 +54,19 @@ like to generate a cohort that includes inclusion statistics
 since the names of the inclusion rules are parsed from 
 this JSON property.} }}
 
-\item{inclusionStatisticsFolder}{The folder where the inclusion rule statistics are stored. Can be
-left NULL if you do not wish to export the inclusion rule statistics}
-
-\item{createCohortTable}{Create the cohort table? If \code{incremental = TRUE} and the
-table already exists this will be skipped.}
+\item{numThreads}{Specify the number of threads for cohort generation. Currently
+this only supports single threaded operations.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
 kept of which definition has been executed.}
+
+\item{inclusionStatisticsFolder}{The folder where the inclusion rule statistics are stored. Can be
+left NULL if you do not wish to export the inclusion rule statistics}
+
+\item{createCohortTable}{Create the cohort table? If \code{incremental = TRUE} and the
+table already exists this will be skipped.}
 }
 \description{
 This function generates a set of cohorts in the cohort table and where

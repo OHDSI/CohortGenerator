@@ -59,14 +59,12 @@ createEmptyCohortSet <- function() {
 #' @export
 generateCohortSet <- function(connectionDetails = NULL,
                               connection = NULL,
-                              numThreads = 1,
                               cdmDatabaseSchema,
                               tempEmulationSchema = NULL,
                               cohortDatabaseSchema = cdmDatabaseSchema,
                               cohortTable = "cohort",
                               cohortSet = NULL,
-                              inclusionStatisticsFolder = NULL,
-                              createCohortTable = FALSE,
+                              numThreads = 1,
                               incremental = FALSE,
                               incrementalFolder = NULL) {
   if (is.null(connection) && is.null(connectionDetails)) {

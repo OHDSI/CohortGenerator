@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate a set of cohorts — generateCohortSet • CohortGenerator</title>
+<title>Used to get a list of cohort table names to use when creating the cohort
+tables — getCohortTableNames • CohortGenerator</title>
 
 
 <!-- jquery -->
@@ -39,10 +40,11 @@
 
 
 
-<meta property="og:title" content="Generate a set of cohorts — generateCohortSet" />
-<meta property="og:description" content="This function generates a set of cohorts in the cohort table and where
-specified the inclusion rule statistics are computed and stored in the
-inclusionStatisticsFolder." />
+<meta property="og:title" content="Used to get a list of cohort table names to use when creating the cohort
+tables — getCohortTableNames" />
+<meta property="og:description" content="This function creates a list of table names used by createCohortTables to specify
+the table names to create. Use this function to specify the names of the main cohort table
+and cohort statistics tables." />
 
 
 
@@ -116,110 +118,64 @@ inclusionStatisticsFolder." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate a set of cohorts</h1>
-    <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/CohortConstruction.R'><code>R/CohortConstruction.R</code></a></small>
-    <div class="hidden name"><code>generateCohortSet.Rd</code></div>
+    <h1>Used to get a list of cohort table names to use when creating the cohort
+tables</h1>
+    <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/CohortTables.R'><code>R/CohortTables.R</code></a></small>
+    <div class="hidden name"><code>getCohortTableNames.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function generates a set of cohorts in the cohort table and where
-specified the inclusion rule statistics are computed and stored in the
-<code>inclusionStatisticsFolder</code>.</p>
+    <p>This function creates a list of table names used by <code><a href='createCohortTables.html'>createCohortTables</a></code> to specify
+the table names to create. Use this function to specify the names of the main cohort table
+and cohort statistics tables.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>generateCohortSet</span><span class='op'>(</span>
-  connectionDetails <span class='op'>=</span> <span class='cn'>NULL</span>,
-  connection <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>cdmDatabaseSchema</span>,
-  tempEmulationSchema <span class='op'>=</span> <span class='cn'>NULL</span>,
-  cohortDatabaseSchema <span class='op'>=</span> <span class='va'>cdmDatabaseSchema</span>,
+    <pre class="usage"><span class='fu'>getCohortTableNames</span><span class='op'>(</span>
   cohortTable <span class='op'>=</span> <span class='st'>"cohort"</span>,
-  cohortSet <span class='op'>=</span> <span class='cn'>NULL</span>,
-  numThreads <span class='op'>=</span> <span class='fl'>1</span>,
-  incremental <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  incrementalFolder <span class='op'>=</span> <span class='cn'>NULL</span>
+  cohortInclusionTable <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>cohortTable</span>, <span class='st'>"_inclusion"</span><span class='op'>)</span>,
+  cohortInclusionResultTable <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>cohortTable</span>, <span class='st'>"_inclusion_result"</span><span class='op'>)</span>,
+  cohortInclusionStatsTable <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>cohortTable</span>, <span class='st'>"_inclusion_stats"</span><span class='op'>)</span>,
+  cohortSummaryStatsTable <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>cohortTable</span>, <span class='st'>"_summary_stats"</span><span class='op'>)</span>,
+  cohortCensorStatsTable <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>cohortTable</span>, <span class='st'>"_censor_stats"</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>connectionDetails</th>
-      <td><p>An object of type <code>connectionDetails</code> as created using the
-<code><a href='https://ohdsi.github.io/DatabaseConnector/reference/createConnectionDetails.html'>createConnectionDetails</a></code> function in the
-DatabaseConnector package. Can be left NULL if <code>connection</code> is
-provided.</p></td>
-    </tr>
-    <tr>
-      <th>connection</th>
-      <td><p>An object of type <code>connection</code> as created using the
-<code><a href='https://ohdsi.github.io/DatabaseConnector/reference/connect.html'>connect</a></code> function in the
-DatabaseConnector package. Can be left NULL if <code>connectionDetails</code>
-is provided, in which case a new connection will be opened at the start
-of the function, and closed when the function finishes.</p></td>
-    </tr>
-    <tr>
-      <th>cdmDatabaseSchema</th>
-      <td><p>Schema name where your patient-level data in OMOP CDM format resides.
-Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'.</p></td>
-    </tr>
-    <tr>
-      <th>tempEmulationSchema</th>
-      <td><p>Some database platforms like Oracle and Impala do not truly support
-temp tables. To emulate temp tables, provide a schema with write
-privileges where temp tables can be created.</p></td>
-    </tr>
-    <tr>
-      <th>cohortDatabaseSchema</th>
-      <td><p>Schema name where your cohort table resides. Note that for SQL Server,
-this should include both the database and schema name, for example
-'scratch.dbo'.</p></td>
-    </tr>
-    <tr>
       <th>cohortTable</th>
       <td><p>Name of the cohort table.</p></td>
     </tr>
     <tr>
-      <th>cohortSet</th>
-      <td><p>The <code>cohortSet</code> argument must be a data frame with 
-the following columns:</p><dl>
-<dt>cohortId</dt><dd><p>The unique integer identifier of the cohort</p></dd> 
-<dt>cohortFullName</dt><dd><p>The cohort's full name</p></dd>
-<dt>sql</dt><dd><p>The OHDSI-SQL used to generate the cohort</p></dd>
-<dt>json</dt><dd><p>The json column must represent a Circe cohort 
-definition. This field is only required when you would 
-like to generate a cohort that includes inclusion statistics
-since the names of the inclusion rules are parsed from 
-this JSON property.</p></dd> 
-</dl></td>
+      <th>cohortInclusionTable</th>
+      <td><p>Name of the inclusion table, one of the tables for storing
+inclusion rule statistics.</p></td>
     </tr>
     <tr>
-      <th>numThreads</th>
-      <td><p>Specify the number of threads for cohort generation. Currently
-this only supports single threaded operations.</p></td>
+      <th>cohortInclusionResultTable</th>
+      <td><p>Name of the inclusion result table, one of the tables for
+storing inclusion rule statistics.</p></td>
     </tr>
     <tr>
-      <th>incremental</th>
-      <td><p>Create only cohorts that haven't been created before?</p></td>
+      <th>cohortInclusionStatsTable</th>
+      <td><p>Name of the inclusion stats table, one of the tables for storing
+inclusion rule statistics.</p></td>
     </tr>
     <tr>
-      <th>incrementalFolder</th>
-      <td><p>If <code>incremental = TRUE</code>, specify a folder where records are
-kept of which definition has been executed.</p></td>
+      <th>cohortSummaryStatsTable</th>
+      <td><p>Name of the summary stats table, one of the tables for storing
+inclusion rule statistics.</p></td>
     </tr>
     <tr>
-      <th>inclusionStatisticsFolder</th>
-      <td><p>The folder where the inclusion rule statistics are stored. Can be
-left NULL if you do not wish to export the inclusion rule statistics</p></td>
-    </tr>
-    <tr>
-      <th>createCohortTable</th>
-      <td><p>Create the cohort table? If <code>incremental = TRUE</code> and the
-table already exists this will be skipped.</p></td>
+      <th>cohortCensorStatsTable</th>
+      <td><p>Name of the censor stats table, one of the tables for storing
+inclusion rule statistics.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list of table names as specified in the parameters of this function.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

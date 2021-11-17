@@ -7,7 +7,7 @@
 createCohortTables(
   connectionDetails = NULL,
   connection = NULL,
-  resultsDatabaseSchema,
+  cohortDatabaseSchema,
   cohortTableNames = getCohortTableNames()
 )
 }
@@ -23,11 +23,17 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
-\item{resultsDatabaseSchema}{Schema name where the statistics tables reside. Note that for
+\item{cohortDatabaseSchema}{The schema to hold the cohort tables. Note that for
 SQL Server, this should include both the database and schema
 name, for example 'scratch.dbo'.}
+
+\item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
+for more details.}
 }
 \description{
 This function creates an empty cohort table and empty tables for
-cohort statistics.
+cohort statistics. NOTE: This function will drop the tables if they 
+already exist in your cohortDatabaseSchema. You can use 
+\code{\link[DatabaseConnector::getTableNames]{DatabaseConnector::getTableNames}}
+to check if these tables exist before calling this function.
 }

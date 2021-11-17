@@ -8,12 +8,18 @@ home:
     href: http://forums.ohdsi.org
 
 reference:
+  - title: "Cohort Tables"
+    desc: >
+      Functions that support creating the necessary cohort tables.
+    contents:
+      - createCohortTables
+      - getCohortTableNames
+
   - title: "Cohort Generation"
     desc: >
       Functions that support generating cohorts.
     contents:
       - generateCohortSet
-      - createCohortTable
       - createEmptyCohortSet
       
   - title: "Cohort Counts"
