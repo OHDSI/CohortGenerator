@@ -49,8 +49,8 @@ this should include both the database and schema name, for example
 \item{cohortTable}{Name of the cohort table.}
 
 \item{cohortSet}{The \code{cohortSet} argument must be a data frame with 
-the following columns: \describe{\item{cohortId}{The 
-unique integer identifier of the cohort} 
+the following columns: \describe{
+\item{cohortId}{The unique integer identifier of the cohort} 
 \item{cohortFullName}{The cohort's full name}
 \item{sql}{The OHDSI-SQL used to generate the cohort}
 \item{json}{The json column must represent a Circe cohort 

@@ -13,7 +13,7 @@ Useful links:
 \itemize{
   \item \url{https://ohdsi.github.io/CohortGenerator/}
   \item \url{https://github.com/OHDSI/CohortGenerator}
-  \item Report bugs at \url{https://github.com/anthonysena/CohortGenerator/issues}
+  \item Report bugs at \url{https://github.com/OHDSI/CohortGenerator/issues}
 }
 
 }

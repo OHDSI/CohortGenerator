@@ -13,8 +13,7 @@ Maintainer: Anthony Sena <sena@ohdsi.org>
 Description: An R package for that encapsulates the functions for generating cohorts against the OMOP CDM. This package allow for the use of SQL generated using CIRCE-compliant JSON or custom SQL.
 Depends:
   DatabaseConnector (>= 4.0.0),
-  CirceR (>= 1.1.1),
-  R (>= 3.5.0)
+  R (>= 3.6.0)
 Imports:
   digest,
   ParallelLogger (>= 2.0.2),
@@ -24,17 +23,18 @@ Imports:
   SqlRender (>= 1.7.0),
   methods,
   dplyr,
-  tibble,
   stats
 Suggests:
+  CirceR (>= 1.1.1),
   Eunomia,
   knitr,
   testthat
 Remotes:
-  ohdsi/CirceR
+  ohdsi/CirceR,
+  ohdsi/Eunomia
 License: Apache License
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
-BugReports: https://github.com/anthonysena/CohortGenerator/issues
+BugReports: https://github.com/OHDSI/CohortGenerator/issues
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Language: en-US

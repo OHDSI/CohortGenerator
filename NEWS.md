@@ -1,6 +1,9 @@
 CohortGenerator 0.2.0
 =======================
 
+Updated documentation
+Remove CirceR dependency and related functions
+Remvoing helper function for SQL rendering
 Add getCohortCounts function
 
 CohortGenerator 0.1.1
