@@ -6,7 +6,7 @@
 \alias{CohortGenerator-package}
 \title{CohortGenerator: An R Package for Cohort Generation Against the OMOP CDM}
 \description{
-An R package for that encapsulates the functions for generating cohorts against the OMOP CDM. This package allow for the use of SQL generated using CIRCE-compliant JSON or custom SQL.
+An R package for that encapsulates the functions for generating cohorts against the OMOP CDM.
 }
 \seealso{
 Useful links:
