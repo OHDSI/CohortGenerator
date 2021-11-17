@@ -1,0 +1,44 @@
+template:
+  params:
+    bootswatch: cosmo
+
+home:
+  links:
+  - text: Ask a question
+    href: http://forums.ohdsi.org
+
+reference:
+  - title: "Cohort Generation"
+    desc: >
+      Functions that support generating cohorts.
+    contents:
+      - generateCohortSet
+      - createCohortTable
+      - createEmptyCohortSet
+      
+  - title: "Cohort Counts"
+    desc: >
+      Functions for obtaining the counts of subjects and events for one or
+      more cohorts
+    contents:
+      - getCohortCounts
+
+  - title: "Record Keeping"
+    desc: >
+      Functions that support record keeping of tasks performed.
+      CohortGenerator uses these functions when running in incremental
+      mode to only generate cohorts when their definition has changed from
+      a previous run.
+    contents:
+      - getRequiredTasks
+      - recordTasksDone
+      - isTaskRequired
+      - saveIncremental
+
+navbar:
+  structure:
+    right: [hades, github]
+  components:
+    hades:
+      text: hadesLogo
+      href: https://ohdsi.github.io/Hades

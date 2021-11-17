@@ -105,7 +105,7 @@ getRequiredTasks <- function(..., checksum, recordKeepingFile) {
   if (file.exists(recordKeepingFile) && length(tasks[[1]]) > 0) {
     recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols(), lazy = FALSE)
     tasks$checksum <- checksum
-    tasks <- tibble::as_tibble(tasks)
+    tasks <- dplyr::as_tibble(tasks)
     if (all(names(tasks) %in% names(recordKeeping))) {
       idx <- getKeyIndex(recordKeeping[, names(tasks)], tasks)
     } else {
@@ -151,9 +151,9 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
       recordKeeping <- recordKeeping[-idx, ]
     }
   } else {
-    recordKeeping <- tibble::tibble()
+    recordKeeping <- dplyr::tibble()
   }
-  newRow <- tibble::as_tibble(list(...))
+  newRow <- dplyr::as_tibble(list(...))
   newRow$checksum <- checksum
   newRow$timeStamp <- Sys.time()
   recordKeeping <- dplyr::bind_rows(recordKeeping, newRow)
@@ -195,7 +195,7 @@ getKeyIndex <- function(key, recordKeeping) {
   if (nrow(recordKeeping) == 0 || length(key[[1]]) == 0 || !all(names(key) %in% names(recordKeeping))) {
     return(c())
   } else {
-    key <- unique(tibble::as_tibble(key))
+    key <- unique(dplyr::as_tibble(key))
     recordKeeping$idxCol <- 1:nrow(recordKeeping)
     idx <- merge(recordKeeping, key)$idx
     return(idx)
