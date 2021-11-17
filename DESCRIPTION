@@ -31,6 +31,7 @@ Suggests:
   testthat
 Remotes:
   ohdsi/CirceR
+  ohdsi/Eunomia
 License: Apache License
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
 BugReports: https://github.com/OHDSI/CohortGenerator/issues
