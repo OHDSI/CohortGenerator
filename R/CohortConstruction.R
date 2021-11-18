@@ -62,9 +62,8 @@ generateCohortSet <- function(connectionDetails = NULL,
                               cdmDatabaseSchema,
                               tempEmulationSchema = NULL,
                               cohortDatabaseSchema = cdmDatabaseSchema,
-                              cohortTable = "cohort",
+                              cohortTableNames = getCohortTableNames(),
                               cohortSet = NULL,
-                              numThreads = 1,
                               incremental = FALSE,
                               incrementalFolder = NULL) {
   if (is.null(connection) && is.null(connectionDetails)) {
@@ -91,31 +90,34 @@ generateCohortSet <- function(connectionDetails = NULL,
   #if (numThreads < 1 || numThreads > parallel::detectCores()) {
   #  stop(paste0("The numThreads argument must be between 1 and", parallel::detectCores()))
   #}
-  if (numThreads != 1) {
-    stop("numThreads must be set to 1 for now.")
-  }
 
   start <- Sys.time()
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  if (createCohortTable) {
-    needToCreate <- TRUE
-    if (incremental) {
-      tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
-      if (toupper(cohortTable) %in% toupper(tables)) {
-        ParallelLogger::logInfo("Cohort table already exists and in incremental mode, so not recreating table.")
-        needToCreate <- FALSE
-      }
-    }
-    if (needToCreate) {
-      createCohortTable(connection = connection,
-                        cohortDatabaseSchema = cohortDatabaseSchema,
-                        cohortTable = cohortTable,
-                        createInclusionStatsTables = FALSE)
+  
+  # Verify the cohort tables exist and if they do not
+  # stop the generation process
+  tableExistsFlagList <- lapply(cohortTableNames, FUN=function(x) { x = FALSE })
+  tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
+  for (i in 1:length(cohortTableNames)) {
+    if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
+      tableExistsFlagList[i] <- TRUE
     }
   }
+
+  if (!all(unlist(tableExistsFlagList, use.names = FALSE))) {
+    errorMsg <- "The following tables have not been created: \n"
+    for (i in 1:length(cohortTableNames)) {
+      if (!tableExistsFlagList[[i]]) {
+        errorMsg <- paste0(errorMsg, "   - ", cohortTableNames[i], "\n")
+      }
+    }
+    errorMsg <- paste(errorMsg, "Please use the createCohortTables function to ensure all tables exist before generating cohorts.", sep = "\n")
+    stop(errorMsg)
+  }
+
 
   if (incremental) {
     cohortSet$checksum <- computeChecksum(cohortSet$sql)
@@ -130,7 +132,7 @@ generateCohortSet <- function(connectionDetails = NULL,
   # }
 
   # Create the cluster
-  cluster <- ParallelLogger::makeCluster(numberOfThreads = numThreads)
+  cluster <- ParallelLogger::makeCluster(numberOfThreads = 1)
   on.exit(ParallelLogger::stopCluster(cluster), add = TRUE)
 
   # Apply the generation operation to the cluster
@@ -143,8 +145,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                    cdmDatabaseSchema = cdmDatabaseSchema,
                                                    tempEmulationSchema = tempEmulationSchema,
                                                    cohortDatabaseSchema = cohortDatabaseSchema,
-                                                   cohortTable = cohortTable,
-                                                   inclusionStatisticsFolder = inclusionStatisticsFolder,
+                                                   cohortTableNames = cohortTableNames,
                                                    incremental = incremental,
                                                    recordKeepingFile = recordKeepingFile,
                                                    stopOnError = TRUE,
@@ -186,7 +187,7 @@ generateCohort <- function(cohortId = NULL,
                            cdmDatabaseSchema,
                            tempEmulationSchema,
                            cohortDatabaseSchema,
-                           cohortTable,
+                           cohortTableNames,
                            inclusionStatisticsFolder,
                            incremental,
                            recordKeepingFile) {
@@ -204,43 +205,45 @@ generateCohort <- function(cohortId = NULL,
     # Log the operation
     ParallelLogger::logInfo(i, "/", nrow(cohortSet), "- Generating cohort: ", cohortSet$cohortFullName[i])
     sql <- cohortSet$sql[i]
-    generateInclusionStats <- sqlContainsInclusionRuleStats(sql)
-    if (generateInclusionStats) {
-      createTempInclusionStatsTables(connection, tempEmulationSchema, cohortSet$json[i], cohortId)
-    }
+    # generateInclusionStats <- sqlContainsInclusionRuleStats(sql)
+    # if (generateInclusionStats) {
+    #   createTempInclusionStatsTables(connection, tempEmulationSchema, cohortSet$json[i], cohortId)
+    # }
     
-    if (generateInclusionStats) {
+    # if (generateInclusionStats) {
       sql <- SqlRender::render(sql = sql,
                                cdm_database_schema = cdmDatabaseSchema,
                                vocabulary_database_schema = cdmDatabaseSchema,
                                target_database_schema = cohortDatabaseSchema,
-                               target_cohort_table = cohortTable,
+                               results_database_schema = cohortDatabaseSchema,
+                               target_cohort_table = cohortTableNames$cohortTable,
                                target_cohort_id = cohortSet$cohortId[i],
-                               results_database_schema.cohort_inclusion = "#cohort_inclusion",
-                               results_database_schema.cohort_inclusion_result = "#cohort_inc_result",
-                               results_database_schema.cohort_inclusion_stats = "#cohort_inc_stats",
-                               results_database_schema.cohort_summary_stats = "#cohort_summary_stats",
-                               results_database_schema.cohort_censor_stats = "#cohort_censor_stats")
-    } else {
-      sql <- SqlRender::render(sql = sql,
-                               cdm_database_schema = cdmDatabaseSchema,
-                               vocabulary_database_schema = cdmDatabaseSchema,
-                               target_database_schema = cohortDatabaseSchema,
-                               target_cohort_table = cohortTable,
-                               target_cohort_id = cohortSet$cohortId[i])
-    }
+                               results_database_schema.cohort_inclusion = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionTable, sep="."),
+                               results_database_schema.cohort_inclusion_result = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionResultTable, sep="."),
+                               results_database_schema.cohort_inclusion_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionStatsTable, sep="."),
+                               results_database_schema.cohort_summary_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortSummaryStatsTable, sep="."),
+                               results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep="."),
+                               warnOnMissingParameters = FALSE)
+    # } else {
+    #   sql <- SqlRender::render(sql = sql,
+    #                            cdm_database_schema = cdmDatabaseSchema,
+    #                            vocabulary_database_schema = cdmDatabaseSchema,
+    #                            target_database_schema = cohortDatabaseSchema,
+    #                            target_cohort_table = cohortTable,
+    #                            target_cohort_id = cohortSet$cohortId[i])
+    # }
     sql <- SqlRender::translate(sql = sql,
                                 targetDialect = connectionDetails$dbms,
                                 tempEmulationSchema = tempEmulationSchema)
     DatabaseConnector::executeSql(connection, sql)
 
-    if (generateInclusionStats && !is.null(inclusionStatisticsFolder)) {
-      saveAndDropTempInclusionStatsTables(connection = connection,
-                                          tempEmulationSchema = tempEmulationSchema,
-                                          inclusionStatisticsFolder = inclusionStatisticsFolder,
-                                          incremental = incremental,
-                                          cohortIds = cohortSet$cohortId[i])
-    }
+    # if (generateInclusionStats && !is.null(inclusionStatisticsFolder)) {
+    #   saveAndDropTempInclusionStatsTables(connection = connection,
+    #                                       tempEmulationSchema = tempEmulationSchema,
+    #                                       inclusionStatisticsFolder = inclusionStatisticsFolder,
+    #                                       incremental = incremental,
+    #                                       cohortIds = cohortSet$cohortId[i])
+    # }
 
     if (incremental) {
       recordTasksDone(cohortId = cohortSet$cohortId[i],
@@ -254,107 +257,107 @@ generateCohort <- function(cohortId = NULL,
   }
 }
 
-createTempInclusionStatsTables <- function(connection, tempEmulationSchema, cohortJson, cohortId) {
-  ParallelLogger::logInfo("Creating temporary inclusion statistics tables")
-  sql <- SqlRender::readSql(system.file("sql/sql_server/CreateInclusionStatsTempTables.sql", package = "CohortGenerator", mustWork = TRUE))
-  sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms, tempEmulationSchema = tempEmulationSchema)
-  DatabaseConnector::executeSql(connection, sql)
+# createTempInclusionStatsTables <- function(connection, tempEmulationSchema, cohortJson, cohortId) {
+#   ParallelLogger::logInfo("Creating temporary inclusion statistics tables")
+#   sql <- SqlRender::readSql(system.file("sql/sql_server/CreateInclusionStatsTempTables.sql", package = "CohortGenerator", mustWork = TRUE))
+#   sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms, tempEmulationSchema = tempEmulationSchema)
+#   DatabaseConnector::executeSql(connection, sql)
+# 
+#   inclusionRules <- data.frame(cohortDefinitionId = as.double(),
+#                                ruleSequence = as.integer(),
+#                                name = as.character())
+# 
+#   cohortDefinition <- RJSONIO::fromJSON(content = cohortJson, digits = 23)
+#   if (!is.null(cohortDefinition$InclusionRules)) {
+#     nrOfRules <- length(cohortDefinition$InclusionRules)
+#     if (nrOfRules > 0) {
+#       for (j in 1:nrOfRules) {
+#         inclusionRules <- rbind(inclusionRules, data.frame(cohortDefinitionId = cohortId,
+#                                                            ruleSequence = j - 1,
+#                                                            name = cohortDefinition$InclusionRules[[j]]$name))
+#       }
+#     }
+#   }
+#   
+#   DatabaseConnector::insertTable(connection = connection,
+#                                  tableName = "#cohort_inclusion",
+#                                  data = inclusionRules,
+#                                  dropTableIfExists = TRUE,
+#                                  createTable = TRUE,
+#                                  tempTable = TRUE,
+#                                  tempEmulationSchema = tempEmulationSchema,
+#                                  camelCaseToSnakeCase = TRUE)
+# }
 
-  inclusionRules <- data.frame(cohortDefinitionId = as.double(),
-                               ruleSequence = as.integer(),
-                               name = as.character())
-
-  cohortDefinition <- RJSONIO::fromJSON(content = cohortJson, digits = 23)
-  if (!is.null(cohortDefinition$InclusionRules)) {
-    nrOfRules <- length(cohortDefinition$InclusionRules)
-    if (nrOfRules > 0) {
-      for (j in 1:nrOfRules) {
-        inclusionRules <- rbind(inclusionRules, data.frame(cohortDefinitionId = cohortId,
-                                                           ruleSequence = j - 1,
-                                                           name = cohortDefinition$InclusionRules[[j]]$name))
-      }
-    }
-  }
-  
-  DatabaseConnector::insertTable(connection = connection,
-                                 tableName = "#cohort_inclusion",
-                                 data = inclusionRules,
-                                 dropTableIfExists = TRUE,
-                                 createTable = TRUE,
-                                 tempTable = TRUE,
-                                 tempEmulationSchema = tempEmulationSchema,
-                                 camelCaseToSnakeCase = TRUE)
-}
-
-saveAndDropTempInclusionStatsTables <- function(connection,
-                                                tempEmulationSchema,
-                                                inclusionStatisticsFolder,
-                                                incremental,
-                                                cohortIds) {
-  fetchStats <- function(table, fileName, cohortIds) {
-    ParallelLogger::logDebug("- Fetching data from ", table)
-    sql <- "SELECT * FROM @table"
-    data <- DatabaseConnector::renderTranslateQuerySql(sql = sql,
-                                                       connection = connection,
-                                                       tempEmulationSchema = tempEmulationSchema,
-                                                       snakeCaseToCamelCase = TRUE,
-                                                       table = table)
-    fullFileName <- file.path(inclusionStatisticsFolder, fileName)
-    if(nrow(data) > 0) {
-      if (incremental) {
-        saveIncremental(data, fullFileName, cohortDefinitionId = cohortIds)
-      } else {
-        readr::write_csv(x = data, file = fullFileName)
-      }
-    }
-  }
-  fetchStats("#cohort_inclusion", "cohortInclusion.csv", cohortIds)
-  fetchStats("#cohort_inc_result", "cohortIncResult.csv", cohortIds)
-  fetchStats("#cohort_inc_stats", "cohortIncStats.csv", cohortIds)
-  fetchStats("#cohort_summary_stats", "cohortSummaryStats.csv", cohortIds)
-  fetchStats("#cohort_censor_stats", "cohortCensorStats.csv", cohortIds)
-  
-  sql <- "TRUNCATE TABLE #cohort_inclusion;
-  DROP TABLE #cohort_inclusion;
-
-  TRUNCATE TABLE #cohort_inc_result;
-  DROP TABLE #cohort_inc_result;
-
-  TRUNCATE TABLE #cohort_inc_stats;
-  DROP TABLE #cohort_inc_stats;
-
-  TRUNCATE TABLE #cohort_summary_stats;
-  DROP TABLE #cohort_summary_stats;
-  
-  TRUNCATE TABLE #cohort_censor_stats;
-  DROP TABLE #cohort_censor_stats;"
-  
-  DatabaseConnector::renderTranslateExecuteSql(connection = connection,
-                                               sql = sql,
-                                               progressBar = FALSE,
-                                               reportOverallTime = FALSE,
-                                               tempEmulationSchema = tempEmulationSchema)
-}
-
-#' Detects if the SQL indicate to compute inclusion rule statistics
-#'
-#' @description
-#' This function takes as a parameter a SQL script used to generate a cohort
-#' and performs a string search for tokens that indicate to generate the inclusion 
-#' statistics. This SQL is usually generated by circe-be.
+# saveAndDropTempInclusionStatsTables <- function(connection,
+#                                                 tempEmulationSchema,
+#                                                 inclusionStatisticsFolder,
+#                                                 incremental,
+#                                                 cohortIds) {
+#   fetchStats <- function(table, fileName, cohortIds) {
+#     ParallelLogger::logDebug("- Fetching data from ", table)
+#     sql <- "SELECT * FROM @table"
+#     data <- DatabaseConnector::renderTranslateQuerySql(sql = sql,
+#                                                        connection = connection,
+#                                                        tempEmulationSchema = tempEmulationSchema,
+#                                                        snakeCaseToCamelCase = TRUE,
+#                                                        table = table)
+#     fullFileName <- file.path(inclusionStatisticsFolder, fileName)
+#     if(nrow(data) > 0) {
+#       if (incremental) {
+#         saveIncremental(data, fullFileName, cohortDefinitionId = cohortIds)
+#       } else {
+#         readr::write_csv(x = data, file = fullFileName)
+#       }
+#     }
+#   }
+#   fetchStats("#cohort_inclusion", "cohortInclusion.csv", cohortIds)
+#   fetchStats("#cohort_inc_result", "cohortIncResult.csv", cohortIds)
+#   fetchStats("#cohort_inc_stats", "cohortIncStats.csv", cohortIds)
+#   fetchStats("#cohort_summary_stats", "cohortSummaryStats.csv", cohortIds)
+#   fetchStats("#cohort_censor_stats", "cohortCensorStats.csv", cohortIds)
+#   
+#   sql <- "TRUNCATE TABLE #cohort_inclusion;
+#   DROP TABLE #cohort_inclusion;
+# 
+#   TRUNCATE TABLE #cohort_inc_result;
+#   DROP TABLE #cohort_inc_result;
+# 
+#   TRUNCATE TABLE #cohort_inc_stats;
+#   DROP TABLE #cohort_inc_stats;
+# 
+#   TRUNCATE TABLE #cohort_summary_stats;
+#   DROP TABLE #cohort_summary_stats;
+#   
+#   TRUNCATE TABLE #cohort_censor_stats;
+#   DROP TABLE #cohort_censor_stats;"
+#   
+#   DatabaseConnector::renderTranslateExecuteSql(connection = connection,
+#                                                sql = sql,
+#                                                progressBar = FALSE,
+#                                                reportOverallTime = FALSE,
+#                                                tempEmulationSchema = tempEmulationSchema)
+# }
 #' 
-#' This function also assumes that the SQL passed into the function has not been
-#' translated to a specific SQL dialect. 
-#'
-#' @param sql   A string containing the SQL used to generate the cohort. This
-#'              code assumes that the SQL has not been rendered using SqlRender
-#'              in order to detect tokens that indicate the generation of
-#'              inclusion rule statistics in addition to the cohort.
-sqlContainsInclusionRuleStats <- function(sql) {
-  sql <- SqlRender::render(sql = sql, warnOnMissingParameters = FALSE)
-  hasCohortCensorStatsTable <- grepl("(@results_database_schema.cohort_censor_stats)", sql)
-  hasOtherInclusionRuleTables <- grepl("(@results_database_schema.cohort_inclusion_result)", sql) &&
-    grepl("(@results_database_schema.cohort_inclusion_stats)", sql) &&
-    grepl("(@results_database_schema.cohort_summary_stats)", sql)
-  return (hasCohortCensorStatsTable || hasOtherInclusionRuleTables)
-}
+#' #' Detects if the SQL indicate to compute inclusion rule statistics
+#' #'
+#' #' @description
+#' #' This function takes as a parameter a SQL script used to generate a cohort
+#' #' and performs a string search for tokens that indicate to generate the inclusion 
+#' #' statistics. This SQL is usually generated by circe-be.
+#' #' 
+#' #' This function also assumes that the SQL passed into the function has not been
+#' #' translated to a specific SQL dialect. 
+#' #'
+#' #' @param sql   A string containing the SQL used to generate the cohort. This
+#' #'              code assumes that the SQL has not been rendered using SqlRender
+#' #'              in order to detect tokens that indicate the generation of
+#' #'              inclusion rule statistics in addition to the cohort.
+#' sqlContainsInclusionRuleStats <- function(sql) {
+#'   sql <- SqlRender::render(sql = sql, warnOnMissingParameters = FALSE)
+#'   hasCohortCensorStatsTable <- grepl("(@results_database_schema.cohort_censor_stats)", sql)
+#'   hasOtherInclusionRuleTables <- grepl("(@results_database_schema.cohort_inclusion_result)", sql) &&
+#'     grepl("(@results_database_schema.cohort_inclusion_stats)", sql) &&
+#'     grepl("(@results_database_schema.cohort_summary_stats)", sql)
+#'   return (hasCohortCensorStatsTable || hasOtherInclusionRuleTables)
+#' }

@@ -70,12 +70,12 @@ test_that("Call instatiateCohortSet with incremental = TRUE and no folder specif
                message = "Must specify incrementalFolder")
 })
 
-test_that("Ensure instatiateCohortSet is single threaded", {
-  expect_error(generateCohortSet(connectionDetails = connectionDetails,
-                                    cohortSet = createEmptyCohortSet(),
-                                    numThreads = 2),
-               message = "numThreads must be set to 1 for now.")
-})
+# test_that("Ensure instatiateCohortSet is single threaded", {
+#   expect_error(generateCohortSet(connectionDetails = connectionDetails,
+#                                     cohortSet = createEmptyCohortSet(),
+#                                     numThreads = 2),
+#                message = "numThreads must be set to 1 for now.")
+# })
 
 
 # getInclusionStatistics ------
@@ -85,95 +85,110 @@ test_that("Call getInclusionStatistics without connection or connectionDetails",
 })
 
 # Functional Tests ----------------
-test_that("Create cohorts - Gen Stats = T, Incremental = F, Gather Results", {
-  outputFolder <- tempdir()
+test_that("Generate cohorts before creating cohort tables errors out", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "missing")
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  expect_error(generateCohortSet(connectionDetails = connectionDetails,
+                                   cdmDatabaseSchema = "main",
+                                   cohortDatabaseSchema = "main",
+                                   cohortTableNames = cohortTableNames,
+                                   cohortSet = cohortsWithStats,
+                                   incremental = FALSE,
+                                   incrementalFolder = file.path(outputFolder, "RecordKeeping")))
+})
 
+test_that("Create cohorts with stats, Incremental = F, Gather Results", {
+  outputFolder <- tempdir()
+  cohortTableNames <- getCohortTableNames(cohortTable = "genStats")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
-                                           cdmDatabaseSchema = "main",
-                                           cohortDatabaseSchema = "main",
-                                           cohortTable = "temp_cohort",
-                                           cohortSet = cohortsWithStats,
-                                           createCohortTable = TRUE,
-                                           incremental = FALSE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"),
-                                           inclusionStatisticsFolder = outputFolder)
+                                        cdmDatabaseSchema = "main",
+                                        cohortDatabaseSchema = "main",
+                                        cohortTableNames = cohortTableNames,
+                                        cohortSet = cohortsWithStats,
+                                        incremental = FALSE,
+                                        incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(length(cohortsGenerated), nrow(cohortsWithStats))
   rm(cohortsWithStats)
   unlink(outputFolder)
 })
 
-test_that("Create cohorts - Gen Stats = T, Incremental = T", {
+test_that("Create cohorts with stats, Incremental = T", {
   outputFolder <- tempdir()
+  cohortTableNames <- getCohortTableNames(cohortTable = "genStatsInc")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
   # 1st run first to ensure that all cohorts are generated
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
-                                           cohortTable = "temp_cohort",
+                                           cohortTableNames = cohortTableNames,
                                            cohortSet = cohortsWithStats,
-                                           createCohortTable = TRUE,
                                            incremental = TRUE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"),
-                                           inclusionStatisticsFolder = outputFolder)
+                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   # 2nd run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
   cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
-                                           cdmDatabaseSchema = "main",
-                                           cohortDatabaseSchema = "main",
-                                           cohortTable = "temp_cohort",
-                                           cohortSet = cohortsWithStats,
-                                           createCohortTable = TRUE,
-                                           incremental = TRUE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"),
-                                           inclusionStatisticsFolder = outputFolder)
+                                        cdmDatabaseSchema = "main",
+                                        cohortDatabaseSchema = "main",
+                                        cohortTableNames = cohortTableNames,
+                                        cohortSet = cohortsWithStats,
+                                        incremental = TRUE,
+                                        incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(length(cohortsGenerated), nrow(cohortsWithStats))
   rm(cohortsWithStats)
   unlink(outputFolder)
 })
 
-test_that("Create cohorts - Gen Stats = F, Incremental = F", {
+test_that("Create cohorts without stats, Incremental = F", {
   outputFolder <- tempdir()
+  cohortTableNames <- getCohortTableNames(cohortTable = "noStats")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
   # Run first to ensure that all cohorts are generated
   cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
   cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
-                                           cdmDatabaseSchema = "main",
-                                           cohortDatabaseSchema = "main",
-                                           cohortTable = "temp_cohort",
-                                           cohortSet = cohortsWithoutStats,
-                                           createCohortTable = TRUE,
-                                           incremental = FALSE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"),
-                                           inclusionStatisticsFolder = outputFolder)
+                                        cdmDatabaseSchema = "main",
+                                        cohortDatabaseSchema = "main",
+                                        cohortTableNames = cohortTableNames,
+                                        cohortSet = cohortsWithoutStats,
+                                        incremental = FALSE,
+                                        incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(length(cohortsGenerated), nrow(cohortsWithoutStats))
   rm(cohortsWithoutStats)
   unlink(outputFolder)
 })
 
-test_that("Create cohorts - Gen Stats = F, Incremental = T", {
+test_that("Create cohorts without stats, Incremental = T", {
   outputFolder <- tempdir()
+  cohortTableNames <- getCohortTableNames(cohortTable = "noStatsInc")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
   # Run first to ensure that all cohorts are generated
   cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
   cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
-                                           cohortTable = "temp_cohort",
+                                           cohortTableNames = cohortTableNames,
                                            cohortSet = cohortsWithoutStats,
-                                           createCohortTable = TRUE,
                                            incremental = TRUE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"),
-                                           inclusionStatisticsFolder = outputFolder)
+                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   # Next run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
   cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
-                                           cohortTable = "temp_cohort",
+                                           cohortTableNames = cohortTableNames,
                                            cohortSet = cohortsWithoutStats,
-                                           createCohortTable = TRUE,
                                            incremental = TRUE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"),
-                                           inclusionStatisticsFolder = outputFolder)
+                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(length(cohortsGenerated), nrow(cohortsWithoutStats))
   unlink(outputFolder)
 })
@@ -183,4 +198,3 @@ rm(generateSql)
 rm(getCohortsForTest)
 rm(cohortJsonFiles)
 rm(cohorts)
-rm(connectionDetails) # Remove the Eunomia database

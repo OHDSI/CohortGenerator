@@ -41,4 +41,3 @@ test_that("Call getCohortCounts with subset of cohort IDs", {
 
 # Cleanup ------
 rm(cohortCounts)
-rm(connectionDetails) # Remove the Eunomia database
