@@ -10,9 +10,8 @@ generateCohortSet(
   cdmDatabaseSchema,
   tempEmulationSchema = NULL,
   cohortDatabaseSchema = cdmDatabaseSchema,
-  cohortTable = "cohort",
+  cohortTableNames = getCohortTableNames(),
   cohortSet = NULL,
-  numThreads = 1,
   incremental = FALSE,
   incrementalFolder = NULL
 )
@@ -41,26 +40,15 @@ privileges where temp tables can be created.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{Name of the cohort table.}
-
-\item{cohortSet}{The \code{cohortSet} argument must be a data frame with 
-the following columns: \describe{
-\item{cohortId}{The unique integer identifier of the cohort} 
-\item{cohortFullName}{The cohort's full name}
-\item{sql}{The OHDSI-SQL used to generate the cohort}
-\item{json}{The json column must represent a Circe cohort 
-definition. This field is only required when you would 
-like to generate a cohort that includes inclusion statistics
-since the names of the inclusion rules are parsed from 
-this JSON property.} }}
-
-\item{numThreads}{Specify the number of threads for cohort generation. Currently
-this only supports single threaded operations.}
-
 \item{incremental}{Create only cohorts that haven't been created before?}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
 kept of which definition has been executed.}
+
+\item{numThreads}{Specify the number of threads for cohort generation. Currently
+this only supports single threaded operations.}
+
+\item{cohortTable}{Name of the cohort table.}
 
 \item{inclusionStatisticsFolder}{The folder where the inclusion rule statistics are stored. Can be
 left NULL if you do not wish to export the inclusion rule statistics}

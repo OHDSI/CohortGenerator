@@ -8,7 +8,8 @@ createCohortTables(
   connectionDetails = NULL,
   connection = NULL,
   cohortDatabaseSchema,
-  cohortTableNames = getCohortTableNames()
+  cohortTableNames = getCohortTableNames(),
+  incremental = FALSE
 )
 }
 \arguments{
@@ -29,11 +30,12 @@ name, for example 'scratch.dbo'.}
 
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
+
+\item{incremental}{When set to TRUE, this function will check to see
+if the cohortTableNames exists in the cohortDatabaseSchema
+and if they exist, it will skip creating the tables.}
 }
 \description{
 This function creates an empty cohort table and empty tables for
-cohort statistics. NOTE: This function will drop the tables if they 
-already exist in your cohortDatabaseSchema. You can use 
-\code{\link[DatabaseConnector::getTableNames]{DatabaseConnector::getTableNames}}
-to check if these tables exist before calling this function.
+cohort statistics.
 }

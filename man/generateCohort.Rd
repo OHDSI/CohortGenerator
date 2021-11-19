@@ -12,7 +12,7 @@ generateCohort(
   cdmDatabaseSchema,
   tempEmulationSchema,
   cohortDatabaseSchema,
-  cohortTable,
+  cohortTableNames,
   inclusionStatisticsFolder,
   incremental,
   recordKeepingFile
@@ -20,17 +20,6 @@ generateCohort(
 }
 \arguments{
 \item{cohortId}{The cohortId in the list of \code{cohortSet}}
-
-\item{cohortSet}{The \code{cohortSet} argument must be a data frame with 
-the following columns: \describe{
-\item{cohortId}{The unique integer identifier of the cohort} 
-\item{cohortFullName}{The cohort's full name}
-\item{sql}{The OHDSI-SQL used to generate the cohort}
-\item{json}{The json column must represent a Circe cohort 
-definition. This field is only required when you would 
-like to generate a cohort that includes inclusion statistics
-since the names of the inclusion rules are parsed from 
-this JSON property.} }}
 
 \item{connection}{An object of type \code{connection} as created using the
 \code{\link[DatabaseConnector]{connect}} function in the
@@ -55,8 +44,6 @@ privileges where temp tables can be created.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{Name of the cohort table.}
-
 \item{inclusionStatisticsFolder}{The folder where the inclusion rule statistics are stored. Can be
 left NULL if you do not wish to export the inclusion rule statistics}
 
@@ -64,6 +51,8 @@ left NULL if you do not wish to export the inclusion rule statistics}
 
 \item{recordKeepingFile}{If \code{incremental = TRUE}, this file will contain
 information on cohorts already generated}
+
+\item{cohortTable}{Name of the cohort table.}
 }
 \description{
 This function is used by \code{generateCohortSet} to generate a cohort
