@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Create an empty cohort set
+#' Create an empty cohort definition set
 #'
 #' @description
 #' This function creates an empty cohort set data.frame for use
@@ -24,35 +24,27 @@
 #' Returns an empty cohort set data.frame
 #' 
 #' @export
-createEmptyCohortSet <- function() {
-  return(setNames(data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortFullName", "sql")))
+createEmptyCohortDefinitionSet <- function() {
+  return(setNames(data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortName", "sql")))
 }
 
 #' Generate a set of cohorts
 #'
 #' @description
-#' This function generates a set of cohorts in the cohort table and where
-#' specified the inclusion rule statistics are computed and stored in the
-#' \code{inclusionStatisticsFolder}.
+#' This function generates a set of cohorts in the cohort table.
 #'
 #' @template Connection
-#'
-#' @param numThreads                  Specify the number of threads for cohort generation. Currently
-#'                                    this only supports single threaded operations.
 #'
 #' @template CdmDatabaseSchema
 #'
 #' @template TempEmulationSchema
 #'
-#' @template CohortTable
+#' @template CohortTableNames
 #'
-#' @template CohortSet
+#' @template CohortDefinitionSet
 #'
-#' @template InclusionStatisticsFolder
-#' 
-#' @param createCohortTable           Create the cohort table? If \code{incremental = TRUE} and the
-#'                                    table already exists this will be skipped.
 #' @param incremental                 Create only cohorts that haven't been created before?
+#' 
 #' @param incrementalFolder           If \code{incremental = TRUE}, specify a folder where records are
 #'                                    kept of which definition has been executed.
 #'
@@ -60,22 +52,19 @@ createEmptyCohortSet <- function() {
 generateCohortSet <- function(connectionDetails = NULL,
                               connection = NULL,
                               cdmDatabaseSchema,
-                              tempEmulationSchema = NULL,
+                              tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                               cohortDatabaseSchema = cdmDatabaseSchema,
                               cohortTableNames = getCohortTableNames(),
-                              cohortSet = NULL,
+                              cohortDefinitionSet = NULL,
                               incremental = FALSE,
                               incrementalFolder = NULL) {
+  checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
+  checkmate::assertNames(colnames(cohortDefinitionSet),
+                         must.include = c("cohortId",
+                                          "cohortName",
+                                          "sql"))
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
-  }
-  if (!is.null(cohortSet) & is.data.frame(cohortSet)) {
-    cohortRequiredColumns <- colnames(createEmptyCohortSet())
-    if (length(intersect(names(cohortSet), cohortRequiredColumns)) != length(cohortRequiredColumns)) {
-      stop(paste("The cohortSet data frame must contain the following columns:", cohortRequiredColumns, sep = ","))
-    }
-  } else {
-    stop("The cohortSet parameter is mandatory and must be a data frame.")
   }
   if (incremental) {
     if (is.null(incrementalFolder)) {
@@ -120,7 +109,7 @@ generateCohortSet <- function(connectionDetails = NULL,
 
 
   if (incremental) {
-    cohortSet$checksum <- computeChecksum(cohortSet$sql)
+    cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
   }
 
@@ -137,9 +126,9 @@ generateCohortSet <- function(connectionDetails = NULL,
 
   # Apply the generation operation to the cluster
   cohortsGenerated <- ParallelLogger::clusterApply(cluster,
-                                                   cohortSet$cohortId,
+                                                   cohortDefinitionSet$cohortId,
                                                    generateCohort,
-                                                   cohortSet = cohortSet,
+                                                   cohortDefinitionSet = cohortDefinitionSet,
                                                    connection = connection,
                                                    connectionDetails = connectionDetails,
                                                    cdmDatabaseSchema = cdmDatabaseSchema,
@@ -162,9 +151,9 @@ generateCohortSet <- function(connectionDetails = NULL,
 #' This function is used by \code{generateCohortSet} to generate a cohort
 #' against the CDM.
 #'
-#' @param cohortId   The cohortId in the list of \code{cohortSet}
+#' @param cohortId   The cohortId in the list of \code{cohortDefinitionSet}
 #' 
-#' @template CohortSet
+#' @template cohortDefinitionSet
 #' 
 #' @template Connection
 #' 
@@ -172,29 +161,26 @@ generateCohortSet <- function(connectionDetails = NULL,
 #'
 #' @template TempEmulationSchema
 #'
-#' @template CohortTable
-#' 
-#' @template InclusionStatisticsFolder
+#' @template CohortTableNames
 #' 
 #' @param incremental       Create only cohorts that haven't been created before?
 #' 
 #' @param recordKeepingFile If \code{incremental = TRUE}, this file will contain
 #'                          information on cohorts already generated
 generateCohort <- function(cohortId = NULL,
-                           cohortSet,
+                           cohortDefinitionSet,
                            connection = NULL,
                            connectionDetails = NULL,
                            cdmDatabaseSchema,
-                           tempEmulationSchema,
+                           tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                            cohortDatabaseSchema,
                            cohortTableNames,
-                           inclusionStatisticsFolder,
                            incremental,
                            recordKeepingFile) {
   # Get the index of the cohort record for the current cohortId
-  i <- which(cohortSet$cohortId == cohortId)
-  if (!incremental || isTaskRequired(cohortId = cohortSet$cohortId[i],
-                                     checksum = cohortSet$checksum[i],
+  i <- which(cohortDefinitionSet$cohortId == cohortId)
+  if (!incremental || isTaskRequired(cohortId = cohortDefinitionSet$cohortId[i],
+                                     checksum = cohortDefinitionSet$checksum[i],
                                      recordKeepingFile = recordKeepingFile)) {
     if (is.null(connection)) {
       # Establish the connection and ensure the cleanup is performed
@@ -202,15 +188,15 @@ generateCohort <- function(cohortId = NULL,
       on.exit(DatabaseConnector::disconnect(connection))
     }
 
-    ParallelLogger::logInfo(i, "/", nrow(cohortSet), "- Generating cohort: ", cohortSet$cohortFullName[i])
-    sql <- cohortSet$sql[i]
+    ParallelLogger::logInfo(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortDefinitionSet$cohortName[i])
+    sql <- cohortDefinitionSet$sql[i]
     sql <- SqlRender::render(sql = sql,
                              cdm_database_schema = cdmDatabaseSchema,
                              vocabulary_database_schema = cdmDatabaseSchema,
                              target_database_schema = cohortDatabaseSchema,
                              results_database_schema = cohortDatabaseSchema,
                              target_cohort_table = cohortTableNames$cohortTable,
-                             target_cohort_id = cohortSet$cohortId[i],
+                             target_cohort_id = cohortDefinitionSet$cohortId[i],
                              results_database_schema.cohort_inclusion = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionTable, sep="."),
                              results_database_schema.cohort_inclusion_result = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionResultTable, sep="."),
                              results_database_schema.cohort_inclusion_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionStatsTable, sep="."),
@@ -223,12 +209,12 @@ generateCohort <- function(cohortId = NULL,
     DatabaseConnector::executeSql(connection, sql)
 
     if (incremental) {
-      recordTasksDone(cohortId = cohortSet$cohortId[i],
-                      checksum = cohortSet$checksum[i],
+      recordTasksDone(cohortId = cohortDefinitionSet$cohortId[i],
+                      checksum = cohortDefinitionSet$checksum[i],
                       recordKeepingFile = recordKeepingFile)
     }
 
-    return(cohortSet$cohortId[i])
+    return(cohortDefinitionSet$cohortId[i])
   } else {
     return(NULL)
   }

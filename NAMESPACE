@@ -2,7 +2,7 @@
 
 export(computeChecksum)
 export(createCohortTables)
-export(createEmptyCohortSet)
+export(createEmptyCohortDefinitionSet)
 export(generateCohortSet)
 export(getCohortCounts)
 export(getCohortTableNames)

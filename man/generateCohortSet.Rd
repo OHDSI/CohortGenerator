@@ -8,10 +8,10 @@ generateCohortSet(
   connectionDetails = NULL,
   connection = NULL,
   cdmDatabaseSchema,
-  tempEmulationSchema = NULL,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   cohortDatabaseSchema = cdmDatabaseSchema,
   cohortTableNames = getCohortTableNames(),
-  cohortSet = NULL,
+  cohortDefinitionSet = NULL,
   incremental = FALSE,
   incrementalFolder = NULL
 )
@@ -40,24 +40,19 @@ privileges where temp tables can be created.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
+\item{cohortTableNames}{List of cohort table names.}
+
+\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
+the following columns: \describe{
+\item{cohortId}{The unique integer identifier of the cohort} 
+\item{cohortName}{The cohort's name}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}}
+
 \item{incremental}{Create only cohorts that haven't been created before?}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
 kept of which definition has been executed.}
-
-\item{numThreads}{Specify the number of threads for cohort generation. Currently
-this only supports single threaded operations.}
-
-\item{cohortTable}{Name of the cohort table.}
-
-\item{inclusionStatisticsFolder}{The folder where the inclusion rule statistics are stored. Can be
-left NULL if you do not wish to export the inclusion rule statistics}
-
-\item{createCohortTable}{Create the cohort table? If \code{incremental = TRUE} and the
-table already exists this will be skipped.}
 }
 \description{
-This function generates a set of cohorts in the cohort table and where
-specified the inclusion rule statistics are computed and stored in the
-\code{inclusionStatisticsFolder}.
+This function generates a set of cohorts in the cohort table.
 }

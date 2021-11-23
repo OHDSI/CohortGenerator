@@ -27,13 +27,13 @@ getCohortsForTest <- function(cohorts, generateStats = FALSE) {
 
 # This will gather all of the cohort JSON in the package for use in the tests
 cohortJsonFiles <- list.files(path = system.file("cohorts", package = "CohortGenerator"), full.names = TRUE)
-cohorts <- setNames(data.frame(matrix(ncol = 4, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortFullName", "json", "cohortJsonFile"))
+cohorts <- setNames(data.frame(matrix(ncol = 4, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortName", "json", "cohortJsonFile"))
 for (i in 1:length(cohortJsonFiles)) {
   cohortJsonFileName <- cohortJsonFiles[i]
   cohortFullName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
   cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
   cohorts <- rbind(cohorts, data.frame(cohortId = i, 
-                                       cohortFullName = cohortFullName, 
+                                       cohortName = cohortFullName, 
                                        json = cohortJson,
                                        cohortJsonFile = cohortJsonFileName,
                                        stringsAsFactors = FALSE))
@@ -51,28 +51,39 @@ test_that("Call generateCohortSet with default parameters", {
                message = "(cohorts parameter)")
 })
 
-test_that("Call instatiateCohortSet with malformed cohort parameter", {
+test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter", {
   expect_error(generateCohortSet(connectionDetails = connectionDetails,
-                                    cohortSet = data.frame()),
+                                    cohortDefinitionSet = data.frame()),
                message = "(must contain the following columns)")
 })
 
-test_that("Call instatiateCohortSet with vector as cohort parameter", {
+test_that("Call instatiateCohortSet with cohortDefinitionSet with extra columns", {
+  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
+  cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(cohortId = 1,
+                                           cohortName = "Test",
+                                           sql = "sql",
+                                           foo = "foo"))
   expect_error(generateCohortSet(connectionDetails = connectionDetails,
-                                    cohortSet = c()),
+                                 cohortDefinitionSet = data.frame()),
+               message = "(must contain the following columns)")
+})
+
+test_that("Call instatiateCohortSet with vector as cohortDefinitionSet parameter", {
+  expect_error(generateCohortSet(connectionDetails = connectionDetails,
+                                    cohortDefinitionSet = c()),
                message = "(data frame)")
 })
 
 test_that("Call instatiateCohortSet with incremental = TRUE and no folder specified", {
   expect_error(generateCohortSet(connectionDetails = connectionDetails,
-                                    cohortSet = createEmptyCohortSet(),
+                                    cohortDefinitionSet = createEmptyCohortDefinitionSet(),
                                     incremental = TRUE),
                message = "Must specify incrementalFolder")
 })
 
 # test_that("Ensure instatiateCohortSet is single threaded", {
 #   expect_error(generateCohortSet(connectionDetails = connectionDetails,
-#                                     cohortSet = createEmptyCohortSet(),
+#                                     cohortDefinitionSet = createEmptyCohortDefinitionSet(),
 #                                     numThreads = 2),
 #                message = "numThreads must be set to 1 for now.")
 # })
@@ -92,7 +103,7 @@ test_that("Generate cohorts before creating cohort tables errors out", {
                                    cdmDatabaseSchema = "main",
                                    cohortDatabaseSchema = "main",
                                    cohortTableNames = cohortTableNames,
-                                   cohortSet = cohortsWithStats,
+                                   cohortDefinitionSet = cohortsWithStats,
                                    incremental = FALSE,
                                    incrementalFolder = file.path(outputFolder, "RecordKeeping")))
 })
@@ -108,7 +119,7 @@ test_that("Create cohorts with stats, Incremental = F, Gather Results", {
                                         cdmDatabaseSchema = "main",
                                         cohortDatabaseSchema = "main",
                                         cohortTableNames = cohortTableNames,
-                                        cohortSet = cohortsWithStats,
+                                        cohortDefinitionSet = cohortsWithStats,
                                         incremental = FALSE,
                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(length(cohortsGenerated), nrow(cohortsWithStats))
@@ -128,7 +139,7 @@ test_that("Create cohorts with stats, Incremental = T", {
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTableNames = cohortTableNames,
-                                           cohortSet = cohortsWithStats,
+                                           cohortDefinitionSet = cohortsWithStats,
                                            incremental = TRUE,
                                            incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   # 2nd run using incremental mode to verify that all cohorts are created
@@ -137,7 +148,7 @@ test_that("Create cohorts with stats, Incremental = T", {
                                         cdmDatabaseSchema = "main",
                                         cohortDatabaseSchema = "main",
                                         cohortTableNames = cohortTableNames,
-                                        cohortSet = cohortsWithStats,
+                                        cohortDefinitionSet = cohortsWithStats,
                                         incremental = TRUE,
                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(length(cohortsGenerated), nrow(cohortsWithStats))
@@ -157,7 +168,7 @@ test_that("Create cohorts without stats, Incremental = F", {
                                         cdmDatabaseSchema = "main",
                                         cohortDatabaseSchema = "main",
                                         cohortTableNames = cohortTableNames,
-                                        cohortSet = cohortsWithoutStats,
+                                        cohortDefinitionSet = cohortsWithoutStats,
                                         incremental = FALSE,
                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(length(cohortsGenerated), nrow(cohortsWithoutStats))
@@ -177,7 +188,7 @@ test_that("Create cohorts without stats, Incremental = T", {
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTableNames = cohortTableNames,
-                                           cohortSet = cohortsWithoutStats,
+                                           cohortDefinitionSet = cohortsWithoutStats,
                                            incremental = TRUE,
                                            incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   # Next run using incremental mode to verify that all cohorts are created
@@ -186,7 +197,7 @@ test_that("Create cohorts without stats, Incremental = T", {
                                            cdmDatabaseSchema = "main",
                                            cohortDatabaseSchema = "main",
                                            cohortTableNames = cohortTableNames,
-                                           cohortSet = cohortsWithoutStats,
+                                           cohortDefinitionSet = cohortsWithoutStats,
                                            incremental = TRUE,
                                            incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(length(cohortsGenerated), nrow(cohortsWithoutStats))

@@ -6,20 +6,25 @@
 \usage{
 generateCohort(
   cohortId = NULL,
-  cohortSet,
+  cohortDefinitionSet,
   connection = NULL,
   connectionDetails = NULL,
   cdmDatabaseSchema,
-  tempEmulationSchema,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   cohortDatabaseSchema,
   cohortTableNames,
-  inclusionStatisticsFolder,
   incremental,
   recordKeepingFile
 )
 }
 \arguments{
-\item{cohortId}{The cohortId in the list of \code{cohortSet}}
+\item{cohortId}{The cohortId in the list of \code{cohortDefinitionSet}}
+
+\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
+the following columns: \describe{
+\item{cohortId}{The unique integer identifier of the cohort} 
+\item{cohortName}{The cohort's name}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}}
 
 \item{connection}{An object of type \code{connection} as created using the
 \code{\link[DatabaseConnector]{connect}} function in the
@@ -44,15 +49,12 @@ privileges where temp tables can be created.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{inclusionStatisticsFolder}{The folder where the inclusion rule statistics are stored. Can be
-left NULL if you do not wish to export the inclusion rule statistics}
+\item{cohortTableNames}{List of cohort table names.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 
 \item{recordKeepingFile}{If \code{incremental = TRUE}, this file will contain
 information on cohorts already generated}
-
-\item{cohortTable}{Name of the cohort table.}
 }
 \description{
 This function is used by \code{generateCohortSet} to generate a cohort
