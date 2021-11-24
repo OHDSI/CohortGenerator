@@ -17,16 +17,16 @@ This R package contains functions for generating cohorts using data in the CDM.
 # Example
 
 ``` r
-# First construct cohort set: an empty data frame with the
-# cohorts to generate
-cohortsToCreate <- CohortGenerator::createEmptyCohortSet()
+# First construct a cohort definition set: an empty 
+# data frame with the cohorts to generate
+cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
 
 # Fill the cohort set using  cohorts included in this 
 # package as an example
 cohortJsonFiles <- list.files(path = system.file("cohorts", package = "CohortGenerator"), full.names = TRUE)
 for (i in 1:length(cohortJsonFiles)) {
   cohortJsonFileName <- cohortJsonFiles[i]
-  cohortFullName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
+  cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
   # Here we read in the JSON in order to create the SQL
   # using [CirceR](https://ohdsi.github.io/CirceR/)
   # If you have your JSON and SQL stored differenly, you can
@@ -35,7 +35,7 @@ for (i in 1:length(cohortJsonFiles)) {
   cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
   cohortSql <- CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = FALSE))
   cohortsToCreate <- rbind(cohortsToCreate, data.frame(cohortId = i,
-                                                       cohortFullName = cohortFullName, 
+                                                       cohortName = cohortName, 
                                                        sql = cohortSql,
                                                        json = cohortJson,
                                                        stringsAsFactors = FALSE))
@@ -46,20 +46,25 @@ for (i in 1:length(cohortJsonFiles)) {
 # successfully generated against the CDM
 outputFolder <- "C:/TEMP"
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+
+# Create the cohort tables to hold the cohort generation results
+cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = "my_cohort_table")
+CohortGenerator::createCohortTables(connectionDetails = connectionDetails,
+                                                        cohortDatabaseSchema = "main",
+                                                        cohortTableNames = cohortTableNames)
+# Generate the cohorts
 cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = connectionDetails,
                                                        cdmDatabaseSchema = "main",
                                                        cohortDatabaseSchema = "main",
-                                                       cohortTable = "temp_cohort",
-                                                       cohortSet = cohortsToCreate,
-                                                       createCohortTable = TRUE,
+                                                       cohortTableNames = cohortTableNames,
+                                                       cohortDefinitionSet = cohortsToCreate,
                                                        incremental = FALSE,
-                                                       incrementalFolder = file.path(outputFolder, "RecordKeeping"),
-                                                       inclusionStatisticsFolder = outputFolder)
-                                                       
+                                                       incrementalFolder = file.path(outputFolder, "RecordKeeping"))
+
 # Get the cohort counts
 cohortCounts <- CohortGenerator::getCohortCounts(connectionDetails = connectionDetails,
                                                  cohortDatabaseSchema = "main",
-                                                 cohortTable = "temp_cohort")
+                                                 cohortTable = cohortTableNames$cohortTable)
 print(cohortCounts)
 ```
 

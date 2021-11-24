@@ -1,10 +1,11 @@
 CohortGenerator 0.2.0
 =======================
 
-Updated documentation
-Remove CirceR dependency and related functions
-Remvoing helper function for SQL rendering
-Add getCohortCounts function
+- Updated documentation
+- Remove CirceR dependency and related functions
+- Refactoring many functions to enable easier chainging of function call with 
+ROhdsiWebApi and CohortDiagnostics
+- Add getCohortCounts function
 
 CohortGenerator 0.1.1
 =======================
