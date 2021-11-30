@@ -181,20 +181,19 @@ test_that("Export cohort stats in incremental mode", {
 
 # drop cohort stats tables --------------
 test_that("Drop cohort stats tables", {
-  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-  on.exit(DatabaseConnector::disconnect(connection))
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsDropTest")
   # First create the cohort tables
-  createCohortTables(connection = connection,
+  createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames)
   
   # Drop the cohort stats tables
-  dropCohortStatsTables(connection = connection,
+  dropCohortStatsTables(connectionDetails = connectionDetails,
                         cohortDatabaseSchema = "main",
                         cohortTableNames = cohortTableNames)
   
   # Verify that the only table remaining is the main cohort table
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   tables <- DatabaseConnector::getTableNames(connection = connection,
                                              databaseSchema = "main")
   

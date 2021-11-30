@@ -156,6 +156,12 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
                                   connection = NULL,
                                   cohortDatabaseSchema,
                                   cohortTableNames = getCohortTableNames()) {
+  if (is.null(connection)) {
+    # Establish the connection and ensure the cleanup is performed
+    connection <- DatabaseConnector::connect(connectionDetails)
+    on.exit(DatabaseConnector::disconnect(connection))
+  }
+  
   # Export the stats
   dropTable <- function(table) {
     ParallelLogger::logDebug("- Dropping ", table)
