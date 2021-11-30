@@ -33,7 +33,7 @@ inclusion rule statistics.}
 inclusion rule statistics.}
 }
 \value{
-A list of table names as specified in the parameters of this function.
+A list of the table names as specified in the parameters to this function.
 }
 \description{
 This function creates a list of table names used by \code{\link{createCohortTables}} to specify

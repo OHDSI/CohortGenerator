@@ -117,14 +117,12 @@
   <span class="va">cohortsToCreate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">cohortsToCreate</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>cohortId <span class="op">=</span> <span class="va">i</span>,
                                                        cohortName <span class="op">=</span> <span class="va">cohortName</span>, 
                                                        sql <span class="op">=</span> <span class="va">cohortSql</span>,
-                                                       json <span class="op">=</span> <span class="va">cohortJson</span>,
                                                        stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
 <span class="co"># Generate the cohort set against Eunomia. </span>
 <span class="co"># cohortsGenerated contains a list of the cohortIds </span>
 <span class="co"># successfully generated against the CDM</span>
-<span class="va">outputFolder</span> <span class="op">&lt;-</span> <span class="st">"C:/TEMP"</span>
 <span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># Create the cohort tables to hold the cohort generation results</span>
@@ -137,9 +135,7 @@
                                                        cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
                                                        cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
                                                        cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                                                       cohortDefinitionSet <span class="op">=</span> <span class="va">cohortsToCreate</span>,
-                                                       incremental <span class="op">=</span> <span class="cn">FALSE</span>,
-                                                       incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">outputFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span><span class="op">)</span>
+                                                       cohortDefinitionSet <span class="op">=</span> <span class="va">cohortsToCreate</span><span class="op">)</span>
 
 <span class="co"># Get the cohort counts</span>
 <span class="va">cohortCounts</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/getCohortCounts.html">getCohortCounts</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,

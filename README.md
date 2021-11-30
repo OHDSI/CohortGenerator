@@ -37,14 +37,12 @@ for (i in 1:length(cohortJsonFiles)) {
   cohortsToCreate <- rbind(cohortsToCreate, data.frame(cohortId = i,
                                                        cohortName = cohortName, 
                                                        sql = cohortSql,
-                                                       json = cohortJson,
                                                        stringsAsFactors = FALSE))
 }
 
 # Generate the cohort set against Eunomia. 
 # cohortsGenerated contains a list of the cohortIds 
 # successfully generated against the CDM
-outputFolder <- "C:/TEMP"
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 
 # Create the cohort tables to hold the cohort generation results
@@ -57,9 +55,7 @@ cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = conne
                                                        cdmDatabaseSchema = "main",
                                                        cohortDatabaseSchema = "main",
                                                        cohortTableNames = cohortTableNames,
-                                                       cohortDefinitionSet = cohortsToCreate,
-                                                       incremental = FALSE,
-                                                       incrementalFolder = file.path(outputFolder, "RecordKeeping"))
+                                                       cohortDefinitionSet = cohortsToCreate)
 
 # Get the cohort counts
 cohortCounts <- CohortGenerator::getCohortCounts(connectionDetails = connectionDetails,

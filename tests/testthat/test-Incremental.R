@@ -335,3 +335,53 @@ test_that("Incremental save with empty key", {
   }
   unlink(tmpFile)
 })
+
+
+test_that("isTaskRequired stops if duplicates detected", {
+  rkf <- tempfile()
+  
+  sql1 <- "SELECT * FROM my_table WHERE x = 1;"
+  checksum1 <- computeChecksum(sql1)
+  recordTasksDone(
+    cohortId = 1,
+    task = "Run SQL",
+    checksum = checksum1,
+    recordKeepingFile = rkf
+  )
+  
+  # Manually hack the file to include a duplicate entry
+  data <- readr::read_csv(file = rkf, col_types = readr::cols(), lazy=FALSE)
+  data <- rbind(data, data)
+  readr::write_csv(data, file = rkf)
+  
+  # Now we'd expect an error if attempting to call isTaskRequired
+  expect_error(isTaskRequired(cohortId = 1, 
+                              task = "Run SQL", 
+                              checksum = checksum,
+                              recordKeepingFile = rkf))
+  unlink(rkf)
+})
+
+test_that("recordTasksDone exits if incremental = FALSE", {
+  expect_null(
+    recordTasksDone(
+      cohortId = 1,
+      task = "Run SQL",
+      checksum = "x",
+      incremental = FALSE
+    )
+  )
+})
+
+test_that("recordTasksDone exits if no key(s) provided", {
+  rkf <- tempfile()
+  
+  expect_null(
+    recordTasksDone(
+      checksum = "x",
+      recordKeepingFile = rkf
+    )
+  )
+  
+  unlink(rkf)
+})

@@ -136,3 +136,72 @@ test_that("Create cohort tables with incremental = TRUE and partial table creati
   DatabaseConnector::disconnect(conn)
 })
 
+# export cohort stats tests --------------
+test_that("Export cohort stats with permanent tables", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
+  cohortStatsFolder <- tempdir()
+  # First create the cohort tables
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  
+  # Export the results
+  exportCohortStatsTables(connectionDetails = connectionDetails,
+                          cohortDatabaseSchema = "main",
+                          cohortTableNames = cohortTableNames,
+                          cohortStatisticsFolder = cohortStatsFolder,
+                          incremental = FALSE)
+  
+  # Verify the files are written to the file system
+  exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
+  expect_equal(length(exportedFiles), 5)
+  unlink(cohortStatsFolder)
+})
+
+test_that("Export cohort stats in incremental mode", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
+  cohortStatsFolder <- tempdir()
+  # First create the cohort tables
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  
+  # Export the results
+  exportCohortStatsTables(connectionDetails = connectionDetails,
+                          cohortDatabaseSchema = "main",
+                          cohortTableNames = cohortTableNames,
+                          cohortStatisticsFolder = cohortStatsFolder,
+                          incremental = TRUE)
+  
+  # Verify the files are written to the file system
+  exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
+  expect_equal(length(exportedFiles), 5)
+  unlink(cohortStatsFolder)
+})
+
+# drop cohort stats tables --------------
+test_that("Drop cohort stats tables", {
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  on.exit(DatabaseConnector::disconnect(connection))
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsDropTest")
+  # First create the cohort tables
+  createCohortTables(connection = connection,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  
+  # Drop the cohort stats tables
+  dropCohortStatsTables(connection = connection,
+                        cohortDatabaseSchema = "main",
+                        cohortTableNames = cohortTableNames)
+  
+  # Verify that the only table remaining is the main cohort table
+  tables <- DatabaseConnector::getTableNames(connection = connection,
+                                             databaseSchema = "main")
+  
+  expect_true(tolower(cohortTableNames$cohortTable) %in% tolower(tables))
+  expect_false(tolower(cohortTableNames$cohortInclusionTable) %in% tolower(tables))
+  expect_false(tolower(cohortTableNames$cohortInclusionResultTable) %in% tolower(tables))
+  expect_false(tolower(cohortTableNames$cohortInclusionStatsTable) %in% tolower(tables))
+  expect_false(tolower(cohortTableNames$cohortSummaryStatsTable) %in% tolower(tables))
+  expect_false(tolower(cohortTableNames$cohortCensorStatsTable) %in% tolower(tables))
+})

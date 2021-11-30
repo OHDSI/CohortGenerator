@@ -36,7 +36,7 @@
 #'                                     inclusion rule statistics.
 #'                                     
 #' @returns 
-#' A list of table names as specified in the parameters of this function.
+#' A list of the table names as specified in the parameters to this function.
 #' 
 #' @export
 getCohortTableNames <- function(cohortTable = "cohort",
@@ -119,7 +119,8 @@ createCohortTables <- function(connectionDetails = NULL,
                              cohort_summary_stats_table = cohortTableNames$cohortSummaryStatsTable,
                              cohort_censor_stats_table = cohortTableNames$cohortCensorStatsTable,
                              warnOnMissingParameters = TRUE)
-    sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms)
+    sql <- SqlRender::translate(sql = sql, 
+                                targetDialect = connection@dbms)
     DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
     
     logCreateTableMessage <- function(schema, tableName) {
@@ -134,4 +135,43 @@ createCohortTables <- function(connectionDetails = NULL,
     delta <- Sys.time() - start
     ParallelLogger::logInfo("Creating cohort tables took ", round(delta, 2), attr(delta, "units"))
   }
+}
+
+#' Drop cohort statistics tables
+#'
+#' @description
+#' This function drops the cohort statistics tables.
+#'
+#' @template Connection
+#'
+#' @param cohortDatabaseSchema        The schema to hold the cohort tables. Note that for
+#'                                    SQL Server, this should include both the database and schema
+#'                                    name, for example 'scratch.dbo'.
+#'
+#' @param cohortTableNames            The names of the cohort statistics tables. See \code{\link{getCohortTableNames}}
+#'                                    for more details.
+#'                                    
+#' @export
+dropCohortStatsTables <- function(connectionDetails = NULL,
+                                  connection = NULL,
+                                  cohortDatabaseSchema,
+                                  cohortTableNames = getCohortTableNames()) {
+  # Export the stats
+  dropTable <- function(table) {
+    ParallelLogger::logDebug("- Dropping ", table)
+    sql <- "TRUNCATE TABLE @cohort_database_schema.@table; 
+            DROP TABLE @cohort_database_schema.@table;"
+    DatabaseConnector::renderTranslateExecuteSql(
+      sql = sql,
+      connection = connection,
+      table = table,
+      cohort_database_schema = cohortDatabaseSchema,
+      progressBar = FALSE
+    )
+  }
+  dropTable(cohortTableNames$cohortInclusionTable)
+  dropTable(cohortTableNames$cohortInclusionResultTable)
+  dropTable(cohortTableNames$cohortInclusionStatsTable)
+  dropTable(cohortTableNames$cohortSummaryStatsTable)
+  dropTable(cohortTableNames$cohortCensorStatsTable)
 }

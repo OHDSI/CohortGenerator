@@ -3,6 +3,8 @@
 export(computeChecksum)
 export(createCohortTables)
 export(createEmptyCohortDefinitionSet)
+export(dropCohortStatsTables)
+export(exportCohortStatsTables)
 export(generateCohortSet)
 export(getCohortCounts)
 export(getCohortTableNames)

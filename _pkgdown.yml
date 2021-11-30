@@ -24,10 +24,19 @@ reference:
       
   - title: "Cohort Counts"
     desc: >
-      Functions for obtaining the counts of subjects and events for one or
+      Function for obtaining the counts of subjects and events for one or
       more cohorts
     contents:
       - getCohortCounts
+      
+  - title: "Cohort Statistics"
+    desc: >
+      Function for exporting the cohort statistics to the file system
+      and a helper function for dropping those tables when they are no 
+      longer needed.
+    contents:
+      - exportCohortStatsTables
+      - dropCohortStatsTables
 
   - title: "Record Keeping"
     desc: >

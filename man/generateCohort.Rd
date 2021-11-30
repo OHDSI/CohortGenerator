@@ -10,7 +10,7 @@ generateCohort(
   connection = NULL,
   connectionDetails = NULL,
   cdmDatabaseSchema,
-  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+  tempEmulationSchema,
   cohortDatabaseSchema,
   cohortTableNames,
   incremental,

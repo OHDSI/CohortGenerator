@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generates a cohort — generateCohort • CohortGenerator</title>
+<title>Drop cohort statistics tables — dropCohortStatsTables • CohortGenerator</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Generates a cohort — generateCohort" />
-<meta property="og:description" content="This function is used by generateCohortSet to generate a cohort
-against the CDM." />
+<meta property="og:title" content="Drop cohort statistics tables — dropCohortStatsTables" />
+<meta property="og:description" content="This function drops the cohort statistics tables." />
 
 
 
@@ -115,44 +114,31 @@ against the CDM." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generates a cohort</h1>
-    <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/CohortConstruction.R'><code>R/CohortConstruction.R</code></a></small>
-    <div class="hidden name"><code>generateCohort.Rd</code></div>
+    <h1>Drop cohort statistics tables</h1>
+    <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/CohortTables.R'><code>R/CohortTables.R</code></a></small>
+    <div class="hidden name"><code>dropCohortStatsTables.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is used by <code>generateCohortSet</code> to generate a cohort
-against the CDM.</p>
+    <p>This function drops the cohort statistics tables.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>generateCohort</span><span class='op'>(</span>
-  cohortId <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>cohortDefinitionSet</span>,
-  connection <span class='op'>=</span> <span class='cn'>NULL</span>,
+    <pre class="usage"><span class='fu'>dropCohortStatsTables</span><span class='op'>(</span>
   connectionDetails <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>cdmDatabaseSchema</span>,
-  <span class='va'>tempEmulationSchema</span>,
+  connection <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>cohortDatabaseSchema</span>,
-  <span class='va'>cohortTableNames</span>,
-  <span class='va'>incremental</span>,
-  <span class='va'>recordKeepingFile</span>
+  cohortTableNames <span class='op'>=</span> <span class='fu'><a href='getCohortTableNames.html'>getCohortTableNames</a></span><span class='op'>(</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>cohortId</th>
-      <td><p>The cohortId in the list of <code>cohortDefinitionSet</code></p></td>
-    </tr>
-    <tr>
-      <th>cohortDefinitionSet</th>
-      <td><p>The <code>cohortDefinitionSet</code> argument must be a data frame with 
-the following columns:</p><dl>
-<dt>cohortId</dt><dd><p>The unique integer identifier of the cohort</p></dd> 
-<dt>cohortName</dt><dd><p>The cohort's name</p></dd>
-<dt>sql</dt><dd><p>The OHDSI-SQL used to generate the cohort</p></dd>
-</dl></td>
+      <th>connectionDetails</th>
+      <td><p>An object of type <code>connectionDetails</code> as created using the
+<code><a href='https://ohdsi.github.io/DatabaseConnector/reference/createConnectionDetails.html'>createConnectionDetails</a></code> function in the
+DatabaseConnector package. Can be left NULL if <code>connection</code> is
+provided.</p></td>
     </tr>
     <tr>
       <th>connection</th>
@@ -163,42 +149,15 @@ is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.</p></td>
     </tr>
     <tr>
-      <th>connectionDetails</th>
-      <td><p>An object of type <code>connectionDetails</code> as created using the
-<code><a href='https://ohdsi.github.io/DatabaseConnector/reference/createConnectionDetails.html'>createConnectionDetails</a></code> function in the
-DatabaseConnector package. Can be left NULL if <code>connection</code> is
-provided.</p></td>
-    </tr>
-    <tr>
-      <th>cdmDatabaseSchema</th>
-      <td><p>Schema name where your patient-level data in OMOP CDM format resides.
-Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'.</p></td>
-    </tr>
-    <tr>
-      <th>tempEmulationSchema</th>
-      <td><p>Some database platforms like Oracle and Impala do not truly support
-temp tables. To emulate temp tables, provide a schema with write
-privileges where temp tables can be created.</p></td>
-    </tr>
-    <tr>
       <th>cohortDatabaseSchema</th>
-      <td><p>Schema name where your cohort table resides. Note that for SQL Server,
-this should include both the database and schema name, for example
-'scratch.dbo'.</p></td>
+      <td><p>The schema to hold the cohort tables. Note that for
+SQL Server, this should include both the database and schema
+name, for example 'scratch.dbo'.</p></td>
     </tr>
     <tr>
       <th>cohortTableNames</th>
-      <td><p>List of cohort table names.</p></td>
-    </tr>
-    <tr>
-      <th>incremental</th>
-      <td><p>Create only cohorts that haven't been created before?</p></td>
-    </tr>
-    <tr>
-      <th>recordKeepingFile</th>
-      <td><p>If <code>incremental = TRUE</code>, this file will contain
-information on cohorts already generated</p></td>
+      <td><p>The names of the cohort statistics tables. See <code><a href='getCohortTableNames.html'>getCohortTableNames</a></code>
+for more details.</p></td>
     </tr>
     </table>
 
