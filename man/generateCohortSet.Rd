@@ -46,7 +46,9 @@ this should include both the database and schema name, for example
 the following columns: \describe{
 \item{cohortId}{The unique integer identifier of the cohort} 
 \item{cohortName}{The cohort's name}
-\item{sql}{The OHDSI-SQL used to generate the cohort}}}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}
+Optionally, this data frame may contain: \describe{
+\item{json}{The Circe JSON representation of the cohort}}}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 

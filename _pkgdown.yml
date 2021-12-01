@@ -31,10 +31,11 @@ reference:
       
   - title: "Cohort Statistics"
     desc: >
-      Function for exporting the cohort statistics to the file system
-      and a helper function for dropping those tables when they are no 
-      longer needed.
+      Functions for insertint inclusion rule names from a cohort definition,
+      exporting the cohort statistics to the file system and a helper function 
+      for dropping those tables when they are no longer needed.
     contents:
+      - insertInclusionRuleNames
       - exportCohortStatsTables
       - dropCohortStatsTables
 

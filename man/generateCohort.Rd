@@ -24,7 +24,9 @@ generateCohort(
 the following columns: \describe{
 \item{cohortId}{The unique integer identifier of the cohort} 
 \item{cohortName}{The cohort's name}
-\item{sql}{The OHDSI-SQL used to generate the cohort}}}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}
+Optionally, this data frame may contain: \describe{
+\item{json}{The Circe JSON representation of the cohort}}}
 
 \item{connection}{An object of type \code{connection} as created using the
 \code{\link[DatabaseConnector]{connect}} function in the

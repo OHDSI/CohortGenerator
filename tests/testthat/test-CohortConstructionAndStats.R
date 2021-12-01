@@ -204,6 +204,107 @@ test_that("Create cohorts without stats, Incremental = T", {
   unlink(outputFolder)
 })
 
+# Test Cohort Stats ----------------
+test_that("Insert cohort stats expected use-case", {
+  # Create the cohort tables
+  cohortTableNames <- getCohortTableNames(cohortTable = "stats_insert")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  
+  # Obtain a list of cohorts with inclusion rule stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  
+  # Insert the inclusion rule names
+  cohortInclusionRules <- insertInclusionRuleNames(connectionDetails = connectionDetails,
+                                                   cohortDefinitionSet = cohortsWithStats,
+                                                   cohortDatabaseSchema = "main",
+                                                   cohortInclusionTable = cohortTableNames$cohortInclusionTable)
+  
+  conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  results <- DatabaseConnector::renderTranslateQuerySql(connection = conn,
+                                                        sql = "SELECT * FROM @cohort_database_schema.@table",
+                                                        cohort_database_schema = "main",
+                                                        table = cohortTableNames$cohortInclusionTable,
+                                                        snakeCaseToCamelCase = TRUE)
+  expect_equal(results, cohortInclusionRules)
+  DatabaseConnector::disconnect(conn)
+})
+
+test_that("Insert cohort stats missing connection info", {
+  # Create the cohort tables
+  cohortTableNames <- getCohortTableNames(cohortTable = "stats_missing_conn")
+  # Obtain a list of cohorts with inclusion rule stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  
+  # Expect an error
+  expect_error(insertInclusionRuleNames(cohortDefinitionSet = cohortsWithStats,
+                                        cohortDatabaseSchema = "main",
+                                        cohortInclusionTable = cohortTableNames$cohortInclusionTable))
+})
+
+test_that("Insert cohort stats before creating cohort tables", {
+  # Create the cohort tables
+  cohortTableNames <- getCohortTableNames(cohortTable = "stats_tables_missing")
+  # Obtain a list of cohorts with inclusion rule stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  
+  # Expect an error
+  expect_error(insertInclusionRuleNames(connectionDetails = connectionDetails,
+                                        cohortDefinitionSet = cohortsWithStats,
+                                        cohortDatabaseSchema = "main",
+                                        cohortInclusionTable = cohortTableNames$cohortInclusionTable))
+})
+
+test_that("Insert cohort stats with inclusion rule name that is empty", {
+  # Create the cohort tables
+  cohortTableNames <- getCohortTableNames(cohortTable = "stats_name_empty")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  
+  # Obtain a list of cohorts with inclusion rule stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  # Change the cohort definition so the inclusion rule is empty
+  cohortDefinition <- RJSONIO::fromJSON(content = cohortsWithStats$json[2], digits = 23)
+  cohortDefinition$InclusionRules[[1]]$name <- ""
+  cohortsWithStats$json[2] <- RJSONIO::toJSON(cohortDefinition)
+  
+  # Insert the inclusion rule names
+  cohortInclusionRules <- insertInclusionRuleNames(connectionDetails = connectionDetails,
+                                                   cohortDefinitionSet = cohortsWithStats,
+                                                   cohortDatabaseSchema = "main",
+                                                   cohortInclusionTable = cohortTableNames$cohortInclusionTable)
+  
+  conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  results <- DatabaseConnector::renderTranslateQuerySql(connection = conn,
+                                                        sql = "SELECT * FROM @cohort_database_schema.@table",
+                                                        cohort_database_schema = "main",
+                                                        table = cohortTableNames$cohortInclusionTable,
+                                                        snakeCaseToCamelCase = TRUE)
+  expect_equal(results, cohortInclusionRules)
+  DatabaseConnector::disconnect(conn)
+})
+
+test_that("Insert cohort stats with no inclusion rules generates warning", {
+  # Create the cohort tables
+  cohortTableNames <- getCohortTableNames(cohortTable = "stats_missing")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  
+  # Obtain a list of cohorts with inclusion rule stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  # The 1st cohort definition lacks inclusion rules
+  cohortsWithStats <- cohortsWithStats[1,]
+
+  # Insert the inclusion rule names
+  expect_warning(insertInclusionRuleNames(connectionDetails = connectionDetails,
+                                          cohortDefinitionSet = cohortsWithStats,
+                                          cohortDatabaseSchema = "main",
+                                          cohortInclusionTable = cohortTableNames$cohortInclusionTable))
+})
+
 # Cleanup ------
 rm(generateSql)
 rm(getCohortsForTest)

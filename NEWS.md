@@ -7,6 +7,7 @@ CohortGenerator 0.2.0
 - Add getCohortCounts function
 - Add exportCohortStatsTables function for exporting cohort statistics to the file system 
 - Add dropCohortStatsTables function for dropping cohort statistics tables
+- Add insertInclusionRuleNames function for extracting inclusion rule names from Circe JSON cohort definitions and insert them into the inclusion rule table
 
 CohortGenerator 0.1.1
 =======================

@@ -12,7 +12,7 @@ Authors@R: c(
 Maintainer: Anthony Sena <sena@ohdsi.org>
 Description: An R package for that encapsulates the functions for generating cohorts against the OMOP CDM.
 Depends:
-  DatabaseConnector (>= 4.0.0),
+  DatabaseConnector (>= 5.0.0),
   R (>= 3.6.0)
 Imports:
   checkmate,
