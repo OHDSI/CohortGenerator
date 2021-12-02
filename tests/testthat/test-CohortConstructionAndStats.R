@@ -211,16 +211,16 @@ test_that("Insert cohort stats expected use-case", {
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames)
-  
+
   # Obtain a list of cohorts with inclusion rule stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  
+
   # Insert the inclusion rule names
   cohortInclusionRules <- insertInclusionRuleNames(connectionDetails = connectionDetails,
                                                    cohortDefinitionSet = cohortsWithStats,
                                                    cohortDatabaseSchema = "main",
                                                    cohortInclusionTable = cohortTableNames$cohortInclusionTable)
-  
+
   conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   results <- DatabaseConnector::renderTranslateQuerySql(connection = conn,
                                                         sql = "SELECT * FROM @cohort_database_schema.@table",
@@ -262,20 +262,20 @@ test_that("Insert cohort stats with inclusion rule name that is empty", {
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames)
-  
+
   # Obtain a list of cohorts with inclusion rule stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   # Change the cohort definition so the inclusion rule is empty
   cohortDefinition <- RJSONIO::fromJSON(content = cohortsWithStats$json[2], digits = 23)
   cohortDefinition$InclusionRules[[1]]$name <- ""
   cohortsWithStats$json[2] <- RJSONIO::toJSON(cohortDefinition)
-  
+
   # Insert the inclusion rule names
   cohortInclusionRules <- insertInclusionRuleNames(connectionDetails = connectionDetails,
                                                    cohortDefinitionSet = cohortsWithStats,
                                                    cohortDatabaseSchema = "main",
                                                    cohortInclusionTable = cohortTableNames$cohortInclusionTable)
-  
+
   conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   results <- DatabaseConnector::renderTranslateQuerySql(connection = conn,
                                                         sql = "SELECT * FROM @cohort_database_schema.@table",

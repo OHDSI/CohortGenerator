@@ -36,7 +36,7 @@ schema name, for example 'cdm_data.dbo'.}
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 
-\item{cohortDatabaseSchema}{Schema name where your cohort table resides. Note that for SQL Server,
+\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 

@@ -72,7 +72,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
     description = character()
   )
   # Remove any cohort definitions that do not include the JSON property
-  cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) || is.na(cohortDefinitionSet$json)),]
+  cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) | is.na(cohortDefinitionSet$json)),]
   for (i in 1:nrow(cohortDefinitionSet)) {
     cohortDefinition <- RJSONIO::fromJSON(content = cohortDefinitionSet$json[i], digits = 23)
     if (!is.null(cohortDefinition$InclusionRules)) {
