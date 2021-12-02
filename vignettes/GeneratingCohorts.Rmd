@@ -1,0 +1,42 @@
+---
+title: "Generating Cohorts"
+author: "Anthony G. Sena"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: yes     
+  html_document:
+    number_sections: yes
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Generating Cohorts}
+  %\VignetteEncoding{UTF-8}    
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE,
+  comment = "#>",
+  error = FALSE,
+  tidy = FALSE)
+
+```
+
+# Guide for generating cohorts using CohortGenerator
+
+TODO
+
+```{r tidy=FALSE,eval=FALSE}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

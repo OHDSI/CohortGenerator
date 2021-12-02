@@ -29,11 +29,13 @@ Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
   knitr,
+  rmarkdown,
   testthat
 Remotes:
   ohdsi/CirceR,
   ohdsi/Eunomia
 License: Apache License
+VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
 BugReports: https://github.com/OHDSI/CohortGenerator/issues
 RoxygenNote: 7.1.1

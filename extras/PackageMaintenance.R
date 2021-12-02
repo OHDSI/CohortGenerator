@@ -27,5 +27,12 @@ devtools::spell_check()
 unlink("extras/CohortGenerator.pdf")
 shell("R CMD Rd2pdf ./ --output=extras/CohortGenerator.pdf")
 
+dir.create(path = "./inst/doc/", showWarnings = FALSE)
+rmarkdown::render("vignettes/GeneratingCohorts.Rmd",
+                  output_file = "../inst/doc/GeneratingCohorts.pdf",
+                  rmarkdown::pdf_document(latex_engine = "pdflatex",
+                                          toc = TRUE,
+                                          number_sections = TRUE))
+
 pkgdown::build_site()
 OhdsiRTools::fixHadesLogo()
