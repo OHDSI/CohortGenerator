@@ -13,6 +13,7 @@ generateCohort(
   tempEmulationSchema,
   cohortDatabaseSchema,
   cohortTableNames,
+  stopIfError = TRUE,
   incremental,
   recordKeepingFile
 )
@@ -52,6 +53,10 @@ this should include both the database and schema name, for example
 'scratch.dbo'.}
 
 \item{cohortTableNames}{List of cohort table names.}
+
+\item{stopIfError}{When set to true, an error in processing will call
+the stop() command to notify the parent calling funcion
+that an error occurred.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 

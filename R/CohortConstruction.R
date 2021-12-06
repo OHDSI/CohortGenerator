@@ -159,6 +159,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                    tempEmulationSchema = tempEmulationSchema,
                                                    cohortDatabaseSchema = cohortDatabaseSchema,
                                                    cohortTableNames = cohortTableNames,
+                                                   stopIfError = stopOnError,
                                                    incremental = incremental,
                                                    recordKeepingFile = recordKeepingFile,
                                                    stopOnError = stopOnError,
@@ -190,6 +191,10 @@ generateCohortSet <- function(connectionDetails = NULL,
 #'
 #' @template CohortTableNames
 #' 
+#' @param stopIfError       When set to true, an error in processing will call
+#'                          the stop() command to notify the parent calling funcion
+#'                          that an error occurred.
+#' 
 #' @param incremental       Create only cohorts that haven't been created before?
 #' 
 #' @param recordKeepingFile If \code{incremental = TRUE}, this file will contain
@@ -202,17 +207,12 @@ generateCohort <- function(cohortId = NULL,
                            tempEmulationSchema,
                            cohortDatabaseSchema,
                            cohortTableNames,
+                           stopIfError = TRUE,
                            incremental,
                            recordKeepingFile) {
   # Get the index of the cohort record for the current cohortId
   i <- which(cohortDefinitionSet$cohortId == cohortId)
   cohortName <- cohortDefinitionSet$cohortName[i]
-  # Provide a status of the cohort generation process
-  generationStatus <- "UNKNOWN"
-  # Provide start/end times for the cohort generation task if we perform
-  # the generation
-  startTime <- NA
-  endTime <- NA
   if (!incremental || isTaskRequired(cohortId = cohortDefinitionSet$cohortId[i],
                                      checksum = cohortDefinitionSet$checksum[i],
                                      recordKeepingFile = recordKeepingFile)) {
@@ -221,50 +221,78 @@ generateCohort <- function(cohortId = NULL,
       connection <- DatabaseConnector::connect(connectionDetails)
       on.exit(DatabaseConnector::disconnect(connection))
     }
-
-    tryCatch({
-      ParallelLogger::logInfo(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName)
-      sql <- cohortDefinitionSet$sql[i]
-      sql <- SqlRender::render(sql = sql,
-                               cdm_database_schema = cdmDatabaseSchema,
-                               vocabulary_database_schema = cdmDatabaseSchema,
-                               target_database_schema = cohortDatabaseSchema,
-                               results_database_schema = cohortDatabaseSchema,
-                               target_cohort_table = cohortTableNames$cohortTable,
-                               target_cohort_id = cohortDefinitionSet$cohortId[i],
-                               results_database_schema.cohort_inclusion = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionTable, sep="."),
-                               results_database_schema.cohort_inclusion_result = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionResultTable, sep="."),
-                               results_database_schema.cohort_inclusion_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionStatsTable, sep="."),
-                               results_database_schema.cohort_summary_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortSummaryStatsTable, sep="."),
-                               results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep="."),
-                               warnOnMissingParameters = FALSE)
-      sql <- SqlRender::translate(sql = sql,
-                                  targetDialect = connectionDetails$dbms,
-                                  tempEmulationSchema = tempEmulationSchema)
-      startTime <- lubridate::now()
+    ParallelLogger::logInfo(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName)
+    sql <- cohortDefinitionSet$sql[i]
+    sql <- SqlRender::render(sql = sql,
+                             cdm_database_schema = cdmDatabaseSchema,
+                             vocabulary_database_schema = cdmDatabaseSchema,
+                             target_database_schema = cohortDatabaseSchema,
+                             results_database_schema = cohortDatabaseSchema,
+                             target_cohort_table = cohortTableNames$cohortTable,
+                             target_cohort_id = cohortDefinitionSet$cohortId[i],
+                             results_database_schema.cohort_inclusion = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionTable, sep="."),
+                             results_database_schema.cohort_inclusion_result = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionResultTable, sep="."),
+                             results_database_schema.cohort_inclusion_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionStatsTable, sep="."),
+                             results_database_schema.cohort_summary_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortSummaryStatsTable, sep="."),
+                             results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep="."),
+                             warnOnMissingParameters = FALSE)
+    sql <- SqlRender::translate(sql = sql,
+                                targetDialect = connectionDetails$dbms,
+                                tempEmulationSchema = tempEmulationSchema)
+    
+    # Helper function used within the tryCatch block below
+    runCohortSql <- function(sql, startTime, incremental, cohortId, checksum, recordKeepingFile) {
       DatabaseConnector::executeSql(connection, sql)
-      generationStatus <- "COMPLETE"
       endTime <- lubridate::now()
-    }, error = function(e) {
-      ParallelLogger::logError("An error occurred while generating cohortName = ", cohortName, ". Error: ", e)
-      endTime <- lubridate::now()
-      generationStatus <- "FAILED"
-    })
-
-    if (incremental) {
-      recordTasksDone(cohortId = cohortDefinitionSet$cohortId[i],
-                      checksum = cohortDefinitionSet$checksum[i],
-                      recordKeepingFile = recordKeepingFile)
+      
+      if (incremental) {
+        recordTasksDone(cohortId = cohortId,
+                        checksum = checksum,
+                        recordKeepingFile = recordKeepingFile)
+      }
+      
+      return(list(generationStatus = "COMPLETE",
+                  startTime = startTime,
+                  endTime = endTime))
     }
 
+    # This syntax is strange so leaving a note.
+    # generationInfo is assigned based on the evaluation of 
+    # the expression in the tryCatch(). If there is an error, the 
+    # outermost assignment will assign generationInfo based on the return
+    # value in the error() block. If the expr() function evaluates without
+    # error, the inner most assignment of generationInfo will take place.
+    generationInfo <- tryCatch(expr = {
+      startTime <- lubridate::now()
+      generationInfo <- runCohortSql(sql = sql,
+                                     startTime = startTime,
+                                     incremental = incremental,
+                                     cohortId = cohortDefinitionSet$cohortId[i],
+                                     checksum = cohortDefinitionSet$checksum[i],
+                                     recordKeepingFile = recordKeepingFile)
+    }, error = function(e) {
+      endTime <- lubridate::now()
+      ParallelLogger::logError("An error occurred while generating cohortName = ", cohortName, ". Error: ", e)
+      if (stopIfError) {
+        stop()
+      }
+      return(list(generationStatus = "FAILED",
+                  startTime = startTime,
+                  endTime = endTime))
+      
+    })
+
+
   } else {
-    generationStatus <- "SKIPPED"
+    generationInfo <- list(generationStatus = "SKIPPED",
+                           startTime = NA,
+                           endTime = NA)
   }
   
   summary <- data.frame(cohortId = cohortId,
                         cohortName = cohortName,
-                        generationStatus = generationStatus,
-                        startTime = startTime,
-                        endTime = endTime)
+                        generationStatus = generationInfo$generationStatus,
+                        startTime = generationInfo$startTime,
+                        endTime = generationInfo$endTime)
   return(summary)
 }

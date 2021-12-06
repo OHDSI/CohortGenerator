@@ -1,44 +1,6 @@
 library(testthat)
 library(CohortGenerator)
 
-# Test Prep ----------------
-
-# Helper Functions
-generateSql <- function(cohortJsonFileName, generateStats = FALSE) {
-  cohortExpression <- createCirceExpressionFromFile(cohortJsonFileName)
-  cohortSql <- CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = generateStats))
-  return(cohortSql)
-}
-
-# Used to add a SQL column to the "cohorts" data frame
-# and toggle if inclusion stats are generated for the given SQL
-# definition
-getCohortsForTest <- function(cohorts, generateStats = FALSE) {
-  cohortSql <- data.frame()
-  for (i in 1:nrow(cohorts)) {
-    cohortSql <- rbind(cohortSql, data.frame(sql = generateSql(cohorts$cohortJsonFile[i], generateStats)))
-  }
-  if (length(intersect(colnames(cohorts), c("sql"))) == 1) {
-    cohorts$sql <- NULL
-  }
-  cohorts <- cbind(cohorts, cohortSql)
-  return(cohorts)
-}
-
-# This will gather all of the cohort JSON in the package for use in the tests
-cohortJsonFiles <- list.files(path = system.file("cohorts", package = "CohortGenerator"), full.names = TRUE)
-cohorts <- setNames(data.frame(matrix(ncol = 4, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortName", "json", "cohortJsonFile"))
-for (i in 1:length(cohortJsonFiles)) {
-  cohortJsonFileName <- cohortJsonFiles[i]
-  cohortFullName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
-  cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
-  cohorts <- rbind(cohorts, data.frame(cohortId = i, 
-                                       cohortName = cohortFullName, 
-                                       json = cohortJson,
-                                       cohortJsonFile = cohortJsonFileName,
-                                       stringsAsFactors = FALSE))
-}
-
 # Exception Handling -------------
 # generateCohortSet ---------
 test_that("Call generateCohortSet without connection or connectionDetails", {
@@ -109,7 +71,7 @@ test_that("Generate cohorts before creating cohort tables errors out", {
 })
 
 test_that("Create cohorts with stats, Incremental = F, Gather Results", {
-  outputFolder <- tempdir()
+
   cohortTableNames <- getCohortTableNames(cohortTable = "genStats")
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
@@ -124,11 +86,11 @@ test_that("Create cohorts with stats, Incremental = F, Gather Results", {
                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
   rm(cohortsWithStats)
-  unlink(outputFolder)
+
 })
 
 test_that("Create cohorts with stats, Incremental = T", {
-  outputFolder <- tempdir()
+  recordKeepingFolder <- file.path(outputFolder, "RecordKeeping")
   cohortTableNames <- getCohortTableNames(cohortTable = "genStatsInc")
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
@@ -141,7 +103,7 @@ test_that("Create cohorts with stats, Incremental = T", {
                                            cohortTableNames = cohortTableNames,
                                            cohortDefinitionSet = cohortsWithStats,
                                            incremental = TRUE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"))
+                                           incrementalFolder = recordKeepingFolder)
   # 2nd run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
   cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
@@ -150,15 +112,15 @@ test_that("Create cohorts with stats, Incremental = T", {
                                         cohortTableNames = cohortTableNames,
                                         cohortDefinitionSet = cohortsWithStats,
                                         incremental = TRUE,
-                                        incrementalFolder = file.path(outputFolder, "RecordKeeping"))
+                                        incrementalFolder = recordKeepingFolder)
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
   expect_true(all(cohortsGenerated$generationStatus == "SKIPPED"))
   rm(cohortsWithStats)
-  unlink(outputFolder)
+  unlink(recordKeepingFolder, recursive = TRUE)
 })
 
 test_that("Create cohorts without stats, Incremental = F", {
-  outputFolder <- tempdir()
+
   cohortTableNames <- getCohortTableNames(cohortTable = "noStats")
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
@@ -174,11 +136,11 @@ test_that("Create cohorts without stats, Incremental = F", {
                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"))
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   rm(cohortsWithoutStats)
-  unlink(outputFolder)
+
 })
 
 test_that("Create cohorts without stats, Incremental = T", {
-  outputFolder <- tempdir()
+  recordKeepingFolder <- file.path(outputFolder, "RecordKeeping")
   cohortTableNames <- getCohortTableNames(cohortTable = "noStatsInc")
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
@@ -191,7 +153,7 @@ test_that("Create cohorts without stats, Incremental = T", {
                                            cohortTableNames = cohortTableNames,
                                            cohortDefinitionSet = cohortsWithoutStats,
                                            incremental = TRUE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"))
+                                           incrementalFolder = recordKeepingFolder)
   # Next run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
   cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
@@ -200,10 +162,102 @@ test_that("Create cohorts without stats, Incremental = T", {
                                            cohortTableNames = cohortTableNames,
                                            cohortDefinitionSet = cohortsWithoutStats,
                                            incremental = TRUE,
-                                           incrementalFolder = file.path(outputFolder, "RecordKeeping"))
+                                           incrementalFolder = recordKeepingFolder)
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
-  unlink(outputFolder)
+  unlink(recordKeepingFolder, recursive = TRUE)
 })
+
+test_that("Create cohorts with stopOnError = TRUE", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "stop_error_t")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
+  # Add a new cohort that will automatically fail
+  cohortsWithoutStats <- rbind(cohortsWithoutStats, data.frame(cohortId = 999,
+                                                               cohortName = "Fail Cohort",
+                                                               json = "",
+                                                               cohortJsonFile = "",
+                                                               sql = "SELECT * FROM @cdm_database_schema.non_existant_table"))
+  expect_error(generateCohortSet(connectionDetails = connectionDetails,
+                                 cdmDatabaseSchema = "main",
+                                 cohortDatabaseSchema = "main",
+                                 cohortTableNames = cohortTableNames,
+                                 cohortDefinitionSet = cohortsWithoutStats,
+                                 stopOnError = TRUE))
+})
+
+test_that("Create cohorts with stopOnError = FALSE", {
+  print("Create cohorts with stopOnError = FALSE")
+  cohortTableNames <- getCohortTableNames(cohortTable = "stop_error_f")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
+  # Add a new cohort that will automatically fail
+  cohortsWithoutStats <- rbind(data.frame(cohortId = 999,
+                                          cohortName = "Fail Cohort",
+                                          json = "",
+                                          cohortJsonFile = "",
+                                          sql = "SELECT * FROM @cdm_database_schema.non_existant_table"), cohortsWithoutStats)
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
+                                        cdmDatabaseSchema = "main",
+                                        cohortDatabaseSchema = "main",
+                                        cohortTableNames = cohortTableNames,
+                                        cohortDefinitionSet = cohortsWithoutStats,
+                                        stopOnError = FALSE)
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "FAILED", ]), 1)
+})
+
+test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
+  recordKeepingFolder <- file.path(outputFolder, "RecordKeeping")
+  cohortTableNames <- getCohortTableNames(cohortTable = "stop_error_f_inc_t")
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
+  # Add a new cohort that will automatically fail
+  cohortsWithoutStats <- rbind(data.frame(cohortId = 999,
+                                          cohortName = "Fail Cohort",
+                                          json = "",
+                                          cohortJsonFile = "",
+                                          sql = "SELECT * FROM @cdm_database_schema.non_existant_table"), cohortsWithoutStats)
+  # Generate the cohorts expecting that 1 will fail and 3 will succeed
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
+                                        cdmDatabaseSchema = "main",
+                                        cohortDatabaseSchema = "main",
+                                        cohortTableNames = cohortTableNames,
+                                        cohortDefinitionSet = cohortsWithoutStats,
+                                        stopOnError = FALSE,
+                                        incremental = TRUE,
+                                        incrementalFolder = recordKeepingFolder)
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "FAILED", ]), 1)
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 3)
+
+  # Now update the cohort that was failing to use a SQL statement that will work
+  sqlThatWillWork <- "
+    INSERT INTO @target_database_schema.@target_cohort_table (cohort_definition_id, subject_id, cohort_start_date, cohort_end_date)
+    SELECT @target_cohort_id, person_id, observation_period_start_date, observation_period_end_date
+    FROM @cdm_database_schema.observation_period
+    ;"
+  cohortsWithoutStats[cohortsWithoutStats$cohortId == 999,]$sql <- sqlThatWillWork
+  # Generate the cohorts expecting that 1 will succeed and 3 will be skipped
+  cohortsGenerated <- generateCohortSet(connectionDetails = connectionDetails,
+                                        cdmDatabaseSchema = "main",
+                                        cohortDatabaseSchema = "main",
+                                        cohortTableNames = cohortTableNames,
+                                        cohortDefinitionSet = cohortsWithoutStats,
+                                        stopOnError = FALSE,
+                                        incremental = TRUE,
+                                        incrementalFolder = recordKeepingFolder)
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 1)
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "SKIPPED", ]), 3)
+  unlink(recordKeepingFolder, recursive = TRUE)
+})
+
 
 # Test Cohort Stats ----------------
 test_that("Insert cohort stats expected use-case", {
@@ -237,7 +291,7 @@ test_that("Insert cohort stats missing connection info", {
   cohortTableNames <- getCohortTableNames(cohortTable = "stats_missing_conn")
   # Obtain a list of cohorts with inclusion rule stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  
+
   # Expect an error
   expect_error(insertInclusionRuleNames(cohortDefinitionSet = cohortsWithStats,
                                         cohortDatabaseSchema = "main",
@@ -249,7 +303,7 @@ test_that("Insert cohort stats before creating cohort tables", {
   cohortTableNames <- getCohortTableNames(cohortTable = "stats_tables_missing")
   # Obtain a list of cohorts with inclusion rule stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  
+
   # Expect an error
   expect_error(insertInclusionRuleNames(connectionDetails = connectionDetails,
                                         cohortDefinitionSet = cohortsWithStats,
@@ -293,7 +347,7 @@ test_that("Insert cohort stats with no inclusion rules generates warning", {
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames)
-  
+
   # Obtain a list of cohorts with inclusion rule stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   # The 1st cohort definition lacks inclusion rules
@@ -305,9 +359,3 @@ test_that("Insert cohort stats with no inclusion rules generates warning", {
                                           cohortDatabaseSchema = "main",
                                           cohortInclusionTable = cohortTableNames$cohortInclusionTable))
 })
-
-# Cleanup ------
-rm(generateSql)
-rm(getCohortsForTest)
-rm(cohortJsonFiles)
-rm(cohorts)
