@@ -122,7 +122,7 @@ test_that("Create cohorts with stats, Incremental = F, Gather Results", {
                                         cohortDefinitionSet = cohortsWithStats,
                                         incremental = FALSE,
                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"))
-  expect_equal(length(cohortsGenerated), nrow(cohortsWithStats))
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
   rm(cohortsWithStats)
   unlink(outputFolder)
 })
@@ -151,7 +151,8 @@ test_that("Create cohorts with stats, Incremental = T", {
                                         cohortDefinitionSet = cohortsWithStats,
                                         incremental = TRUE,
                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"))
-  expect_equal(length(cohortsGenerated), nrow(cohortsWithStats))
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
+  expect_true(all(cohortsGenerated$generationStatus == "SKIPPED"))
   rm(cohortsWithStats)
   unlink(outputFolder)
 })
@@ -171,7 +172,7 @@ test_that("Create cohorts without stats, Incremental = F", {
                                         cohortDefinitionSet = cohortsWithoutStats,
                                         incremental = FALSE,
                                         incrementalFolder = file.path(outputFolder, "RecordKeeping"))
-  expect_equal(length(cohortsGenerated), nrow(cohortsWithoutStats))
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   rm(cohortsWithoutStats)
   unlink(outputFolder)
 })
@@ -200,7 +201,7 @@ test_that("Create cohorts without stats, Incremental = T", {
                                            cohortDefinitionSet = cohortsWithoutStats,
                                            incremental = TRUE,
                                            incrementalFolder = file.path(outputFolder, "RecordKeeping"))
-  expect_equal(length(cohortsGenerated), nrow(cohortsWithoutStats))
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   unlink(outputFolder)
 })
 

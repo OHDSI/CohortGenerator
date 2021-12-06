@@ -90,6 +90,18 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/GeneratingCohorts.html">Generating Cohorts</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -131,6 +143,7 @@
   cohortDatabaseSchema <span class='op'>=</span> <span class='va'>cdmDatabaseSchema</span>,
   cohortTableNames <span class='op'>=</span> <span class='fu'><a href='getCohortTableNames.html'>getCohortTableNames</a></span><span class='op'>(</span><span class='op'>)</span>,
   cohortDefinitionSet <span class='op'>=</span> <span class='cn'>NULL</span>,
+  stopOnError <span class='op'>=</span> <span class='cn'>TRUE</span>,
   incremental <span class='op'>=</span> <span class='cn'>FALSE</span>,
   incrementalFolder <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
@@ -187,6 +200,13 @@ the following columns:</p><dl>
 </dl></td>
     </tr>
     <tr>
+      <th>stopOnError</th>
+      <td><p>If an error happens while generating one of the cohorts in the 
+cohortDefinitionSet, should we stop processing the other
+cohorts? The default is TRUE; when set to FALSE, failures will
+be identified in the return value from this function.</p></td>
+    </tr>
+    <tr>
       <th>incremental</th>
       <td><p>Create only cohorts that haven't been created before?</p></td>
     </tr>
@@ -196,6 +216,24 @@ the following columns:</p><dl>
 kept of which definition has been executed.</p></td>
     </tr>
     </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A data.frame consisting of the following columns:</p><dl>
+   <dt>cohortId</dt><dd><p>The unique integer identifier of the cohort</p></dd> 
+   <dt>cohortName</dt><dd><p>The cohort's name</p></dd>
+   <dt>generationStatus</dt><dd><p>The status of the generation task which may be one of the following: 
+          <dl>
+               <dt>COMPLETE</dt><dd><p>The generation completed successfully</p></dd>
+               <dt>FAILED</dt><dd><p>The generation failed (see logs for details)</p></dd>
+               <dt>SKIPPED</dt><dd><p>If using incremental == 'TRUE', this status indicates 
+                              that the cohort's generation was skipped since it 
+                              was previously completed.</p></dd></dl></p></dd>
+   <dt>startTime</dt><dd><p>The start time of the cohort generation. If the generationStatus == 'SKIPPED', the startTime will be NA.</p></dd>
+   <dt>endTime</dt><dd><p>The end time of the cohort generation. If the generationStatus == 'FAILED', the endTime will be the time of the failure. 
+                  If the generationStatus == 'SKIPPED', endTime will be NA.</p></dd>
+   
+</dl>
 
 
   </div>

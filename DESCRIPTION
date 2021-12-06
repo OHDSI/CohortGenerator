@@ -17,23 +17,24 @@ Depends:
 Imports:
   checkmate,
   digest,
+  dplyr,
+  lubridate,
   ParallelLogger (>= 2.0.2),
   readr (>= 1.4.0),
   rlang,
   RJSONIO,
-  SqlRender (>= 1.7.0),
-  methods,
-  dplyr,
-  stats
+  SqlRender (>= 1.7.0)
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
   knitr,
   rmarkdown,
+  ROhdsiWebApi,
   testthat
 Remotes:
   ohdsi/CirceR,
-  ohdsi/Eunomia
+  ohdsi/Eunomia,
+  ohdsi/ROhdsiWebApi
 License: Apache License
 VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
