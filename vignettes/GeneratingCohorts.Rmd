@@ -12,14 +12,19 @@ vignette: >
   %\VignetteIndexEntry{Generating Cohorts}
   %\VignetteEncoding{UTF-8}    
   %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console  
 ---
 
 ```{r setup, include=FALSE}
+options(width = 200)
 knitr::opts_chunk$set(
   cache = FALSE,
   comment = "#>",
   error = FALSE,
-  tidy = FALSE)
+  tidy=TRUE,
+  tidy.opts=list(width.cutoff=80))
+someFolder <- tempdir()
 baseUrl <- "https://api.ohdsi.org/WebAPI"
 ```
 
@@ -34,7 +39,7 @@ This guide will provide examples of using the CohortGenerator package to generat
 We can create cohorts using [ATLAS](https://github.com/OHDSI/Atlas) and download them for generation in R. To do this, we will use the `ROhdsiWebApi` package to download some cohort definitions to R:
 
 
-```{r echo=TRUE, tidy = FALSE, results='hide', error = FALSE, warning=FALSE, message = FALSE}
+```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
 # Connect to WebAPI and retrieve the full list of cohorts
 cohortDefinitions <- ROhdsiWebApi::getCohortDefinitionsMetaData(baseUrl = baseUrl)
 # Filter the list to the cohorts for this example
@@ -62,7 +67,7 @@ Here is how these columns are used:
 
 Now that we have obtained the `cohortDefinitionSet` from ROhdsiWebApi, we're ready to generate our cohorts against our OMOP CDM. In this example, we will use the [Eunomia](https://github.com/OHDSI/Eunomia) data set as our CDM.
 
-```{r}
+```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 # Get the Eunomia connection details
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 
@@ -72,24 +77,21 @@ cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = "cg_examp
 # Next create the tables on the database
 CohortGenerator::createCohortTables(connectionDetails = connectionDetails,
                                     cohortTableNames = cohortTableNames,
-                                    cohortDatabaseSchema = "main",
-                                    incremental = FALSE)
+                                    cohortDatabaseSchema = "main")
 
 # Generate the cohort set
-CohortGenerator::generateCohortSet(connectionDetails= connectionDetails,
-                                   cdmDatabaseSchema = "main",
-                                   cohortDatabaseSchema = "main",
-                                   cohortTableNames = cohortTableNames,
-                                   cohortDefinitionSet = cohortDefinitionSet,
-                                   incremental = FALSE,
-                                   incrementalFolder = file.path(folderName, "RecordKeeping"))
+cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails= connectionDetails,
+                                                       cdmDatabaseSchema = "main",
+                                                       cohortDatabaseSchema = "main",
+                                                       cohortTableNames = cohortTableNames,
+                                                       cohortDefinitionSet = cohortDefinitionSet)
 
 ```
 The code above starts by obtaining the `connectionDetails` from Eunomia. This is where you'll likley want to substitute your own connection information. Next, we call `getCohortTableNames` to obtain a list of `cohortTableNames` that we'll use for the generation process. We then call `createCohortTables` to create the cohort tables on the database server in the `cohortDatabaseSchema`. Once these tables are created, we use the function `generateCohortSet` to generate the `cohortDefintionSet`. When calling `generateCohortSet`, we must specify the schema that holds our CDM (`cdmDatabaseSchema`), the location of the `cohortDatabaseSchema` and `cohortTableNames` where the cohort(s) will be generated. We will cover the other parameters available in the [Advanced Options](#advancedOptions) section.
 
 If we'd like to see the results of the generation process, we can use the `getCohortCounts` method to query the cohort table for a summary of the persons and events for each cohort:
 
-```{r}
+```{r, message = FALSE}
 cohortCounts <- CohortGenerator::getCohortCounts(connectionDetails = connectionDetails,
                                                  cohortDatabaseSchema = "main",
                                                  cohortTable = cohortTableNames$cohortTable)
@@ -102,9 +104,106 @@ cohortCounts
 
 ### Cohort Statistics (Inclusion Rule Statistics)
 
-TODO
+Cohorts defined in ATLAS may define one or more inclusion criteria as part of the cohort's logic. As part of cohort generation, we may want to capture these cohort statistics for use in other packages. For example, [CohortDiagnostics](https://ohdsi.github.io/CohortDiagnostics) has functionality that allows for review of inclusion rule statistics to understand how these rules may materialize between data sources. Here we will review how to generate cohorts with inclusion rule statistics and how to export these results for use by downstream packages such as CohortDiagnostics. Building on our basic example, let's export the cohorts from WebAPI but this time indicate that we'd like to also include the code that `generatesStats`:
 
-### Incremental Options
+```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
+# Get the cohorts and include the code to generate inclusion rule stats
+cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(baseUrl = baseUrl,
+                                                               cohortIds = cohortsForGeneration$id,
+                                                               generateStats = TRUE)
 
-TODO
+# First get the cohort table names to use for this generation task
+cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = "stats_example")
 
+# Next create the tables on the database
+CohortGenerator::createCohortTables(connectionDetails = connectionDetails,
+                                    cohortTableNames = cohortTableNames,
+                                    cohortDatabaseSchema = "main")
+
+# We can then generate the cohorts the same way as before and it will use the 
+# cohort statstics tables to store the results
+# Generate the cohort set
+CohortGenerator::generateCohortSet(connectionDetails= connectionDetails,
+                                   cdmDatabaseSchema = "main",
+                                   cohortDatabaseSchema = "main",
+                                   cohortTableNames = cohortTableNames,
+                                   cohortDefinitionSet = cohortDefinitionSet)
+
+```
+
+At this stage, your cohorts are generated and any cohort statistics are available in the cohort statistics tables. The next step is to export the results to the file system which is done using the code below:
+
+```{r}
+inclusionRuleNames <- CohortGenerator::insertInclusionRuleNames(connectionDetails = connectionDetails,
+                                                                cohortDefinitionSet = cohortDefinitionSet,
+                                                                cohortDatabaseSchema = "main",
+                                                                cohortInclusionTable = cohortTableNames$cohortInclusionTable)
+
+CohortGenerator::exportCohortStatsTables(connectionDetails = connectionDetails,
+                                         cohortDatabaseSchema = "main",
+                                         cohortTableNames = cohortTableNames,
+                                         cohortStatisticsFolder = file.path(someFolder, "InclusionStats"))
+```
+
+The code above performs two steps. First, we insert the inclusion rule names from the Circe expressions in the `cohortDefinitionSet`. This is important since these names are not automatically inserted into the database when generating the cohorts. Second, we export the cohort statistics to the file system which will write comma separated value (CSV) files per cohort statistic table in the `InclusionStats` folder.
+
+Once you have exported your cohort statistics, you can optionally drop the statstics tables by using the following command:
+
+```{r}
+CohortGenerator::dropCohortStatsTables(connectionDetails = connectionDetails,
+                                       cohortDatabaseSchema = "main",
+                                       cohortTableNames = cohortTableNames)
+
+```
+
+### Incremental Mode
+
+CohortGenerator provides an `incremental` option for some of its functions. The purpose of this `incremental` setting is to allow for the code to attempt to skip an operation if it has already completed it. For example, in the context of cohort generation we may want to keep track of cohorts that we have already generated against a source and skip it if we know the cohort definition has not changed. To illustrate incremental mode and explain how it works, we'll continue along with our example from earlier.
+
+```{r}
+# Create a set of tables for this example
+cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = "incremental_example")
+CohortGenerator::createCohortTables(connectionDetails = connectionDetails,
+                                    cohortTableNames = cohortTableNames,
+                                    cohortDatabaseSchema = "main",
+                                    incremental = TRUE)
+
+```
+As expected, the code created the cohort tables as requested. Under the hood, since `incremental = TRUE` was set, the code did a check against the database to see if the tables already exist before creating them. To verify this, we can call the function again and check the results:
+
+```{r}
+CohortGenerator::createCohortTables(connectionDetails = connectionDetails,
+                                    cohortTableNames = cohortTableNames,
+                                    cohortDatabaseSchema = "main",
+                                    incremental = TRUE)
+
+```
+
+The use of `incremental = TRUE` here allows for assurance that tables and results from previous runs are preserved. Next, we can generate our `cohortDefinitionSet` in incremental mode.
+
+```{r}
+CohortGenerator::generateCohortSet(connectionDetails= connectionDetails,
+                                   cdmDatabaseSchema = "main",
+                                   cohortDatabaseSchema = "main",
+                                   cohortTableNames = cohortTableNames,
+                                   cohortDefinitionSet = cohortDefinitionSet,
+                                   incremental = TRUE,
+                                   incrementalFolder = file.path(someFolder, "RecordKeeping"))
+```
+
+Here we indicate that we are performing this operational incrementally by specifying `incremental = TRUE` and by specifying a folder for holding a record keeping file to track where cohorts are generated: `incrementalFolder = file.path(someFolder, "RecordKeeping")`. Once a cohort is generated in incremental mode, the cohort ID and a checksum of the cohort SQL are saved in the `incrementalFolder` in a file called `GeneratedCohorts.csv`. If we attempt to re-generate the same cohort set in incremental mode, `generateCohortSet` will inspect the SQL for each cohort in the `cohortDefinitionSet` and if the checksum of that cohort matches the checksum found in the `incrementalFolder` for the same cohort ID, the generation is skipped. To illustrate how this looks:
+
+```{r}
+CohortGenerator::generateCohortSet(connectionDetails= connectionDetails,
+                                   cdmDatabaseSchema = "main",
+                                   cohortDatabaseSchema = "main",
+                                   cohortTableNames = cohortTableNames,
+                                   cohortDefinitionSet = cohortDefinitionSet,
+                                   incremental = TRUE,
+                                   incrementalFolder = file.path(someFolder, "RecordKeeping"))
+```
+#### Potential Pitfalls of Incremental Mode
+
+Incremental mode makes some assumptions to provide a more flexible way to generate cohorts. These assumptions come with some risks that we would like to highlight:
+
+- **Record keeping files**: The incremental approach for cohort generation makes use of a record keeping file to check if a cohort has already been generated. It does **not** check the database to verify this so you need to take care and preserve the file system where you store the record keeping file. If the file is removed, CohortGenerator will simply repeat the cohort generation process.

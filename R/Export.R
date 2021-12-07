@@ -26,7 +26,7 @@ exportCohortStatsTables <- function(connectionDetails,
                                     cohortDatabaseSchema,
                                     cohortTableNames = getCohortTableNames(),
                                     cohortStatisticsFolder,
-                                    incremental) {
+                                    incremental = FALSE) {
   
   if (is.null(connection)) {
     # Establish the connection and ensure the cleanup is performed
@@ -34,9 +34,13 @@ exportCohortStatsTables <- function(connectionDetails,
     on.exit(DatabaseConnector::disconnect(connection))
   }
   
+  if (!file.exists(cohortStatisticsFolder)) {
+    dir.create(cohortStatisticsFolder, recursive = TRUE)
+  }  
+
   # Export the stats
   exportStats <- function(table, fileName) {
-    ParallelLogger::logDebug("- Fetching data from ", table)
+    ParallelLogger::logInfo("- Fetching data from ", table)
     sql <- "SELECT * FROM @cohort_database_schema.@table"
     data <- DatabaseConnector::renderTranslateQuerySql(
       sql = sql,

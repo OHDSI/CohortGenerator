@@ -164,7 +164,7 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
   
   # Export the stats
   dropTable <- function(table) {
-    ParallelLogger::logDebug("- Dropping ", table)
+    ParallelLogger::logInfo("- Dropping ", table)
     sql <- "TRUNCATE TABLE @cohort_database_schema.@table; 
             DROP TABLE @cohort_database_schema.@table;"
     DatabaseConnector::renderTranslateExecuteSql(
@@ -172,7 +172,8 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
       connection = connection,
       table = table,
       cohort_database_schema = cohortDatabaseSchema,
-      progressBar = FALSE
+      progressBar = FALSE,
+      reportOverallTime = FALSE
     )
   }
   dropTable(cohortTableNames$cohortInclusionTable)
