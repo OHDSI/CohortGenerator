@@ -88,6 +88,7 @@ Documentation can be found on the [package website](https://ohdsi.github.io/Coho
 
 PDF versions of the documentation are also available:
 
+-   Vignette: [Generating Cohorts](https://raw.githubusercontent.com/OHDSI/CohortGenerator/master/inst/doc/GeneratingCohorts.pdf)
 -   Package manual: [CohortGenerator.pdf](https://raw.githubusercontent.com/OHDSI/CohortGenerator/master/extras/CohortGenerator.pdf)
 
 # Support
