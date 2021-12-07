@@ -13,7 +13,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}    
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
-  chunk_output_type: console  
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -49,7 +49,7 @@ cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(baseUrl = baseUrl
                                                                cohortIds = cohortsForGeneration$id,
                                                                generateStats = FALSE)
 ```
-The code above connects to ATLAS's WebAPI, retrieves all of the `cohortDefinitions` and then filters them based on the name to produce the `cohortsForGeneration` data frame. `cohortsForGeneration` contains the list of cohort IDs to use for calling the function `ROhdsiWebApi::exportCohortDefinitionSet` to download the set of cohort definitions into `cohortDefinitionSet`. The cohort definition set data frame has the following columns:
+The code above connects to ATLAS' WebAPI, retrieves all of the `cohortDefinitions` and then filters them based on the name to produce the `cohortsForGeneration` data frame. `cohortsForGeneration` contains the list of cohort IDs to use for calling the function `ROhdsiWebApi::exportCohortDefinitionSet` to download the set of cohort definitions into `cohortDefinitionSet`. The cohort definition set data frame has the following columns:
 
 ```{r}
 names(cohortDefinitionSet)

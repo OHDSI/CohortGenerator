@@ -112,16 +112,15 @@
 <code class="sourceCode R"><span class="co"># Connect to WebAPI and retrieve the full list of cohorts</span>
 <span class="va">cohortDefinitions</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/getCohortDefinitionsMetaData.html">getCohortDefinitionsMetaData</a></span><span class="op">(</span>baseUrl <span class="op">=</span> <span class="va">baseUrl</span><span class="op">)</span>
 <span class="co"># Filter the list to the cohorts for this example</span>
-<span class="va">cohortsForGeneration</span> <span class="op">&lt;-</span> <span class="va">cohortDefinitions</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"^\\[CohortGenerator\\]"</span>, <span class="va">cohortDefinitions</span><span class="op">$</span><span class="va">name</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"name"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">cohortsForGeneration</span> <span class="op">&lt;-</span> <span class="va">cohortDefinitions</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"^\\[CohortGenerator\\]"</span>,
+    <span class="va">cohortDefinitions</span><span class="op">$</span><span class="va">name</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"name"</span><span class="op">)</span><span class="op">]</span>
 <span class="co"># Get the SQL/JSON for the cohorts</span>
 <span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html">exportCohortDefinitionSet</a></span><span class="op">(</span>baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,
-                                                               cohortIds <span class="op">=</span> <span class="va">cohortsForGeneration</span><span class="op">$</span><span class="va">id</span>,
-                                                               generateStats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<p>The code above connects to ATLAS’s WebAPI, retrieves all of the <code>cohortDefinitions</code> and then filters them based on the name to produce the <code>cohortsForGeneration</code> data frame. <code>cohortsForGeneration</code> contains the list of cohort IDs to use for calling the function <code><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html">ROhdsiWebApi::exportCohortDefinitionSet</a></code> to download the set of cohort definitions into <code>cohortDefinitionSet</code>. The cohort definition set data frame has the following columns:</p>
+    cohortIds <span class="op">=</span> <span class="va">cohortsForGeneration</span><span class="op">$</span><span class="va">id</span>, generateStats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<p>The code above connects to ATLAS’ WebAPI, retrieves all of the <code>cohortDefinitions</code> and then filters them based on the name to produce the <code>cohortsForGeneration</code> data frame. <code>cohortsForGeneration</code> contains the list of cohort IDs to use for calling the function <code><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html">ROhdsiWebApi::exportCohortDefinitionSet</a></code> to download the set of cohort definitions into <code>cohortDefinitionSet</code>. The cohort definition set data frame has the following columns:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] "atlasId"          "cohortId"         "cohortName"       "sql"             
-#&gt; [5] "json"             "logicDescription"</code></pre>
+<pre><code>#&gt; [1] "atlasId"          "cohortId"         "cohortName"       "sql"              "json"             "logicDescription"</code></pre>
 <p>Here is how these columns are used:</p>
 <ul>
 <li>
@@ -150,240 +149,20 @@
 <span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"cg_example"</span><span class="op">)</span>
 
 <span class="co"># Next create the tables on the database</span>
-<span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                                    cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                                    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                    incremental <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Connecting using SQLite driver</code></pre>
-<pre><code>#&gt; Creating cohort tables
-#&gt; - Created table main.cg_example
-#&gt; - Created table main.cg_example_inclusion
-#&gt; - Created table main.cg_example_inclusion_result
-#&gt; - Created table main.cg_example_inclusion_stats
-#&gt; - Created table main.cg_example_summary_stats
-#&gt; - Created table main.cg_example_censor_stats
-#&gt; Creating cohort tables took 0.52secs</code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Generate the cohort set</span>
-<span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,
-                                   cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                                   cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,
-                                   incremental <span class="op">=</span> <span class="cn">FALSE</span>,
-                                   incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">folderName</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Connecting using SQLite driver</code></pre>
-<pre><code>#&gt; 1/3- Generating cohort: [CohortGenerator] celecoxib
-#&gt; 
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |===                                                                   |   4%
-  |                                                                            
-  |======                                                                |   8%
-  |                                                                            
-  |========                                                              |  12%
-  |                                                                            
-  |===========                                                           |  16%
-  |                                                                            
-  |==============                                                        |  20%
-  |                                                                            
-  |=================                                                     |  24%
-  |                                                                            
-  |====================                                                  |  28%
-  |                                                                            
-  |======================                                                |  32%
-  |                                                                            
-  |=========================                                             |  36%
-  |                                                                            
-  |============================                                          |  40%
-  |                                                                            
-  |===============================                                       |  44%
-  |                                                                            
-  |==================================                                    |  48%
-  |                                                                            
-  |====================================                                  |  52%
-  |                                                                            
-  |=======================================                               |  56%
-  |                                                                            
-  |==========================================                            |  60%
-  |                                                                            
-  |=============================================                         |  64%
-  |                                                                            
-  |================================================                      |  68%
-  |                                                                            
-  |==================================================                    |  72%
-  |                                                                            
-  |=====================================================                 |  76%
-  |                                                                            
-  |========================================================              |  80%
-  |                                                                            
-  |===========================================================           |  84%
-  |                                                                            
-  |==============================================================        |  88%
-  |                                                                            
-  |================================================================      |  92%
-  |                                                                            
-  |===================================================================   |  96%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-<pre><code>#&gt; Executing SQL took 0.073 secs</code></pre>
-<pre><code>#&gt; 2/3- Generating cohort: [CohortGenerator] celecoxib age 40
-#&gt; 
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |==                                                                    |   3%
-  |                                                                            
-  |=====                                                                 |   7%
-  |                                                                            
-  |=======                                                               |  10%
-  |                                                                            
-  |=========                                                             |  13%
-  |                                                                            
-  |============                                                          |  17%
-  |                                                                            
-  |==============                                                        |  20%
-  |                                                                            
-  |================                                                      |  23%
-  |                                                                            
-  |===================                                                   |  27%
-  |                                                                            
-  |=====================                                                 |  30%
-  |                                                                            
-  |=======================                                               |  33%
-  |                                                                            
-  |==========================                                            |  37%
-  |                                                                            
-  |============================                                          |  40%
-  |                                                                            
-  |==============================                                        |  43%
-  |                                                                            
-  |=================================                                     |  47%
-  |                                                                            
-  |===================================                                   |  50%
-  |                                                                            
-  |=====================================                                 |  53%
-  |                                                                            
-  |========================================                              |  57%
-  |                                                                            
-  |==========================================                            |  60%
-  |                                                                            
-  |============================================                          |  63%
-  |                                                                            
-  |===============================================                       |  67%
-  |                                                                            
-  |=================================================                     |  70%
-  |                                                                            
-  |===================================================                   |  73%
-  |                                                                            
-  |======================================================                |  77%
-  |                                                                            
-  |========================================================              |  80%
-  |                                                                            
-  |==========================================================            |  83%
-  |                                                                            
-  |=============================================================         |  87%
-  |                                                                            
-  |===============================================================       |  90%
-  |                                                                            
-  |=================================================================     |  93%
-  |                                                                            
-  |====================================================================  |  97%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-<pre><code>#&gt; Executing SQL took 0.065 secs</code></pre>
-<pre><code>#&gt; 3/3- Generating cohort: [CohortGenerator] celecoxib age 40 and male
-#&gt; 
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |==                                                                    |   3%
-  |                                                                            
-  |====                                                                  |   6%
-  |                                                                            
-  |======                                                                |   9%
-  |                                                                            
-  |========                                                              |  12%
-  |                                                                            
-  |==========                                                            |  15%
-  |                                                                            
-  |============                                                          |  18%
-  |                                                                            
-  |==============                                                        |  21%
-  |                                                                            
-  |================                                                      |  24%
-  |                                                                            
-  |===================                                                   |  26%
-  |                                                                            
-  |=====================                                                 |  29%
-  |                                                                            
-  |=======================                                               |  32%
-  |                                                                            
-  |=========================                                             |  35%
-  |                                                                            
-  |===========================                                           |  38%
-  |                                                                            
-  |=============================                                         |  41%
-  |                                                                            
-  |===============================                                       |  44%
-  |                                                                            
-  |=================================                                     |  47%
-  |                                                                            
-  |===================================                                   |  50%
-  |                                                                            
-  |=====================================                                 |  53%
-  |                                                                            
-  |=======================================                               |  56%
-  |                                                                            
-  |=========================================                             |  59%
-  |                                                                            
-  |===========================================                           |  62%
-  |                                                                            
-  |=============================================                         |  65%
-  |                                                                            
-  |===============================================                       |  68%
-  |                                                                            
-  |=================================================                     |  71%
-  |                                                                            
-  |===================================================                   |  74%
-  |                                                                            
-  |======================================================                |  76%
-  |                                                                            
-  |========================================================              |  79%
-  |                                                                            
-  |==========================================================            |  82%
-  |                                                                            
-  |============================================================          |  85%
-  |                                                                            
-  |==============================================================        |  88%
-  |                                                                            
-  |================================================================      |  91%
-  |                                                                            
-  |==================================================================    |  94%
-  |                                                                            
-  |====================================================================  |  97%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-<pre><code>#&gt; Executing SQL took 0.105 secs</code></pre>
-<pre><code>#&gt; Generating cohort set took 0.52 secs</code></pre>
-<pre><code>#&gt;   cohortId                                  cohortName generationStatus
-#&gt; 1  1778211                 [CohortGenerator] celecoxib         COMPLETE
-#&gt; 2  1778212          [CohortGenerator] celecoxib age 40         COMPLETE
-#&gt; 3  1778213 [CohortGenerator] celecoxib age 40 and male         COMPLETE
-#&gt;             startTime             endTime
-#&gt; 1 2021-12-06 14:11:10 2021-12-06 14:11:10
-#&gt; 2 2021-12-06 14:11:10 2021-12-06 14:11:10
-#&gt; 3 2021-12-06 14:11:10 2021-12-06 14:11:10</code></pre>
+<span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
+    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span>
+
+<span class="co"># Generate the cohort set</span>
+<span class="va">cohortsGenerated</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
+    cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
+    cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span><span class="op">)</span></code></pre></div>
 <p>The code above starts by obtaining the <code>connectionDetails</code> from Eunomia. This is where you’ll likley want to substitute your own connection information. Next, we call <code>getCohortTableNames</code> to obtain a list of <code>cohortTableNames</code> that we’ll use for the generation process. We then call <code>createCohortTables</code> to create the cohort tables on the database server in the <code>cohortDatabaseSchema</code>. Once these tables are created, we use the function <code>generateCohortSet</code> to generate the <code>cohortDefintionSet</code>. When calling <code>generateCohortSet</code>, we must specify the schema that holds our CDM (<code>cdmDatabaseSchema</code>), the location of the <code>cohortDatabaseSchema</code> and <code>cohortTableNames</code> where the cohort(s) will be generated. We will cover the other parameters available in the <a href="#advancedOptions">Advanced Options</a> section.</p>
 <p>If we’d like to see the results of the generation process, we can use the <code>getCohortCounts</code> method to query the cohort table for a summary of the persons and events for each cohort:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cohortCounts</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/getCohortCounts.html">getCohortCounts</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                                                 cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                                 cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Connecting using SQLite driver</code></pre>
-<pre><code>#&gt; Counting cohorts took 0.036 secs</code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Counting cohorts took 0.042 secs</code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cohortCounts</span></code></pre></div>
 <pre><code>#&gt;   cohortId cohortEntries cohortSubjects
 #&gt; 1  1778211          1800           1800
@@ -397,12 +176,393 @@
 <div id="cohort-statistics-inclusion-rule-statistics" class="section level3">
 <h3 class="hasAnchor">
 <a href="#cohort-statistics-inclusion-rule-statistics" class="anchor"></a>Cohort Statistics (Inclusion Rule Statistics)</h3>
-<p>TODO</p>
+<p>Cohorts defined in ATLAS may define one or more inclusion criteria as part of the cohort’s logic. As part of cohort generation, we may want to capture these cohort statistics for use in other packages. For example, <a href="https://ohdsi.github.io/CohortDiagnostics">CohortDiagnostics</a> has functionality that allows for review of inclusion rule statistics to understand how these rules may materialize between data sources. Here we will review how to generate cohorts with inclusion rule statistics and how to export these results for use by downstream packages such as CohortDiagnostics. Building on our basic example, let’s export the cohorts from WebAPI but this time indicate that we’d like to also include the code that <code>generatesStats</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Get the cohorts and include the code to generate inclusion rule stats</span>
+<span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html">exportCohortDefinitionSet</a></span><span class="op">(</span>baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,
+    cohortIds <span class="op">=</span> <span class="va">cohortsForGeneration</span><span class="op">$</span><span class="va">id</span>, generateStats <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="co"># First get the cohort table names to use for this generation task</span>
+<span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"stats_example"</span><span class="op">)</span>
+
+<span class="co"># Next create the tables on the database</span>
+<span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
+    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span>
+
+<span class="co"># We can then generate the cohorts the same way as before and it will use the</span>
+<span class="co"># cohort statstics tables to store the results Generate the cohort set</span>
+<span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
+    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>, cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span><span class="op">)</span></code></pre></div>
+<p>At this stage, your cohorts are generated and any cohort statistics are available in the cohort statistics tables. The next step is to export the results to the file system which is done using the code below:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">inclusionRuleNames</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/insertInclusionRuleNames.html">insertInclusionRuleNames</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
+    cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>, cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, cohortInclusionTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortInclusionTable</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Connecting using SQLite driver</code></pre>
+<pre><code>#&gt; Inserting inclusion rule names</code></pre>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/exportCohortStatsTables.html">exportCohortStatsTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
+    cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>, cohortStatisticsFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>,
+        <span class="st">"InclusionStats"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Connecting using SQLite driver</code></pre>
+<pre><code>#&gt; - Fetching data from stats_example_inclusion
+#&gt; - Fetching data from stats_example_inclusion_result
+#&gt; - Fetching data from stats_example_inclusion_stats
+#&gt; - Fetching data from stats_example_summary_stats
+#&gt; - Fetching data from stats_example_censor_stats</code></pre>
+<p>The code above performs two steps. First, we insert the inclusion rule names from the Circe expressions in the <code>cohortDefinitionSet</code>. This is important since these names are not automatically inserted into the database when generating the cohorts. Second, we export the cohort statistics to the file system which will write comma separated value (CSV) files per cohort statistic table in the <code>InclusionStats</code> folder.</p>
+<p>Once you have exported your cohort statistics, you can optionally drop the statstics tables by using the following command:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/dropCohortStatsTables.html">dropCohortStatsTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
+    cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Connecting using SQLite driver</code></pre>
+<pre><code>#&gt; - Dropping stats_example_inclusion
+#&gt; - Dropping stats_example_inclusion_result
+#&gt; - Dropping stats_example_inclusion_stats
+#&gt; - Dropping stats_example_summary_stats
+#&gt; - Dropping stats_example_censor_stats</code></pre>
 </div>
-<div id="incremental-options" class="section level3">
+<div id="incremental-mode" class="section level3">
 <h3 class="hasAnchor">
-<a href="#incremental-options" class="anchor"></a>Incremental Options</h3>
-<p>TODO</p>
+<a href="#incremental-mode" class="anchor"></a>Incremental Mode</h3>
+<p>CohortGenerator provides an <code>incremental</code> option for some of its functions. The purpose of this <code>incremental</code> setting is to allow for the code to attempt to skip an operation if it has already completed it. For example, in the context of cohort generation we may want to keep track of cohorts that we have already generated against a source and skip it if we know the cohort definition has not changed. To illustrate incremental mode and explain how it works, we’ll continue along with our example from earlier.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Create a set of tables for this example</span>
+<span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"incremental_example"</span><span class="op">)</span>
+<span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
+    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Connecting using SQLite driver</code></pre>
+<pre><code>#&gt; Creating cohort tables
+#&gt; - Created table main.incremental_example
+#&gt; - Created table main.incremental_example_inclusion
+#&gt; - Created table main.incremental_example_inclusion_result
+#&gt; - Created table main.incremental_example_inclusion_stats
+#&gt; - Created table main.incremental_example_summary_stats
+#&gt; - Created table main.incremental_example_censor_stats
+#&gt; Creating cohort tables took 0.06secs</code></pre>
+<p>As expected, the code created the cohort tables as requested. Under the hood, since <code>incremental = TRUE</code> was set, the code did a check against the database to see if the tables already exist before creating them. To verify this, we can call the function again and check the results:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
+    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Connecting using SQLite driver</code></pre>
+<pre><code>#&gt; Table "incremental_example" already exists and in incremental mode, so not recreating it.
+#&gt; Table "incremental_example_inclusion" already exists and in incremental mode, so not recreating it.
+#&gt; Table "incremental_example_inclusion_result" already exists and in incremental mode, so not recreating it.
+#&gt; Table "incremental_example_inclusion_stats" already exists and in incremental mode, so not recreating it.
+#&gt; Table "incremental_example_summary_stats" already exists and in incremental mode, so not recreating it.
+#&gt; Table "incremental_example_censor_stats" already exists and in incremental mode, so not recreating it.</code></pre>
+<p>The use of <code>incremental = TRUE</code> here allows for assurance that tables and results from previous runs are preserved. Next, we can generate our <code>cohortDefinitionSet</code> in incremental mode.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
+    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>, cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,
+    incremental <span class="op">=</span> <span class="cn">TRUE</span>, incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Connecting using SQLite driver</code></pre>
+<pre><code>#&gt; 1/3- Generating cohort: [CohortGenerator] celecoxib
+#&gt; 
+  |                                                                                                                                                                                                    
+  |                                                                                                                                                                                              |   0%
+  |                                                                                                                                                                                                    
+  |=======                                                                                                                                                                                       |   4%
+  |                                                                                                                                                                                                    
+  |===============                                                                                                                                                                               |   8%
+  |                                                                                                                                                                                                    
+  |======================                                                                                                                                                                        |  12%
+  |                                                                                                                                                                                                    
+  |=============================                                                                                                                                                                 |  15%
+  |                                                                                                                                                                                                    
+  |=====================================                                                                                                                                                         |  19%
+  |                                                                                                                                                                                                    
+  |============================================                                                                                                                                                  |  23%
+  |                                                                                                                                                                                                    
+  |===================================================                                                                                                                                           |  27%
+  |                                                                                                                                                                                                    
+  |==========================================================                                                                                                                                    |  31%
+  |                                                                                                                                                                                                    
+  |==================================================================                                                                                                                            |  35%
+  |                                                                                                                                                                                                    
+  |=========================================================================                                                                                                                     |  38%
+  |                                                                                                                                                                                                    
+  |================================================================================                                                                                                              |  42%
+  |                                                                                                                                                                                                    
+  |========================================================================================                                                                                                      |  46%
+  |                                                                                                                                                                                                    
+  |===============================================================================================                                                                                               |  50%
+  |                                                                                                                                                                                                    
+  |======================================================================================================                                                                                        |  54%
+  |                                                                                                                                                                                                    
+  |==============================================================================================================                                                                                |  58%
+  |                                                                                                                                                                                                    
+  |=====================================================================================================================                                                                         |  62%
+  |                                                                                                                                                                                                    
+  |============================================================================================================================                                                                  |  65%
+  |                                                                                                                                                                                                    
+  |====================================================================================================================================                                                          |  69%
+  |                                                                                                                                                                                                    
+  |===========================================================================================================================================                                                   |  73%
+  |                                                                                                                                                                                                    
+  |==================================================================================================================================================                                            |  77%
+  |                                                                                                                                                                                                    
+  |=========================================================================================================================================================                                     |  81%
+  |                                                                                                                                                                                                    
+  |=================================================================================================================================================================                             |  85%
+  |                                                                                                                                                                                                    
+  |========================================================================================================================================================================                      |  88%
+  |                                                                                                                                                                                                    
+  |===============================================================================================================================================================================               |  92%
+  |                                                                                                                                                                                                    
+  |=======================================================================================================================================================================================       |  96%
+  |                                                                                                                                                                                                    
+  |==============================================================================================================================================================================================| 100%</code></pre>
+<pre><code>#&gt; Executing SQL took 0.079 secs</code></pre>
+<pre><code>#&gt; 2/3- Generating cohort: [CohortGenerator] celecoxib age 40
+#&gt; 
+  |                                                                                                                                                                                                    
+  |                                                                                                                                                                                              |   0%
+  |                                                                                                                                                                                                    
+  |====                                                                                                                                                                                          |   2%
+  |                                                                                                                                                                                                    
+  |=======                                                                                                                                                                                       |   4%
+  |                                                                                                                                                                                                    
+  |===========                                                                                                                                                                                   |   6%
+  |                                                                                                                                                                                                    
+  |===============                                                                                                                                                                               |   8%
+  |                                                                                                                                                                                                    
+  |===================                                                                                                                                                                           |  10%
+  |                                                                                                                                                                                                    
+  |======================                                                                                                                                                                        |  12%
+  |                                                                                                                                                                                                    
+  |==========================                                                                                                                                                                    |  14%
+  |                                                                                                                                                                                                    
+  |==============================                                                                                                                                                                |  16%
+  |                                                                                                                                                                                                    
+  |==================================                                                                                                                                                            |  18%
+  |                                                                                                                                                                                                    
+  |=====================================                                                                                                                                                         |  20%
+  |                                                                                                                                                                                                    
+  |=========================================                                                                                                                                                     |  22%
+  |                                                                                                                                                                                                    
+  |=============================================                                                                                                                                                 |  24%
+  |                                                                                                                                                                                                    
+  |================================================                                                                                                                                              |  25%
+  |                                                                                                                                                                                                    
+  |====================================================                                                                                                                                          |  27%
+  |                                                                                                                                                                                                    
+  |========================================================                                                                                                                                      |  29%
+  |                                                                                                                                                                                                    
+  |============================================================                                                                                                                                  |  31%
+  |                                                                                                                                                                                                    
+  |===============================================================                                                                                                                               |  33%
+  |                                                                                                                                                                                                    
+  |===================================================================                                                                                                                           |  35%
+  |                                                                                                                                                                                                    
+  |=======================================================================                                                                                                                       |  37%
+  |                                                                                                                                                                                                    
+  |===========================================================================                                                                                                                   |  39%
+  |                                                                                                                                                                                                    
+  |==============================================================================                                                                                                                |  41%
+  |                                                                                                                                                                                                    
+  |==================================================================================                                                                                                            |  43%
+  |                                                                                                                                                                                                    
+  |======================================================================================                                                                                                        |  45%
+  |                                                                                                                                                                                                    
+  |=========================================================================================                                                                                                     |  47%
+  |                                                                                                                                                                                                    
+  |=============================================================================================                                                                                                 |  49%
+  |                                                                                                                                                                                                    
+  |=================================================================================================                                                                                             |  51%
+  |                                                                                                                                                                                                    
+  |=====================================================================================================                                                                                         |  53%
+  |                                                                                                                                                                                                    
+  |========================================================================================================                                                                                      |  55%
+  |                                                                                                                                                                                                    
+  |============================================================================================================                                                                                  |  57%
+  |                                                                                                                                                                                                    
+  |================================================================================================================                                                                              |  59%
+  |                                                                                                                                                                                                    
+  |===================================================================================================================                                                                           |  61%
+  |                                                                                                                                                                                                    
+  |=======================================================================================================================                                                                       |  63%
+  |                                                                                                                                                                                                    
+  |===========================================================================================================================                                                                   |  65%
+  |                                                                                                                                                                                                    
+  |===============================================================================================================================                                                               |  67%
+  |                                                                                                                                                                                                    
+  |==================================================================================================================================                                                            |  69%
+  |                                                                                                                                                                                                    
+  |======================================================================================================================================                                                        |  71%
+  |                                                                                                                                                                                                    
+  |==========================================================================================================================================                                                    |  73%
+  |                                                                                                                                                                                                    
+  |==============================================================================================================================================                                                |  75%
+  |                                                                                                                                                                                                    
+  |=================================================================================================================================================                                             |  76%
+  |                                                                                                                                                                                                    
+  |=====================================================================================================================================================                                         |  78%
+  |                                                                                                                                                                                                    
+  |=========================================================================================================================================================                                     |  80%
+  |                                                                                                                                                                                                    
+  |============================================================================================================================================================                                  |  82%
+  |                                                                                                                                                                                                    
+  |================================================================================================================================================================                              |  84%
+  |                                                                                                                                                                                                    
+  |====================================================================================================================================================================                          |  86%
+  |                                                                                                                                                                                                    
+  |========================================================================================================================================================================                      |  88%
+  |                                                                                                                                                                                                    
+  |===========================================================================================================================================================================                   |  90%
+  |                                                                                                                                                                                                    
+  |===============================================================================================================================================================================               |  92%
+  |                                                                                                                                                                                                    
+  |===================================================================================================================================================================================           |  94%
+  |                                                                                                                                                                                                    
+  |=======================================================================================================================================================================================       |  96%
+  |                                                                                                                                                                                                    
+  |==========================================================================================================================================================================================    |  98%
+  |                                                                                                                                                                                                    
+  |==============================================================================================================================================================================================| 100%</code></pre>
+<pre><code>#&gt; Executing SQL took 0.123 secs</code></pre>
+<pre><code>#&gt; 3/3- Generating cohort: [CohortGenerator] celecoxib age 40 and male
+#&gt; 
+  |                                                                                                                                                                                                    
+  |                                                                                                                                                                                              |   0%
+  |                                                                                                                                                                                                    
+  |===                                                                                                                                                                                           |   2%
+  |                                                                                                                                                                                                    
+  |=======                                                                                                                                                                                       |   4%
+  |                                                                                                                                                                                                    
+  |==========                                                                                                                                                                                    |   5%
+  |                                                                                                                                                                                                    
+  |==============                                                                                                                                                                                |   7%
+  |                                                                                                                                                                                                    
+  |=================                                                                                                                                                                             |   9%
+  |                                                                                                                                                                                                    
+  |=====================                                                                                                                                                                         |  11%
+  |                                                                                                                                                                                                    
+  |========================                                                                                                                                                                      |  13%
+  |                                                                                                                                                                                                    
+  |============================                                                                                                                                                                  |  15%
+  |                                                                                                                                                                                                    
+  |===============================                                                                                                                                                               |  16%
+  |                                                                                                                                                                                                    
+  |===================================                                                                                                                                                           |  18%
+  |                                                                                                                                                                                                    
+  |======================================                                                                                                                                                        |  20%
+  |                                                                                                                                                                                                    
+  |=========================================                                                                                                                                                     |  22%
+  |                                                                                                                                                                                                    
+  |=============================================                                                                                                                                                 |  24%
+  |                                                                                                                                                                                                    
+  |================================================                                                                                                                                              |  25%
+  |                                                                                                                                                                                                    
+  |====================================================                                                                                                                                          |  27%
+  |                                                                                                                                                                                                    
+  |=======================================================                                                                                                                                       |  29%
+  |                                                                                                                                                                                                    
+  |===========================================================                                                                                                                                   |  31%
+  |                                                                                                                                                                                                    
+  |==============================================================                                                                                                                                |  33%
+  |                                                                                                                                                                                                    
+  |==================================================================                                                                                                                            |  35%
+  |                                                                                                                                                                                                    
+  |=====================================================================                                                                                                                         |  36%
+  |                                                                                                                                                                                                    
+  |=========================================================================                                                                                                                     |  38%
+  |                                                                                                                                                                                                    
+  |============================================================================                                                                                                                  |  40%
+  |                                                                                                                                                                                                    
+  |===============================================================================                                                                                                               |  42%
+  |                                                                                                                                                                                                    
+  |===================================================================================                                                                                                           |  44%
+  |                                                                                                                                                                                                    
+  |======================================================================================                                                                                                        |  45%
+  |                                                                                                                                                                                                    
+  |==========================================================================================                                                                                                    |  47%
+  |                                                                                                                                                                                                    
+  |=============================================================================================                                                                                                 |  49%
+  |                                                                                                                                                                                                    
+  |=================================================================================================                                                                                             |  51%
+  |                                                                                                                                                                                                    
+  |====================================================================================================                                                                                          |  53%
+  |                                                                                                                                                                                                    
+  |========================================================================================================                                                                                      |  55%
+  |                                                                                                                                                                                                    
+  |===========================================================================================================                                                                                   |  56%
+  |                                                                                                                                                                                                    
+  |===============================================================================================================                                                                               |  58%
+  |                                                                                                                                                                                                    
+  |==================================================================================================================                                                                            |  60%
+  |                                                                                                                                                                                                    
+  |=====================================================================================================================                                                                         |  62%
+  |                                                                                                                                                                                                    
+  |=========================================================================================================================                                                                     |  64%
+  |                                                                                                                                                                                                    
+  |============================================================================================================================                                                                  |  65%
+  |                                                                                                                                                                                                    
+  |================================================================================================================================                                                              |  67%
+  |                                                                                                                                                                                                    
+  |===================================================================================================================================                                                           |  69%
+  |                                                                                                                                                                                                    
+  |=======================================================================================================================================                                                       |  71%
+  |                                                                                                                                                                                                    
+  |==========================================================================================================================================                                                    |  73%
+  |                                                                                                                                                                                                    
+  |==============================================================================================================================================                                                |  75%
+  |                                                                                                                                                                                                    
+  |=================================================================================================================================================                                             |  76%
+  |                                                                                                                                                                                                    
+  |=====================================================================================================================================================                                         |  78%
+  |                                                                                                                                                                                                    
+  |========================================================================================================================================================                                      |  80%
+  |                                                                                                                                                                                                    
+  |===========================================================================================================================================================                                   |  82%
+  |                                                                                                                                                                                                    
+  |===============================================================================================================================================================                               |  84%
+  |                                                                                                                                                                                                    
+  |==================================================================================================================================================================                            |  85%
+  |                                                                                                                                                                                                    
+  |======================================================================================================================================================================                        |  87%
+  |                                                                                                                                                                                                    
+  |=========================================================================================================================================================================                     |  89%
+  |                                                                                                                                                                                                    
+  |=============================================================================================================================================================================                 |  91%
+  |                                                                                                                                                                                                    
+  |================================================================================================================================================================================              |  93%
+  |                                                                                                                                                                                                    
+  |====================================================================================================================================================================================          |  95%
+  |                                                                                                                                                                                                    
+  |=======================================================================================================================================================================================       |  96%
+  |                                                                                                                                                                                                    
+  |===========================================================================================================================================================================================   |  98%
+  |                                                                                                                                                                                                    
+  |==============================================================================================================================================================================================| 100%</code></pre>
+<pre><code>#&gt; Executing SQL took 0.116 secs</code></pre>
+<pre><code>#&gt; Generating cohort set took 0.67 secs</code></pre>
+<pre><code>#&gt;   cohortId                                  cohortName generationStatus           startTime             endTime
+#&gt; 1  1778211                 [CohortGenerator] celecoxib         COMPLETE 2021-12-06 20:24:30 2021-12-06 20:24:30
+#&gt; 2  1778212          [CohortGenerator] celecoxib age 40         COMPLETE 2021-12-06 20:24:31 2021-12-06 20:24:31
+#&gt; 3  1778213 [CohortGenerator] celecoxib age 40 and male         COMPLETE 2021-12-06 20:24:31 2021-12-06 20:24:31</code></pre>
+<p>Here we indicate that we are performing this operational incrementally by specifying <code>incremental = TRUE</code> and by specifying a folder for holding a record keeping file to track where cohorts are generated: <code>incrementalFolder = file.path(someFolder, "RecordKeeping")</code>. Once a cohort is generated in incremental mode, the cohort ID and a checksum of the cohort SQL are saved in the <code>incrementalFolder</code> in a file called <code>GeneratedCohorts.csv</code>. If we attempt to re-generate the same cohort set in incremental mode, <code>generateCohortSet</code> will inspect the SQL for each cohort in the <code>cohortDefinitionSet</code> and if the checksum of that cohort matches the checksum found in the <code>incrementalFolder</code> for the same cohort ID, the generation is skipped. To illustrate how this looks:</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>, cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
+    cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>, cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>, cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,
+    incremental <span class="op">=</span> <span class="cn">TRUE</span>, incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Connecting using SQLite driver</code></pre>
+<pre><code>#&gt; Skipping cohortId = '1778211' because it is unchanged from earlier run
+#&gt; Skipping cohortId = '1778212' because it is unchanged from earlier run
+#&gt; Skipping cohortId = '1778213' because it is unchanged from earlier run
+#&gt; Generating cohort set took 0.05 secs</code></pre>
+<pre><code>#&gt;   cohortId                                  cohortName generationStatus startTime endTime
+#&gt; 1  1778211                 [CohortGenerator] celecoxib          SKIPPED        NA      NA
+#&gt; 2  1778212          [CohortGenerator] celecoxib age 40          SKIPPED        NA      NA
+#&gt; 3  1778213 [CohortGenerator] celecoxib age 40 and male          SKIPPED        NA      NA</code></pre>
+<div id="potential-pitfalls-of-incremental-mode" class="section level4">
+<h4 class="hasAnchor">
+<a href="#potential-pitfalls-of-incremental-mode" class="anchor"></a>Potential Pitfalls of Incremental Mode</h4>
+<p>Incremental mode makes some assumptions to provide a more flexible way to generate cohorts. These assumptions come with some risks that we would like to highlight:</p>
+<ul>
+<li>
+<strong>Record keeping files</strong>: The incremental approach for cohort generation makes use of a record keeping file to check if a cohort has already been generated. It does <strong>not</strong> check the database to verify this so you need to take care and preserve the file system where you store the record keeping file. If the file is removed, CohortGenerator will simply repeat the cohort generation process.</li>
+</ul>
+</div>
 </div>
 </div>
 </div>

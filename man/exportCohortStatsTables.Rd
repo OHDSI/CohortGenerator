@@ -10,7 +10,7 @@ exportCohortStatsTables(
   cohortDatabaseSchema,
   cohortTableNames = getCohortTableNames(),
   cohortStatisticsFolder,
-  incremental
+  incremental = FALSE
 )
 }
 \arguments{

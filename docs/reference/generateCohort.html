@@ -146,6 +146,7 @@ against the CDM.</p>
   <span class='va'>tempEmulationSchema</span>,
   <span class='va'>cohortDatabaseSchema</span>,
   <span class='va'>cohortTableNames</span>,
+  stopIfError <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>incremental</span>,
   <span class='va'>recordKeepingFile</span>
 <span class='op'>)</span></pre>
@@ -204,6 +205,12 @@ this should include both the database and schema name, for example
     <tr>
       <th>cohortTableNames</th>
       <td><p>List of cohort table names.</p></td>
+    </tr>
+    <tr>
+      <th>stopIfError</th>
+      <td><p>When set to true, an error in processing will call
+the stop() command to notify the parent calling funcion
+that an error occurred.</p></td>
     </tr>
     <tr>
       <th>incremental</th>
