@@ -38,3 +38,6 @@ test_that("Call getCohortCounts with subset of cohort IDs", {
   matchedCohortCounts <- merge(testCohortCounts, cohortCounts)
   expect_true(nrow(matchedCohortCounts[matchedCohortCounts$cohortSubjects == matchedCohortCounts$count,]) == nrow(testCohortCounts))
 })
+
+# Cleanup ------
+rm(cohortCounts)

@@ -89,6 +89,18 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/GeneratingCohorts.html">Generating Cohorts</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -127,6 +139,32 @@
     <tbody>
       <tr>
         <th colspan="2">
+          <h2 id="section-cohort-tables" class="hasAnchor"><a href="#section-cohort-tables" class="anchor"></a>Cohort Tables</h2>
+          <p class="section-desc"><p>Functions that support creating the necessary cohort tables.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="createCohortTables.html">createCohortTables()</a></code> </p>
+        </td>
+        <td><p>Create cohort tables</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getCohortTableNames.html">getCohortTableNames()</a></code> </p>
+        </td>
+        <td><p>Used to get a list of cohort table names to use when creating the cohort
+tables</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
           <h2 id="section-cohort-generation" class="hasAnchor"><a href="#section-cohort-generation" class="anchor"></a>Cohort Generation</h2>
           <p class="section-desc"><p>Functions that support generating cohorts.</p></p>
         </th>
@@ -145,21 +183,15 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="createCohortTable.html">createCohortTable()</a></code> </p>
+          <p><code><a href="createEmptyCohortDefinitionSet.html">createEmptyCohortDefinitionSet()</a></code> </p>
         </td>
-        <td><p>Create cohort table(s)</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="createEmptyCohortSet.html">createEmptyCohortSet()</a></code> </p>
-        </td>
-        <td><p>Create an empty cohort set</p></td>
+        <td><p>Create an empty cohort definition set</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
           <h2 id="section-cohort-counts" class="hasAnchor"><a href="#section-cohort-counts" class="anchor"></a>Cohort Counts</h2>
-          <p class="section-desc"><p>Functions for obtaining the counts of subjects and events for one or more cohorts</p></p>
+          <p class="section-desc"><p>Function for obtaining the counts of subjects and events for one or more cohorts</p></p>
         </th>
       </tr>
       
@@ -173,6 +205,38 @@
           <p><code><a href="getCohortCounts.html">getCohortCounts()</a></code> </p>
         </td>
         <td><p>Count the cohort(s)</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-cohort-statistics" class="hasAnchor"><a href="#section-cohort-statistics" class="anchor"></a>Cohort Statistics</h2>
+          <p class="section-desc"><p>Functions for insertint inclusion rule names from a cohort definition, exporting the cohort statistics to the file system and a helper function for dropping those tables when they are no longer needed.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="insertInclusionRuleNames.html">insertInclusionRuleNames()</a></code> </p>
+        </td>
+        <td><p>Used to insert the inclusion rule names from a cohort definition set
+when generating cohorts that include cohort statistics</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="exportCohortStatsTables.html">exportCohortStatsTables()</a></code> </p>
+        </td>
+        <td><p>Export the cohort statistics tables to the file system</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="dropCohortStatsTables.html">dropCohortStatsTables()</a></code> </p>
+        </td>
+        <td><p>Drop cohort statistics tables</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -210,6 +274,12 @@
           <p><code><a href="saveIncremental.html">saveIncremental()</a></code> </p>
         </td>
         <td><p>Used in incremental mode to save values to a file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="computeChecksum.html">computeChecksum()</a></code> </p>
+        </td>
+        <td><p>Computes the checksum for a value</p></td>
       </tr>
     </tbody>
     </table>

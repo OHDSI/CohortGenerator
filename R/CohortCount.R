@@ -32,7 +32,7 @@ getCohortCounts <- function(connectionDetails = NULL,
                            cohort_table = cohortTable,
                            cohort_ids = cohortIds)
   sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms)
-  tablesInServer <- tolower(DatabaseConnector::dbListTables(conn = connection, schema = cohortDatabaseSchema))
+  tablesInServer <- tolower(DatabaseConnector::getTableNames(conn = connection, databaseSchema = cohortDatabaseSchema))
   if (tolower(cohortTable) %in% tablesInServer) {
     counts <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
     delta <- Sys.time() - start
