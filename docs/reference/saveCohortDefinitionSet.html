@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Export the cohort statistics tables to the file system — exportCohortStatsTables • CohortGenerator</title>
+<title>Save the cohort definition set to the file system — saveCohortDefinitionSet • CohortGenerator</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,14 @@
 
 
 
-<meta property="og:title" content="Export the cohort statistics tables to the file system — exportCohortStatsTables" />
-<meta property="og:description" content="This function retrieves the data from the cohort statistics tables and
-writes them to the inclusion statistics folder specified in the function
-call." />
+<meta property="og:title" content="Save the cohort definition set to the file system — saveCohortDefinitionSet" />
+<meta property="og:description" content="This function saves a cohortDefinitionSet to the file system and provides
+options for specifying where to write the individual elements: the settings
+file will contain the cohort information as a CSV specified by the 
+settingsFileName, the cohort JSON is written to the jsonFolder and the SQL
+is written to the sqlFolder. We also provide a way to specify the 
+json/sql file name format using the cohortFileNameFormat and 
+cohortFileNameValue parameters." />
 
 
 
@@ -128,64 +132,80 @@ call." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Export the cohort statistics tables to the file system</h1>
+    <h1>Save the cohort definition set to the file system</h1>
     <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/ExportSave.R'><code>R/ExportSave.R</code></a></small>
-    <div class="hidden name"><code>exportCohortStatsTables.Rd</code></div>
+    <div class="hidden name"><code>saveCohortDefinitionSet.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function retrieves the data from the cohort statistics tables and
-writes them to the inclusion statistics folder specified in the function
-call.</p>
+    <p>This function saves a cohortDefinitionSet to the file system and provides
+options for specifying where to write the individual elements: the settings
+file will contain the cohort information as a CSV specified by the 
+settingsFileName, the cohort JSON is written to the jsonFolder and the SQL
+is written to the sqlFolder. We also provide a way to specify the 
+json/sql file name format using the cohortFileNameFormat and 
+cohortFileNameValue parameters.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>exportCohortStatsTables</span><span class='op'>(</span>
-  <span class='va'>connectionDetails</span>,
-  connection <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>cohortDatabaseSchema</span>,
-  cohortTableNames <span class='op'>=</span> <span class='fu'><a href='getCohortTableNames.html'>getCohortTableNames</a></span><span class='op'>(</span><span class='op'>)</span>,
-  <span class='va'>cohortStatisticsFolder</span>,
-  incremental <span class='op'>=</span> <span class='cn'>FALSE</span>
+    <pre class="usage"><span class='fu'>saveCohortDefinitionSet</span><span class='op'>(</span>
+  <span class='va'>cohortDefinitionSet</span>,
+  settingsFolder <span class='op'>=</span> <span class='st'>"inst/settings"</span>,
+  settingsFileName <span class='op'>=</span> <span class='st'>"CohortsToCreate.csv"</span>,
+  jsonFolder <span class='op'>=</span> <span class='st'>"inst/cohorts"</span>,
+  sqlFolder <span class='op'>=</span> <span class='st'>"inst/sql/sql_server"</span>,
+  cohortFileNameFormat <span class='op'>=</span> <span class='st'>"%s"</span>,
+  cohortFileNameValue <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cohortName"</span><span class='op'>)</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>connectionDetails</th>
-      <td><p>An object of type <code>connectionDetails</code> as created using the
-<code><a href='https://ohdsi.github.io/DatabaseConnector/reference/createConnectionDetails.html'>createConnectionDetails</a></code> function in the
-DatabaseConnector package. Can be left NULL if <code>connection</code> is
-provided.</p></td>
+      <th>cohortDefinitionSet</th>
+      <td><p>The <code>cohortDefinitionSet</code> argument must be a data frame with 
+the following columns:</p><dl>
+<dt>cohortId</dt><dd><p>The unique integer identifier of the cohort</p></dd> 
+<dt>cohortName</dt><dd><p>The cohort's name</p></dd>
+<dt>sql</dt><dd><p>The OHDSI-SQL used to generate the cohort</p></dd>
+</dl><p>Optionally, this data frame may contain:</p><dl>
+<dt>json</dt><dd><p>The Circe JSON representation of the cohort</p></dd>
+</dl></td>
     </tr>
     <tr>
-      <th>connection</th>
-      <td><p>An object of type <code>connection</code> as created using the
-<code><a href='https://ohdsi.github.io/DatabaseConnector/reference/connect.html'>connect</a></code> function in the
-DatabaseConnector package. Can be left NULL if <code>connectionDetails</code>
-is provided, in which case a new connection will be opened at the start
-of the function, and closed when the function finishes.</p></td>
+      <th>settingsFolder</th>
+      <td><p>The name of the folder that will hold the settingsFileName</p></td>
     </tr>
     <tr>
-      <th>cohortDatabaseSchema</th>
-      <td><p>The schema to hold the cohort tables. Note that for
-SQL Server, this should include both the database and schema
-name, for example 'scratch.dbo'.</p></td>
+      <th>settingsFileName</th>
+      <td><p>The name of the CSV file that will hold the cohort information
+including the atlasId, cohortId and cohortName</p></td>
     </tr>
     <tr>
-      <th>cohortTableNames</th>
-      <td><p>The names of the cohort statistics tables. See <code><a href='getCohortTableNames.html'>getCohortTableNames</a></code>
-for more details.</p></td>
+      <th>jsonFolder</th>
+      <td><p>The name of the folder that will hold the JSON representation
+of the cohort if it is available in the cohortDefinitionSet</p></td>
     </tr>
     <tr>
-      <th>cohortStatisticsFolder</th>
-      <td><p>The path to the folder where the cohort statistics folder 
-where the results will be written</p></td>
+      <th>sqlFolder</th>
+      <td><p>The name of the folder that will hold the SQL representation
+of the cohort.</p></td>
     </tr>
     <tr>
-      <th>incremental</th>
-      <td><p>If <code>incremental = TRUE</code>, results are written to update values instead of 
-overwriting an existing results</p></td>
+      <th>cohortFileNameFormat</th>
+      <td><p>Defines the format string  for naming the cohort 
+JSON and SQL files. The format string follows the 
+standard defined in the base sprintf function.</p></td>
+    </tr>
+    <tr>
+      <th>cohortFileNameValue</th>
+      <td><p>Defines the columns in the cohortDefinitionSet to use
+in conjunction with the cohortFileNameFormat parameter.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>When TRUE, logging messages are emitted to indicate export
+progress.</p></td>
     </tr>
     </table>
 

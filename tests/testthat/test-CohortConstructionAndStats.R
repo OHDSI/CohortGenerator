@@ -43,14 +43,6 @@ test_that("Call instatiateCohortSet with incremental = TRUE and no folder specif
                message = "Must specify incrementalFolder")
 })
 
-# test_that("Ensure instatiateCohortSet is single threaded", {
-#   expect_error(generateCohortSet(connectionDetails = connectionDetails,
-#                                     cohortDefinitionSet = createEmptyCohortDefinitionSet(),
-#                                     numThreads = 2),
-#                message = "numThreads must be set to 1 for now.")
-# })
-
-
 # getInclusionStatistics ------
 test_that("Call getInclusionStatistics without connection or connectionDetails", {
   expect_error(getInclusionStatistics(),
@@ -174,7 +166,8 @@ test_that("Create cohorts with stopOnError = TRUE", {
                      cohortTableNames = cohortTableNames)
   cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
   # Add a new cohort that will automatically fail
-  cohortsWithoutStats <- rbind(cohortsWithoutStats, data.frame(cohortId = 999,
+  cohortsWithoutStats <- rbind(cohortsWithoutStats, data.frame(atlasId = 999,
+                                                               cohortId = 999,
                                                                cohortName = "Fail Cohort",
                                                                json = "",
                                                                cohortJsonFile = "",
@@ -195,7 +188,8 @@ test_that("Create cohorts with stopOnError = FALSE", {
                      cohortTableNames = cohortTableNames)
   cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
   # Add a new cohort that will automatically fail
-  cohortsWithoutStats <- rbind(data.frame(cohortId = 999,
+  cohortsWithoutStats <- rbind(data.frame(atlasId = 999,
+                                          cohortId = 999,
                                           cohortName = "Fail Cohort",
                                           json = "",
                                           cohortJsonFile = "",
@@ -218,7 +212,8 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
                      cohortTableNames = cohortTableNames)
   cohortsWithoutStats <- getCohortsForTest(cohorts, generateStats = FALSE)
   # Add a new cohort that will automatically fail
-  cohortsWithoutStats <- rbind(data.frame(cohortId = 999,
+  cohortsWithoutStats <- rbind(data.frame(atlasId = 999,
+                                          cohortId = 999,
                                           cohortName = "Fail Cohort",
                                           json = "",
                                           cohortJsonFile = "",

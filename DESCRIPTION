@@ -23,7 +23,8 @@ Imports:
   readr (>= 1.4.0),
   rlang,
   RJSONIO,
-  SqlRender (>= 1.7.0)
+  SqlRender (>= 1.7.0),
+  stringi
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,

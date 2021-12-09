@@ -99,11 +99,6 @@ generateCohortSet <- function(connectionDetails = NULL,
     }
   }
   
-  # This is for when we parallel cohort generation
-  #if (numThreads < 1 || numThreads > parallel::detectCores()) {
-  #  stop(paste0("The numThreads argument must be between 1 and", parallel::detectCores()))
-  #}
-
   start <- Sys.time()
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
@@ -136,13 +131,6 @@ generateCohortSet <- function(connectionDetails = NULL,
     cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
   }
-
-  # Revisit parallel generation later
-  # if (numThreads > 1) {
-  #   cluster <- ParallelLogger::logInfo(paste0("Generating cohorts in parallel using ",
-  #                                             numThreads,
-  #                                             " threads. Individual cohort generation progress will not be displayed in the console."))
-  # }
 
   # Create the cluster
   cluster <- ParallelLogger::makeCluster(numberOfThreads = 1)

@@ -89,18 +89,18 @@ test_that("Create cohort tables with incremental = TRUE", {
 test_that("Create cohort tables with incremental = TRUE and partial table creation works", {
   conn = DatabaseConnector::connect(connectionDetails = connectionDetails)
   cohortTableNames <- getCohortTableNames(cohortTable = "incrementalPartial")
-  
+
   # Create only a cohort table
   sql <- "IF OBJECT_ID('@cohort_database_schema.@cohort_table', 'U') IS NOT NULL
           DROP TABLE @cohort_database_schema.@cohort_table;
-  
+
           CREATE TABLE @cohort_database_schema.@cohort_table (
             cohort_definition_id BIGINT,
             subject_id BIGINT,
             cohort_start_date DATE,
             cohort_end_date DATE
           );
-          
+
           INSERT INTO @cohort_database_schema.@cohort_table (
             cohort_definition_id,
             subject_id,
@@ -119,20 +119,20 @@ test_that("Create cohort tables with incremental = TRUE and partial table creati
   sql <- paste0("SELECT * FROM main.", cohortTableNames$cohortTable, ";")
   results <- DatabaseConnector::querySql(conn, sql = sql)
   expect_equal(nrow(results), 1)
-  
+
   # Create the cohort tables and verify
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames,
                      incremental = TRUE)
-  
+
   for(i in names(cohortTableNames)) {
     sql <- paste("SELECT * FROM", cohortTableNames[[i]], ";")
     results <- DatabaseConnector::querySql(conn, sql = sql)
     expectedRowCount <- ifelse(cohortTableNames[[i]] == cohortTableNames$cohortTable, 1, 0)
     expect_equal(nrow(results), expectedRowCount)
   }
-  
+
   DatabaseConnector::disconnect(conn)
 })
 
@@ -151,7 +151,7 @@ test_that("Export cohort stats with permanent tables", {
                           cohortTableNames = cohortTableNames,
                           cohortStatisticsFolder = cohortStatsFolder,
                           incremental = FALSE)
-  
+
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
   expect_equal(length(exportedFiles), 5)
@@ -165,14 +165,14 @@ test_that("Export cohort stats in incremental mode", {
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames)
-  
+
   # Export the results
   exportCohortStatsTables(connectionDetails = connectionDetails,
                           cohortDatabaseSchema = "main",
                           cohortTableNames = cohortTableNames,
                           cohortStatisticsFolder = cohortStatsFolder,
                           incremental = TRUE)
-  
+
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
   expect_equal(length(exportedFiles), 5)
@@ -191,12 +191,12 @@ test_that("Drop cohort stats tables", {
   dropCohortStatsTables(connectionDetails = connectionDetails,
                         cohortDatabaseSchema = "main",
                         cohortTableNames = cohortTableNames)
-  
+
   # Verify that the only table remaining is the main cohort table
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   tables <- DatabaseConnector::getTableNames(connection = connection,
                                              databaseSchema = "main")
-  
+
   expect_true(tolower(cohortTableNames$cohortTable) %in% tolower(tables))
   expect_false(tolower(cohortTableNames$cohortInclusionTable) %in% tolower(tables))
   expect_false(tolower(cohortTableNames$cohortInclusionResultTable) %in% tolower(tables))
