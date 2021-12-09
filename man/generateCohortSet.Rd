@@ -7,14 +7,12 @@
 generateCohortSet(
   connectionDetails = NULL,
   connection = NULL,
-  numThreads = 1,
   cdmDatabaseSchema,
-  tempEmulationSchema = NULL,
+  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   cohortDatabaseSchema = cdmDatabaseSchema,
-  cohortTable = "cohort",
-  cohortSet = NULL,
-  inclusionStatisticsFolder = NULL,
-  createCohortTable = FALSE,
+  cohortTableNames = getCohortTableNames(),
+  cohortDefinitionSet = NULL,
+  stopOnError = TRUE,
   incremental = FALSE,
   incrementalFolder = NULL
 )
@@ -31,9 +29,6 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
-\item{numThreads}{Specify the number of threads for cohort generation. Currently
-this only supports single threaded operations.}
-
 \item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
 Note that for SQL Server, this should include both the database and
 schema name, for example 'cdm_data.dbo'.}
@@ -42,36 +37,48 @@ schema name, for example 'cdm_data.dbo'.}
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 
-\item{cohortDatabaseSchema}{Schema name where your cohort table resides. Note that for SQL Server,
+\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{Name of the cohort table.}
+\item{cohortTableNames}{List of cohort table names.}
 
-\item{cohortSet}{The \code{cohortSet} argument must be a data frame with 
+\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
 the following columns: \describe{
 \item{cohortId}{The unique integer identifier of the cohort} 
-\item{cohortFullName}{The cohort's full name}
-\item{sql}{The OHDSI-SQL used to generate the cohort}
-\item{json}{The json column must represent a Circe cohort 
-definition. This field is only required when you would 
-like to generate a cohort that includes inclusion statistics
-since the names of the inclusion rules are parsed from 
-this JSON property.} }}
+\item{cohortName}{The cohort's name}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}
+Optionally, this data frame may contain: \describe{
+\item{json}{The Circe JSON representation of the cohort}}}
 
-\item{inclusionStatisticsFolder}{The folder where the inclusion rule statistics are stored. Can be
-left NULL if you do not wish to export the inclusion rule statistics}
-
-\item{createCohortTable}{Create the cohort table? If \code{incremental = TRUE} and the
-table already exists this will be skipped.}
+\item{stopOnError}{If an error happens while generating one of the cohorts in the 
+cohortDefinitionSet, should we stop processing the other
+cohorts? The default is TRUE; when set to FALSE, failures will
+be identified in the return value from this function.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
 kept of which definition has been executed.}
 }
+\value{
+A data.frame consisting of the following columns:
+\describe{
+   \item{cohortId}{The unique integer identifier of the cohort} 
+   \item{cohortName}{The cohort's name}
+   \item{generationStatus}{The status of the generation task which may be one of the following: 
+          \describe{
+               \item{COMPLETE}{The generation completed successfully}
+               \item{FAILED}{The generation failed (see logs for details)}
+               \item{SKIPPED}{If using incremental == 'TRUE', this status indicates 
+                              that the cohort's generation was skipped since it 
+                              was previously completed.}
+          }}
+   \item{startTime}{The start time of the cohort generation. If the generationStatus == 'SKIPPED', the startTime will be NA.}
+   \item{endTime}{The end time of the cohort generation. If the generationStatus == 'FAILED', the endTime will be the time of the failure. 
+                  If the generationStatus == 'SKIPPED', endTime will be NA.}
+   }
+}
 \description{
-This function generates a set of cohorts in the cohort table and where
-specified the inclusion rule statistics are computed and stored in the
-\code{inclusionStatisticsFolder}.
+This function generates a set of cohorts in the cohort table.
 }

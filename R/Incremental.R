@@ -141,7 +141,7 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
   if (!incremental) {
     return()
   }
-  if (length(list(...)[[1]]) == 0) {
+  if (length(list(...)) == 0) {
     return()
   }
   if (file.exists(recordKeepingFile)) {

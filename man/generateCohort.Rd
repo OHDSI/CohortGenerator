@@ -6,31 +6,28 @@
 \usage{
 generateCohort(
   cohortId = NULL,
-  cohortSet,
+  cohortDefinitionSet,
   connection = NULL,
   connectionDetails = NULL,
   cdmDatabaseSchema,
   tempEmulationSchema,
   cohortDatabaseSchema,
-  cohortTable,
-  inclusionStatisticsFolder,
+  cohortTableNames,
+  stopIfError = TRUE,
   incremental,
   recordKeepingFile
 )
 }
 \arguments{
-\item{cohortId}{The cohortId in the list of \code{cohortSet}}
+\item{cohortId}{The cohortId in the list of \code{cohortDefinitionSet}}
 
-\item{cohortSet}{The \code{cohortSet} argument must be a data frame with 
+\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
 the following columns: \describe{
 \item{cohortId}{The unique integer identifier of the cohort} 
-\item{cohortFullName}{The cohort's full name}
-\item{sql}{The OHDSI-SQL used to generate the cohort}
-\item{json}{The json column must represent a Circe cohort 
-definition. This field is only required when you would 
-like to generate a cohort that includes inclusion statistics
-since the names of the inclusion rules are parsed from 
-this JSON property.} }}
+\item{cohortName}{The cohort's name}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}
+Optionally, this data frame may contain: \describe{
+\item{json}{The Circe JSON representation of the cohort}}}
 
 \item{connection}{An object of type \code{connection} as created using the
 \code{\link[DatabaseConnector]{connect}} function in the
@@ -51,14 +48,15 @@ schema name, for example 'cdm_data.dbo'.}
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.}
 
-\item{cohortDatabaseSchema}{Schema name where your cohort table resides. Note that for SQL Server,
+\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{Name of the cohort table.}
+\item{cohortTableNames}{List of cohort table names.}
 
-\item{inclusionStatisticsFolder}{The folder where the inclusion rule statistics are stored. Can be
-left NULL if you do not wish to export the inclusion rule statistics}
+\item{stopIfError}{When set to true, an error in processing will call
+the stop() command to notify the parent calling funcion
+that an error occurred.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 

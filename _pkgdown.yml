@@ -8,20 +8,36 @@ home:
     href: http://forums.ohdsi.org
 
 reference:
+  - title: "Cohort Tables"
+    desc: >
+      Functions that support creating the necessary cohort tables.
+    contents:
+      - createCohortTables
+      - getCohortTableNames
+
   - title: "Cohort Generation"
     desc: >
       Functions that support generating cohorts.
     contents:
       - generateCohortSet
-      - createCohortTable
-      - createEmptyCohortSet
+      - createEmptyCohortDefinitionSet
       
   - title: "Cohort Counts"
     desc: >
-      Functions for obtaining the counts of subjects and events for one or
+      Function for obtaining the counts of subjects and events for one or
       more cohorts
     contents:
       - getCohortCounts
+      
+  - title: "Cohort Statistics"
+    desc: >
+      Functions for insertint inclusion rule names from a cohort definition,
+      exporting the cohort statistics to the file system and a helper function 
+      for dropping those tables when they are no longer needed.
+    contents:
+      - insertInclusionRuleNames
+      - exportCohortStatsTables
+      - dropCohortStatsTables
 
   - title: "Record Keeping"
     desc: >
@@ -34,6 +50,7 @@ reference:
       - recordTasksDone
       - isTaskRequired
       - saveIncremental
+      - computeChecksum
 
 navbar:
   structure:

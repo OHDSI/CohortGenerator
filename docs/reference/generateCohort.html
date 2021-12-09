@@ -91,6 +91,18 @@ against the CDM." />
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/GeneratingCohorts.html">Generating Cohorts</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -127,14 +139,14 @@ against the CDM.</p>
 
     <pre class="usage"><span class='fu'>generateCohort</span><span class='op'>(</span>
   cohortId <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>cohortSet</span>,
+  <span class='va'>cohortDefinitionSet</span>,
   connection <span class='op'>=</span> <span class='cn'>NULL</span>,
   connectionDetails <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>cdmDatabaseSchema</span>,
   <span class='va'>tempEmulationSchema</span>,
   <span class='va'>cohortDatabaseSchema</span>,
-  <span class='va'>cohortTable</span>,
-  <span class='va'>inclusionStatisticsFolder</span>,
+  <span class='va'>cohortTableNames</span>,
+  stopIfError <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>incremental</span>,
   <span class='va'>recordKeepingFile</span>
 <span class='op'>)</span></pre>
@@ -144,20 +156,17 @@ against the CDM.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>cohortId</th>
-      <td><p>The cohortId in the list of <code>cohortSet</code></p></td>
+      <td><p>The cohortId in the list of <code>cohortDefinitionSet</code></p></td>
     </tr>
     <tr>
-      <th>cohortSet</th>
-      <td><p>The <code>cohortSet</code> argument must be a data frame with 
+      <th>cohortDefinitionSet</th>
+      <td><p>The <code>cohortDefinitionSet</code> argument must be a data frame with 
 the following columns:</p><dl>
 <dt>cohortId</dt><dd><p>The unique integer identifier of the cohort</p></dd> 
-<dt>cohortFullName</dt><dd><p>The cohort's full name</p></dd>
+<dt>cohortName</dt><dd><p>The cohort's name</p></dd>
 <dt>sql</dt><dd><p>The OHDSI-SQL used to generate the cohort</p></dd>
-<dt>json</dt><dd><p>The json column must represent a Circe cohort 
-definition. This field is only required when you would 
-like to generate a cohort that includes inclusion statistics
-since the names of the inclusion rules are parsed from 
-this JSON property.</p></dd> 
+</dl><p>Optionally, this data frame may contain:</p><dl>
+<dt>json</dt><dd><p>The Circe JSON representation of the cohort</p></dd>
 </dl></td>
     </tr>
     <tr>
@@ -189,18 +198,19 @@ privileges where temp tables can be created.</p></td>
     </tr>
     <tr>
       <th>cohortDatabaseSchema</th>
-      <td><p>Schema name where your cohort table resides. Note that for SQL Server,
+      <td><p>Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.</p></td>
     </tr>
     <tr>
-      <th>cohortTable</th>
-      <td><p>Name of the cohort table.</p></td>
+      <th>cohortTableNames</th>
+      <td><p>List of cohort table names.</p></td>
     </tr>
     <tr>
-      <th>inclusionStatisticsFolder</th>
-      <td><p>The folder where the inclusion rule statistics are stored. Can be
-left NULL if you do not wish to export the inclusion rule statistics</p></td>
+      <th>stopIfError</th>
+      <td><p>When set to true, an error in processing will call
+the stop() command to notify the parent calling funcion
+that an error occurred.</p></td>
     </tr>
     <tr>
       <th>incremental</th>

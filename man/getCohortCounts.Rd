@@ -28,7 +28,7 @@ of the function, and closed when the function finishes.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTable}{Name of the cohort table.}
+\item{cohortTable}{The name of the cohort table.}
 
 \item{cohortIds}{The cohort Id(s) used to reference the cohort in the cohort
 table. If left empty, all cohorts in the table will be included.}
