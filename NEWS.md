@@ -1,13 +1,15 @@
 CohortGenerator 0.2.0
 =======================
 
-- Updated documentation
+- Renamed `createCohortTable` to `createCohortTables` to include all cohort statistics tables
+- Renamed `createEmptyCohortSet` to `createEmptyCohortDefinitionSet` to make this consistent with ROhdsiWebApi and CohortDiagnostics
+- Added `dropCohortStatsTables` function for removing cohort statistics tables
+- Added `exportCohortStatsTables` function for exporting cohort statistics to CSV files
+- Added `getCohortTableNames` function to define the list of cohort table names to create
+- Added `insertInclusionRuleNames` for inserting the inclusion rule names into the cohort stats table
+- Added `saveCohortDefinitionSet` to save the cohort definition set to the file system for use by study packages
+- Added a vignette and updated documentation
 - Remove CirceR dependency and related functions
-- Refactoring many functions to enable easier chaining of function calls with ROhdsiWebApi and CohortDiagnostics
-- Add getCohortCounts function
-- Add exportCohortStatsTables function for exporting cohort statistics to the file system 
-- Add dropCohortStatsTables function for dropping cohort statistics tables
-- Add insertInclusionRuleNames function for extracting inclusion rule names from Circe JSON cohort definitions and insert them into the inclusion rule table
 
 CohortGenerator 0.1.1
 =======================

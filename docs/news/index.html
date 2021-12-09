@@ -133,13 +133,15 @@
 <h1 class="page-header" data-toc-text="0.2.0">
 <a href="#cohortgenerator-020" class="anchor"></a>CohortGenerator 0.2.0</h1>
 <ul>
-<li>Updated documentation</li>
+<li>Renamed <code>createCohortTable</code> to <code>createCohortTables</code> to include all cohort statistics tables</li>
+<li>Renamed <code>createEmptyCohortSet</code> to <code>createEmptyCohortDefinitionSet</code> to make this consistent with ROhdsiWebApi and CohortDiagnostics</li>
+<li>Added <code>dropCohortStatsTables</code> function for removing cohort statistics tables</li>
+<li>Added <code>exportCohortStatsTables</code> function for exporting cohort statistics to CSV files</li>
+<li>Added <code>getCohortTableNames</code> function to define the list of cohort table names to create</li>
+<li>Added <code>insertInclusionRuleNames</code> for inserting the inclusion rule names into the cohort stats table</li>
+<li>Added <code>saveCohortDefinitionSet</code> to save the cohort definition set to the file system for use by study packages</li>
+<li>Added a vignette and updated documentation</li>
 <li>Remove CirceR dependency and related functions</li>
-<li>Refactoring many functions to enable easier chaining of function calls with ROhdsiWebApi and CohortDiagnostics</li>
-<li>Add getCohortCounts function</li>
-<li>Add exportCohortStatsTables function for exporting cohort statistics to the file system</li>
-<li>Add dropCohortStatsTables function for dropping cohort statistics tables</li>
-<li>Add insertInclusionRuleNames function for extracting inclusion rule names from Circe JSON cohort definitions and insert them into the inclusion rule table</li>
 </ul>
 </div>
     <div id="cohortgenerator-011" class="section level1">
