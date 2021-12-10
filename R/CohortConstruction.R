@@ -65,7 +65,8 @@ getCohortDefinitionSetFromPackage <- function(packageName, fileName = "settings/
   json <- sapply(cohorts$name, getJson)
   return(data.frame(cohortId = cohorts$cohortId,
                     cohortName = cohorts$cohortName, 
-                    sql = sql))
+                    sql = sql,
+                    json = json))
 }
 
 #' Generate a set of cohorts
