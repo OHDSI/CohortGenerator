@@ -9,10 +9,15 @@ getCohortDefinitionSetFromPackage(
   fileName = "settings/CohortsToCreate.csv"
 )
 }
+\arguments{
+\item{packageName}{The name of the package containing the cohort definitions.}
+
+\item{fileName}{The path to the CSV file containing the list of cohorts to create.}
+}
 \value{
 Returns a cohort set data.frame
 }
 \description{
-This function supports the legacy way of storing a cohort defnition set in a package,
+This function supports the legacy way of storing a cohort definition set in a package,
 with a CSV file, JSON files, and SQL files in the `inst` folder.
 }

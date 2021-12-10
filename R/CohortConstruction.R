@@ -31,8 +31,11 @@ createEmptyCohortDefinitionSet <- function() {
 #' Get a cohort definition set embedded in a package
 #'
 #' @description
-#' This function supports the legacy way of storing a cohort defnition set in a package,
+#' This function supports the legacy way of storing a cohort definition set in a package,
 #' with a CSV file, JSON files, and SQL files in the `inst` folder.
+#'
+#' @param packageName The name of the package containing the cohort definitions.
+#' @param fileName    The path to the CSV file containing the list of cohorts to create. 
 #'
 #' @return
 #' Returns a cohort set data.frame
