@@ -158,7 +158,7 @@ generateCohortSet <- function(connectionDetails = NULL,
 
   delta <- Sys.time() - start
   writeLines(paste("Generating cohort set took", round(delta, 2), attr(delta, "units")))
-  return(cohortsGenerated)
+  invisible(cohortsGenerated)
 }
 
 #' Generates a cohort
