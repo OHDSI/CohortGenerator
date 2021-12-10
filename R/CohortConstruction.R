@@ -180,8 +180,8 @@ generateCohortSet <- function(connectionDetails = NULL,
 #' @template CohortTableNames
 #' 
 #' @param stopIfError       When set to true, an error in processing will call
-#'                          the stop() command to notify the parent calling funcion
-#'                          that an error occurred.
+#'                          the stop() command to notify the parent calling 
+#'                          function that an error occurred.
 #' 
 #' @param incremental       Create only cohorts that haven't been created before?
 #' 

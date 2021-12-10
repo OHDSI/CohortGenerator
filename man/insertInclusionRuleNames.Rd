@@ -47,6 +47,6 @@ A data frame containing the inclusion rules by cohort and sequence ID
 This function will take a cohortDefinitionSet that inclusions the Circe JSON 
 representation of each cohort, parse the InclusionRule property to obtain
 the inclusion rule name and sequence number and insert the values into the 
-cohortInclusionTable. This function is only required when generting cohorts
+cohortInclusionTable. This function is only required when generating cohorts
 that include cohort statistics.
 }
