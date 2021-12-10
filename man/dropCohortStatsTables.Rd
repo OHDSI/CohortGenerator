@@ -23,11 +23,11 @@ DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
 
-\item{cohortDatabaseSchema}{The schema to hold the cohort tables. Note that for
-SQL Server, this should include both the database and schema
-name, for example 'scratch.dbo'.}
+\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
+this should include both the database and schema name, for example
+'scratch.dbo'.}
 
-\item{cohortTableNames}{The names of the cohort statistics tables. See \code{\link{getCohortTableNames}}
+\item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
 }
 \description{

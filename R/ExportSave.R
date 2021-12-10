@@ -7,12 +7,7 @@
 #'
 #' @template Connection
 #' 
-#' @param cohortDatabaseSchema        The schema to hold the cohort tables. Note that for
-#'                                    SQL Server, this should include both the database and schema
-#'                                    name, for example 'scratch.dbo'.
-#'
-#' @param cohortTableNames            The names of the cohort statistics tables. See \code{\link{getCohortTableNames}}
-#'                                    for more details.
+#' @template CohortTableNames
 #'                                    
 #' @param cohortStatisticsFolder      The path to the folder where the cohort statistics folder 
 #'                                    where the results will be written
