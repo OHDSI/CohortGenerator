@@ -61,12 +61,7 @@ getCohortTableNames <- function(cohortTable = "cohort",
 #'
 #' @template Connection
 #'
-#' @param cohortDatabaseSchema        The schema to hold the cohort tables. Note that for
-#'                                    SQL Server, this should include both the database and schema
-#'                                    name, for example 'scratch.dbo'.
-#'
-#' @param cohortTableNames            The names of the cohort tables. See \code{\link{getCohortTableNames}}
-#'                                    for more details.
+#' @template CohortTableNames
 #'                                    
 #' @param incremental                 When set to TRUE, this function will check to see
 #'                                    if the cohortTableNames exists in the cohortDatabaseSchema
@@ -144,12 +139,7 @@ createCohortTables <- function(connectionDetails = NULL,
 #'
 #' @template Connection
 #'
-#' @param cohortDatabaseSchema        The schema to hold the cohort tables. Note that for
-#'                                    SQL Server, this should include both the database and schema
-#'                                    name, for example 'scratch.dbo'.
-#'
-#' @param cohortTableNames            The names of the cohort statistics tables. See \code{\link{getCohortTableNames}}
-#'                                    for more details.
+#' @template CohortTableNames
 #'                                    
 #' @export
 dropCohortStatsTables <- function(connectionDetails = NULL,

@@ -41,7 +41,8 @@ privileges where temp tables can be created.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTableNames}{List of cohort table names.}
+\item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
+for more details.}
 
 \item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
 the following columns: \describe{
