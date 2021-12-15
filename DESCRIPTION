@@ -2,7 +2,7 @@ Package: CohortGenerator
 Type: Package
 Title: An R Package for Cohort Generation Against the OMOP CDM
 Version: 0.2.0
-Date: 2021-11-17
+Date: 2021-12-15
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Gowtham", "Rao", email = "gowthamrao@gmail.com", role = c("aut")),
