@@ -52,11 +52,12 @@ privileges where temp tables can be created.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
-\item{cohortTableNames}{List of cohort table names.}
+\item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
+for more details.}
 
 \item{stopIfError}{When set to true, an error in processing will call
-the stop() command to notify the parent calling funcion
-that an error occurred.}
+the stop() command to notify the parent calling 
+function that an error occurred.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 

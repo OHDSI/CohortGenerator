@@ -88,7 +88,7 @@
       <h1 data-toc-skip>Generating Cohorts</h1>
                         <h4 class="author">Anthony G. Sena and Martijn J. Schuemie</h4>
             
-            <h4 class="date">2021-12-09</h4>
+            <h4 class="date">2021-12-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/master/vignettes/GeneratingCohorts.Rmd"><code>vignettes/GeneratingCohorts.Rmd</code></a></small>
       <div class="hidden name"><code>GeneratingCohorts.Rmd</code></div>
@@ -177,14 +177,14 @@
                                       cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
                                       cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
                                       cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span><span class="op">)</span></code></pre></div>
-<p>The code above starts by obtaining the <code>connectionDetails</code> from Eunomia. This is where you’ll likley want to substitute your own connection information. Next, we call <code>getCohortTableNames</code> to obtain a list of <code>cohortTableNames</code> that we’ll use for the generation process. We then call <code>createCohortTables</code> to create the cohort tables on the database server in the <code>cohortDatabaseSchema</code>. Once these tables are created, we use the function <code>generateCohortSet</code> to generate the <code>cohortDefintionSet</code>. When calling <code>generateCohortSet</code>, we must specify the schema that holds our CDM (<code>cdmDatabaseSchema</code>), the location of the <code>cohortDatabaseSchema</code> and <code>cohortTableNames</code> where the cohort(s) will be generated. We will cover the other parameters available in the <a href="#advancedOptions">Advanced Options</a> section.</p>
+<p>The code above starts by obtaining the <code>connectionDetails</code> from Eunomia. This is where you’ll likely want to substitute your own connection information. Next, we call <code>getCohortTableNames</code> to obtain a list of <code>cohortTableNames</code> that we’ll use for the generation process. We then call <code>createCohortTables</code> to create the cohort tables on the database server in the <code>cohortDatabaseSchema</code>. Once these tables are created, we use the function <code>generateCohortSet</code> to generate the <code>cohortDefintionSet</code>. When calling <code>generateCohortSet</code>, we must specify the schema that holds our CDM (<code>cdmDatabaseSchema</code>), the location of the <code>cohortDatabaseSchema</code> and <code>cohortTableNames</code> where the cohort(s) will be generated. We will cover the other parameters available in the <a href="#advancedOptions">Advanced Options</a> section.</p>
 <p>If we’d like to see the results of the generation process, we can use the <code>getCohortCounts</code> method to query the cohort table for a summary of the persons and events for each cohort:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/getCohortCounts.html">getCohortCounts</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
                 cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
                 cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span></code></pre></div>
 <pre><code>#&gt; Connecting using SQLite driver</code></pre>
-<pre><code>#&gt; Counting cohorts took 0.04 secs</code></pre>
+<pre><code>#&gt; Counting cohorts took 0.037 secs</code></pre>
 <pre><code>#&gt;   cohortId cohortEntries cohortSubjects
 #&gt; 1  1778211          1800           1800
 #&gt; 2  1778212           569            569
@@ -233,7 +233,7 @@
                         cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
                         cohortStatisticsFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"InclusionStats"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>The code above performs two steps. First, we insert the inclusion rule names from the Circe expressions in the <code>cohortDefinitionSet</code>. This is important since these names are not automatically inserted into the database when generating the cohorts. Second, we export the cohort statistics to the file system which will write comma separated value (CSV) files per cohort statistic table in the <code>InclusionStats</code> folder.</p>
-<p>Once you have exported your cohort statistics, you can optionally drop the statstics tables by using the following command:</p>
+<p>Once you have exported your cohort statistics, you can optionally drop the statistics tables by using the following command:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/dropCohortStatsTables.html">dropCohortStatsTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
                       cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
@@ -286,14 +286,6 @@
 #&gt; Skipping cohortId = '1778212' because it is unchanged from earlier run
 #&gt; Skipping cohortId = '1778213' because it is unchanged from earlier run
 #&gt; Generating cohort set took 0.05 secs</code></pre>
-<pre><code>#&gt;   cohortId                                  cohortName generationStatus
-#&gt; 1  1778211                 [CohortGenerator] celecoxib          SKIPPED
-#&gt; 2  1778212          [CohortGenerator] celecoxib age 40          SKIPPED
-#&gt; 3  1778213 [CohortGenerator] celecoxib age 40 and male          SKIPPED
-#&gt;   startTime endTime
-#&gt; 1        NA      NA
-#&gt; 2        NA      NA
-#&gt; 3        NA      NA</code></pre>
 <div id="potential-pitfalls-of-incremental-mode" class="section level4">
 <h4 class="hasAnchor">
 <a href="#potential-pitfalls-of-incremental-mode" class="anchor"></a>Potential Pitfalls of Incremental Mode</h4>

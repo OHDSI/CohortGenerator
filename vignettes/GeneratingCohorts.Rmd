@@ -103,7 +103,7 @@ cohortsGenerated <- generateCohortSet(connectionDetails= connectionDetails,
                                       cohortDefinitionSet = cohortDefinitionSet)
 
 ```
-The code above starts by obtaining the `connectionDetails` from Eunomia. This is where you'll likley want to substitute your own connection information. Next, we call `getCohortTableNames` to obtain a list of `cohortTableNames` that we'll use for the generation process. We then call `createCohortTables` to create the cohort tables on the database server in the `cohortDatabaseSchema`. Once these tables are created, we use the function `generateCohortSet` to generate the `cohortDefintionSet`. When calling `generateCohortSet`, we must specify the schema that holds our CDM (`cdmDatabaseSchema`), the location of the `cohortDatabaseSchema` and `cohortTableNames` where the cohort(s) will be generated. We will cover the other parameters available in the [Advanced Options](#advancedOptions) section.
+The code above starts by obtaining the `connectionDetails` from Eunomia. This is where you'll likely want to substitute your own connection information. Next, we call `getCohortTableNames` to obtain a list of `cohortTableNames` that we'll use for the generation process. We then call `createCohortTables` to create the cohort tables on the database server in the `cohortDatabaseSchema`. Once these tables are created, we use the function `generateCohortSet` to generate the `cohortDefintionSet`. When calling `generateCohortSet`, we must specify the schema that holds our CDM (`cdmDatabaseSchema`), the location of the `cohortDatabaseSchema` and `cohortTableNames` where the cohort(s) will be generated. We will cover the other parameters available in the [Advanced Options](#advancedOptions) section.
 
 If we'd like to see the results of the generation process, we can use the `getCohortCounts` method to query the cohort table for a summary of the persons and events for each cohort:
 
@@ -166,7 +166,7 @@ exportCohortStatsTables(connectionDetails = connectionDetails,
 
 The code above performs two steps. First, we insert the inclusion rule names from the Circe expressions in the `cohortDefinitionSet`. This is important since these names are not automatically inserted into the database when generating the cohorts. Second, we export the cohort statistics to the file system which will write comma separated value (CSV) files per cohort statistic table in the `InclusionStats` folder.
 
-Once you have exported your cohort statistics, you can optionally drop the statstics tables by using the following command:
+Once you have exported your cohort statistics, you can optionally drop the statistics tables by using the following command:
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 dropCohortStatsTables(connectionDetails = connectionDetails,
