@@ -1,3 +1,8 @@
+CohortGenerator 0.3.0
+=======================
+- Added `getCohortDefintionSet` function for retrieving a cohort definition set from either a package or the file system
+- Re-factored `saveCohortDefinitionSet` to remove the `settingsFolder`. The `settingsFileName` should include the path to the file.
+
 CohortGenerator 0.2.0
 =======================
 

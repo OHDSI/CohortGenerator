@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Changelog • CohortGenerator</title>
+<title>Get a cohort definition set — getCohortDefinitionSet • CohortGenerator</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,11 @@
 
 
 
-<meta property="og:title" content="Changelog" />
+<meta property="og:title" content="Get a cohort definition set — getCohortDefinitionSet" />
+<meta property="og:description" content="This function supports the legacy way of retrieving a cohort definition set 
+from the file system or in a package. This function supports the legacy way of
+storing a cohort definition set in a package with a CSV file, JSON files, 
+and SQL files in the `inst` folder." />
 
 
 
@@ -58,7 +62,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-news">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -125,56 +129,83 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
+    <h1>Get a cohort definition set</h1>
+    <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/CohortDefinitionSet.R'><code>R/CohortDefinitionSet.R</code></a></small>
+    <div class="hidden name"><code>getCohortDefinitionSet.Rd</code></div>
     </div>
 
-    <div id="cohortgenerator-030" class="section level1">
-<h1 class="page-header" data-toc-text="0.3.0">
-<a href="#cohortgenerator-030" class="anchor"></a>CohortGenerator 0.3.0</h1>
-<ul>
-<li>Added <code>getCohortDefintionSet</code> function for retrieving a cohort definition set from either a package or the file system</li>
-<li>Re-factored <code>saveCohortDefinitionSet</code> to remove the <code>settingsFolder</code>. The <code>settingsFileName</code> should include the path to the file.</li>
-</ul>
-</div>
-    <div id="cohortgenerator-020" class="section level1">
-<h1 class="page-header" data-toc-text="0.2.0">
-<a href="#cohortgenerator-020" class="anchor"></a>CohortGenerator 0.2.0</h1>
-<ul>
-<li>Renamed <code>createCohortTable</code> to <code>createCohortTables</code> to include all cohort statistics tables</li>
-<li>Renamed <code>createEmptyCohortSet</code> to <code>createEmptyCohortDefinitionSet</code> to make this consistent with ROhdsiWebApi and CohortDiagnostics</li>
-<li>Added <code>dropCohortStatsTables</code> function for removing cohort statistics tables</li>
-<li>Added <code>exportCohortStatsTables</code> function for exporting cohort statistics to CSV files</li>
-<li>Added <code>getCohortTableNames</code> function to define the list of cohort table names to create</li>
-<li>Added <code>insertInclusionRuleNames</code> for inserting the inclusion rule names into the cohort stats table</li>
-<li>Added <code>saveCohortDefinitionSet</code> to save the cohort definition set to the file system for use by study packages</li>
-<li>Added a vignette and updated documentation</li>
-<li>Remove CirceR dependency and related functions</li>
-</ul>
-</div>
-    <div id="cohortgenerator-011" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.1">
-<a href="#cohortgenerator-011" class="anchor"></a>CohortGenerator 0.1.1</h1>
-<p>Fixing documentation</p>
-</div>
-    <div id="cohortgenerator-010" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.0">
-<a href="#cohortgenerator-010" class="anchor"></a>CohortGenerator 0.1.0</h1>
-<p>Updating function calls to use “generate” instead of “instantiate”</p>
-</div>
-    <div id="cohortgenerator-001" class="section level1">
-<h1 class="page-header" data-toc-text="0.0.1">
-<a href="#cohortgenerator-001" class="anchor"></a>CohortGenerator 0.0.1</h1>
-<p>Initial version</p>
-</div>
-  </div>
+    <div class="ref-description">
+    <p>This function supports the legacy way of retrieving a cohort definition set 
+from the file system or in a package. This function supports the legacy way of
+storing a cohort definition set in a package with a CSV file, JSON files, 
+and SQL files in the `inst` folder.</p>
+    </div>
 
+    <pre class="usage"><span class='fu'>getCohortDefinitionSet</span><span class='op'>(</span>
+  settingsFileName <span class='op'>=</span> <span class='st'>"settings/CohortsToCreate.csv"</span>,
+  jsonFolder <span class='op'>=</span> <span class='st'>"cohorts"</span>,
+  sqlFolder <span class='op'>=</span> <span class='st'>"sql/sql_server"</span>,
+  cohortFileNameFormat <span class='op'>=</span> <span class='st'>"%s"</span>,
+  cohortFileNameValue <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cohortName"</span><span class='op'>)</span>,
+  packageName <span class='op'>=</span> <span class='cn'>NULL</span>,
+  warnOnMissingJson <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>settingsFileName</th>
+      <td><p>The name of the CSV file that will hold the cohort information
+including the atlasId, cohortId and cohortName</p></td>
+    </tr>
+    <tr>
+      <th>jsonFolder</th>
+      <td><p>The name of the folder that will hold the JSON representation
+of the cohort if it is available in the cohortDefinitionSet</p></td>
+    </tr>
+    <tr>
+      <th>sqlFolder</th>
+      <td><p>The name of the folder that will hold the SQL representation
+of the cohort.</p></td>
+    </tr>
+    <tr>
+      <th>cohortFileNameFormat</th>
+      <td><p>Defines the format string  for naming the cohort 
+JSON and SQL files. The format string follows the 
+standard defined in the base sprintf function.</p></td>
+    </tr>
+    <tr>
+      <th>cohortFileNameValue</th>
+      <td><p>Defines the columns in the cohortDefinitionSet to use
+in conjunction with the cohortFileNameFormat parameter.</p></td>
+    </tr>
+    <tr>
+      <th>packageName</th>
+      <td><p>The name of the package containing the cohort definitions.</p></td>
+    </tr>
+    <tr>
+      <th>warnOnMissingJson</th>
+      <td><p>Provide a warning if a .JSON file is not found for a 
+cohort in the settings file</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>When TRUE, extra logging messages are emitted</p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Returns a cohort set data.frame</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
-
 </div>
 
 

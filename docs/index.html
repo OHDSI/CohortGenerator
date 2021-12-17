@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -115,7 +115,7 @@
 
 <span class="co"># Fill the cohort set using  cohorts included in this </span>
 <span class="co"># package as an example</span>
-<span class="va">cohortJsonFiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"cohorts"</span>, package <span class="op">=</span> <span class="st">"CohortGenerator"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">cohortJsonFiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"testdata/name/cohorts"</span>, package <span class="op">=</span> <span class="st">"CohortGenerator"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">cohortJsonFiles</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">cohortJsonFileName</span> <span class="op">&lt;-</span> <span class="va">cohortJsonFiles</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>
   <span class="va">cohortName</span> <span class="op">&lt;-</span> <span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/fileutils.html">file_path_sans_ext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html">basename</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">)</span>

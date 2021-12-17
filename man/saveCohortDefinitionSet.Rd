@@ -11,7 +11,7 @@ saveCohortDefinitionSet(
   sqlFolder = "inst/sql/sql_server",
   cohortFileNameFormat = "\%s",
   cohortFileNameValue = c("cohortName"),
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{

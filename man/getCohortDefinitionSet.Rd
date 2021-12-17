@@ -12,7 +12,7 @@ getCohortDefinitionSet(
   cohortFileNameValue = c("cohortName"),
   packageName = NULL,
   warnOnMissingJson = TRUE,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{

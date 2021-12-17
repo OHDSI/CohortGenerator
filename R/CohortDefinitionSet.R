@@ -1,3 +1,19 @@
+# Copyright 2021 Observational Health Data Sciences and Informatics
+#
+# This file is part of CohortGenerator
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' Create an empty cohort definition set
 #'
 #' @description
@@ -10,47 +26,6 @@
 #' @export
 createEmptyCohortDefinitionSet <- function() {
   return(setNames(data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortName", "sql")))
-}
-
-#' Get a cohort definition set embedded in a package
-#'
-#' @description
-#' This function supports the legacy way of storing a cohort definition set in a package,
-#' with a CSV file, JSON files, and SQL files in the `inst` folder.
-#'
-#' @param packageName The name of the package containing the cohort definitions.
-#' @param fileName    The path to the CSV file containing the list of cohorts to create. 
-#'
-#' @return
-#' Returns a cohort set data.frame
-#' 
-#' @export
-getCohortDefinitionSetFromPackage <- function(packageName, fileName = "settings/CohortsToCreate.csv") {
-  getPathInPackage <- function(fileName, package) {
-    path <- system.file(fileName, package = packageName)
-    if (path == "") {
-      stop(sprintf("Cannot find '%s' in the %s package", fileName, packageName))
-    } else {
-      return(path)
-    }
-  }
-  
-  pathToCsv <- getPathInPackage(fileName, package = packageName)
-  cohorts <- read.csv(pathToCsv)
-  getSql<- function(name) {
-    pathToSql <- getPathInPackage(file.path("sql", "sql_server", sprintf("%s.sql", name)), package = packageName)
-    SqlRender::readSql(pathToSql)
-  }
-  sql <- sapply(cohorts$name, getSql)
-  getJson<- function(name) {
-    pathToJson <- getPathInPackage(file.path("cohorts", sprintf("%s.json", name)), package = packageName)
-    SqlRender::readSql(pathToJson)
-  }
-  json <- sapply(cohorts$name, getJson)
-  return(data.frame(cohortId = cohorts$cohortId,
-                    cohortName = cohorts$cohortName, 
-                    sql = sql,
-                    json = json))
 }
 
 #' Get a cohort definition set
