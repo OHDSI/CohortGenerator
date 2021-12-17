@@ -9,7 +9,7 @@
 #' 
 #' @export
 createEmptyCohortDefinitionSet <- function() {
-  return(setNames(data.frame(matrix(ncol = 4, nrow = 0), stringsAsFactors = FALSE), c("atlasId", "cohortId","cohortName", "sql")))
+  return(setNames(data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortName", "sql")))
 }
 
 #' Get a cohort definition set embedded in a package
@@ -61,8 +61,6 @@ getCohortDefinitionSetFromPackage <- function(packageName, fileName = "settings/
 #' storing a cohort definition set in a package with a CSV file, JSON files, 
 #' and SQL files in the `inst` folder.
 #'
-#' @param settingsFolder   The name of the folder that will hold the settingsFileName
-#' 
 #' @param settingsFileName The name of the CSV file that will hold the cohort information
 #'                         including the atlasId, cohortId and cohortName
 #'                  
@@ -84,71 +82,80 @@ getCohortDefinitionSetFromPackage <- function(packageName, fileName = "settings/
 #' @param warnOnMissingJson Provide a warning if a .JSON file is not found for a 
 #'                          cohort in the settings file
 #' 
-#' @param verbose           When TRUE, logging messages are emitted to indicate export
-#'                          progress.
+#' @param verbose           When TRUE, extra logging messages are emitted
 #'
 #' @return
 #' Returns a cohort set data.frame
 #' 
 #' @export
-getCohortDefinitionSet <- function(settingsFolder = "settings",
-                                   settingsFileName = "CohortsToCreate.csv",
+getCohortDefinitionSet <- function(settingsFileName = "settings/CohortsToCreate.csv",
                                    jsonFolder = "cohorts",
                                    sqlFolder = "sql/sql_server",
                                    cohortFileNameFormat = "%s",
                                    cohortFileNameValue = c("cohortName"),
                                    packageName = NULL,
                                    warnOnMissingJson = TRUE,
-                                   verbose = TRUE) {
+                                   verbose = FALSE) {
+  
   checkmate::assert_vector(cohortFileNameValue)
   checkmate::assert_true(length(cohortFileNameValue) > 0)
   
-  getPath <- function(fileName, package = package, verbose = verbose) {
+  getPath <- function(fileName) {
+    path = fileName
     if (!is.null(packageName)) {
-      if (verbose) {
-        ParallelLogger::logInfo(" --- Loading ", fileName, " from package: ", packageName)
-      }
-      # NOTE: mustWork = TRUE will cause this function to stop if the settingsFileName is not found
-      # in the setting file
-      return(system.file(fileName, package = packageName, mustWork = TRUE))
-    } else {
-      return(fileName)
+      path = system.file(fileName, package = packageName)
     }
+    if (verbose) {
+      ParallelLogger::logInfo(paste0(" -- Loading ", basename(fileName), " from ", path))
+    }
+    if (!file.exists(path)) {
+      if (grepl(".json$", tolower(basename(fileName))) && warnOnMissingJson) {
+        errorMsg <- ifelse(is.null(packageName), 
+                           paste0("File not found: ", path), 
+                           paste0("File, ", fileName, " not found in package: ", packageName))
+        warning(errorMsg)
+      }
+    }
+    return(path)
   }
+  
   # Read the settings file which holds the cohortDefinitionSet
-  settings <- readr::read_csv(getPath(fileName = file.path(settingsFolder, settingsFileName)),
+  ParallelLogger::logInfo("Loading cohortDefinitionSet")
+  settings <- readr::read_csv(getPath(fileName = settingsFileName),
                               col_types = readr::cols(), 
                               lazy = FALSE)
   
+  settingsColumns <- .getSettingsFileRequiredColumns()
+  checkmate::assert_true(all(settingsColumns %in% names(settings)))
   checkmate::assert_true(all(cohortFileNameValue %in% names(settings)))
+  checkmate::assert_true((!all(.getFileDataColumns() %in% names(settings))))
   
-  readFile <- function(fileName, warnOnMissingJson = warnOnMissingJson, verbose = verbose) {
-    if (verbose) {
-      ParallelLogger::logInfo(" --- Loading: ", fileName)
+  readFile <- function(fileName) {
+    if (file.exists(fileName)) {
+      return(SqlRender::readSql(fileName))
+    } else {
+      if (grepl(".json$", tolower(basename(fileName))) && warnOnMissingJson) {
+        warning(paste0(" --- ", fileName, " not found"))
+        return(NA)
+      } else {
+        stop(paste0("File not found: ", fileName))
+      }
     }
-    # TODO: Do this operation in a tryCatch
-    # so we can emit a warning if the JSON file is
-    # not found on the file system and return NA.
-    SqlRender::readSql(fileName)
   }
 
   # Read the JSON/SQL files
   fileData <- data.frame()
   for(i in 1:nrow(settings)) {
-    cohortId <- settings$cohortId[i]
-    cohortFileName <- .removeNonAsciiCharacters(cohortDefinitionSet$cohortName[i])
-    fileNameRoot <- .getFileNameFromCohortDefinitionSet(cohortDefinitionSet = settings,
-                                                        cohortFileNameFormat = cohortFileNameFormat)
-    fileNameRoot <- .removeNonAsciiCharacters(fileNameRoot)
-    json <- readFile(fileName = getPath(fileName = file.path(jsonFolder, paste0(fileNameRoot, ".json"))))
-    sql <- readFile(fileName = getPath(fileName = file.path(sqlFolder, paste0(fileNameRoot, "sql"))))
+    cohortFileNameRoot <- .getFileNameFromCohortDefinitionSet(cohortDefinitionSetRow = settings[i,],
+                                                              cohortFileNameValue = cohortFileNameValue,
+                                                              cohortFileNameFormat = cohortFileNameFormat)
+    cohortFileNameRoot <- .removeNonAsciiCharacters(cohortFileNameRoot)
+    json <- readFile(fileName = getPath(fileName = file.path(jsonFolder, paste0(cohortFileNameRoot, ".json"))))
+    sql <- readFile(fileName = getPath(fileName = file.path(sqlFolder, paste0(cohortFileNameRoot, ".sql"))))
     fileData <- rbind(fileData, data.frame(json = json,
                                            sql = sql))
   }
   
-  if (all(is.null(settings$atlasId))) {
-    settings$atlasId <- settings$cohortIdId
-  }
   cohortDefinitionSet <- cbind(settings, fileData)
   invisible(cohortDefinitionSet)
 }
@@ -166,10 +173,8 @@ getCohortDefinitionSet <- function(settingsFolder = "settings",
 #'
 #' @template CohortDefinitionSet
 #'
-#' @param settingsFolder   The name of the folder that will hold the settingsFileName
-#' 
 #' @param settingsFileName The name of the CSV file that will hold the cohort information
-#'                         including the atlasId, cohortId and cohortName
+#'                         including the cohortId and cohortName
 #'                  
 #' @param jsonFolder       The name of the folder that will hold the JSON representation
 #'                         of the cohort if it is available in the cohortDefinitionSet
@@ -189,19 +194,20 @@ getCohortDefinitionSet <- function(settingsFolder = "settings",
 #'                                    
 #' @export
 saveCohortDefinitionSet <- function(cohortDefinitionSet,
-                                    settingsFolder = "inst/settings",
-                                    settingsFileName = "CohortsToCreate.csv",
+                                    settingsFileName = "inst/settings/CohortsToCreate.csv",
                                     jsonFolder = "inst/cohorts",
                                     sqlFolder = "inst/sql/sql_server",
                                     cohortFileNameFormat = "%s",
                                     cohortFileNameValue = c("cohortName"),
-                                    verbose = TRUE) {
-  settingsColumns <- .getSettingsFileColumns()
+                                    verbose = FALSE) {
+  settingsColumns <- .getSettingsFileRequiredColumns()
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assert_vector(cohortFileNameValue)
   checkmate::assert_true(length(cohortFileNameValue) > 0)
+  checkmate::assert_true(all(settingsColumns %in% names(cohortDefinitionSet)))
   checkmate::assert_true(all(cohortFileNameValue %in% names(cohortDefinitionSet)))
-  if (!file.exists(settingsFolder)) {
+  settingsFolder <- dirname(settingsFileName)
+  if (!dir.exists(settingsFolder)) {
     dir.create(settingsFolder, recursive = TRUE)
   }
   if (!file.exists(jsonFolder)) {
@@ -213,9 +219,11 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   
   # Export the cohortDefinitionSet to the settings folder
   if (verbose) {
-    ParallelLogger::logInfo("Exporting cohortDefinitionSet to ", settingsFolder)
+    ParallelLogger::logInfo("Exporting cohortDefinitionSet to ", settingsFileName)
   }
-  readr::write_csv(x =  cohortDefinitionSet[,settingsColumns], file = file.path(settingsFolder, settingsFileName))
+  # Write the settings file and ensure that the "sql" and "json" columns are
+  # not included
+  readr::write_csv(x =  cohortDefinitionSet[,-which(names(cohortDefinitionSet) %in% .getFileDataColumns())], file = settingsFileName)
   
   # Export the SQL & JSON for each entry
   for(i in 1:nrow(cohortDefinitionSet)) {
@@ -238,8 +246,12 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   ParallelLogger::logInfo("Cohort definition saved")
 }
 
-.getSettingsFileColumns <- function() { 
-  return(c("atlasId", "cohortId", "cohortName"))
+.getSettingsFileRequiredColumns <- function() { 
+  return(c("cohortId", "cohortName"))
+}
+
+.getFileDataColumns <- function() {
+  return(c("json", "sql"))
 }
 
 .getFileNameFromCohortDefinitionSet <- function(cohortDefinitionSetRow,

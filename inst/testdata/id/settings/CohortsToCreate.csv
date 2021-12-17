@@ -1,0 +1,4 @@
+atlasId,cohortId,cohortName,logicDescription,generateStats
+10,1,celecoxib,Celecoxib exposure,FALSE
+11,2,celecoxibAge40,Celecoxib exposure and age at index >= 40,FALSE
+12,3,celecoxibAge40Male,Celecoxib exposure in males and age at index >= 40,FALSE
