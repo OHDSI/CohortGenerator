@@ -14,61 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Create an empty cohort definition set
-#'
-#' @description
-#' This function creates an empty cohort set data.frame for use
-#' with \code{generateCohortSet}.
-#'
-#' @return
-#' Returns an empty cohort set data.frame
-#' 
-#' @export
-createEmptyCohortDefinitionSet <- function() {
-  return(setNames(data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortName", "sql")))
-}
-
-#' Get a cohort definition set embedded in a package
-#'
-#' @description
-#' This function supports the legacy way of storing a cohort definition set in a package,
-#' with a CSV file, JSON files, and SQL files in the `inst` folder.
-#'
-#' @param packageName The name of the package containing the cohort definitions.
-#' @param fileName    The path to the CSV file containing the list of cohorts to create. 
-#'
-#' @return
-#' Returns a cohort set data.frame
-#' 
-#' @export
-getCohortDefinitionSetFromPackage <- function(packageName, fileName = "settings/CohortsToCreate.csv") {
-  getPathInPackage <- function(fileName, package) {
-    path <- system.file(fileName, package = packageName)
-    if (path == "") {
-      stop(sprintf("Cannot find '%s' in the %s package", fileName, packageName))
-    } else {
-      return(path)
-    }
-  }
-  
-  pathToCsv <- getPathInPackage(fileName, package = packageName)
-  cohorts <- read.csv(pathToCsv)
-  getSql<- function(name) {
-    pathToSql <- getPathInPackage(file.path("sql", "sql_server", sprintf("%s.sql", name)), package = packageName)
-    SqlRender::readSql(pathToSql)
-  }
-  sql <- sapply(cohorts$name, getSql)
-  getJson<- function(name) {
-    pathToJson <- getPathInPackage(file.path("cohorts", sprintf("%s.json", name)), package = packageName)
-    SqlRender::readSql(pathToJson)
-  }
-  json <- sapply(cohorts$name, getJson)
-  return(data.frame(cohortId = cohorts$cohortId,
-                    cohortName = cohorts$cohortName, 
-                    sql = sql,
-                    json = json))
-}
-
 #' Generate a set of cohorts
 #'
 #' @description
