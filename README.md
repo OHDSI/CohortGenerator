@@ -1,6 +1,6 @@
 # CohortGenerator
 
-[![Build Status](https://github.com/OHDSI/CohortGenerator/workflows/R-CMD-check/badge.svg)](https://github.com/OHDSI/CohortGenerator/actions?query=workflow%3AR-CMD-check) [![codecov.io](https://codecov.io/github/OHDSI/CohortGenerator/coverage.svg?branch=master)](https://codecov.io/github/OHDSI/CohortGenerator?branch=master)
+[![Build Status](https://github.com/OHDSI/CohortGenerator/workflows/R-CMD-check/badge.svg)](https://github.com/OHDSI/CohortGenerator/actions?query=workflow%3AR-CMD-check) [![codecov.io](https://codecov.io/github/OHDSI/CohortGenerator/coverage.svg?branch=main)](https://codecov.io/github/OHDSI/CohortGenerator?branch=main)
 
 CohortGenerator is part of [HADES](https://ohdsi.github.io/Hades/).
 
@@ -88,8 +88,8 @@ Documentation can be found on the [package website](https://ohdsi.github.io/Coho
 
 PDF versions of the documentation are also available:
 
--   Vignette: [Generating Cohorts](https://raw.githubusercontent.com/OHDSI/CohortGenerator/master/inst/doc/GeneratingCohorts.pdf)
--   Package manual: [CohortGenerator.pdf](https://raw.githubusercontent.com/OHDSI/CohortGenerator/master/extras/CohortGenerator.pdf)
+-   Vignette: [Generating Cohorts](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/GeneratingCohorts.pdf)
+-   Package manual: [CohortGenerator.pdf](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/extras/CohortGenerator.pdf)
 
 # Support
 
