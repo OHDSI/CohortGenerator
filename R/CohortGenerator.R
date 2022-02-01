@@ -1,4 +1,4 @@
-# Copyright 2021 Observational Health Data Sciences and Informatics
+# Copyright 2022 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 # 
@@ -23,3 +23,6 @@
 #' @importFrom utils write.csv install.packages menu packageVersion sessionInfo
 #' @importFrom rlang .data
 NULL
+
+# Add custom assertions
+assert_settings_columns = checkmate::makeAssertionFunction(checkSettingsColumns)

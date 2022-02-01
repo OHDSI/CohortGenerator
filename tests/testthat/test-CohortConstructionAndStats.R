@@ -178,6 +178,9 @@ test_that("Create cohorts with stopOnError = TRUE", {
                                  cohortTableNames = cohortTableNames,
                                  cohortDefinitionSet = cohortsWithoutStats,
                                  stopOnError = TRUE))
+  if (file.exists("errorReportSql.txt")) {
+    unlink("errorReportSql.txt")
+  }
 })
 
 test_that("Create cohorts with stopOnError = FALSE", {
@@ -202,6 +205,9 @@ test_that("Create cohorts with stopOnError = FALSE", {
                                         stopOnError = FALSE)
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "FAILED", ]), 1)
+  if (file.exists("errorReportSql.txt")) {
+    unlink("errorReportSql.txt")
+  }
 })
 
 test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
@@ -251,6 +257,9 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 1)
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "SKIPPED", ]), 3)
   unlink(recordKeepingFolder, recursive = TRUE)
+  if (file.exists("errorReportSql.txt")) {
+    unlink("errorReportSql.txt")
+  }
 })
 
 

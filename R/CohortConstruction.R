@@ -1,4 +1,4 @@
-# Copyright 2021 Observational Health Data Sciences and Informatics
+# Copyright 2022 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 # 
@@ -13,20 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-#' Create an empty cohort definition set
-#'
-#' @description
-#' This function creates an empty cohort set data.frame for use
-#' with \code{generateCohortSet}.
-#'
-#' @return
-#' Returns an empty cohort set data.frame
-#' 
-#' @export
-createEmptyCohortDefinitionSet <- function() {
-  return(setNames(data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortName", "sql")))
-}
 
 #' Generate a set of cohorts
 #'
@@ -225,7 +211,7 @@ generateCohort <- function(cohortId = NULL,
                              results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep="."),
                              warnOnMissingParameters = FALSE)
     sql <- SqlRender::translate(sql = sql,
-                                targetDialect = connectionDetails$dbms,
+                                targetDialect = connection@dbms,
                                 tempEmulationSchema = tempEmulationSchema)
     
     # Helper function used within the tryCatch block below

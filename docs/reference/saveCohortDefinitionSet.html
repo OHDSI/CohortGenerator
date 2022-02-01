@@ -78,7 +78,7 @@ cohortFileNameValue parameters." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -133,7 +133,7 @@ cohortFileNameValue parameters." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Save the cohort definition set to the file system</h1>
-    <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/ExportSave.R'><code>R/ExportSave.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/CohortDefinitionSet.R'><code>R/CohortDefinitionSet.R</code></a></small>
     <div class="hidden name"><code>saveCohortDefinitionSet.Rd</code></div>
     </div>
 
@@ -149,13 +149,12 @@ cohortFileNameValue parameters.</p>
 
     <pre class="usage"><span class='fu'>saveCohortDefinitionSet</span><span class='op'>(</span>
   <span class='va'>cohortDefinitionSet</span>,
-  settingsFolder <span class='op'>=</span> <span class='st'>"inst/settings"</span>,
-  settingsFileName <span class='op'>=</span> <span class='st'>"CohortsToCreate.csv"</span>,
+  settingsFileName <span class='op'>=</span> <span class='st'>"inst/settings/CohortsToCreate.csv"</span>,
   jsonFolder <span class='op'>=</span> <span class='st'>"inst/cohorts"</span>,
   sqlFolder <span class='op'>=</span> <span class='st'>"inst/sql/sql_server"</span>,
   cohortFileNameFormat <span class='op'>=</span> <span class='st'>"%s"</span>,
   cohortFileNameValue <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cohortName"</span><span class='op'>)</span>,
-  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -173,13 +172,9 @@ the following columns:</p><dl>
 </dl></td>
     </tr>
     <tr>
-      <th>settingsFolder</th>
-      <td><p>The name of the folder that will hold the settingsFileName</p></td>
-    </tr>
-    <tr>
       <th>settingsFileName</th>
       <td><p>The name of the CSV file that will hold the cohort information
-including the atlasId, cohortId and cohortName</p></td>
+including the cohortId and cohortName</p></td>
     </tr>
     <tr>
       <th>jsonFolder</th>
