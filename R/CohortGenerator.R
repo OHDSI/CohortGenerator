@@ -23,3 +23,6 @@
 #' @importFrom utils write.csv install.packages menu packageVersion sessionInfo
 #' @importFrom rlang .data
 NULL
+
+# Add custom assertions
+assert_settings_columns = checkmate::makeAssertionFunction(checkSettingsColumns)
