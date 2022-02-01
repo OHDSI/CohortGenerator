@@ -211,7 +211,7 @@ generateCohort <- function(cohortId = NULL,
                              results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep="."),
                              warnOnMissingParameters = FALSE)
     sql <- SqlRender::translate(sql = sql,
-                                targetDialect = connectionDetails$dbms,
+                                targetDialect = connection@dbms,
                                 tempEmulationSchema = tempEmulationSchema)
     
     # Helper function used within the tryCatch block below
