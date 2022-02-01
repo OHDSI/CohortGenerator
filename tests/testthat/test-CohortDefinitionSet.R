@@ -120,3 +120,8 @@ test_that("Call saveCohortDefinitionSet - custom file names", {
   expect_true(file.exists(file.path(exportFolder, "inst/sql/sql_server", paste0(expectedFileNameRoot, ".sql"))))
   unlink(exportFolder, recursive = TRUE)
 })
+
+test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator package that is not properly formatted", {
+  expect_error(getCohortDefinitionSet(settingsFileName = "testdata/invalid/settings/CohortsToCreate.csv",
+                                      packageName = "CohortGenerator"))
+})

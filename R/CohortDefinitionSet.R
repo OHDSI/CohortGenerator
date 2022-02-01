@@ -100,8 +100,7 @@ getCohortDefinitionSet <- function(settingsFileName = "settings/CohortsToCreate.
                               col_types = readr::cols(), 
                               lazy = FALSE)
   
-  settingsColumns <- .getSettingsFileRequiredColumns()
-  checkmate::assert_true(all(settingsColumns %in% names(settings)))
+  assert_settings_columns(names(settings), getPath(fileName = settingsFileName))
   checkmate::assert_true(all(cohortFileNameValue %in% names(settings)))
   checkmate::assert_true((!all(.getFileDataColumns() %in% names(settings))))
   
@@ -175,11 +174,10 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
                                     cohortFileNameFormat = "%s",
                                     cohortFileNameValue = c("cohortName"),
                                     verbose = FALSE) {
-  settingsColumns <- .getSettingsFileRequiredColumns()
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assert_vector(cohortFileNameValue)
   checkmate::assert_true(length(cohortFileNameValue) > 0)
-  checkmate::assert_true(all(settingsColumns %in% names(cohortDefinitionSet)))
+  assert_settings_columns(names(cohortDefinitionSet))
   checkmate::assert_true(all(cohortFileNameValue %in% names(cohortDefinitionSet)))
   settingsFolder <- dirname(settingsFileName)
   if (!dir.exists(settingsFolder)) {
@@ -245,4 +243,39 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
 
 .removeNonAsciiCharacters <- function(expression) {
   return(stringi::stri_trans_general(expression, "latin-ascii"))
+}
+
+#' Custom checkmate assertion for ensuring the settings columns are properly
+#' specified
+#'
+#' @description
+#' This function is used to provide a more informative message when ensuring
+#' that the columns in the cohort definition set or the CSV file that 
+#' defines the cohort definition set is properly specified. This function
+#' is then bootstrapped upon package initialization (code in CohortGenerator.R)
+#' to allow for it to work with the other checkmate assertions as described in:
+#' https://mllg.github.io/checkmate/articles/checkmate.html. The assertion function
+#' is called assert_settings_columns.
+#'
+#' @param columnNames The name of the columns found in either the cohortDefintionSet
+#'                    data frame or from reading the contents of the settingsFile
+#'                  
+#' @param settingsFileName The file name of the CSV that defines the cohortDefinitionSet. 
+#'                         When NULL, this function assumes the column names are defined
+#'                         in a data.frame representation of the cohortDefinitionSet
+#' @return
+#' Returns TRUE if all required columns are found otherwise it returns an error
+checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
+  settingsColumns <- .getSettingsFileRequiredColumns()
+  res <- all(settingsColumns %in% columnNames)
+  if (!isTRUE(res)) {
+    sourceDescription <- "cohort definition set"
+    if (!is.null(settingsFileName)) {
+      sourceDescription <- "settings file"
+    }
+    errorMessage <- paste0("CohortGenerator requires the following columns in the ", sourceDescription, ": ", paste(shQuote(settingsColumns), collapse=", "),  ". The following columns were found: ", paste(shQuote(columnNames), collapse=", "))
+    return(errorMessage)
+  } else {
+    return(TRUE)
+  }
 }
