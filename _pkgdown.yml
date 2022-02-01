@@ -15,6 +15,14 @@ reference:
       - createCohortTables
       - getCohortTableNames
 
+  - title: "Cohort Defintion Set"
+    desc: >
+      Functions that support working with a cohort definition set
+    contents:
+      - saveCohortDefintionSet
+      - getCohortDefinitionSet
+      - createEmptyCohortDefinitionSet
+      
   - title: "Cohort Generation"
     desc: >
       Functions that support generating cohorts.

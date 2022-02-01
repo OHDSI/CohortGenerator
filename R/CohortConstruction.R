@@ -14,20 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Create an empty cohort definition set
-#'
-#' @description
-#' This function creates an empty cohort set data.frame for use
-#' with \code{generateCohortSet}.
-#'
-#' @return
-#' Returns an empty cohort set data.frame
-#' 
-#' @export
-createEmptyCohortDefinitionSet <- function() {
-  return(setNames(data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = FALSE), c("cohortId","cohortName", "sql")))
-}
-
 #' Generate a set of cohorts
 #'
 #' @description

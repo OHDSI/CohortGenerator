@@ -66,7 +66,7 @@ The `cohortDefintionSet` contains all of the details about each cohort that we w
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 saveCohortDefinitionSet(cohortDefinitionSet = cohortDefinitionSet,
-                        settingsFolder = file.path(packageRoot, "inst/settings"),
+                        settingsFileName = file.path(packageRoot, "inst/settings/CohortsToCreate.csv"),
                         jsonFolder = file.path(packageRoot, "inst/cohorts"),
                         sqlFolder = file.path(packageRoot, "inst/sql/sql_server"))
 ```
@@ -77,7 +77,14 @@ By default, saving the cohort definition set will create the files under a folde
 - **inst/cohorts**: This folder will contain a .json file per cohort definition.
 - **inst/sql/sql_server**: This folder will contain a .sql file per cohort definition.
 
-Your study package can later re-construct the cohortDefinitionSet by reading in these resources into the data frame structure described earlier in this vignette.
+Your study package can later re-construct the cohortDefinitionSet by reading in these resources using the `getCohortDefinitionSet` function.
+
+```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
+cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = file.path(packageRoot, "inst/settings/CohortsToCreate.csv"),
+                                              jsonFolder = file.path(packageRoot, "inst/cohorts"),
+                                              sqlFolder = file.path(packageRoot, "inst/sql/sql_server"))
+```
+
 
 ### Generating Cohorts
 
