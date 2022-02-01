@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Changelog • CohortGenerator</title>
+<title>Custom checkmate assertion for ensuring the settings columns are properly
+specified — checkSettingsColumns • CohortGenerator</title>
 
 
 <!-- jquery -->
@@ -39,7 +40,15 @@
 
 
 
-<meta property="og:title" content="Changelog" />
+<meta property="og:title" content="Custom checkmate assertion for ensuring the settings columns are properly
+specified — checkSettingsColumns" />
+<meta property="og:description" content="This function is used to provide a more informative message when ensuring
+that the columns in the cohort definition set or the CSV file that 
+defines the cohort definition set is properly specified. This function
+is then bootstrapped upon package initialization (code in CohortGenerator.R)
+to allow for it to work with the other checkmate assertions as described in:
+https://mllg.github.io/checkmate/articles/checkmate.html. The assertion function
+is called assert_settings_columns." />
 
 
 
@@ -58,7 +67,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-news">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -125,57 +134,50 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
+    <h1>Custom checkmate assertion for ensuring the settings columns are properly
+specified</h1>
+    <small class="dont-index">Source: <a href='https://github.com/OHDSI/CohortGenerator/blob/master/R/CohortDefinitionSet.R'><code>R/CohortDefinitionSet.R</code></a></small>
+    <div class="hidden name"><code>checkSettingsColumns.Rd</code></div>
     </div>
 
-    <div id="cohortgenerator-030" class="section level1">
-<h1 class="page-header" data-toc-text="0.3.0">
-<a href="#cohortgenerator-030" class="anchor"></a>CohortGenerator 0.3.0</h1>
-<ul>
-<li>Added <code>getCohortDefintionSet</code> function for retrieving a cohort definition set from either a package or the file system</li>
-<li>Re-factored <code>saveCohortDefinitionSet</code> to remove the <code>settingsFolder</code>. The <code>settingsFileName</code> should include the path to the file.</li>
-<li>Bug fixes</li>
-</ul>
-</div>
-    <div id="cohortgenerator-020" class="section level1">
-<h1 class="page-header" data-toc-text="0.2.0">
-<a href="#cohortgenerator-020" class="anchor"></a>CohortGenerator 0.2.0</h1>
-<ul>
-<li>Renamed <code>createCohortTable</code> to <code>createCohortTables</code> to include all cohort statistics tables</li>
-<li>Renamed <code>createEmptyCohortSet</code> to <code>createEmptyCohortDefinitionSet</code> to make this consistent with ROhdsiWebApi and CohortDiagnostics</li>
-<li>Added <code>dropCohortStatsTables</code> function for removing cohort statistics tables</li>
-<li>Added <code>exportCohortStatsTables</code> function for exporting cohort statistics to CSV files</li>
-<li>Added <code>getCohortTableNames</code> function to define the list of cohort table names to create</li>
-<li>Added <code>insertInclusionRuleNames</code> for inserting the inclusion rule names into the cohort stats table</li>
-<li>Added <code>saveCohortDefinitionSet</code> to save the cohort definition set to the file system for use by study packages</li>
-<li>Added a vignette and updated documentation</li>
-<li>Remove CirceR dependency and related functions</li>
-</ul>
-</div>
-    <div id="cohortgenerator-011" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.1">
-<a href="#cohortgenerator-011" class="anchor"></a>CohortGenerator 0.1.1</h1>
-<p>Fixing documentation</p>
-</div>
-    <div id="cohortgenerator-010" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.0">
-<a href="#cohortgenerator-010" class="anchor"></a>CohortGenerator 0.1.0</h1>
-<p>Updating function calls to use “generate” instead of “instantiate”</p>
-</div>
-    <div id="cohortgenerator-001" class="section level1">
-<h1 class="page-header" data-toc-text="0.0.1">
-<a href="#cohortgenerator-001" class="anchor"></a>CohortGenerator 0.0.1</h1>
-<p>Initial version</p>
-</div>
-  </div>
+    <div class="ref-description">
+    <p>This function is used to provide a more informative message when ensuring
+that the columns in the cohort definition set or the CSV file that 
+defines the cohort definition set is properly specified. This function
+is then bootstrapped upon package initialization (code in CohortGenerator.R)
+to allow for it to work with the other checkmate assertions as described in:
+https://mllg.github.io/checkmate/articles/checkmate.html. The assertion function
+is called assert_settings_columns.</p>
+    </div>
 
+    <pre class="usage"><span class='fu'>checkSettingsColumns</span><span class='op'>(</span><span class='va'>columnNames</span>, settingsFileName <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>columnNames</th>
+      <td><p>The name of the columns found in either the cohortDefintionSet
+data frame or from reading the contents of the settingsFile</p></td>
+    </tr>
+    <tr>
+      <th>settingsFileName</th>
+      <td><p>The file name of the CSV that defines the cohortDefinitionSet. 
+When NULL, this function assumes the column names are defined
+in a data.frame representation of the cohortDefinitionSet</p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Returns TRUE if all required columns are found otherwise it returns an error</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
-
 </div>
 
 
