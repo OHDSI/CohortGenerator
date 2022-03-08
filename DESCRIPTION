@@ -19,12 +19,12 @@ Imports:
   digest,
   dplyr,
   lubridate,
-  ParallelLogger (>= 2.0.2),
-  readr (>= 1.4.0),
+  ParallelLogger (>= 3.0.0),
+  readr (>= 2.1.0),
   rlang,
   RJSONIO,
   SqlRender (>= 1.7.0),
-  stringi
+  stringi (>= 1.7.6)
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
