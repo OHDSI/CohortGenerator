@@ -39,5 +39,23 @@ test_that("Call getCohortCounts with subset of cohort IDs", {
   expect_true(nrow(matchedCohortCounts[matchedCohortCounts$cohortSubjects == matchedCohortCounts$count,]) == nrow(testCohortCounts))
 })
 
+test_that("Call getCohortCounts with a cohortDefinitionSet to get the cohort names", {
+  cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/id/Cohorts.csv",
+                                                jsonFolder = "testdata/id/cohorts",
+                                                sqlFolder = "testdata/id/sql/sql_server",
+                                                packageName = "CohortGenerator",
+                                                verbose = TRUE)
+  
+  testCohortCounts <- getCohortCounts(connectionDetails = connectionDetails,
+                                      cohortDatabaseSchema = "main",
+                                      cohortTable = "cohort",
+                                      cohortIds = c(1,2),
+                                      cohortDefinitionSet = cohortDefinitionSet)
+  
+  matchedCohortCounts <- merge(testCohortCounts, cohortCounts)
+  expect_true(nrow(matchedCohortCounts[matchedCohortCounts$cohortSubjects == matchedCohortCounts$count,]) == nrow(testCohortCounts))
+  expect_true(toupper(c("cohortName")) %in% toupper(names(testCohortCounts)))
+})
+
 # Cleanup ------
 rm(cohortCounts)
