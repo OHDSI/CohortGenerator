@@ -37,7 +37,7 @@ createEmptyCohortDefinitionSet <- function() {
 #' and SQL files in the `inst` folder.
 #'
 #' @param settingsFileName The name of the CSV file that will hold the cohort information
-#'                         including the atlasId, cohortId and cohortName
+#'                         including the cohortId and cohortName
 #'                  
 #' @param jsonFolder       The name of the folder that will hold the JSON representation
 #'                         of the cohort if it is available in the cohortDefinitionSet
@@ -63,11 +63,11 @@ createEmptyCohortDefinitionSet <- function() {
 #' Returns a cohort set data.frame
 #' 
 #' @export
-getCohortDefinitionSet <- function(settingsFileName = "settings/CohortsToCreate.csv",
+getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
                                    jsonFolder = "cohorts",
                                    sqlFolder = "sql/sql_server",
                                    cohortFileNameFormat = "%s",
-                                   cohortFileNameValue = c("cohortName"),
+                                   cohortFileNameValue = c("cohortId"),
                                    packageName = NULL,
                                    warnOnMissingJson = TRUE,
                                    verbose = FALSE) {
@@ -168,11 +168,11 @@ getCohortDefinitionSet <- function(settingsFileName = "settings/CohortsToCreate.
 #'                                    
 #' @export
 saveCohortDefinitionSet <- function(cohortDefinitionSet,
-                                    settingsFileName = "inst/settings/CohortsToCreate.csv",
+                                    settingsFileName = "inst/Cohorts.csv",
                                     jsonFolder = "inst/cohorts",
                                     sqlFolder = "inst/sql/sql_server",
                                     cohortFileNameFormat = "%s",
-                                    cohortFileNameValue = c("cohortName"),
+                                    cohortFileNameValue = c("cohortId"),
                                     verbose = FALSE) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assert_vector(cohortFileNameValue)
