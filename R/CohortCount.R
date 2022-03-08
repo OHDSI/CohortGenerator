@@ -17,7 +17,10 @@
 #' Count the cohort(s)
 #'
 #' @description
-#' Computes the subject and entry count per cohort
+#' Computes the subject and entry count per cohort. Note the cohortDefinitionSet
+#' parameter is optional - if you specify the cohortDefinitionSet, the cohort
+#' counts will be joined to the cohortDefinitionSet to include attributes
+#' like the cohortName.
 #'
 #' @template Connection
 #'

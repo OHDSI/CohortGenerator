@@ -9,7 +9,8 @@ getCohortCounts(
   connection = NULL,
   cohortDatabaseSchema,
   cohortTable = "cohort",
-  cohortIds = c()
+  cohortIds = c(),
+  cohortDefinitionSet = NULL
 )
 }
 \arguments{
@@ -32,10 +33,21 @@ this should include both the database and schema name, for example
 
 \item{cohortIds}{The cohort Id(s) used to reference the cohort in the cohort
 table. If left empty, all cohorts in the table will be included.}
+
+\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
+the following columns: \describe{
+\item{cohortId}{The unique integer identifier of the cohort} 
+\item{cohortName}{The cohort's name}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}
+Optionally, this data frame may contain: \describe{
+\item{json}{The Circe JSON representation of the cohort}}}
 }
 \value{
 A data frame with cohort counts
 }
 \description{
-Computes the subject and entry count per cohort
+Computes the subject and entry count per cohort. Note the cohortDefinitionSet
+parameter is optional - if you specify the cohortDefinitionSet, the cohort
+counts will be joined to the cohortDefinitionSet to include attributes
+like the cohortName.
 }

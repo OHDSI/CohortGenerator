@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,14 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
-</li>
-<li>
-  <a href="news/index.html">Changelog</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -61,13 +54,16 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://ohdsi.github.io/Hades"><img src='https://ohdsi.github.io/Hades/images/hadesMini.png' width=80 height=17 style='vertical-align: top;'></a>
+  <a href="https://ohdsi.github.io/Hades" class="external-link"><img src='https://ohdsi.github.io/Hades/images/hadesMini.png' width=80 height=17 style='vertical-align: top;'></a>
 </li>
 <li>
-  <a href="https://github.com/OHDSI/CohortGenerator/">
+  <a href="https://github.com/OHDSI/CohortGenerator/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -85,29 +81,34 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-<div id="cohortgenerator" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#cohortgenerator" class="anchor"></a>CohortGenerator</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="cohortgenerator">CohortGenerator<a class="anchor" aria-label="anchor" href="#cohortgenerator"></a>
+</h1></div>
 
-<p>CohortGenerator is part of <a href="https://ohdsi.github.io/Hades/">HADES</a>.</p>
+<p>CohortGenerator is part of <a href="https://ohdsi.github.io/Hades/" class="external-link">HADES</a>.</p>
 </div>
-<div id="introduction" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>This R package contains functions for generating cohorts using data in the CDM.</p>
+<div class="section level1">
+<h1 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h1>
+<p>This R package contains functions for generating cohorts using data
+in the CDM.</p>
 </div>
-<div id="features" class="section level1">
-<h1 class="hasAnchor">
-<a href="#features" class="anchor"></a>Features</h1>
+<div class="section level1">
+<h1 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+</h1>
 <ul>
-<li>Create a cohort table and generate <a href="https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html">cohorts</a> against an OMOP CDM.</li>
+<li>Create a cohort table and generate <a href="https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html" class="external-link">cohorts</a>
+against an OMOP CDM.</li>
 <li>Get the count of subjects and events in a cohort.</li>
-<li>Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully generated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.</li>
+<li>Provides functions for performing incremental tasks. This is used by
+CohortGenerator to skip any cohorts that were successfully generated in
+a previous run. This functionality is generic enough for other packages
+to use for performing their own incremental tasks.</li>
 </ul>
 </div>
-<div id="example" class="section level1">
-<h1 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h1>
+<div class="section level1">
+<h1 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h1>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># First construct a cohort definition set: an empty </span>
 <span class="co"># data frame with the cohorts to generate</span>
@@ -115,18 +116,18 @@
 
 <span class="co"># Fill the cohort set using  cohorts included in this </span>
 <span class="co"># package as an example</span>
-<span class="va">cohortJsonFiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"testdata/name/cohorts"</span>, package <span class="op">=</span> <span class="st">"CohortGenerator"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">cohortJsonFiles</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<span class="va">cohortJsonFiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/name/cohorts"</span>, package <span class="op">=</span> <span class="st">"CohortGenerator"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">cohortJsonFiles</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">cohortJsonFileName</span> <span class="op">&lt;-</span> <span class="va">cohortJsonFiles</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>
-  <span class="va">cohortName</span> <span class="op">&lt;-</span> <span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/fileutils.html">file_path_sans_ext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html">basename</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">cohortName</span> <span class="op">&lt;-</span> <span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/fileutils.html" class="external-link">file_path_sans_ext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">)</span>
   <span class="co"># Here we read in the JSON in order to create the SQL</span>
   <span class="co"># using [CirceR](https://ohdsi.github.io/CirceR/)</span>
   <span class="co"># If you have your JSON and SQL stored differenly, you can</span>
   <span class="co"># modify this to read your JSON/SQL files however you require</span>
-  <span class="va">cohortJson</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readChar.html">readChar</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.info</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">$</span><span class="va">size</span><span class="op">)</span>
-  <span class="va">cohortExpression</span> <span class="op">&lt;-</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/cohortExpressionFromJson.html">cohortExpressionFromJson</a></span><span class="op">(</span><span class="va">cohortJson</span><span class="op">)</span>
-  <span class="va">cohortSql</span> <span class="op">&lt;-</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/buildCohortQuery.html">buildCohortQuery</a></span><span class="op">(</span><span class="va">cohortExpression</span>, options <span class="op">=</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/createGenerateOptions.html">createGenerateOptions</a></span><span class="op">(</span>generateStats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">cohortsToCreate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">cohortsToCreate</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>cohortId <span class="op">=</span> <span class="va">i</span>,
+  <span class="va">cohortJson</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readChar.html" class="external-link">readChar</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">$</span><span class="va">size</span><span class="op">)</span>
+  <span class="va">cohortExpression</span> <span class="op">&lt;-</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/cohortExpressionFromJson.html" class="external-link">cohortExpressionFromJson</a></span><span class="op">(</span><span class="va">cohortJson</span><span class="op">)</span>
+  <span class="va">cohortSql</span> <span class="op">&lt;-</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/buildCohortQuery.html" class="external-link">buildCohortQuery</a></span><span class="op">(</span><span class="va">cohortExpression</span>, options <span class="op">=</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/createGenerateOptions.html" class="external-link">createGenerateOptions</a></span><span class="op">(</span>generateStats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">cohortsToCreate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">cohortsToCreate</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>cohortId <span class="op">=</span> <span class="va">i</span>,
                                                        cohortName <span class="op">=</span> <span class="va">cohortName</span>, 
                                                        sql <span class="op">=</span> <span class="va">cohortSql</span>,
                                                        stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
@@ -135,7 +136,7 @@
 <span class="co"># Generate the cohort set against Eunomia. </span>
 <span class="co"># cohortsGenerated contains a list of the cohortIds </span>
 <span class="co"># successfully generated against the CDM</span>
-<span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># Create the cohort tables to hold the cohort generation results</span>
 <span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"my_cohort_table"</span><span class="op">)</span>
@@ -153,68 +154,76 @@
 <span class="va">cohortCounts</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/getCohortCounts.html">getCohortCounts</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
                                                  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
                                                  cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">cohortCounts</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">cohortCounts</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="technology" class="section level1">
-<h1 class="hasAnchor">
-<a href="#technology" class="anchor"></a>Technology</h1>
+<div class="section level1">
+<h1 id="technology">Technology<a class="anchor" aria-label="anchor" href="#technology"></a>
+</h1>
 <p>CohortGenerator is an R package.</p>
 </div>
-<div id="system-requirements" class="section level1">
-<h1 class="hasAnchor">
-<a href="#system-requirements" class="anchor"></a>System requirements</h1>
+<div class="section level1">
+<h1 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
+</h1>
 <p>Requires R (version 3.6.0 or higher).</p>
 </div>
-<div id="getting-started" class="section level1">
-<h1 class="hasAnchor">
-<a href="#getting-started" class="anchor"></a>Getting Started</h1>
-<ol>
-<li><p>Make sure your R environment is properly configured. This means that Java must be installed. See <a href="https://ohdsi.github.io/Hades/rSetup.html">these instructions</a> for how to configure your R environment.</p></li>
+<div class="section level1">
+<h1 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h1>
+<ol style="list-style-type: decimal">
+<li><p>Make sure your R environment is properly configured. This means
+that Java must be installed. See <a href="https://ohdsi.github.io/Hades/rSetup.html" class="external-link">these instructions</a>
+for how to configure your R environment.</p></li>
 <li>
-<p>In R, use the following commands to download and install CohortGenerator:</p>
+<p>In R, use the following commands to download and install
+CohortGenerator:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"OHDSI/CohortGenerator"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"OHDSI/CohortGenerator"</span><span class="op">)</span></code></pre></div>
 </li>
 </ol>
 </div>
-<div id="user-documentation" class="section level1">
-<h1 class="hasAnchor">
-<a href="#user-documentation" class="anchor"></a>User Documentation</h1>
-<p>Documentation can be found on the <a href="https://ohdsi.github.io/CohortGenerator/">package website</a>.</p>
+<div class="section level1">
+<h1 id="user-documentation">User Documentation<a class="anchor" aria-label="anchor" href="#user-documentation"></a>
+</h1>
+<p>Documentation can be found on the <a href="https://ohdsi.github.io/CohortGenerator/" class="external-link">package website</a>.</p>
 <p>PDF versions of the documentation are also available:</p>
 <ul>
-<li>Vignette: <a href="https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/GeneratingCohorts.pdf">Generating Cohorts</a>
+<li>Vignette: <a href="https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/GeneratingCohorts.pdf" class="external-link">Generating
+Cohorts</a>
 </li>
-<li>Package manual: <a href="https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/extras/CohortGenerator.pdf">CohortGenerator.pdf</a>
+<li>Package manual: <a href="https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/extras/CohortGenerator.pdf" class="external-link">CohortGenerator.pdf</a>
 </li>
 </ul>
 </div>
-<div id="support" class="section level1">
-<h1 class="hasAnchor">
-<a href="#support" class="anchor"></a>Support</h1>
+<div class="section level1">
+<h1 id="support">Support<a class="anchor" aria-label="anchor" href="#support"></a>
+</h1>
 <ul>
-<li>Developer questions/comments/feedback: <a href="http://forums.ohdsi.org/c/developers">OHDSI Forum</a>
+<li>Developer questions/comments/feedback:
+<a href="http://forums.ohdsi.org/c/developers" class="external-link">OHDSI Forum</a>
 </li>
-<li>We use the <a href="https://github.com/OHDSI/CohortGenerator/issues">GitHub issue tracker</a> for all bugs/issues/enhancements</li>
+<li>We use the
+<a href="https://github.com/OHDSI/CohortGenerator/issues" class="external-link">GitHub issue
+tracker</a> for all bugs/issues/enhancements</li>
 </ul>
 </div>
-<div id="contributing" class="section level1">
-<h1 class="hasAnchor">
-<a href="#contributing" class="anchor"></a>Contributing</h1>
-<p>Read <a href="https://ohdsi.github.io/Hades/contribute.html">here</a> how you can contribute to this package.</p>
+<div class="section level1">
+<h1 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h1>
+<p>Read <a href="https://ohdsi.github.io/Hades/contribute.html" class="external-link">here</a>
+how you can contribute to this package.</p>
 </div>
-<div id="license" class="section level1">
-<h1 class="hasAnchor">
-<a href="#license" class="anchor"></a>License</h1>
+<div class="section level1">
+<h1 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h1>
 <p>CohortGenerator is licensed under Apache License 2.0</p>
 </div>
-<div id="development" class="section level1">
-<h1 class="hasAnchor">
-<a href="#development" class="anchor"></a>Development</h1>
+<div class="section level1">
+<h1 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
+</h1>
 <p>This package is being developed in RStudio.</p>
-<div id="development-status" class="section level3">
-<h3 class="hasAnchor">
-<a href="#development-status" class="anchor"></a>Development status</h3>
+<div class="section level3">
+<h3 id="development-status">Development status<a class="anchor" aria-label="anchor" href="#development-status"></a>
+</h3>
 <p>Beta</p>
 </div>
 </div>
@@ -223,49 +232,60 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/OHDSI/CohortGenerator/">https://​github.com/​OHDSI/​CohortGenerator/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/OHDSI/CohortGenerator/issues">https://​github.com/​OHDSI/​CohortGenerator/​issues</a>
-</li>
-<li>Ask a question at <br><a href="http://forums.ohdsi.org">http://​forums.ohdsi.org</a>
-</li>
+<li><a href="https://github.com/OHDSI/CohortGenerator/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/OHDSI/CohortGenerator/issues" class="external-link">Report a bug</a></li>
+<li><a href="http://forums.ohdsi.org" class="external-link">Ask a question</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>Apache License</li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing CohortGenerator</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Anthony Sena <br><small class="roles"> Author, maintainer </small>  </li>
 <li>Gowtham Rao <br><small class="roles"> Author </small>  </li>
 <li>Martijn Schuemie <br><small class="roles"> Author </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/OHDSI/CohortGenerator/actions?query=workflow%3AR-CMD-check"><img src="https://github.com/OHDSI/CohortGenerator/workflows/R-CMD-check/badge.svg" alt="Build Status"></a></li>
-<li><a href="https://codecov.io/github/OHDSI/CohortGenerator?branch=main"><img src="https://codecov.io/github/OHDSI/CohortGenerator/coverage.svg?branch=main" alt="codecov.io"></a></li>
+<li><a href="https://github.com/OHDSI/CohortGenerator/actions?query=workflow%3AR-CMD-check" class="external-link"><img src="https://github.com/OHDSI/CohortGenerator/workflows/R-CMD-check/badge.svg" alt="Build Status"></a></li>
+<li><a href="https://codecov.io/github/OHDSI/CohortGenerator?branch=main" class="external-link"><img src="https://codecov.io/github/OHDSI/CohortGenerator/coverage.svg?branch=main" alt="codecov.io"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Anthony Sena, Gowtham Rao, Martijn Schuemie.</p>
+  <p></p>
+<p>Developed by Anthony Sena, Gowtham Rao, Martijn Schuemie.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -273,6 +293,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -6,11 +6,11 @@
 \usage{
 saveCohortDefinitionSet(
   cohortDefinitionSet,
-  settingsFileName = "inst/settings/CohortsToCreate.csv",
+  settingsFileName = "inst/Cohorts.csv",
   jsonFolder = "inst/cohorts",
   sqlFolder = "inst/sql/sql_server",
   cohortFileNameFormat = "\%s",
-  cohortFileNameValue = c("cohortName"),
+  cohortFileNameValue = c("cohortId"),
   verbose = FALSE
 )
 }
