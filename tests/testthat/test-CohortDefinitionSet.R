@@ -50,6 +50,7 @@ test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator pack
                                                 sqlFolder = "testdata/name/sql/sql_server",
                                                 packageName = "CohortGenerator",
                                                 verbose = TRUE)
+  expect_equal(nrow(cohortDefinitionSet), 3)
 })
 
 test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator package where json/sql use the cohort id", {
@@ -59,6 +60,7 @@ test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator pack
                                                 cohortFileNameFormat = "%s",
                                                 cohortFileNameValue = c("cohortId"),
                                                 packageName = "CohortGenerator")
+  expect_equal(nrow(cohortDefinitionSet), 3)
 })
 
 # saveCohortDefinitionSet ---------
