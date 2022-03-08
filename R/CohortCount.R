@@ -17,7 +17,10 @@
 #' Count the cohort(s)
 #'
 #' @description
-#' Computes the subject and entry count per cohort
+#' Computes the subject and entry count per cohort. Note the cohortDefinitionSet
+#' parameter is optional - if you specify the cohortDefinitionSet, the cohort
+#' counts will be joined to the cohortDefinitionSet to include attributes
+#' like the cohortName.
 #'
 #' @template Connection
 #'
@@ -25,6 +28,8 @@
 #'
 #' @param cohortIds            The cohort Id(s) used to reference the cohort in the cohort
 #'                             table. If left empty, all cohorts in the table will be included.
+#'
+#' @template CohortDefinitionSet
 #'
 #' @return
 #' A data frame with cohort counts
@@ -34,7 +39,8 @@ getCohortCounts <- function(connectionDetails = NULL,
                             connection = NULL,
                             cohortDatabaseSchema,
                             cohortTable = "cohort",
-                            cohortIds = c()) {
+                            cohortIds = c(),
+                            cohortDefinitionSet = NULL) {
   start <- Sys.time()
   
   if (is.null(connection)) {
@@ -53,6 +59,12 @@ getCohortCounts <- function(connectionDetails = NULL,
     counts <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
     delta <- Sys.time() - start
     ParallelLogger::logInfo(paste("Counting cohorts took", signif(delta, 3), attr(delta, "units")))
+    if (!is.null(cohortDefinitionSet)) {
+      counts <- merge(x = counts,
+                      y = cohortDefinitionSet,
+                      by = "cohortId",
+                      all.x = TRUE)
+    }
     return(counts)
   } else {
     warning('Cohort table was not found. Was it created?')

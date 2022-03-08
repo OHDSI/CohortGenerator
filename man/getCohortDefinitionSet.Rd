@@ -5,11 +5,11 @@
 \title{Get a cohort definition set}
 \usage{
 getCohortDefinitionSet(
-  settingsFileName = "settings/CohortsToCreate.csv",
+  settingsFileName = "Cohorts.csv",
   jsonFolder = "cohorts",
   sqlFolder = "sql/sql_server",
   cohortFileNameFormat = "\%s",
-  cohortFileNameValue = c("cohortName"),
+  cohortFileNameValue = c("cohortId"),
   packageName = NULL,
   warnOnMissingJson = TRUE,
   verbose = FALSE
@@ -17,7 +17,7 @@ getCohortDefinitionSet(
 }
 \arguments{
 \item{settingsFileName}{The name of the CSV file that will hold the cohort information
-including the atlasId, cohortId and cohortName}
+including the cohortId and cohortName}
 
 \item{jsonFolder}{The name of the folder that will hold the JSON representation
 of the cohort if it is available in the cohortDefinitionSet}

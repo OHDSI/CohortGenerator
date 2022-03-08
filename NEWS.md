@@ -1,3 +1,9 @@
+CohortGenerator 0.4.0
+=======================
+- Update dependency versions in DESCRIPTION to resolve issues when using older versions of readr/stringi. (Issue #13)
+- Breaking change: change the defaults for saving/getting a cohortDefinitionSet to/from the file system. (Issue #16)
+- `getCohortCounts` now supports an optional parameter `cohortDefinitionSet` which will join the cohort counts with the cohort definition set when desired (Issue #14)
+
 CohortGenerator 0.3.0
 =======================
 - Added `getCohortDefintionSet` function for retrieving a cohort definition set from either a package or the file system

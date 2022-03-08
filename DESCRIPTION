@@ -1,8 +1,8 @@
 Package: CohortGenerator
 Type: Package
 Title: An R Package for Cohort Generation Against the OMOP CDM
-Version: 0.3.0
-Date: 2022-02-01
+Version: 0.4.0
+Date: 2022-03-08
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Gowtham", "Rao", email = "gowthamrao@gmail.com", role = c("aut")),
@@ -19,12 +19,12 @@ Imports:
   digest,
   dplyr,
   lubridate,
-  ParallelLogger (>= 2.0.2),
-  readr (>= 1.4.0),
+  ParallelLogger (>= 3.0.0),
+  readr (>= 2.1.0),
   rlang,
   RJSONIO,
   SqlRender (>= 1.7.0),
-  stringi
+  stringi (>= 1.7.6)
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
