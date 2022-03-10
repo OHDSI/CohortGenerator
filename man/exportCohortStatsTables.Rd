@@ -10,7 +10,8 @@ exportCohortStatsTables(
   cohortDatabaseSchema,
   cohortTableNames = getCohortTableNames(),
   cohortStatisticsFolder,
-  incremental = FALSE
+  incremental = FALSE,
+  databaseId = NULL
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ where the results will be written}
 
 \item{incremental}{If \code{incremental = TRUE}, results are written to update values instead of 
 overwriting an existing results}
+
+\item{databaseId}{Optional - when specified, the databaseId will be added
+to the exported results}
 }
 \description{
 This function retrieves the data from the cohort statistics tables and

@@ -30,6 +30,9 @@
 #'                             table. If left empty, all cohorts in the table will be included.
 #'
 #' @template CohortDefinitionSet
+#' 
+#' @param databaseId                  Optional - when specified, the databaseId will be added
+#'                                    to the exported results
 #'
 #' @return
 #' A data frame with cohort counts
@@ -40,7 +43,8 @@ getCohortCounts <- function(connectionDetails = NULL,
                             cohortDatabaseSchema,
                             cohortTable = "cohort",
                             cohortIds = c(),
-                            cohortDefinitionSet = NULL) {
+                            cohortDefinitionSet = NULL,
+                            databaseId = NULL) {
   start <- Sys.time()
   
   if (is.null(connection)) {
@@ -52,7 +56,8 @@ getCohortCounts <- function(connectionDetails = NULL,
   sql <- SqlRender::render(sql = sql,
                            cohort_database_schema = cohortDatabaseSchema,
                            cohort_table = cohortTable,
-                           cohort_ids = cohortIds)
+                           cohort_ids = cohortIds,
+                           database_id = ifelse(test = is.null(databaseId), yes = '', no = databaseId))
   sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms)
   tablesInServer <- tolower(DatabaseConnector::getTableNames(conn = connection, databaseSchema = cohortDatabaseSchema))
   if (tolower(cohortTable) %in% tablesInServer) {

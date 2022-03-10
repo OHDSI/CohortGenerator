@@ -158,6 +158,41 @@ test_that("Export cohort stats with permanent tables", {
   unlink(cohortStatsFolder)
 })
 
+test_that("Export cohort stats with databaseId", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsDatabaseId")
+  cohortStatsFolder <- tempdir()
+  # First create the cohort tables
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  
+  # Generate with stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  generateCohortSet(connectionDetails = connectionDetails,
+                    cohortDefinitionSet = cohortsWithStats,
+                    cdmDatabaseSchema = "main",
+                    cohortTableNames = cohortTableNames,
+                    cohortDatabaseSchema = "main",
+                    incremental = FALSE)
+  
+  # Export the results
+  exportCohortStatsTables(connectionDetails = connectionDetails,
+                          cohortDatabaseSchema = "main",
+                          cohortTableNames = cohortTableNames,
+                          cohortStatisticsFolder = cohortStatsFolder,
+                          incremental = FALSE,
+                          databaseId = "Eunomia")
+  
+  # Verify the files are written to the file system and have the databaseId
+  # present
+  exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
+  for (i in 1:length(exportedFiles)) {
+    data <- readr::read_csv(exportedFiles[i], lazy = FALSE, show_col_types = FALSE)
+    expect_true(toupper(c("databaseId")) %in% toupper(names(data)))
+  }
+  unlink(cohortStatsFolder)
+})
+
 test_that("Export cohort stats in incremental mode", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
   cohortStatsFolder <- tempdir()
@@ -174,7 +209,7 @@ test_that("Export cohort stats in incremental mode", {
                           incremental = TRUE)
 
   # Verify the files are written to the file system
-  exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
+  exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   expect_equal(length(exportedFiles), 5)
   unlink(cohortStatsFolder)
 })
