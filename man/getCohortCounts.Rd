@@ -10,7 +10,8 @@ getCohortCounts(
   cohortDatabaseSchema,
   cohortTable = "cohort",
   cohortIds = c(),
-  cohortDefinitionSet = NULL
+  cohortDefinitionSet = NULL,
+  databaseId = NULL
 )
 }
 \arguments{
@@ -41,6 +42,9 @@ the following columns: \describe{
 \item{sql}{The OHDSI-SQL used to generate the cohort}}
 Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
+
+\item{databaseId}{Optional - when specified, the databaseId will be added
+to the exported results}
 }
 \value{
 A data frame with cohort counts

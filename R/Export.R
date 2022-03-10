@@ -31,13 +31,17 @@
 #' @param incremental                 If \code{incremental = TRUE}, results are written to update values instead of 
 #'                                    overwriting an existing results
 #'                                    
+#' @param databaseId                  Optional - when specified, the databaseId will be added
+#'                                    to the exported results
+#'                                    
 #' @export
 exportCohortStatsTables <- function(connectionDetails,
                                     connection = NULL,
                                     cohortDatabaseSchema,
                                     cohortTableNames = getCohortTableNames(),
                                     cohortStatisticsFolder,
-                                    incremental = FALSE) {
+                                    incremental = FALSE,
+                                    databaseId = NULL) {
   
   if (is.null(connection)) {
     # Establish the connection and ensure the cleanup is performed
@@ -52,13 +56,14 @@ exportCohortStatsTables <- function(connectionDetails,
   # Export the stats
   exportStats <- function(table, fileName) {
     ParallelLogger::logInfo("- Fetching data from ", table)
-    sql <- "SELECT * FROM @cohort_database_schema.@table"
+    sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} * FROM @cohort_database_schema.@table"
     data <- DatabaseConnector::renderTranslateQuerySql(
       sql = sql,
       connection = connection,
       snakeCaseToCamelCase = TRUE,
       table = table,
-      cohort_database_schema = cohortDatabaseSchema
+      cohort_database_schema = cohortDatabaseSchema,
+      database_id = ifelse(is.null(databaseId), yes = '', no = databaseId)
     )
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
     if (incremental) {
