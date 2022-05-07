@@ -60,22 +60,23 @@ exportCohortStatsTables <- function(connectionDetails,
     data <- DatabaseConnector::renderTranslateQuerySql(
       sql = sql,
       connection = connection,
-      snakeCaseToCamelCase = TRUE,
+      snakeCaseToCamelCase = FALSE,
       table = table,
       cohort_database_schema = cohortDatabaseSchema,
       database_id = ifelse(is.null(databaseId), yes = '', no = databaseId)
     )
+    colnames(data) <- tolower(colnames(data))
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
     if (incremental) {
-      cohortIds <- unique(data$cohortDefinitionId)
-      saveIncremental(data, fullFileName, cohortId = cohortIds)
+      cohortIds <- unique(data$cohort_definition_id)
+      saveIncremental(data, fullFileName, cohort_definition_id = cohortIds)
     } else {
       readr::write_csv(x = data, file = fullFileName)
     }
   }
-  exportStats(cohortTableNames$cohortInclusionTable, "cohortInclusion.csv")
-  exportStats(cohortTableNames$cohortInclusionResultTable, "cohortIncResult.csv")
-  exportStats(cohortTableNames$cohortInclusionStatsTable, "cohortIncStats.csv")
-  exportStats(cohortTableNames$cohortSummaryStatsTable, "cohortSummaryStats.csv")
-  exportStats(cohortTableNames$cohortCensorStatsTable, "cohortCensorStats.csv")
+  exportStats(cohortTableNames$cohortInclusionTable, "cohort_inclusion.csv")
+  exportStats(cohortTableNames$cohortInclusionResultTable, "cohort_inc_result.csv")
+  exportStats(cohortTableNames$cohortInclusionStatsTable, "cohort_inc_stats.csv")
+  exportStats(cohortTableNames$cohortSummaryStatsTable, "cohort_summary_stats.csv")
+  exportStats(cohortTableNames$cohortCensorStatsTable, "cohort_censor_stats.csv")
 }
