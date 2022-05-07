@@ -183,12 +183,12 @@ test_that("Export cohort stats with databaseId", {
                           incremental = FALSE,
                           databaseId = "Eunomia")
   
-  # Verify the files are written to the file system and have the databaseId
+  # Verify the files are written to the file system and have the database_id
   # present
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
     data <- readr::read_csv(exportedFiles[i], lazy = FALSE, show_col_types = FALSE)
-    expect_true(toupper(c("databaseId")) %in% toupper(names(data)))
+    expect_true(toupper(c("database_id")) %in% toupper(names(data)))
   }
   unlink(cohortStatsFolder)
 })
