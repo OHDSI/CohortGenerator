@@ -144,7 +144,42 @@ test_that("Export cohort stats with permanent tables", {
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames)
-  
+
+  # Test getting results data frames
+  cohortStats <- getCohortStats(connectionDetails = connectionDetails,
+                                cohortDatabaseSchema = "main",
+                                cohortTableNames = cohortTableNames,
+                                databaseId = "Eunomia")
+
+  checkmate::expect_names(names(cohortStats),
+                         must.include = c("cohortInclusionTable",
+                                          "cohortInclusionResultTable",
+                                          "cohortInclusionStatsTable",
+                                          "cohortInclusionStatsTable",
+                                          "cohortSummaryStatsTable",
+                                          "cohortCensorStatsTable"))
+
+  for (tbl in names(cohortStats)) {
+    checkmate::expect_data_frame(cohortStats[[tbl]])
+  }
+
+  # Test bad table name
+  expect_error(
+    cohortStats <- getCohortStats(connectionDetails = connectionDetails,
+                                  cohortDatabaseSchema = "main",
+                                  cohortTableNames = cohortTableNames,
+                                  outputTables = c("cohort"),
+                                  databaseId = "Eunomia")
+  )
+
+  # Test only exporting single table
+  cohortStats <- getCohortStats(connectionDetails = connectionDetails,
+                                  cohortDatabaseSchema = "main",
+                                  cohortTableNames = cohortTableNames,
+                                  outputTables = c("cohortInclusionStatsTable"),
+                                  databaseId = "Eunomia")
+
+  checkmate::expect_names(names(cohortStats), subset.of = c("cohortInclusionStatsTable"))
   # Export the results
   exportCohortStatsTables(connectionDetails = connectionDetails,
                           cohortDatabaseSchema = "main",
@@ -174,7 +209,7 @@ test_that("Export cohort stats with databaseId", {
                     cohortTableNames = cohortTableNames,
                     cohortDatabaseSchema = "main",
                     incremental = FALSE)
-  
+
   # Export the results
   exportCohortStatsTables(connectionDetails = connectionDetails,
                           cohortDatabaseSchema = "main",
