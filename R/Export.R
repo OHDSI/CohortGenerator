@@ -42,31 +42,29 @@ exportCohortStatsTables <- function(connectionDetails,
                                     cohortStatisticsFolder,
                                     incremental = FALSE,
                                     databaseId = NULL) {
-  
+
   if (is.null(connection)) {
     # Establish the connection and ensure the cleanup is performed
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   if (!file.exists(cohortStatisticsFolder)) {
     dir.create(cohortStatisticsFolder, recursive = TRUE)
-  }  
+  }
 
   # Export the stats
-  exportStats <- function(table, fileName) {
-    ParallelLogger::logInfo("- Fetching data from ", table)
-    sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} * FROM @cohort_database_schema.@table"
-    data <- DatabaseConnector::renderTranslateQuerySql(
-      sql = sql,
-      connection = connection,
-      snakeCaseToCamelCase = FALSE,
-      table = table,
-      cohort_database_schema = cohortDatabaseSchema,
-      database_id = ifelse(is.null(databaseId), yes = '', no = databaseId)
-    )
-    colnames(data) <- tolower(colnames(data))
+  exportStats <- function(table,
+                          fileName) {
+
+    data <- getStatsTable(connection = connection,
+                          table = table,
+                          snakeCaseToCamelCase = FALSE,
+                          databaseId = databaseId,
+                          cohortDatabaseSchema = cohortDatabaseSchema)
+
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
+    ParallelLogger::logInfo("- Saving data to - ", fullFileName)
     if (incremental) {
       cohortIds <- unique(data$cohort_definition_id)
       saveIncremental(data, fullFileName, cohort_definition_id = cohortIds)
@@ -74,9 +72,11 @@ exportCohortStatsTables <- function(connectionDetails,
       readr::write_csv(x = data, file = fullFileName)
     }
   }
+
   exportStats(cohortTableNames$cohortInclusionTable, "cohort_inclusion.csv")
   exportStats(cohortTableNames$cohortInclusionResultTable, "cohort_inc_result.csv")
   exportStats(cohortTableNames$cohortInclusionStatsTable, "cohort_inc_stats.csv")
   exportStats(cohortTableNames$cohortSummaryStatsTable, "cohort_summary_stats.csv")
   exportStats(cohortTableNames$cohortCensorStatsTable, "cohort_censor_stats.csv")
+
 }

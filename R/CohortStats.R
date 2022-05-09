@@ -56,12 +56,12 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   tableList <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
   if (!toupper(cohortInclusionTable) %in% toupper(tableList)) {
     stop(paste0(cohortInclusionTable, " table not found in schema: ", cohortDatabaseSchema, ". Please make sure the table is created using the createCohortTables() function before calling this function."))
   }
-  
+
   # Assemble the cohort inclusion rules
   # NOTE: This data frame must match the @cohort_inclusion_table
   # structure as defined in inst/sql/sql_server/CreateCohortTables.sql
@@ -87,7 +87,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
           if (is.null(ruleDescription)) {
             ruleDescription <- ""
           }
-          inclusionRules <- rbind(inclusionRules, 
+          inclusionRules <- rbind(inclusionRules,
                                   data.frame(
                                     cohortDefinitionId = cohortDefinitionSet$cohortId[i],
                                     ruleSequence = j - 1,
@@ -98,7 +98,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
       }
     }
   }
-  
+
   # Remove any existing data to prevent duplication
   DatabaseConnector::renderTranslateExecuteSql(connection = connection,
                                                sql = "TRUNCATE TABLE @cohort_database_schema.@table;",
@@ -106,7 +106,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
                                                reportOverallTime = FALSE,
                                                cohort_database_schema = cohortDatabaseSchema,
                                                table = cohortInclusionTable)
-  
+
   # Insert the inclusion rules
   if (nrow(inclusionRules) > 0) {
     ParallelLogger::logInfo("Inserting inclusion rule names")
@@ -120,6 +120,91 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
   } else {
     warning("No inclusion rules found in the cohortDefinitionSet")
   }
-  
+
   return(inclusionRules)
+}
+
+# Get stats data
+getStatsTable <- function(connectionDetails,
+                          connection = NULL,
+                          cohortDatabaseSchema,
+                          table,
+                          snakeCaseToCamelCase = FALSE,
+                          databaseId = NULL) {
+  if (is.null(connection)) {
+    # Establish the connection and ensure the cleanup is performed
+    connection <- DatabaseConnector::connect(connectionDetails)
+    on.exit(DatabaseConnector::disconnect(connection))
+  }
+
+  ParallelLogger::logInfo("- Fetching data from ", table)
+  sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} * FROM @cohort_database_schema.@table"
+  data <- DatabaseConnector::renderTranslateQuerySql(
+    sql = sql,
+    connection = connection,
+    snakeCaseToCamelCase = snakeCaseToCamelCase,
+    table = table,
+    cohort_database_schema = cohortDatabaseSchema,
+    database_id = ifelse(is.null(databaseId), yes = '', no = databaseId)
+  )
+
+  if (!snakeCaseToCamelCase) {
+    colnames(data) <- tolower(colnames(data))
+  }
+
+  return(data)
+}
+
+#' Get Cohort Inclusion Stats Table Data
+#' @description
+#' This function returns a data frame of the data in the Cohort Inclusion Tables.
+#' Results are organised in to a list with 5 different data frames:
+#'  * cohortInclusionTable
+#'  * cohortInclusionResultTable
+#'  * cohortInclusionStatsTable
+#'  * cohortSummaryStatsTable
+#'  * cohortCensorStatsTable
+#'
+#'
+#' These can be optionally specified with the `outputTables`.
+#' See `exportCohortStatsTables` function for saving data to csv.
+#'
+#' @md
+#' @inheritParams exportCohortStatsTables
+#'
+#' @param snakeCaseToCamelCase        Convert column names from snake case to camel case.
+#' @export
+getCohortStats <- function(connectionDetails,
+                           connection = NULL,
+                           cohortDatabaseSchema,
+                           databaseId = NULL,
+                           snakeCaseToCamelCase = TRUE,
+                           outputTables = c("cohortInclusionTable",
+                                            "cohortInclusionResultTable",
+                                            "cohortInclusionStatsTable",
+                                            "cohortInclusionStatsTable",
+                                            "cohortSummaryStatsTable",
+                                            "cohortCensorStatsTable"),
+                           cohortTableNames = getCohortTableNames()) {
+
+  # Names of cohort table names must include output tables
+  checkmate::assertNames(names(cohortTableNames), must.include = outputTables)
+  # ouput tables strictly the set of allowed tables
+  checkmate::assertNames(outputTables,
+                         subset.of = c("cohortInclusionTable",
+                                       "cohortInclusionResultTable",
+                                       "cohortInclusionStatsTable",
+                                       "cohortInclusionStatsTable",
+                                       "cohortSummaryStatsTable",
+                                       "cohortCensorStatsTable"))
+  results <- list()
+  for (table in outputTables) {
+    results[[table]] <- getStatsTable(connectionDetails = connectionDetails,
+                                      connection = connection,
+                                      cohortDatabaseSchema = cohortDatabaseSchema,
+                                      table = cohortTableNames[[table]],
+                                      snakeCaseToCamelCase = snakeCaseToCamelCase,
+                                      databaseId = databaseId)
+  }
+  return(results)
 }
