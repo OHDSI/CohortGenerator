@@ -1,23 +1,6 @@
 library(testthat)
 library(CohortGenerator)
 
-# isCamelCase Tests ---------------
-test_that("isCamelCase returns TRUE", {
-  expect_true(isCamelCase("camelCaseTest"))
-})
-
-test_that("isCamelCase returns FALSE with space", {
-  expect_false(isCamelCase("camel CaseTest"))
-})
-
-test_that("isCamelCase returns FALSE with underscore", {
-  expect_false(isCamelCase("camel_CaseTest"))
-})
-
-test_that("isCamelCase returns FALSE with leading capital", {
-  expect_false(isCamelCase("CamelCaseTest"))
-})
-
 # isSnakeCase Tests ---------------
 test_that("isSnakeCase returns TRUE", {
   expect_true(isSnakeCase("snake_case_test"))

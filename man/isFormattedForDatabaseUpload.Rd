@@ -2,19 +2,22 @@
 % Please edit documentation in R/CsvHelper.R
 \name{isFormattedForDatabaseUpload}
 \alias{isFormattedForDatabaseUpload}
-\title{Used to check a data.frame or tibble to see if it conforms to 
-the standard for uploading to a database}
+\title{Is the data.frame formatted for uploading to a database?}
 \usage{
-isFormattedForDatabaseUpload(x)
+isFormattedForDatabaseUpload(x, warn = TRUE)
 }
 \arguments{
-\item{x}{A data frame or tibble}
+\item{x}{A data frame}
+
+\item{warn}{When TRUE, display a warning of any columns are not in snake 
+case format}
 }
 \value{
-Returns TRUE if all columns are lower snake case otherwise returns
-FALSE and warns on the column names that violate the rule.
+Returns TRUE if all columns are snake case format. If warn == TRUE,
+the function will emit a warning on the column names that are not in snake 
+case format.
 }
 \description{
-This function is used to check a data.frame or tibble to ensure all 
-column names are lower snake case.
+This function is used to check a data.frame to ensure all 
+column names are in snake case format.
 }

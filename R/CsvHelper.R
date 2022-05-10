@@ -108,23 +108,6 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
   return(all(columnNamesInSnakeCaseFormat))
 }
 
-#' Used to check if a string is in lower camel case
-#'
-#' @description
-#' This function is used check file and field names
-#' to ensure the proper casing is in use.
-#' 
-#' @param x  The string to evaluate
-#' 
-#' @return 
-#'  TRUE if the string is in lower camel case
-#'
-#' @export
-isCamelCase <- function(x) {
-  y <- snakecase::to_lower_camel_case(x)
-  return(x == y)
-}
-
 #' Used to check if a string is in lower snake case
 #'
 #' @description
