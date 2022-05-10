@@ -37,6 +37,11 @@ to the exported results}
 
 \item{snakeCaseToCamelCase}{Convert column names from snake case to camel case.}
 
+\item{outputTables}{Character vector. One or more of "cohortInclusionTable", "cohortInclusionResultTable",
+"cohortInclusionStatsTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable"
+or "cohortCensorStatsTable". Output is limited to these tables. Cannot export, for,
+example, the cohort table. Defaults to all stats tables.}
+
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
 }
