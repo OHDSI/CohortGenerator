@@ -173,6 +173,10 @@ getStatsTable <- function(connectionDetails,
 #' @inheritParams exportCohortStatsTables
 #'
 #' @param snakeCaseToCamelCase        Convert column names from snake case to camel case.
+#' @param outputTables                Character vector. One or more of "cohortInclusionTable", "cohortInclusionResultTable",
+#'                                    "cohortInclusionStatsTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable"
+#'                                    or "cohortCensorStatsTable". Output is limited to these tables. Cannot export, for,
+#'                                    example, the cohort table. Defaults to all stats tables.
 #' @export
 getCohortStats <- function(connectionDetails,
                            connection = NULL,
