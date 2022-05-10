@@ -24,7 +24,8 @@ Imports:
   rlang,
   RJSONIO,
   SqlRender (>= 1.7.0),
-  stringi (>= 1.7.6)
+  stringi (>= 1.7.6),
+  snakecase
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
