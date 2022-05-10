@@ -96,9 +96,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   
   # Read the settings file which holds the cohortDefinitionSet
   ParallelLogger::logInfo("Loading cohortDefinitionSet")
-  settings <- readr::read_csv(getPath(fileName = settingsFileName),
-                              col_types = readr::cols(), 
-                              lazy = FALSE)
+  settings <- readCsv(file = getPath(fileName = settingsFileName))
   
   assert_settings_columns(names(settings), getPath(fileName = settingsFileName))
   checkmate::assert_true(all(cohortFileNameValue %in% names(settings)))
@@ -196,7 +194,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   }
   # Write the settings file and ensure that the "sql" and "json" columns are
   # not included
-  readr::write_csv(x =  cohortDefinitionSet[,-which(names(cohortDefinitionSet) %in% .getFileDataColumns())], file = settingsFileName)
+  writeCsv(x =  cohortDefinitionSet[,-which(names(cohortDefinitionSet) %in% .getFileDataColumns())], file = settingsFileName)
   
   # Export the SQL & JSON for each entry
   for(i in 1:nrow(cohortDefinitionSet)) {

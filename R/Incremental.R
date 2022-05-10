@@ -14,6 +14,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+#' Used to read a csv file
+#'
+#' @description
+#' This function is used to centralize the function for reading
+#' CSV files across the HADES ecosystem.
+#' 
+#' @param file  The csv file to read.
+#'
+#' @return
+#' A tibble with the CSV contents
+#' 
+#' @export
+readCsv <- function(file) {
+  readr::read_csv(file = file, 
+                  col_types = readr::cols(), 
+                  lazy = FALSE)
+}
+
+#' Used to write a csv file
+#'
+#' @description
+#' This function is used to centralize the function for writing
+#' CSV files across the HADES ecosystem.
+#' 
+#' @param x  A data frame or tibble to write to disk.
+#' 
+#' @param file  The csv file to write.
+#'
+#' @return 
+#'  Returns the input x invisibly.
+#'
+#' @export
+writeCsv <- function(x, file) {
+  readr::write_csv(x = x,
+                   file = file)
+  invisible(x)
+}
+
 #' Computes the checksum for a value
 #'
 #' @description
@@ -57,7 +96,7 @@ computeChecksum <- function(val) {
 #' @export
 isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
   if (file.exists(recordKeepingFile)) {
-    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols(), lazy = FALSE)
+    recordKeeping <- readCsv(file = recordKeepingFile)
     task <- recordKeeping[getKeyIndex(list(...), recordKeeping), ]
     if (nrow(task) == 0) {
       return(TRUE)
@@ -103,7 +142,7 @@ isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
 getRequiredTasks <- function(..., checksum, recordKeepingFile) {
   tasks <- list(...)
   if (file.exists(recordKeepingFile) && length(tasks[[1]]) > 0) {
-    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols(), lazy = FALSE)
+    recordKeeping <- readCsv(file = recordKeepingFile)
     tasks$checksum <- checksum
     tasks <- dplyr::as_tibble(tasks)
     if (all(names(tasks) %in% names(recordKeeping))) {
@@ -145,7 +184,7 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
     return()
   }
   if (file.exists(recordKeepingFile)) {
-    recordKeeping <- readr::read_csv(recordKeepingFile, col_types = readr::cols(), lazy = FALSE)
+    recordKeeping <- readCsv(file = recordKeepingFile)
     idx <- getKeyIndex(list(...), recordKeeping)
     if (length(idx) > 0) {
       recordKeeping <- recordKeeping[-idx, ]
@@ -157,7 +196,7 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
   newRow$checksum <- checksum
   newRow$timeStamp <- Sys.time()
   recordKeeping <- dplyr::bind_rows(recordKeeping, newRow)
-  readr::write_csv(recordKeeping, recordKeepingFile)
+  writeCsv(x = recordKeeping, file = recordKeepingFile)
 }
 
 #' Used in incremental mode to save values to a file
@@ -181,14 +220,14 @@ saveIncremental <- function(data, fileName, ...) {
     return()
   }
   if (file.exists(fileName)) {
-    previousData <- readr::read_csv(fileName, col_types = readr::cols(), lazy = FALSE)
+    previousData <- readCsv(file = fileName)
     idx <- getKeyIndex(list(...), previousData)
     if (length(idx) > 0) {
       previousData <- previousData[-idx, ]
     }
     data <- dplyr::bind_rows(previousData, data)
   }
-  readr::write_csv(data, fileName)
+  writeCsv(x = data, file = fileName)
 }
 
 getKeyIndex <- function(key, recordKeeping) {

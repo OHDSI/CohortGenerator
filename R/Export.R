@@ -69,7 +69,7 @@ exportCohortStatsTables <- function(connectionDetails,
       cohortIds <- unique(data$cohort_definition_id)
       saveIncremental(data, fullFileName, cohort_definition_id = cohortIds)
     } else {
-      readr::write_csv(x = data, file = fullFileName)
+      writeCsv(x = data, file = fullFileName)
     }
   }
 

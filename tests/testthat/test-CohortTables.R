@@ -222,7 +222,7 @@ test_that("Export cohort stats with databaseId", {
   # present
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
-    data <- readr::read_csv(exportedFiles[i], lazy = FALSE, show_col_types = FALSE)
+    data <- readCsv(file = exportedFiles[i])
     expect_true(toupper(c("database_id")) %in% toupper(names(data)))
   }
   unlink(cohortStatsFolder)
