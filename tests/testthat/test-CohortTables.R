@@ -144,7 +144,42 @@ test_that("Export cohort stats with permanent tables", {
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames)
-  
+
+  # Test getting results data frames
+  cohortStats <- getCohortStats(connectionDetails = connectionDetails,
+                                cohortDatabaseSchema = "main",
+                                cohortTableNames = cohortTableNames,
+                                databaseId = "Eunomia")
+
+  checkmate::expect_names(names(cohortStats),
+                         must.include = c("cohortInclusionTable",
+                                          "cohortInclusionResultTable",
+                                          "cohortInclusionStatsTable",
+                                          "cohortInclusionStatsTable",
+                                          "cohortSummaryStatsTable",
+                                          "cohortCensorStatsTable"))
+
+  for (tbl in names(cohortStats)) {
+    checkmate::expect_data_frame(cohortStats[[tbl]])
+  }
+
+  # Test bad table name
+  expect_error(
+    cohortStats <- getCohortStats(connectionDetails = connectionDetails,
+                                  cohortDatabaseSchema = "main",
+                                  cohortTableNames = cohortTableNames,
+                                  outputTables = c("cohort"),
+                                  databaseId = "Eunomia")
+  )
+
+  # Test only exporting single table
+  cohortStats <- getCohortStats(connectionDetails = connectionDetails,
+                                  cohortDatabaseSchema = "main",
+                                  cohortTableNames = cohortTableNames,
+                                  outputTables = c("cohortInclusionStatsTable"),
+                                  databaseId = "Eunomia")
+
+  checkmate::expect_names(names(cohortStats), subset.of = c("cohortInclusionStatsTable"))
   # Export the results
   exportCohortStatsTables(connectionDetails = connectionDetails,
                           cohortDatabaseSchema = "main",
@@ -174,7 +209,7 @@ test_that("Export cohort stats with databaseId", {
                     cohortTableNames = cohortTableNames,
                     cohortDatabaseSchema = "main",
                     incremental = FALSE)
-  
+
   # Export the results
   exportCohortStatsTables(connectionDetails = connectionDetails,
                           cohortDatabaseSchema = "main",
@@ -183,12 +218,12 @@ test_that("Export cohort stats with databaseId", {
                           incremental = FALSE,
                           databaseId = "Eunomia")
   
-  # Verify the files are written to the file system and have the databaseId
+  # Verify the files are written to the file system and have the database_id
   # present
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
     data <- readr::read_csv(exportedFiles[i], lazy = FALSE, show_col_types = FALSE)
-    expect_true(toupper(c("databaseId")) %in% toupper(names(data)))
+    expect_true(toupper(c("database_id")) %in% toupper(names(data)))
   }
   unlink(cohortStatsFolder)
 })
