@@ -2,8 +2,16 @@ library(testthat)
 library(CohortGenerator)
 
 # isSnakeCase Tests ---------------
-test_that("isSnakeCase returns TRUE", {
+test_that("isSnakeCase returns TRUE with expected case", {
   expect_true(isSnakeCase("snake_case_test"))
+})
+
+test_that("isSnakeCase returns TRUE when input is a single word", {
+  expect_true(isSnakeCase("snake"))
+})
+
+test_that("isSnakeCase returns TRUE when input contains an integer value", {
+  expect_true(isSnakeCase("snake2"))
 })
 
 test_that("isSnakeCase returns FALSE with space", {
