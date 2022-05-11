@@ -346,7 +346,7 @@ test_that("isTaskRequired stops if duplicates detected", {
   # Manually hack the file to include a duplicate entry
   data <- CohortGenerator::readCsv(file = rkf)
   data <- rbind(data, data)
-  CohortGenerator::writeCsv(data, file = rkf)
+  CohortGenerator::writeCsv(data, file = rkf, warnOnUploadRuleViolations = FALSE)
   
   # Now we'd expect an error if attempting to call isTaskRequired
   expect_error(isTaskRequired(cohortId = 1, 

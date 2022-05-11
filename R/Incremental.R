@@ -158,7 +158,7 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
   newRow$checksum <- checksum
   newRow$timeStamp <- Sys.time()
   recordKeeping <- dplyr::bind_rows(recordKeeping, newRow)
-  writeCsv(x = recordKeeping, file = recordKeepingFile)
+  writeCsv(x = recordKeeping, file = recordKeepingFile, warnOnUploadRuleViolations = FALSE)
 }
 
 #' Used in incremental mode to save values to a file
@@ -189,7 +189,7 @@ saveIncremental <- function(data, fileName, ...) {
     }
     data <- dplyr::bind_rows(previousData, data)
   }
-  writeCsv(x = data, file = fileName)
+  writeCsv(x = data, file = fileName, warnOnUploadRuleViolations = FALSE)
 }
 
 getKeyIndex <- function(key, recordKeeping) {

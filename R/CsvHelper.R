@@ -67,7 +67,7 @@ writeCsv <- function(x, file, warnOnUploadRuleViolations = TRUE) {
     # Also perform a check to see if the fileName end in "s" which might indicate
     # that the resulting file name is plural
     if (endsWith(fileName, "s")) {
-      warning(paste("The filename:", basename(file), "may be plural since it ends in 's'. Please ensure you are using singular nouns for your file names."))
+      message(paste("The filename:", basename(file), "may be plural since it ends in 's'. Please ensure you are using singular nouns for your file names."))
     }
   }
   
@@ -99,7 +99,7 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
   columnNames <- colnames(x)
   columnNamesInSnakeCaseFormat <- isSnakeCase(columnNames)
   if (!all(columnNamesInSnakeCaseFormat) && warn) {
-    problemColumns <- columnNames[-columnNamesInSnakeCaseFormat]
+    problemColumns <- columnNames[!columnNamesInSnakeCaseFormat]
     problemColumnsFixed <- paste(snakecase::to_snake_case(problemColumns), collapse = ", ")
     problemColumnsWarning <- paste(problemColumns, collapse = ", ")
     problemColumnsFixedWarning <- paste(problemColumnsFixed, collapse = ", ")
@@ -121,6 +121,6 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
 #'
 #' @export
 isSnakeCase <- function(x) {
-  y <- snakecase::to_snake_case(x)
+  y <- snakecase::to_snake_case(x, numerals = "asis")
   return(x == y)
 }

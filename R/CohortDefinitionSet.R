@@ -194,7 +194,9 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   }
   # Write the settings file and ensure that the "sql" and "json" columns are
   # not included
-  writeCsv(x =  cohortDefinitionSet[,-which(names(cohortDefinitionSet) %in% .getFileDataColumns())], file = settingsFileName)
+  writeCsv(x =  cohortDefinitionSet[,-which(names(cohortDefinitionSet) %in% .getFileDataColumns())], 
+           file = settingsFileName,
+           warnOnUploadRuleViolations = FALSE)
   
   # Export the SQL & JSON for each entry
   for(i in 1:nrow(cohortDefinitionSet)) {
