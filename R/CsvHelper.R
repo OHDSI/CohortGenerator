@@ -100,9 +100,8 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
   columnNamesInSnakeCaseFormat <- isSnakeCase(columnNames)
   if (!all(columnNamesInSnakeCaseFormat) && warn) {
     problemColumns <- columnNames[!columnNamesInSnakeCaseFormat]
-    problemColumnsFixed <- paste(snakecase::to_snake_case(problemColumns), collapse = ", ")
     problemColumnsWarning <- paste(problemColumns, collapse = ", ")
-    problemColumnsFixedWarning <- paste(problemColumnsFixed, collapse = ", ")
+    problemColumnsFixedWarning <- paste(snakecase::to_snake_case(problemColumns), collapse = ", ")
     warning(paste("The following data.frame column names are not in snake case format:", problemColumnsWarning, "\n  Consider revising the column names to:", problemColumnsFixedWarning))
   }
   return(all(columnNamesInSnakeCaseFormat))
