@@ -107,7 +107,7 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
   return(all(columnNamesInSnakeCaseFormat))
 }
 
-#' Used to check if a string is in lower snake case
+#' Used to check if a string is in snake case
 #'
 #' @description
 #' This function is used check file and field names
@@ -116,7 +116,7 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
 #' @param x  The string to evaluate
 #' 
 #' @return 
-#'  TRUE if the string is in lower snake case
+#'  TRUE if the string is in snake case
 #'
 #' @export
 isSnakeCase <- function(x) {
