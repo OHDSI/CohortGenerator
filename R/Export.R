@@ -59,7 +59,7 @@ exportCohortStatsTables <- function(connectionDetails,
 
     data <- getStatsTable(connection = connection,
                           table = table,
-                          snakeCaseToCamelCase = FALSE,
+                          snakeCaseToCamelCase = TRUE,
                           databaseId = databaseId,
                           cohortDatabaseSchema = cohortDatabaseSchema)
 

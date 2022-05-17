@@ -223,7 +223,7 @@ test_that("Export cohort stats with databaseId", {
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
     data <- readCsv(file = exportedFiles[i])
-    expect_true(toupper(c("database_id")) %in% toupper(names(data)))
+    expect_true(toupper(c("databaseId")) %in% toupper(names(data)))
   }
   unlink(cohortStatsFolder)
 })

@@ -2,17 +2,23 @@
 % Please edit documentation in R/CsvHelper.R
 \name{readCsv}
 \alias{readCsv}
-\title{Used to read a csv file}
+\title{Used to read a .csv file}
 \usage{
-readCsv(file)
+readCsv(file, warnOnCaseMismatch = TRUE)
 }
 \arguments{
-\item{file}{The csv file to read.}
+\item{file}{The .csv file to read.}
+
+\item{warnOnCaseMismatch}{When TRUE, raise a warning if column headings 
+in the .csv are not in snake_case format}
 }
 \value{
-A tibble with the CSV contents
+A tibble with the .csv contents
 }
 \description{
 This function is used to centralize the function for reading
-CSV files across the HADES ecosystem.
+.csv files across the HADES ecosystem. This function will automatically 
+convert from snake_case in the file to camelCase in the data.frame returned
+as is the standard described in: 
+https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL
 }

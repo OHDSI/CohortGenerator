@@ -15,45 +15,80 @@
 # limitations under the License.
 
 
-#' Used to read a csv file
+#' Used to read a .csv file
 #'
 #' @description
 #' This function is used to centralize the function for reading
-#' CSV files across the HADES ecosystem.
+#' .csv files across the HADES ecosystem. This function will automatically 
+#' convert from snake_case in the file to camelCase in the data.frame returned
+#' as is the standard described in: 
+#' https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL
 #' 
-#' @param file  The csv file to read.
+#' @param file  The .csv file to read.
+#' @param warnOnCaseMismatch  When TRUE, raise a warning if column headings 
+#' in the .csv are not in snake_case format
 #'
 #' @return
-#' A tibble with the CSV contents
+#' A tibble with the .csv contents
 #' 
 #' @export
-readCsv <- function(file) {
-  readr::read_csv(file = file, 
-                  col_types = readr::cols(), 
-                  lazy = FALSE)
+readCsv <- function(file, warnOnCaseMismatch = TRUE) {
+  fileContents <- readr::read_csv(file = file, 
+                                  col_types = readr::cols(), 
+                                  lazy = FALSE)
+  columnNames <- colnames(fileContents)
+  columnNamesInSnakeCaseFormat <- isSnakeCase(columnNames)
+  if (!all(columnNamesInSnakeCaseFormat) && warnOnCaseMismatch) {
+    problemColumns <- columnNames[!columnNamesInSnakeCaseFormat]
+    problemColumnsWarning <- paste(problemColumns, collapse = ", ")
+    warning(paste("The following columns were not in snake case format:", problemColumnsWarning))
+  }
+  colnames(fileContents) <- SqlRender::snakeCaseToCamelCase(colnames(fileContents))
+  invisible(fileContents)
 }
 
-#' Used to write a csv file
+#' Used to write a .csv file
 #'
 #' @description
 #' This function is used to centralize the function for writing
-#' CSV files across the HADES ecosystem. This function may also raise warnings
-#' if the data is stored in a format that will not work with the HADES standard
-#' for uploading to a results database.
+#' .csv files across the HADES ecosystem. This function will automatically 
+#' convert from camelCase in the data.frame to snake_case column names
+#' in the resulting .csv file as is the standard
+#' described in: 
+#' https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL
+#' 
+#' This function may also raise warnings if the data is stored in a format 
+#' that will not work with the HADES standard for uploading to a results database.
+#' Specifically file names should be in snake_case format, all column headings
+#' are in snake_case format and where possible the file name should not be plural.
+#' See \code{isFormattedForDatabaseUpload} for a helper function to check a 
+#' data.frame for rules on the column names
 #' 
 #' @param x  A data frame or tibble to write to disk.
 #' 
-#' @param file  The csv file to write.
+#' @param file  The .csv file to write.
+#' 
+#' @param warnOnCaseMismatch  When TRUE, raise a warning if columns in the 
+#' data.frame are NOT in camelCase format.
 #' 
 #' @param warnOnUploadRuleViolations When TRUE, this function will provide
 #' warning messages that may indicate if the data is stored in a format in the
-#' CSV that may cause problems when uploading to a database.
+#' .csv that may cause problems when uploading to a database.
 #' 
 #' @return 
 #'  Returns the input x invisibly.
 #'
 #' @export
-writeCsv <- function(x, file, warnOnUploadRuleViolations = TRUE) {
+writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE) {
+  columnNames <- colnames(x)
+  columnNamesInCamelCaseFormat <- isCamelCase(columnNames)
+  if (!all(columnNamesInCamelCaseFormat) && warnOnCaseMismatch) {
+    problemColumns <- columnNames[!columnNamesInCamelCaseFormat]
+    problemColumnsWarning <- paste(problemColumns, collapse = ", ")
+    warning(paste("The following columns were not in camel case format:", problemColumnsWarning))
+  }
+  colnames(x) <- SqlRender::camelCaseToSnakeCase(colnames(x))
+  
   if (warnOnUploadRuleViolations) {
     # Check the data.frame to ensure it is in the proper format for upload
     isFormattedForDatabaseUpload(x)
@@ -100,9 +135,21 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
   columnNamesInSnakeCaseFormat <- isSnakeCase(columnNames)
   if (!all(columnNamesInSnakeCaseFormat) && warn) {
     problemColumns <- columnNames[!columnNamesInSnakeCaseFormat]
+    # Are the problem columns in camelCase? If so, we can use SqlRender
+    # to provide a suggestion
+    columnNameSuggestions <- c()
+    if (length(problemColumns) > 0) {
+      for(i in 1:length(problemColumns)) {
+        suggestion <- problemColumns[i]
+        if (isCamelCase(suggestion)) {
+          suggestion <- SqlRender::camelCaseToSnakeCase(suggestion)
+        }
+        columnNameSuggestions <- c(columnNameSuggestions, suggestion)
+      }
+    }
     problemColumnsWarning <- paste(problemColumns, collapse = ", ")
-    problemColumnsFixedWarning <- paste(snakecase::to_snake_case(problemColumns), collapse = ", ")
-    warning(paste("The following data.frame column names are not in snake case format:", problemColumnsWarning, "\n  Consider revising the column names to:", problemColumnsFixedWarning))
+    problemColumnsSuggestions <- paste(columnNameSuggestions, collapse = ", ")
+    warning(paste("The following data.frame column names are not in snake case format:", problemColumnsWarning, "\n  Consider revising the column names to:", problemColumnsSuggestions))
   }
   return(all(columnNamesInSnakeCaseFormat))
 }
@@ -110,8 +157,8 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
 #' Used to check if a string is in snake case
 #'
 #' @description
-#' This function is used check file and field names
-#' to ensure the proper casing is in use.
+#' This function is used check if a string conforms to
+#' the snake case format.
 #' 
 #' @param x  The string to evaluate
 #' 
@@ -120,6 +167,21 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
 #'
 #' @export
 isSnakeCase <- function(x) {
-  y <- snakecase::to_snake_case(x, numerals = "asis")
-  return(x == y)
+  return(grepl(pattern = "^[a-z0-9]+(?:_[a-z0-9]+)*$", x = x))
+}
+
+#' Used to check if a string is in lower camel case
+#'
+#' @description
+#' This function is used check if a string conforms to
+#' the lower camel case format.
+#' 
+#' @param x  The string to evaluate
+#' 
+#' @return 
+#'  TRUE if the string is in lower camel case
+#'
+#' @export
+isCamelCase <- function(x) {
+  return(grepl(pattern = "^[a-z]+([A-Z0-9]*[a-z0-9]+[A-Za-z0-9]*)$", x = x))
 }
