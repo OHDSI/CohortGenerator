@@ -66,8 +66,8 @@ exportCohortStatsTables <- function(connectionDetails,
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
     ParallelLogger::logInfo("- Saving data to - ", fullFileName)
     if (incremental) {
-      cohortIds <- unique(data$cohort_definition_id)
-      saveIncremental(data, fullFileName, cohort_definition_id = cohortIds)
+      cohortDefinitionIds <- unique(data$cohortDefinitionId)
+      saveIncremental(data, fullFileName, cohortDefinitionId = cohortIds)
     } else {
       writeCsv(x = data, file = fullFileName)
     }
