@@ -4,12 +4,13 @@ library(CohortGenerator)
 # Exception Handling -------------
 # generateCohortSet ---------
 test_that("Call generateCohortSet without connection or connectionDetails", {
-  expect_error(generateCohortSet(),
+  expect_error(generateCohortSet(cohortDefinitionSet = getCohortsForTest(cohorts)),
                message = "(connection details)")
 })
 
 test_that("Call generateCohortSet with default parameters", {
-  expect_error(generateCohortSet(connectionDetails = c()),
+  expect_error(generateCohortSet(cohortDefinitionSet = getCohortsForTest(cohorts),
+                                 connectionDetails = c()),
                message = "(cohorts parameter)")
 })
 
@@ -38,8 +39,8 @@ test_that("Call instatiateCohortSet with vector as cohortDefinitionSet parameter
 
 test_that("Call instatiateCohortSet with incremental = TRUE and no folder specified", {
   expect_error(generateCohortSet(connectionDetails = connectionDetails,
-                                    cohortDefinitionSet = createEmptyCohortDefinitionSet(),
-                                    incremental = TRUE),
+                                 cohortDefinitionSet = getCohortsForTest(cohorts),
+                                 incremental = TRUE),
                message = "Must specify incrementalFolder")
 })
 
