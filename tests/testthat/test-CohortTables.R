@@ -139,7 +139,7 @@ test_that("Create cohort tables with incremental = TRUE and partial table creati
 # export cohort stats tests --------------
 test_that("Export cohort stats with permanent tables", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
-  cohortStatsFolder <- tempdir()
+  cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
@@ -149,6 +149,7 @@ test_that("Export cohort stats with permanent tables", {
   cohortStats <- getCohortStats(connectionDetails = connectionDetails,
                                 cohortDatabaseSchema = "main",
                                 cohortTableNames = cohortTableNames,
+                                snakeCaseToCamelCase = FALSE,
                                 databaseId = "Eunomia")
 
   checkmate::expect_names(names(cohortStats),
@@ -195,7 +196,7 @@ test_that("Export cohort stats with permanent tables", {
 
 test_that("Export cohort stats with databaseId", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsDatabaseId")
-  cohortStatsFolder <- tempdir()
+  cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
@@ -230,7 +231,7 @@ test_that("Export cohort stats with databaseId", {
 
 test_that("Export cohort stats in incremental mode", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
-  cohortStatsFolder <- tempdir()
+  cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",

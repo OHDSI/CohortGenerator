@@ -49,7 +49,7 @@ exportCohortStatsTables <- function(connectionDetails,
     on.exit(DatabaseConnector::disconnect(connection))
   }
 
-  if (!file.exists(cohortStatisticsFolder)) {
+  if (!dir.exists(cohortStatisticsFolder)) {
     dir.create(cohortStatisticsFolder, recursive = TRUE)
   }
 
