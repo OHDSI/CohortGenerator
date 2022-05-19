@@ -49,7 +49,7 @@ exportCohortStatsTables <- function(connectionDetails,
     on.exit(DatabaseConnector::disconnect(connection))
   }
 
-  if (!file.exists(cohortStatisticsFolder)) {
+  if (!dir.exists(cohortStatisticsFolder)) {
     dir.create(cohortStatisticsFolder, recursive = TRUE)
   }
 
@@ -59,17 +59,17 @@ exportCohortStatsTables <- function(connectionDetails,
 
     data <- getStatsTable(connection = connection,
                           table = table,
-                          snakeCaseToCamelCase = FALSE,
+                          snakeCaseToCamelCase = TRUE,
                           databaseId = databaseId,
                           cohortDatabaseSchema = cohortDatabaseSchema)
 
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
     ParallelLogger::logInfo("- Saving data to - ", fullFileName)
     if (incremental) {
-      cohortIds <- unique(data$cohort_definition_id)
-      saveIncremental(data, fullFileName, cohort_definition_id = cohortIds)
+      cohortDefinitionIds <- unique(data$cohortDefinitionId)
+      saveIncremental(data, fullFileName, cohortDefinitionId = cohortDefinitionIds)
     } else {
-      readr::write_csv(x = data, file = fullFileName)
+      writeCsv(x = data, file = fullFileName)
     }
   }
 

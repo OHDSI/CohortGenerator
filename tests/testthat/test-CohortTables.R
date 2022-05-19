@@ -139,7 +139,7 @@ test_that("Create cohort tables with incremental = TRUE and partial table creati
 # export cohort stats tests --------------
 test_that("Export cohort stats with permanent tables", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
-  cohortStatsFolder <- tempdir()
+  cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
@@ -149,6 +149,7 @@ test_that("Export cohort stats with permanent tables", {
   cohortStats <- getCohortStats(connectionDetails = connectionDetails,
                                 cohortDatabaseSchema = "main",
                                 cohortTableNames = cohortTableNames,
+                                snakeCaseToCamelCase = FALSE,
                                 databaseId = "Eunomia")
 
   checkmate::expect_names(names(cohortStats),
@@ -195,7 +196,7 @@ test_that("Export cohort stats with permanent tables", {
 
 test_that("Export cohort stats with databaseId", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsDatabaseId")
-  cohortStatsFolder <- tempdir()
+  cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
@@ -222,15 +223,15 @@ test_that("Export cohort stats with databaseId", {
   # present
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
-    data <- readr::read_csv(exportedFiles[i], lazy = FALSE, show_col_types = FALSE)
-    expect_true(toupper(c("database_id")) %in% toupper(names(data)))
+    data <- readCsv(file = exportedFiles[i])
+    expect_true(toupper(c("databaseId")) %in% toupper(names(data)))
   }
   unlink(cohortStatsFolder)
 })
 
 test_that("Export cohort stats in incremental mode", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
-  cohortStatsFolder <- tempdir()
+  cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
