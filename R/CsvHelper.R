@@ -102,7 +102,7 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolati
     # Also perform a check to see if the fileName end in "s" which might indicate
     # that the resulting file name is plural
     if (endsWith(fileName, "s")) {
-      message(paste("The filename:", basename(file), "may be plural since it ends in 's'. Please ensure you are using singular nouns for your file names."))
+      rlang::inform(paste("The filename:", basename(file), "may be plural since it ends in 's'. Please ensure you are using singular nouns for your file names."))
     }
   }
   
