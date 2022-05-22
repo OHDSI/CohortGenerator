@@ -58,7 +58,7 @@ computeChecksum <- function(val) {
 #' @export
 isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
   if (file.exists(recordKeepingFile)) {
-    recordKeeping <- readCsv(file = recordKeepingFile)
+    recordKeeping <- .readCsv(file = recordKeepingFile)
     task <- recordKeeping[getKeyIndex(list(...), recordKeeping), ]
     if (nrow(task) == 0) {
       return(TRUE)
@@ -104,7 +104,7 @@ isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
 getRequiredTasks <- function(..., checksum, recordKeepingFile) {
   tasks <- list(...)
   if (file.exists(recordKeepingFile) && length(tasks[[1]]) > 0) {
-    recordKeeping <- readCsv(file = recordKeepingFile)
+    recordKeeping <- .readCsv(file = recordKeepingFile)
     tasks$checksum <- checksum
     tasks <- dplyr::as_tibble(tasks)
     if (all(names(tasks) %in% names(recordKeeping))) {
@@ -146,7 +146,7 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
     return()
   }
   if (file.exists(recordKeepingFile)) {
-    recordKeeping <- readCsv(file = recordKeepingFile)
+    recordKeeping <- .readCsv(file = recordKeepingFile)
     idx <- getKeyIndex(list(...), recordKeeping)
     if (length(idx) > 0) {
       recordKeeping <- recordKeeping[-idx, ]
@@ -158,7 +158,7 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
   newRow$checksum <- checksum
   newRow$timeStamp <- Sys.time()
   recordKeeping <- dplyr::bind_rows(recordKeeping, newRow)
-  writeCsv(x = recordKeeping, file = recordKeepingFile, warnOnUploadRuleViolations = FALSE)
+  .writeCsv(x = recordKeeping, file = recordKeepingFile)
 }
 
 #' Used in incremental mode to save values to a file
@@ -182,14 +182,14 @@ saveIncremental <- function(data, fileName, ...) {
     return()
   }
   if (file.exists(fileName)) {
-    previousData <- readCsv(file = fileName)
+    previousData <- .readCsv(file = fileName)
     idx <- getKeyIndex(list(...), previousData)
     if (length(idx) > 0) {
       previousData <- previousData[-idx, ]
     }
     data <- dplyr::bind_rows(previousData, data)
   }
-  writeCsv(x = data, file = fileName, warnOnUploadRuleViolations = FALSE)
+  .writeCsv(x = data, file = fileName)
 }
 
 getKeyIndex <- function(key, recordKeeping) {

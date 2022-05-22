@@ -32,8 +32,8 @@ of the cohort if it is available in the cohortDefinitionSet}
 \item{sqlFolder}{The name of the folder that will hold the SQL representation
 of the cohort.}
 
-\item{cohortFileNameFormat}{Defines the format string  for naming the cohort 
-JSON and SQL files. The format string follows the 
+\item{cohortFileNameFormat}{Defines the format string  for naming the cohort
+JSON and SQL files. The format string follows the
 standard defined in the base sprintf function.}
 
 \item{cohortFileNameValue}{Defines the columns in the cohortDefinitionSet to use
@@ -45,9 +45,9 @@ progress.}
 \description{
 This function saves a cohortDefinitionSet to the file system and provides
 options for specifying where to write the individual elements: the settings
-file will contain the cohort information as a CSV specified by the 
+file will contain the cohort information as a CSV specified by the
 settingsFileName, the cohort JSON is written to the jsonFolder and the SQL
-is written to the sqlFolder. We also provide a way to specify the 
-json/sql file name format using the cohortFileNameFormat and 
+is written to the sqlFolder. We also provide a way to specify the
+json/sql file name format using the cohortFileNameFormat and
 cohortFileNameValue parameters.
 }

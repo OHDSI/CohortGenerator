@@ -12,7 +12,7 @@ saveIncremental(data, fileName, ...)
 \item{fileName}{A CSV holding results in the same structure as the data
 parameter}
 
-\item{...}{Parameter values used to identify the key 
+\item{...}{Parameter values used to identify the key
 in the results file}
 }
 \description{

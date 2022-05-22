@@ -299,7 +299,7 @@ test_that("Incremental save", {
   goldStandard <- dplyr::tibble(cohortId = c(3, 1, 2, 2),
                                 count = c(500, 600, 700, 800))
 
-  incrementalFileContents <- CohortGenerator::readCsv(file = tmpFile)
+  incrementalFileContents <- .readCsv(file = tmpFile)
 
   expect_equal(nrow(goldStandard), nrow(incrementalFileContents))
   for(i in 1:nrow(goldStandard)) {
@@ -320,7 +320,7 @@ test_that("Incremental save with empty key", {
 
   saveIncremental(newData, tmpFile, cohortId = c())
 
-  incrementalFileContents <- CohortGenerator::readCsv(file = tmpFile)
+  incrementalFileContents <- .readCsv(file = tmpFile)
   expect_equal(nrow(data), nrow(incrementalFileContents))
   for(i in 1:nrow(data)) {
     for(j in colnames(data)) {
@@ -344,9 +344,9 @@ test_that("isTaskRequired stops if duplicates detected", {
   )
   
   # Manually hack the file to include a duplicate entry
-  data <- CohortGenerator::readCsv(file = rkf)
+  data <- .readCsv(file = rkf)
   data <- rbind(data, data)
-  CohortGenerator::writeCsv(data, file = rkf, warnOnUploadRuleViolations = FALSE)
+  .writeCsv(data, file = rkf)
   
   # Now we'd expect an error if attempting to call isTaskRequired
   expect_error(isTaskRequired(cohortId = 1, 

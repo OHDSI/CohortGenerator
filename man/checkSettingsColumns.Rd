@@ -11,7 +11,7 @@ checkSettingsColumns(columnNames, settingsFileName = NULL)
 \item{columnNames}{The name of the columns found in either the cohortDefintionSet
 data frame or from reading the contents of the settingsFile}
 
-\item{settingsFileName}{The file name of the CSV that defines the cohortDefinitionSet. 
+\item{settingsFileName}{The file name of the CSV that defines the cohortDefinitionSet.
 When NULL, this function assumes the column names are defined
 in a data.frame representation of the cohortDefinitionSet}
 }
@@ -20,7 +20,7 @@ Returns TRUE if all required columns are found otherwise it returns an error
 }
 \description{
 This function is used to provide a more informative message when ensuring
-that the columns in the cohort definition set or the CSV file that 
+that the columns in the cohort definition set or the CSV file that
 defines the cohort definition set is properly specified. This function
 is then bootstrapped upon package initialization (code in CohortGenerator.R)
 to allow for it to work with the other checkmate assertions as described in:

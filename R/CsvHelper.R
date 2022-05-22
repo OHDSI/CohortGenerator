@@ -33,9 +33,7 @@
 #' 
 #' @export
 readCsv <- function(file, warnOnCaseMismatch = TRUE) {
-  fileContents <- readr::read_csv(file = file, 
-                                  col_types = readr::cols(), 
-                                  lazy = FALSE)
+  fileContents <- .readCsv(file = file)
   columnNames <- colnames(fileContents)
   columnNamesInSnakeCaseFormat <- isSnakeCase(columnNames)
   if (!all(columnNamesInSnakeCaseFormat) && warnOnCaseMismatch) {
@@ -45,6 +43,22 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
   }
   colnames(fileContents) <- SqlRender::snakeCaseToCamelCase(colnames(fileContents))
   invisible(fileContents)
+}
+
+#' Internal read CSV file when control over column formatting is required.
+#'
+#' @description
+#' This function is internal to the package 
+#' 
+#' @param file  The .csv file to read.
+#' 
+#' @return 
+#'  Returns the file contents invisibly.
+#'
+.readCsv <- function(file) {
+  invisible(readr::read_csv(file = file,
+                            col_types = readr::cols(),
+                            lazy = FALSE))
 }
 
 #' Used to write a .csv file
@@ -106,6 +120,27 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolati
     }
   }
   
+  # Write the file
+  .writeCsv(x = x , file = file)
+}
+
+
+#' Internal write.csv file when control over column formatting is required.
+#'
+#' @description
+#' This function is internal to the package since the \code{exportCohortStatsTables}
+#' requires additional control over the column formatting which requires that
+#' we bypass the \code{writeCsv} function since it will automatically convert
+#' from camelCase to snake_case.
+#' 
+#' @param x  A data frame or tibble to write to disk.
+#' 
+#' @param file  The .csv file to write.
+#' 
+#' @return 
+#'  Returns the input x invisibly.
+#'
+.writeCsv <- function(x, file) {
   # Write the file
   readr::write_csv(x = x,
                    file = file)
