@@ -11,7 +11,7 @@ writeCsv(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE)
 
 \item{file}{The .csv file to write.}
 
-\item{warnOnCaseMismatch}{When TRUE, raise a warning if columns in the 
+\item{warnOnCaseMismatch}{When TRUE, raise a warning if columns in the
 data.frame are NOT in camelCase format.}
 
 \item{warnOnUploadRuleViolations}{When TRUE, this function will provide
@@ -23,16 +23,16 @@ Returns the input x invisibly.
 }
 \description{
 This function is used to centralize the function for writing
-.csv files across the HADES ecosystem. This function will automatically 
+.csv files across the HADES ecosystem. This function will automatically
 convert from camelCase in the data.frame to snake_case column names
 in the resulting .csv file as is the standard
-described in: 
+described in:
 https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL
 
-This function may also raise warnings if the data is stored in a format 
+This function may also raise warnings if the data is stored in a format
 that will not work with the HADES standard for uploading to a results database.
 Specifically file names should be in snake_case format, all column headings
 are in snake_case format and where possible the file name should not be plural.
-See \code{isFormattedForDatabaseUpload} for a helper function to check a 
+See \code{isFormattedForDatabaseUpload} for a helper function to check a
 data.frame for rules on the column names
 }

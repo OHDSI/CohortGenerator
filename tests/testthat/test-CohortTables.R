@@ -201,7 +201,7 @@ test_that("Export cohort stats with databaseId", {
   createCohortTables(connectionDetails = connectionDetails,
                      cohortDatabaseSchema = "main",
                      cohortTableNames = cohortTableNames)
-  
+
   # Generate with stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   generateCohortSet(connectionDetails = connectionDetails,
@@ -218,13 +218,48 @@ test_that("Export cohort stats with databaseId", {
                           cohortStatisticsFolder = cohortStatsFolder,
                           incremental = FALSE,
                           databaseId = "Eunomia")
-  
+
   # Verify the files are written to the file system and have the database_id
   # present
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
     data <- readCsv(file = exportedFiles[i])
     expect_true(toupper(c("databaseId")) %in% toupper(names(data)))
+  }
+  unlink(cohortStatsFolder)
+})
+
+test_that("Export cohort stats with fileNamesInSnakeCase = TRUE", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsSnakeCase")
+  cohortStatsFolder <- file.path(outputFolder, "snakeCaseStats")
+  # First create the cohort tables
+  createCohortTables(connectionDetails = connectionDetails,
+                     cohortDatabaseSchema = "main",
+                     cohortTableNames = cohortTableNames)
+  
+  # Generate with stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  generateCohortSet(connectionDetails = connectionDetails,
+                    cohortDefinitionSet = cohortsWithStats,
+                    cdmDatabaseSchema = "main",
+                    cohortTableNames = cohortTableNames,
+                    cohortDatabaseSchema = "main",
+                    incremental = FALSE)
+  
+  # Export the results
+  exportCohortStatsTables(connectionDetails = connectionDetails,
+                          cohortDatabaseSchema = "main",
+                          cohortTableNames = cohortTableNames,
+                          cohortStatisticsFolder = cohortStatsFolder,
+                          fileNamesInSnakeCase = TRUE,
+                          incremental = FALSE,
+                          databaseId = "Eunomia")
+  
+  # Verify the files are written to the file system and are in snake_case
+  # present
+  exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv")
+  for (i in 1:length(exportedFiles)) {
+    expect_true(isSnakeCase(tools::file_path_sans_ext(exportedFiles[i])))
   }
   unlink(cohortStatsFolder)
 })

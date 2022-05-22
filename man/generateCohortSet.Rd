@@ -52,7 +52,7 @@ the following columns: \describe{
 Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
 
-\item{stopOnError}{If an error happens while generating one of the cohorts in the 
+\item{stopOnError}{If an error happens while generating one of the cohorts in the
 cohortDefinitionSet, should we stop processing the other
 cohorts? The default is TRUE; when set to FALSE, failures will
 be identified in the return value from this function.}
@@ -65,18 +65,18 @@ kept of which definition has been executed.}
 \value{
 A data.frame consisting of the following columns:
 \describe{
-   \item{cohortId}{The unique integer identifier of the cohort} 
+   \item{cohortId}{The unique integer identifier of the cohort}
    \item{cohortName}{The cohort's name}
-   \item{generationStatus}{The status of the generation task which may be one of the following: 
+   \item{generationStatus}{The status of the generation task which may be one of the following:
           \describe{
                \item{COMPLETE}{The generation completed successfully}
                \item{FAILED}{The generation failed (see logs for details)}
-               \item{SKIPPED}{If using incremental == 'TRUE', this status indicates 
-                              that the cohort's generation was skipped since it 
+               \item{SKIPPED}{If using incremental == 'TRUE', this status indicates
+                              that the cohort's generation was skipped since it
                               was previously completed.}
           }}
    \item{startTime}{The start time of the cohort generation. If the generationStatus == 'SKIPPED', the startTime will be NA.}
-   \item{endTime}{The end time of the cohort generation. If the generationStatus == 'FAILED', the endTime will be the time of the failure. 
+   \item{endTime}{The end time of the cohort generation. If the generationStatus == 'FAILED', the endTime will be the time of the failure.
                   If the generationStatus == 'SKIPPED', endTime will be NA.}
    }
 }

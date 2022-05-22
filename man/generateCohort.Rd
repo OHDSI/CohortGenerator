@@ -56,7 +56,7 @@ this should include both the database and schema name, for example
 for more details.}
 
 \item{stopIfError}{When set to true, an error in processing will call
-the stop() command to notify the parent calling 
+the stop() command to notify the parent calling
 function that an error occurred.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}

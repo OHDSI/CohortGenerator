@@ -28,6 +28,11 @@
 #' @param cohortStatisticsFolder      The path to the folder where the cohort statistics folder 
 #'                                    where the results will be written
 #'                                    
+#' @param snakeCaseToCamelCase        Should column names in the exported files 
+#'                                    convert from snake_case to camelCase? Default is FALSE
+#'                                    
+#' @param fileNamesInSnakeCase        Should the exported files use snake_case? Default is FALSE
+#'                                    
 #' @param incremental                 If \code{incremental = TRUE}, results are written to update values instead of 
 #'                                    overwriting an existing results
 #'                                    
@@ -40,6 +45,8 @@ exportCohortStatsTables <- function(connectionDetails,
                                     cohortDatabaseSchema,
                                     cohortTableNames = getCohortTableNames(),
                                     cohortStatisticsFolder,
+                                    snakeCaseToCamelCase = TRUE,
+                                    fileNamesInSnakeCase = FALSE,
                                     incremental = FALSE,
                                     databaseId = NULL) {
 
@@ -59,7 +66,7 @@ exportCohortStatsTables <- function(connectionDetails,
 
     data <- getStatsTable(connection = connection,
                           table = table,
-                          snakeCaseToCamelCase = TRUE,
+                          snakeCaseToCamelCase = snakeCaseToCamelCase,
                           databaseId = databaseId,
                           cohortDatabaseSchema = cohortDatabaseSchema)
 
@@ -69,14 +76,25 @@ exportCohortStatsTables <- function(connectionDetails,
       cohortDefinitionIds <- unique(data$cohortDefinitionId)
       saveIncremental(data, fullFileName, cohortDefinitionId = cohortDefinitionIds)
     } else {
-      writeCsv(x = data, file = fullFileName)
+      .writeCsv(x = data, file = fullFileName)
     }
   }
-
-  exportStats(cohortTableNames$cohortInclusionTable, "cohort_inclusion.csv")
-  exportStats(cohortTableNames$cohortInclusionResultTable, "cohort_inc_result.csv")
-  exportStats(cohortTableNames$cohortInclusionStatsTable, "cohort_inc_stats.csv")
-  exportStats(cohortTableNames$cohortSummaryStatsTable, "cohort_summary_stats.csv")
-  exportStats(cohortTableNames$cohortCensorStatsTable, "cohort_censor_stats.csv")
-
+  
+  tablesToExport <- data.frame(tableName = cohortTableNames$cohortInclusionTable,
+                               fileName = "cohort_inclusion.csv")
+  tablesToExport <- rbind(tablesToExport, data.frame(tableName = cohortTableNames$cohortInclusionResultTable,
+                                                     fileName = "cohort_inc_result.csv"))
+  tablesToExport <- rbind(tablesToExport, data.frame(tableName = cohortTableNames$cohortInclusionStatsTable,
+                                                     fileName = "cohort_inc_stats.csv"))
+  tablesToExport <- rbind(tablesToExport, data.frame(tableName = cohortTableNames$cohortSummaryStatsTable,
+                                                     fileName = "cohort_summary_stats.csv"))
+  tablesToExport <- rbind(tablesToExport, data.frame(tableName = cohortTableNames$cohortCensorStatsTable,
+                                                     fileName = "cohort_censor_stats.csv"))
+  for(i in 1:nrow(tablesToExport)) {
+    fileName <- ifelse(test = fileNamesInSnakeCase, 
+                       yes = tablesToExport$fileName[i], 
+                       no = SqlRender::snakeCaseToCamelCase(tablesToExport$fileName[i]))
+    exportStats(table = tablesToExport$tableName[i], 
+                fileName = fileName)
+  }
 }

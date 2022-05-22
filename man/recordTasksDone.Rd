@@ -7,7 +7,7 @@
 recordTasksDone(..., checksum, recordKeepingFile, incremental = TRUE)
 }
 \arguments{
-\item{...}{Parameter values used to identify the key 
+\item{...}{Parameter values used to identify the key
 in the incremental record keeping file}
 
 \item{checksum}{The checksum representing the operation to check}
