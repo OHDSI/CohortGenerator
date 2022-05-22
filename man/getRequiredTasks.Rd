@@ -7,7 +7,7 @@
 getRequiredTasks(..., checksum, recordKeepingFile)
 }
 \arguments{
-\item{...}{Parameter values used to identify the key 
+\item{...}{Parameter values used to identify the key
 in the incremental record keeping file}
 
 \item{checksum}{The checksum representing the operation to check}
@@ -21,6 +21,6 @@ of the record keeping file
 }
 \description{
 This function will attempt to check the \code{recordKeepingFile}
-to determine if a list of operations have completed by comparing the 
+to determine if a list of operations have completed by comparing the
 keys passed into the function with the checksum supplied
 }

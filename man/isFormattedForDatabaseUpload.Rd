@@ -9,15 +9,15 @@ isFormattedForDatabaseUpload(x, warn = TRUE)
 \arguments{
 \item{x}{A data frame}
 
-\item{warn}{When TRUE, display a warning of any columns are not in snake 
+\item{warn}{When TRUE, display a warning of any columns are not in snake
 case format}
 }
 \value{
 Returns TRUE if all columns are snake case format. If warn == TRUE,
-the function will emit a warning on the column names that are not in snake 
+the function will emit a warning on the column names that are not in snake
 case format.
 }
 \description{
-This function is used to check a data.frame to ensure all 
+This function is used to check a data.frame to ensure all
 column names are in snake case format.
 }
