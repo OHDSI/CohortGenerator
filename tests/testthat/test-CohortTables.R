@@ -3,56 +3,73 @@ library(CohortGenerator)
 
 # getCohortTableNames ---------
 test_that("Call getCohortTableNames with defaults", {
-  expect_equal(getCohortTableNames(),
-               list(cohortTable = "cohort",
-                    cohortInclusionTable = "cohort_inclusion",
-                    cohortInclusionResultTable = "cohort_inclusion_result",
-                    cohortInclusionStatsTable = "cohort_inclusion_stats",
-                    cohortSummaryStatsTable = "cohort_summary_stats",
-                    cohortCensorStatsTable = "cohort_censor_stats"))
+  expect_equal(
+    getCohortTableNames(),
+    list(
+      cohortTable = "cohort",
+      cohortInclusionTable = "cohort_inclusion",
+      cohortInclusionResultTable = "cohort_inclusion_result",
+      cohortInclusionStatsTable = "cohort_inclusion_stats",
+      cohortSummaryStatsTable = "cohort_summary_stats",
+      cohortCensorStatsTable = "cohort_censor_stats"
+    )
+  )
 })
 
 test_that("Call getCohortTableNames with custom table names", {
-  expect_equal(getCohortTableNames(cohortTable = "a",
-                                   cohortInclusionTable = "b",
-                                   cohortInclusionResultTable = "c",
-                                   cohortInclusionStatsTable = "d",
-                                   cohortSummaryStatsTable = "e",
-                                   cohortCensorStatsTable = "f"),
-               list(cohortTable = "a",
-                    cohortInclusionTable = "b",
-                    cohortInclusionResultTable = "c",
-                    cohortInclusionStatsTable = "d",
-                    cohortSummaryStatsTable = "e",
-                    cohortCensorStatsTable = "f"))
+  expect_equal(
+    getCohortTableNames(
+      cohortTable = "a",
+      cohortInclusionTable = "b",
+      cohortInclusionResultTable = "c",
+      cohortInclusionStatsTable = "d",
+      cohortSummaryStatsTable = "e",
+      cohortCensorStatsTable = "f"
+    ),
+    list(
+      cohortTable = "a",
+      cohortInclusionTable = "b",
+      cohortInclusionResultTable = "c",
+      cohortInclusionStatsTable = "d",
+      cohortSummaryStatsTable = "e",
+      cohortCensorStatsTable = "f"
+    )
+  )
 })
 
 # createCohortTables ---------
 test_that("Call createCohortTables without connection or connectionDetails", {
   expect_error(createCohortTables(),
-               message = "(connection details)")
+    message = "(connection details)"
+  )
 })
 
 test_that("Create cohort tables with connectionDetails", {
   expect_message(
-    createCohortTables(connectionDetails = connectionDetails,
-                       cohortDatabaseSchema = "main")
+    createCohortTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main"
+    )
   )
 })
 
 test_that("Create cohort tables with connection", {
-  conn = DatabaseConnector::connect(connectionDetails = connectionDetails)
-  cohortTableNames <- getCohortTableNames(cohortTable = "a",
-                                          cohortInclusionTable = "b",
-                                          cohortInclusionResultTable = "c",
-                                          cohortInclusionStatsTable = "d",
-                                          cohortSummaryStatsTable = "e",
-                                          cohortCensorStatsTable = "f")
-  createCohortTables(connectionDetails = connectionDetails,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  cohortTableNames <- getCohortTableNames(
+    cohortTable = "a",
+    cohortInclusionTable = "b",
+    cohortInclusionResultTable = "c",
+    cohortInclusionStatsTable = "d",
+    cohortSummaryStatsTable = "e",
+    cohortCensorStatsTable = "f"
+  )
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
 
-  for(i in names(cohortTableNames)) {
+  for (i in names(cohortTableNames)) {
     sql <- paste("SELECT * FROM", cohortTableNames[[i]], ";")
     results <- DatabaseConnector::querySql(conn, sql = sql)
     expect_equal(nrow(results), 0)
@@ -61,15 +78,17 @@ test_that("Create cohort tables with connection", {
 })
 
 test_that("Create cohort tables with incremental = TRUE", {
-  conn = DatabaseConnector::connect(connectionDetails = connectionDetails)
+  conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   cohortTableNames <- getCohortTableNames(cohortTable = "incrementalTrue")
   # Call the 1st time and verify the tables exist
-  createCohortTables(connectionDetails = connectionDetails,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames,
-                     incremental = TRUE)
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    incremental = TRUE
+  )
 
-  for(i in names(cohortTableNames)) {
+  for (i in names(cohortTableNames)) {
     sql <- paste("SELECT * FROM", cohortTableNames[[i]], ";")
     results <- DatabaseConnector::querySql(conn, sql = sql)
     expect_equal(nrow(results), 0)
@@ -77,17 +96,19 @@ test_that("Create cohort tables with incremental = TRUE", {
 
   # Call again and verify the table creation is skipped
   expect_invisible(
-    createCohortTables(connectionDetails = connectionDetails,
-                       cohortDatabaseSchema = "main",
-                       cohortTableNames = cohortTableNames,
-                       incremental = TRUE)
+    createCohortTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      incremental = TRUE
+    )
   )
 
   DatabaseConnector::disconnect(conn)
 })
 
 test_that("Create cohort tables with incremental = TRUE and partial table creation works", {
-  conn = DatabaseConnector::connect(connectionDetails = connectionDetails)
+  conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   cohortTableNames <- getCohortTableNames(cohortTable = "incrementalPartial")
 
   # Create only a cohort table
@@ -121,12 +142,14 @@ test_that("Create cohort tables with incremental = TRUE and partial table creati
   expect_equal(nrow(results), 1)
 
   # Create the cohort tables and verify
-  createCohortTables(connectionDetails = connectionDetails,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames,
-                     incremental = TRUE)
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    incremental = TRUE
+  )
 
-  for(i in names(cohortTableNames)) {
+  for (i in names(cohortTableNames)) {
     sql <- paste("SELECT * FROM", cohortTableNames[[i]], ";")
     results <- DatabaseConnector::querySql(conn, sql = sql)
     expectedRowCount <- ifelse(cohortTableNames[[i]] == cohortTableNames$cohortTable, 1, 0)
@@ -141,24 +164,31 @@ test_that("Export cohort stats with permanent tables", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
   cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
-  createCohortTables(connectionDetails = connectionDetails,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
 
   # Test getting results data frames
-  cohortStats <- getCohortStats(connectionDetails = connectionDetails,
-                                cohortDatabaseSchema = "main",
-                                cohortTableNames = cohortTableNames,
-                                snakeCaseToCamelCase = FALSE,
-                                databaseId = "Eunomia")
+  cohortStats <- getCohortStats(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    snakeCaseToCamelCase = FALSE,
+    databaseId = "Eunomia"
+  )
 
   checkmate::expect_names(names(cohortStats),
-                         must.include = c("cohortInclusionTable",
-                                          "cohortInclusionResultTable",
-                                          "cohortInclusionStatsTable",
-                                          "cohortInclusionStatsTable",
-                                          "cohortSummaryStatsTable",
-                                          "cohortCensorStatsTable"))
+    must.include = c(
+      "cohortInclusionTable",
+      "cohortInclusionResultTable",
+      "cohortInclusionStatsTable",
+      "cohortInclusionStatsTable",
+      "cohortSummaryStatsTable",
+      "cohortCensorStatsTable"
+    )
+  )
 
   for (tbl in names(cohortStats)) {
     checkmate::expect_data_frame(cohortStats[[tbl]])
@@ -166,27 +196,33 @@ test_that("Export cohort stats with permanent tables", {
 
   # Test bad table name
   expect_error(
-    cohortStats <- getCohortStats(connectionDetails = connectionDetails,
-                                  cohortDatabaseSchema = "main",
-                                  cohortTableNames = cohortTableNames,
-                                  outputTables = c("cohort"),
-                                  databaseId = "Eunomia")
+    cohortStats <- getCohortStats(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      outputTables = c("cohort"),
+      databaseId = "Eunomia"
+    )
   )
 
   # Test only exporting single table
-  cohortStats <- getCohortStats(connectionDetails = connectionDetails,
-                                  cohortDatabaseSchema = "main",
-                                  cohortTableNames = cohortTableNames,
-                                  outputTables = c("cohortInclusionStatsTable"),
-                                  databaseId = "Eunomia")
+  cohortStats <- getCohortStats(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    outputTables = c("cohortInclusionStatsTable"),
+    databaseId = "Eunomia"
+  )
 
   checkmate::expect_names(names(cohortStats), subset.of = c("cohortInclusionStatsTable"))
   # Export the results
-  exportCohortStatsTables(connectionDetails = connectionDetails,
-                          cohortDatabaseSchema = "main",
-                          cohortTableNames = cohortTableNames,
-                          cohortStatisticsFolder = cohortStatsFolder,
-                          incremental = FALSE)
+  exportCohortStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortStatisticsFolder = cohortStatsFolder,
+    incremental = FALSE
+  )
 
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
@@ -198,26 +234,32 @@ test_that("Export cohort stats with databaseId", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsDatabaseId")
   cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
-  createCohortTables(connectionDetails = connectionDetails,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
 
   # Generate with stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  generateCohortSet(connectionDetails = connectionDetails,
-                    cohortDefinitionSet = cohortsWithStats,
-                    cdmDatabaseSchema = "main",
-                    cohortTableNames = cohortTableNames,
-                    cohortDatabaseSchema = "main",
-                    incremental = FALSE)
+  generateCohortSet(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortsWithStats,
+    cdmDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = "main",
+    incremental = FALSE
+  )
 
   # Export the results
-  exportCohortStatsTables(connectionDetails = connectionDetails,
-                          cohortDatabaseSchema = "main",
-                          cohortTableNames = cohortTableNames,
-                          cohortStatisticsFolder = cohortStatsFolder,
-                          incremental = FALSE,
-                          databaseId = "Eunomia")
+  exportCohortStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortStatisticsFolder = cohortStatsFolder,
+    incremental = FALSE,
+    databaseId = "Eunomia"
+  )
 
   # Verify the files are written to the file system and have the database_id
   # present
@@ -233,28 +275,34 @@ test_that("Export cohort stats with fileNamesInSnakeCase = TRUE", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsSnakeCase")
   cohortStatsFolder <- file.path(outputFolder, "snakeCaseStats")
   # First create the cohort tables
-  createCohortTables(connectionDetails = connectionDetails,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
-  
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
   # Generate with stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  generateCohortSet(connectionDetails = connectionDetails,
-                    cohortDefinitionSet = cohortsWithStats,
-                    cdmDatabaseSchema = "main",
-                    cohortTableNames = cohortTableNames,
-                    cohortDatabaseSchema = "main",
-                    incremental = FALSE)
-  
+  generateCohortSet(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortsWithStats,
+    cdmDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = "main",
+    incremental = FALSE
+  )
+
   # Export the results
-  exportCohortStatsTables(connectionDetails = connectionDetails,
-                          cohortDatabaseSchema = "main",
-                          cohortTableNames = cohortTableNames,
-                          cohortStatisticsFolder = cohortStatsFolder,
-                          fileNamesInSnakeCase = TRUE,
-                          incremental = FALSE,
-                          databaseId = "Eunomia")
-  
+  exportCohortStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortStatisticsFolder = cohortStatsFolder,
+    fileNamesInSnakeCase = TRUE,
+    incremental = FALSE,
+    databaseId = "Eunomia"
+  )
+
   # Verify the files are written to the file system and are in snake_case
   # present
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv")
@@ -268,16 +316,20 @@ test_that("Export cohort stats in incremental mode", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")
   cohortStatsFolder <- file.path(outputFolder, "stats")
   # First create the cohort tables
-  createCohortTables(connectionDetails = connectionDetails,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
 
   # Export the results
-  exportCohortStatsTables(connectionDetails = connectionDetails,
-                          cohortDatabaseSchema = "main",
-                          cohortTableNames = cohortTableNames,
-                          cohortStatisticsFolder = cohortStatsFolder,
-                          incremental = TRUE)
+  exportCohortStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortStatisticsFolder = cohortStatsFolder,
+    incremental = TRUE
+  )
 
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
@@ -289,19 +341,25 @@ test_that("Export cohort stats in incremental mode", {
 test_that("Drop cohort stats tables", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsDropTest")
   # First create the cohort tables
-  createCohortTables(connectionDetails = connectionDetails,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
-  
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
   # Drop the cohort stats tables
-  dropCohortStatsTables(connectionDetails = connectionDetails,
-                        cohortDatabaseSchema = "main",
-                        cohortTableNames = cohortTableNames)
+  dropCohortStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
 
   # Verify that the only table remaining is the main cohort table
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-  tables <- DatabaseConnector::getTableNames(connection = connection,
-                                             databaseSchema = "main")
+  tables <- DatabaseConnector::getTableNames(
+    connection = connection,
+    databaseSchema = "main"
+  )
 
   expect_true(tolower(cohortTableNames$cohortTable) %in% tolower(tables))
   expect_false(tolower(cohortTableNames$cohortInclusionTable) %in% tolower(tables))
