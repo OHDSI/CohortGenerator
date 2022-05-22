@@ -1,13 +1,13 @@
 # Copyright 2022 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,26 +16,26 @@
 
 #' Used to insert the inclusion rule names from a cohort definition set
 #' when generating cohorts that include cohort statistics
-#' 
-#' @description 
-#' This function will take a cohortDefinitionSet that inclusions the Circe JSON 
+#'
+#' @description
+#' This function will take a cohortDefinitionSet that inclusions the Circe JSON
 #' representation of each cohort, parse the InclusionRule property to obtain
-#' the inclusion rule name and sequence number and insert the values into the 
+#' the inclusion rule name and sequence number and insert the values into the
 #' cohortInclusionTable. This function is only required when generating cohorts
 #' that include cohort statistics.
 #'
 #' @template Connection
-#'    
+#'
 #' @template CohortDefinitionSet
-#' 
+#'
 #' @template CohortDatabaseSchema
 #'
 #' @param cohortInclusionTable         Name of the inclusion table, one of the tables for storing
 #'                                     inclusion rule statistics.
-#'                                     
-#' @returns 
+#'
+#' @returns
 #' A data frame containing the inclusion rules by cohort and sequence ID
-#' 
+#'
 #' @export
 insertInclusionRuleNames <- function(connectionDetails = NULL,
                                      connection = NULL,
@@ -49,9 +49,12 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
 
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c("cohortId",
-                                          "cohortName",
-                                          "json"))
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "json"
+    )
+  )
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
@@ -72,7 +75,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
     description = character()
   )
   # Remove any cohort definitions that do not include the JSON property
-  cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) | is.na(cohortDefinitionSet$json)),]
+  cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) | is.na(cohortDefinitionSet$json)), ]
   for (i in 1:nrow(cohortDefinitionSet)) {
     cohortDefinition <- RJSONIO::fromJSON(content = cohortDefinitionSet$json[i], digits = 23)
     if (!is.null(cohortDefinition$InclusionRules)) {
@@ -87,36 +90,42 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
           if (is.null(ruleDescription)) {
             ruleDescription <- ""
           }
-          inclusionRules <- rbind(inclusionRules,
-                                  data.frame(
-                                    cohortDefinitionId = cohortDefinitionSet$cohortId[i],
-                                    ruleSequence = j - 1,
-                                    name = ruleName,
-                                    description = ruleDescription
-                                  ))
+          inclusionRules <- rbind(
+            inclusionRules,
+            data.frame(
+              cohortDefinitionId = cohortDefinitionSet$cohortId[i],
+              ruleSequence = j - 1,
+              name = ruleName,
+              description = ruleDescription
+            )
+          )
         }
       }
     }
   }
 
   # Remove any existing data to prevent duplication
-  DatabaseConnector::renderTranslateExecuteSql(connection = connection,
-                                               sql = "TRUNCATE TABLE @cohort_database_schema.@table;",
-                                               progressBar = FALSE,
-                                               reportOverallTime = FALSE,
-                                               cohort_database_schema = cohortDatabaseSchema,
-                                               table = cohortInclusionTable)
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = connection,
+    sql = "TRUNCATE TABLE @cohort_database_schema.@table;",
+    progressBar = FALSE,
+    reportOverallTime = FALSE,
+    cohort_database_schema = cohortDatabaseSchema,
+    table = cohortInclusionTable
+  )
 
   # Insert the inclusion rules
   if (nrow(inclusionRules) > 0) {
     ParallelLogger::logInfo("Inserting inclusion rule names")
-    DatabaseConnector::insertTable(connection = connection,
-                                   databaseSchema = cohortDatabaseSchema,
-                                   tableName = cohortInclusionTable,
-                                   data = inclusionRules,
-                                   dropTableIfExists = FALSE,
-                                   createTable = FALSE,
-                                   camelCaseToSnakeCase = TRUE)
+    DatabaseConnector::insertTable(
+      connection = connection,
+      databaseSchema = cohortDatabaseSchema,
+      tableName = cohortInclusionTable,
+      data = inclusionRules,
+      dropTableIfExists = FALSE,
+      createTable = FALSE,
+      camelCaseToSnakeCase = TRUE
+    )
   } else {
     warning("No inclusion rules found in the cohortDefinitionSet")
   }
@@ -145,7 +154,7 @@ getStatsTable <- function(connectionDetails,
     snakeCaseToCamelCase = snakeCaseToCamelCase,
     table = table,
     cohort_database_schema = cohortDatabaseSchema,
-    database_id = ifelse(is.null(databaseId), yes = '', no = databaseId)
+    database_id = ifelse(is.null(databaseId), yes = "", no = databaseId)
   )
 
   if (!snakeCaseToCamelCase) {
@@ -183,32 +192,39 @@ getCohortStats <- function(connectionDetails,
                            cohortDatabaseSchema,
                            databaseId = NULL,
                            snakeCaseToCamelCase = TRUE,
-                           outputTables = c("cohortInclusionTable",
-                                            "cohortInclusionResultTable",
-                                            "cohortInclusionStatsTable",
-                                            "cohortInclusionStatsTable",
-                                            "cohortSummaryStatsTable",
-                                            "cohortCensorStatsTable"),
+                           outputTables = c(
+                             "cohortInclusionTable",
+                             "cohortInclusionResultTable",
+                             "cohortInclusionStatsTable",
+                             "cohortInclusionStatsTable",
+                             "cohortSummaryStatsTable",
+                             "cohortCensorStatsTable"
+                           ),
                            cohortTableNames = getCohortTableNames()) {
 
   # Names of cohort table names must include output tables
   checkmate::assertNames(names(cohortTableNames), must.include = outputTables)
   # ouput tables strictly the set of allowed tables
   checkmate::assertNames(outputTables,
-                         subset.of = c("cohortInclusionTable",
-                                       "cohortInclusionResultTable",
-                                       "cohortInclusionStatsTable",
-                                       "cohortInclusionStatsTable",
-                                       "cohortSummaryStatsTable",
-                                       "cohortCensorStatsTable"))
+    subset.of = c(
+      "cohortInclusionTable",
+      "cohortInclusionResultTable",
+      "cohortInclusionStatsTable",
+      "cohortInclusionStatsTable",
+      "cohortSummaryStatsTable",
+      "cohortCensorStatsTable"
+    )
+  )
   results <- list()
   for (table in outputTables) {
-    results[[table]] <- getStatsTable(connectionDetails = connectionDetails,
-                                      connection = connection,
-                                      cohortDatabaseSchema = cohortDatabaseSchema,
-                                      table = cohortTableNames[[table]],
-                                      snakeCaseToCamelCase = snakeCaseToCamelCase,
-                                      databaseId = databaseId)
+    results[[table]] <- getStatsTable(
+      connectionDetails = connectionDetails,
+      connection = connection,
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      table = cohortTableNames[[table]],
+      snakeCaseToCamelCase = snakeCaseToCamelCase,
+      databaseId = databaseId
+    )
   }
   return(results)
 }

@@ -86,10 +86,12 @@ test_that("readCsv reads a file with incorrect column casing and raises a warnin
 test_that("writeCsv writes a file without column casing warning", {
   testfile <- tempfile(fileext = ".csv")
   df <- createEmptyCohortDefinitionSet()
-  expect_invisible(writeCsv(x = df,
-                            file = testfile, 
-                            warnOnCaseMismatch = TRUE,
-                            warnOnUploadRuleViolations = FALSE))
+  expect_invisible(writeCsv(
+    x = df,
+    file = testfile,
+    warnOnCaseMismatch = TRUE,
+    warnOnUploadRuleViolations = FALSE
+  ))
   unlink(testfile)
 })
 
@@ -97,19 +99,23 @@ test_that("writeCsv writes a file with column casing warning", {
   testfile <- tempfile(fileext = ".csv")
   df <- createEmptyCohortDefinitionSet()
   names(df) <- SqlRender::camelCaseToSnakeCase(names(df))
-  expect_warning(writeCsv(x = df,
-                          file = testfile, 
-                          warnOnCaseMismatch = TRUE,
-                          warnOnUploadRuleViolations = FALSE))
+  expect_warning(writeCsv(
+    x = df,
+    file = testfile,
+    warnOnCaseMismatch = TRUE,
+    warnOnUploadRuleViolations = FALSE
+  ))
   unlink(testfile)
 })
 
 test_that("writeCsv writes a file with a warning on upload rule violations", {
   testfile <- tempfile(pattern = "camelCase", fileext = ".csv")
   df <- createEmptyCohortDefinitionSet()
-  expect_warning(writeCsv(x = df,
-                          file = testfile, 
-                          warnOnCaseMismatch = FALSE,
-                          warnOnUploadRuleViolations = TRUE))
+  expect_warning(writeCsv(
+    x = df,
+    file = testfile,
+    warnOnCaseMismatch = FALSE,
+    warnOnUploadRuleViolations = TRUE
+  ))
   unlink(testfile)
 })

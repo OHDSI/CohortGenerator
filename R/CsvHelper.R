@@ -1,13 +1,13 @@
 # Copyright 2022 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,18 +19,18 @@
 #'
 #' @description
 #' This function is used to centralize the function for reading
-#' .csv files across the HADES ecosystem. This function will automatically 
+#' .csv files across the HADES ecosystem. This function will automatically
 #' convert from snake_case in the file to camelCase in the data.frame returned
-#' as is the standard described in: 
+#' as is the standard described in:
 #' https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL
-#' 
+#'
 #' @param file  The .csv file to read.
-#' @param warnOnCaseMismatch  When TRUE, raise a warning if column headings 
+#' @param warnOnCaseMismatch  When TRUE, raise a warning if column headings
 #' in the .csv are not in snake_case format
 #'
 #' @return
 #' A tibble with the .csv contents
-#' 
+#'
 #' @export
 readCsv <- function(file, warnOnCaseMismatch = TRUE) {
   fileContents <- .readCsv(file = file)
@@ -48,48 +48,50 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #' Internal read CSV file when control over column formatting is required.
 #'
 #' @description
-#' This function is internal to the package 
-#' 
+#' This function is internal to the package
+#'
 #' @param file  The .csv file to read.
-#' 
-#' @return 
+#'
+#' @return
 #'  Returns the file contents invisibly.
 #'
 .readCsv <- function(file) {
-  invisible(readr::read_csv(file = file,
-                            col_types = readr::cols(),
-                            lazy = FALSE))
+  invisible(readr::read_csv(
+    file = file,
+    col_types = readr::cols(),
+    lazy = FALSE
+  ))
 }
 
 #' Used to write a .csv file
 #'
 #' @description
 #' This function is used to centralize the function for writing
-#' .csv files across the HADES ecosystem. This function will automatically 
+#' .csv files across the HADES ecosystem. This function will automatically
 #' convert from camelCase in the data.frame to snake_case column names
 #' in the resulting .csv file as is the standard
-#' described in: 
+#' described in:
 #' https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL
-#' 
-#' This function may also raise warnings if the data is stored in a format 
+#'
+#' This function may also raise warnings if the data is stored in a format
 #' that will not work with the HADES standard for uploading to a results database.
 #' Specifically file names should be in snake_case format, all column headings
 #' are in snake_case format and where possible the file name should not be plural.
-#' See \code{isFormattedForDatabaseUpload} for a helper function to check a 
+#' See \code{isFormattedForDatabaseUpload} for a helper function to check a
 #' data.frame for rules on the column names
-#' 
+#'
 #' @param x  A data frame or tibble to write to disk.
-#' 
+#'
 #' @param file  The .csv file to write.
-#' 
-#' @param warnOnCaseMismatch  When TRUE, raise a warning if columns in the 
+#'
+#' @param warnOnCaseMismatch  When TRUE, raise a warning if columns in the
 #' data.frame are NOT in camelCase format.
-#' 
+#'
 #' @param warnOnUploadRuleViolations When TRUE, this function will provide
 #' warning messages that may indicate if the data is stored in a format in the
 #' .csv that may cause problems when uploading to a database.
-#' 
-#' @return 
+#'
+#' @return
 #'  Returns the input x invisibly.
 #'
 #' @export
@@ -102,26 +104,26 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolati
     warning(paste("The following columns were not in camel case format:", problemColumnsWarning))
   }
   colnames(x) <- SqlRender::camelCaseToSnakeCase(colnames(x))
-  
+
   if (warnOnUploadRuleViolations) {
     # Check the data.frame to ensure it is in the proper format for upload
     isFormattedForDatabaseUpload(x)
-    
+
     # Check if the file name is in lower snake case format
     fileName <- gsub(x = basename(file), pattern = ".csv", replacement = "")
     if (!isSnakeCase(fileName)) {
       warning(paste("The filename:", basename(file), "is not in snake case format"))
     }
-    
+
     # Also perform a check to see if the fileName end in "s" which might indicate
     # that the resulting file name is plural
     if (endsWith(fileName, "s")) {
       rlang::inform(paste("The filename:", basename(file), "may be plural since it ends in 's'. Please ensure you are using singular nouns for your file names."))
     }
   }
-  
+
   # Write the file
-  .writeCsv(x = x , file = file)
+  .writeCsv(x = x, file = file)
 }
 
 
@@ -132,18 +134,20 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolati
 #' requires additional control over the column formatting which requires that
 #' we bypass the \code{writeCsv} function since it will automatically convert
 #' from camelCase to snake_case.
-#' 
+#'
 #' @param x  A data frame or tibble to write to disk.
-#' 
+#'
 #' @param file  The .csv file to write.
-#' 
-#' @return 
+#'
+#' @return
 #'  Returns the input x invisibly.
 #'
 .writeCsv <- function(x, file) {
   # Write the file
-  readr::write_csv(x = x,
-                   file = file)
+  readr::write_csv(
+    x = x,
+    file = file
+  )
   invisible(x)
 }
 
@@ -151,16 +155,16 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolati
 #' Is the data.frame formatted for uploading to a database?
 #'
 #' @description
-#' This function is used to check a data.frame to ensure all 
-#' column names are in snake case format. 
-#' 
+#' This function is used to check a data.frame to ensure all
+#' column names are in snake case format.
+#'
 #' @param x  A data frame
-#' @param warn When TRUE, display a warning of any columns are not in snake 
+#' @param warn When TRUE, display a warning of any columns are not in snake
 #' case format
-#' 
-#' @return 
+#'
+#' @return
 #' Returns TRUE if all columns are snake case format. If warn == TRUE,
-#' the function will emit a warning on the column names that are not in snake 
+#' the function will emit a warning on the column names that are not in snake
 #' case format.
 #'
 #' @export
@@ -174,7 +178,7 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
     # to provide a suggestion
     columnNameSuggestions <- c()
     if (length(problemColumns) > 0) {
-      for(i in 1:length(problemColumns)) {
+      for (i in 1:length(problemColumns)) {
         suggestion <- problemColumns[i]
         if (isCamelCase(suggestion)) {
           suggestion <- SqlRender::camelCaseToSnakeCase(suggestion)
@@ -194,10 +198,10 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
 #' @description
 #' This function is used check if a string conforms to
 #' the snake case format.
-#' 
+#'
 #' @param x  The string to evaluate
-#' 
-#' @return 
+#'
+#' @return
 #'  TRUE if the string is in snake case
 #'
 #' @export
@@ -210,10 +214,10 @@ isSnakeCase <- function(x) {
 #' @description
 #' This function is used check if a string conforms to
 #' the lower camel case format.
-#' 
+#'
 #' @param x  The string to evaluate
-#' 
-#' @return 
+#'
+#' @return
 #'  TRUE if the string is in lower camel case
 #'
 #' @export
