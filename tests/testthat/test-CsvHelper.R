@@ -119,3 +119,15 @@ test_that("writeCsv writes a file with a warning on upload rule violations", {
   ))
   unlink(testfile)
 })
+
+test_that("writeCsv writes a file with a message on plural file name", {
+  testfile <- tempfile(pattern = "test_cases", fileext = ".csv")
+  df <- createEmptyCohortDefinitionSet()
+  expect_silent(writeCsv(
+    x = df,
+    file = testfile,
+    warnOnCaseMismatch = FALSE,
+    warnOnUploadRuleViolations = TRUE
+  ))
+  unlink(testfile)
+})

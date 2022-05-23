@@ -73,8 +73,13 @@ exportCohortStatsTables <- function(connectionDetails,
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
     ParallelLogger::logInfo("- Saving data to - ", fullFileName)
     if (incremental) {
-      cohortDefinitionIds <- unique(data$cohortDefinitionId)
-      saveIncremental(data, fullFileName, cohortDefinitionId = cohortDefinitionIds)
+      if (snakeCaseToCamelCase) {
+        cohortDefinitionIds <- unique(data$cohortDefinitionId)
+        saveIncremental(data, fullFileName, cohortDefinitionId = cohortDefinitionIds)
+      } else {
+        cohortDefinitionIds <- unique(data$cohort_definition_id)
+        saveIncremental(data, fullFileName, cohort_definition_id = cohortDefinitionIds)
+      }
     } else {
       .writeCsv(x = data, file = fullFileName)
     }
