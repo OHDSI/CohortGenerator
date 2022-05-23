@@ -6,8 +6,12 @@
 \usage{
 isCohortDefinitionSet(x)
 }
+\arguments{
+\item{x}{The data.frame to check}
+}
 \value{
-Returns TRUE if the input is a cohortDefinitionSet
+Returns TRUE if the input is a cohortDefinitionSet or returns FALSE
+with warnings on any violations
 }
 \description{
 This function checks a data.frame to verify it holds the expected format

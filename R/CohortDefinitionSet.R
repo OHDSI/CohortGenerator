@@ -48,6 +48,8 @@ createEmptyCohortDefinitionSet <- function(verbose = FALSE) {
 #' @description
 #' This function checks a data.frame to verify it holds the expected format
 #' for a cohortDefinitionSet.
+#' 
+#' @param x  The data.frame to check
 #'
 #' @return
 #' Returns TRUE if the input is a cohortDefinitionSet or returns FALSE

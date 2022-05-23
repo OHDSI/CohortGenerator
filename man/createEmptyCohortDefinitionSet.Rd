@@ -11,7 +11,7 @@ createEmptyCohortDefinitionSet(verbose = FALSE)
 returned}
 }
 \value{
-Invisibly Returns an empty cohort set data.frame
+Invisibly returns an empty cohort set data.frame
 }
 \description{
 This function creates an empty cohort set data.frame for use
