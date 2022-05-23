@@ -4,10 +4,14 @@
 \alias{createEmptyCohortDefinitionSet}
 \title{Create an empty cohort definition set}
 \usage{
-createEmptyCohortDefinitionSet()
+createEmptyCohortDefinitionSet(verbose = FALSE)
+}
+\arguments{
+\item{verbose}{When TRUE, descriptions of each field in the data.frame are
+returned}
 }
 \value{
-Returns an empty cohort set data.frame
+Invisibly Returns an empty cohort set data.frame
 }
 \description{
 This function creates an empty cohort set data.frame for use

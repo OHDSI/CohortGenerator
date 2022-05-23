@@ -20,12 +20,98 @@
 #' This function creates an empty cohort set data.frame for use
 #' with \code{generateCohortSet}.
 #'
+#' @param verbose When TRUE, descriptions of each field in the data.frame are
+#'                returned
+#'                         
 #' @return
-#' Returns an empty cohort set data.frame
+#' Invisibly returns an empty cohort set data.frame
 #'
 #' @export
-createEmptyCohortDefinitionSet <- function() {
-  return(setNames(data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = FALSE), c("cohortId", "cohortName", "sql")))
+createEmptyCohortDefinitionSet <- function(verbose = FALSE) {
+  checkmate::assert_logical(verbose)
+  cohortDefinitionSetSpec <- .getCohortDefinitionSetSpecification()
+  if (verbose) {
+    print(cohortDefinitionSetSpec)
+  }
+  # Build the data.frame dynamically from the cohort definition set spec
+  df <- data.frame()
+  for (i in 1:nrow(cohortDefinitionSetSpec)) {
+    colName <- cohortDefinitionSetSpec$columnName[i]
+    dataType <- cohortDefinitionSetSpec$dataType[i]
+    df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
+  }
+  invisible(df)
+}
+
+#' Is the data.frame a cohort definition set?
+#'
+#' @description
+#' This function checks a data.frame to verify it holds the expected format
+#' for a cohortDefinitionSet.
+#'
+#' @return
+#' Returns TRUE if the input is a cohortDefinitionSet or returns FALSE
+#' with warnings on any violations
+#' 
+#' @export
+isCohortDefinitionSet <- function(x) {
+  checkmate::assert_data_frame(x)
+  df <- createEmptyCohortDefinitionSet(verbose = FALSE)
+  cohortDefinitionSetSpec <- .getCohortDefinitionSetSpecification()
+  
+  # Compare the column names from the input x to an empty cohort 
+  # definition set to ensure the required columns are present
+  cohortDefinitionSetColumns <- colnames(df)
+  matchingColumns <- intersect(x = colnames(x), y = cohortDefinitionSetColumns)
+  columnNamesMatch <- setequal(matchingColumns, cohortDefinitionSetColumns)
+  
+  if (!columnNamesMatch) {
+    columnsMissing <- setdiff(x = cohortDefinitionSetColumns, y = colnames(x))
+    warningMessage <- paste0("The following columns were missing in your cohortDefinitionSet: ",
+                             paste(columnsMissing, collapse = ","),
+                             ". A cohortDefinitionSet requires the following columns: ", 
+                             paste(cohortDefinitionSetColumns, collapse = ","))
+    warning(warningMessage)
+  }
+  
+  # Compare the data types from the input x to an empty cohort 
+  # definition set to ensure the same data types are present
+  dataTypesMatch <- FALSE
+  if (columnNamesMatch) {
+    # Subset x to the required columns
+    xSubset <- x[,cohortDefinitionSetColumns]
+    # Get the data types
+    xDataTypes <- sapply(xSubset, typeof)
+    # Get the reference data types
+    cohortDefinitionSetDataTypes <- sapply(df, typeof)
+    # Check if the data types match
+    dataTypesMatch <- setequal(xDataTypes, cohortDefinitionSetDataTypes)
+    if (!dataTypesMatch) {
+      dataTypesMismatch <- setdiff(x = cohortDefinitionSetDataTypes, y = xDataTypes)
+      # Create a column for the warning message
+      cohortDefinitionSetSpec$columnNameWithDataType <- paste(cohortDefinitionSetSpec$columnName, cohortDefinitionSetSpec$dataType, sep=" == ")
+      warningMessage <- paste0("Your cohortDefinitionSet had a mismatch in data types. Please check your cohortDefinitionSet to ensure it conforms to the following:\ncolumn == data type\n-------------------\n", paste(cohortDefinitionSetSpec$columnNameWithDataType, collapse = "\n"))
+      warning(warningMessage)
+    }
+  }
+  return(columnNamesMatch && dataTypesMatch)
+}
+
+#' Helper function to return the specification description of a 
+#' cohortDefinitionSet
+#'
+#' @description
+#' This function reads from the cohortDefinitionSetSpecificationDescription.csv
+#' to return a data.frame that describes the required columns in a 
+#' cohortDefinitionSet
+#'
+#' @return
+#' Returns a data.frame that defines a cohortDefinitionSet
+#' 
+.getCohortDefinitionSetSpecification <- function() {
+  return(readCsv(system.file("cohortDefinitionSetSpecificationDescription.csv",
+                             package = "CohortGenerator",
+                             mustWork = TRUE)))
 }
 
 #' Get a cohort definition set

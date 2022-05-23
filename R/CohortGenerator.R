@@ -21,6 +21,7 @@
 #' @importFrom grDevices rgb
 #' @importFrom stats aggregate setNames
 #' @importFrom utils write.csv install.packages menu packageVersion sessionInfo
+#' @importFrom magrittr "%>%"
 #' @importFrom rlang .data
 NULL
 
