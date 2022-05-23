@@ -22,14 +22,14 @@ test_that("Export cohort stats with permanent tables", {
   )
 
   checkmate::expect_names(names(cohortStats),
-                          must.include = c(
-                            "cohortInclusionTable",
-                            "cohortInclusionResultTable",
-                            "cohortInclusionStatsTable",
-                            "cohortInclusionStatsTable",
-                            "cohortSummaryStatsTable",
-                            "cohortCensorStatsTable"
-                          )
+    must.include = c(
+      "cohortInclusionTable",
+      "cohortInclusionResultTable",
+      "cohortInclusionStatsTable",
+      "cohortInclusionStatsTable",
+      "cohortSummaryStatsTable",
+      "cohortCensorStatsTable"
+    )
   )
 
   for (tbl in names(cohortStats)) {
@@ -182,14 +182,14 @@ test_that("Export cohort stats in incremental mode", {
 test_that("Export cohort stats with camelCase for column names", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsSnakeCase")
   cohortStatsFolder <- file.path(outputFolder, "statsCamelCase")
-  
+
   # First create the cohort tables
   createCohortTables(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames
   )
-  
+
   # Generate the cohorts
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   generateCohortSet(
@@ -210,15 +210,15 @@ test_that("Export cohort stats with camelCase for column names", {
     fileNamesInSnakeCase = TRUE,
     incremental = TRUE
   )
-  
-  # Verify the files are written to the file system and the columns are in 
+
+  # Verify the files are written to the file system and the columns are in
   # camel case format
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
     data <- CohortGenerator:::.readCsv(exportedFiles[i])
     expect_true(all(isCamelCase(names(data))))
   }
-  
+
   # Export the results again in incremental mode and verify
   # the results are preserved
   exportCohortStatsTables(
@@ -230,27 +230,27 @@ test_that("Export cohort stats with camelCase for column names", {
     fileNamesInSnakeCase = TRUE,
     incremental = TRUE
   )
-  
+
   # Verify the cohort_inc_stats.csv contains cohortDefinitionIds c(2,3)
   # camel case format
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = "cohort_inc_stats.csv", full.names = TRUE)
   expect_equal(length(exportedFiles), 1)
   data <- CohortGenerator:::.readCsv(exportedFiles[1])
-  expect_equal(unique(data$cohortDefinitionId), c(2,3))  
-  unlink(cohortStatsFolder)  
+  expect_equal(unique(data$cohortDefinitionId), c(2, 3))
+  unlink(cohortStatsFolder)
 })
 
 test_that("Export cohort stats with snake_case for column names", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStats_snake")
   cohortStatsFolder <- file.path(outputFolder, "statsSnakeCase")
-  
+
   # First create the cohort tables
   createCohortTables(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames
   )
-  
+
   # Generate the cohorts
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   generateCohortSet(
@@ -260,7 +260,7 @@ test_that("Export cohort stats with snake_case for column names", {
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithStats
   )
-  
+
   # Export the results
   exportCohortStatsTables(
     connectionDetails = connectionDetails,
@@ -271,15 +271,15 @@ test_that("Export cohort stats with snake_case for column names", {
     fileNamesInSnakeCase = TRUE,
     incremental = TRUE
   )
-  
-  # Verify the files are written to the file system and the columns are in 
+
+  # Verify the files are written to the file system and the columns are in
   # camel case format
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
     data <- CohortGenerator:::.readCsv(exportedFiles[i])
     expect_true(all(isSnakeCase(names(data))))
   }
-  
+
   # Export the results again in incremental mode and verify
   # the results are preserved
   exportCohortStatsTables(
@@ -291,12 +291,12 @@ test_that("Export cohort stats with snake_case for column names", {
     fileNamesInSnakeCase = TRUE,
     incremental = TRUE
   )
-  
+
   # Verify the cohort_inc_stats.csv contains cohort_definition_id == c(2,3)
   # snake case format
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = "cohort_inc_stats.csv", full.names = TRUE)
   expect_equal(length(exportedFiles), 1)
   data <- CohortGenerator:::.readCsv(exportedFiles[1])
-  expect_equal(unique(data$cohort_definition_id), c(2,3))  
-  unlink(cohortStatsFolder)  
+  expect_equal(unique(data$cohort_definition_id), c(2, 3))
+  unlink(cohortStatsFolder)
 })

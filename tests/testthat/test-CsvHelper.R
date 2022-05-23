@@ -131,4 +131,3 @@ test_that("writeCsv writes a file with a message on plural file name", {
   ))
   unlink(testfile)
 })
-
