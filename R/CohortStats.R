@@ -167,7 +167,7 @@ getStatsTable <- function(connectionDetails,
 #' Get Cohort Inclusion Stats Table Data
 #' @description
 #' This function returns a data frame of the data in the Cohort Inclusion Tables.
-#' Results are organised in to a list with 5 different data frames:
+#' Results are organized in to a list with 5 different data frames:
 #'  * cohortInclusionTable
 #'  * cohortInclusionResultTable
 #'  * cohortInclusionStatsTable
