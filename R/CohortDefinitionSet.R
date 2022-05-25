@@ -265,7 +265,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
 #' https://mllg.github.io/checkmate/articles/checkmate.html. The assertion function
 #' is called assert_settings_columns.
 #'
-#' @param columnNames The name of the columns found in either the cohortDefintionSet
+#' @param columnNames The name of the columns found in either the cohortDefinitionSet
 #'                    data frame or from reading the contents of the settingsFile
 #'
 #' @param settingsFileName The file name of the CSV that defines the cohortDefinitionSet.

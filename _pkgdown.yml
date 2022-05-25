@@ -43,9 +43,19 @@ reference:
       exporting the cohort statistics to the file system and a helper function 
       for dropping those tables when they are no longer needed.
     contents:
+      - getCohortStats
       - insertInclusionRuleNames
       - exportCohortStatsTables
       - dropCohortStatsTables
+      
+  - title: "CSV File Helpers"
+    desc: >
+      Functions for reading and writing CSV files to ensure adherance to
+      the HADES standard when interfacing between R and SQL/File System:
+      https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL
+    contents:
+      - readCsv
+      - writeCsv
 
   - title: "Record Keeping"
     desc: >

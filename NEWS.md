@@ -1,3 +1,9 @@
+CohortGenerator 0.5.0
+=======================
+- Allow for specification of the database_id in export methods. (Issue #18)
+- `getCohortStats` function allows for exporting cohort statistics into data frames (Pull Request #24)
+- Add utility methods for reading/writing CSV files. (Issue #16)
+
 CohortGenerator 0.4.0
 =======================
 - Update dependency versions in DESCRIPTION to resolve issues when using older versions of readr/stringi. (Issue #13)
