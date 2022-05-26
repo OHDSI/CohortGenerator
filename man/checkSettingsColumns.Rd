@@ -8,7 +8,7 @@ specified}
 checkSettingsColumns(columnNames, settingsFileName = NULL)
 }
 \arguments{
-\item{columnNames}{The name of the columns found in either the cohortDefintionSet
+\item{columnNames}{The name of the columns found in either the cohortDefinitionSet
 data frame or from reading the contents of the settingsFile}
 
 \item{settingsFileName}{The file name of the CSV that defines the cohortDefinitionSet.

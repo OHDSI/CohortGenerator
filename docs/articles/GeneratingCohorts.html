@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -85,7 +85,7 @@
                         <h4 data-toc-skip class="author">Anthony G. Sena
 and Martijn J. Schuemie</h4>
             
-            <h4 data-toc-skip class="date">2022-03-08</h4>
+            <h4 data-toc-skip class="date">2022-05-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/HEAD/vignettes/GeneratingCohorts.Rmd" class="external-link"><code>vignettes/GeneratingCohorts.Rmd</code></a></small>
       <div class="hidden name"><code>GeneratingCohorts.Rmd</code></div>
@@ -235,7 +235,7 @@ summary of the persons and events for each cohort:</p>
                 cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">#&gt; Connecting using SQLite driver</span>
 <span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Counting cohorts took 0.0356 secs</span></code></pre>
+<pre><code><span class="co">#&gt; Counting cohorts took 0.041 secs</span></code></pre>
 <pre><code><span class="co">#&gt;   cohortId cohortEntries cohortSubjects</span>
 <span class="co">#&gt; 1  1778211          1800           1800</span>
 <span class="co">#&gt; 2  1778212           569            569</span>
@@ -394,7 +394,7 @@ skipped. To illustrate how this looks:</p>
 <pre><code><span class="co">#&gt; Skipping cohortId = '1778212' because it is unchanged from earlier run</span></code></pre>
 <pre><code><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
 <pre><code><span class="co">#&gt; Skipping cohortId = '1778213' because it is unchanged from earlier run</span>
-<span class="co">#&gt; Generating cohort set took 0.08 secs</span></code></pre>
+<span class="co">#&gt; Generating cohort set took 0.07 secs</span></code></pre>
 <div class="section level5">
 <h5 id="potential-pitfalls-of-incremental-mode">Potential Pitfalls of Incremental Mode<a class="anchor" aria-label="anchor" href="#potential-pitfalls-of-incremental-mode"></a>
 </h5>
