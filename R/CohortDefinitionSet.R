@@ -92,7 +92,11 @@ isCohortDefinitionSet <- function(x) {
       dataTypesMismatch <- setdiff(x = cohortDefinitionSetDataTypes, y = xDataTypes)
       # Create a column for the warning message
       cohortDefinitionSetSpec$columnNameWithDataType <- paste(cohortDefinitionSetSpec$columnName, cohortDefinitionSetSpec$dataType, sep=" == ")
-      warningMessage <- paste0("Your cohortDefinitionSet had a mismatch in data types. Please check your cohortDefinitionSet to ensure it conforms to the following:\ncolumn == data type\n-------------------\n", paste(cohortDefinitionSetSpec$columnNameWithDataType, collapse = "\n"))
+      userSuppliedCohortDefinitionSetDataTypes <- paste(names(x[1==0,]), "==", sapply(x[1==0,], class), collapse = "\n")
+      warningMessage <- paste0("Your cohortDefinitionSet had a mismatch in data types. Please check your cohortDefinitionSet to ensure it conforms to the following expected data types:")
+      warningMessage <- paste0(warningMessage, "Expected column == data type\n--------------------------\n", paste(cohortDefinitionSetSpec$columnNameWithDataType, collapse = "\n"))
+      warningMessage <- paste0(warningMessage, "\n--------------------------\n")
+      warningMessage <- paste0(warningMessage, "Your cohortDefinitionSet \n--------------------------\n", userSuppliedCohortDefinitionSetDataTypes)
       warning(warningMessage)
     }
   }
