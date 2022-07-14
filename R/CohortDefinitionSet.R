@@ -253,7 +253,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
 
   # Read the settings file which holds the cohortDefinitionSet
   ParallelLogger::logInfo("Loading cohortDefinitionSet")
-  settings <- readCsv(file = getPath(fileName = settingsFileName))
+  settings <- readCsv(file = getPath(fileName = settingsFileName), warnOnCaseMismatch = FALSE)
 
   assert_settings_columns(names(settings), getPath(fileName = settingsFileName))
   checkmate::assert_true(all(cohortFileNameValue %in% names(settings)))

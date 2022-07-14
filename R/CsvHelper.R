@@ -41,7 +41,8 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
     problemColumnsWarning <- paste(problemColumns, collapse = ", ")
     warning(paste("The following columns were not in snake case format:", problemColumnsWarning))
   }
-  colnames(fileContents) <- SqlRender::snakeCaseToCamelCase(colnames(fileContents))
+  colIdxToConvert <- which(isSnakeCase(columnNames))
+  names(fileContents)[colIdxToConvert] <- SqlRender::snakeCaseToCamelCase(names(fileContents)[colIdxToConvert])
   invisible(fileContents)
 }
 
