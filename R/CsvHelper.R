@@ -86,6 +86,9 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #'
 #' @param warnOnCaseMismatch  When TRUE, raise a warning if columns in the
 #' data.frame are NOT in camelCase format.
+#' 
+#' @param warnOnFileNameCaseMismatch When TRUE, raise a warning if the file
+#' name specified is not in snake_case format.
 #'
 #' @param warnOnUploadRuleViolations When TRUE, this function will provide
 #' warning messages that may indicate if the data is stored in a format in the
