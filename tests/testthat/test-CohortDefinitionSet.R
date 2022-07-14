@@ -169,6 +169,9 @@ test_that("Call isCohortDefinitionSet with real cohort definition set and expect
     sqlFolder = "testdata/id/sql/sql_server",
     packageName = "CohortGenerator"
   )
+  cohortDefinitionSet <- checkAndFixCohortDefinitionSetDataTypes(x = cohortDefinitionSet,
+                                                                 fixDataTypes = TRUE,
+                                                                 emitWarning = FALSE)$x
   expect_true(isCohortDefinitionSet(cohortDefinitionSet))
 })
 
@@ -179,6 +182,9 @@ test_that("Call isCohortDefinitionSet with incorrect cohort definition set and e
     sqlFolder = "testdata/id/sql/sql_server",
     packageName = "CohortGenerator"
   )
+  cohortDefinitionSet <- checkAndFixCohortDefinitionSetDataTypes(x = cohortDefinitionSet,
+                                                                 fixDataTypes = TRUE,
+                                                                 emitWarning = FALSE)$x
   cohortDefinitionSetError <- cohortDefinitionSet[,!(names(cohortDefinitionSet) %in% c("json"))]
   expect_warning(expect_false(isCohortDefinitionSet(cohortDefinitionSetError)))
 })
