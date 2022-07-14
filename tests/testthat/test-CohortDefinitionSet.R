@@ -195,3 +195,7 @@ test_that("Call isCohortDefinitionSet with cohort definition set with incorrect 
   expect_warning(expect_false(isCohortDefinitionSet(cohortDefinitionSet)))
 })
 
+test_that("Call checkAndFixCohortDefinitionSetDataTypes with empty data.frame() and expect error" , {
+  expect_error(checkAndFixCohortDefinitionSetDataTypes(x = data.frame()))
+})
+
