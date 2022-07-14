@@ -153,3 +153,49 @@ test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator pack
     packageName = "CohortGenerator"
   ))
 })
+
+test_that("Call createEmptyCohortDefinitionSet in verbose mode" , {
+  expect_output(createEmptyCohortDefinitionSet(verbose = TRUE))
+})
+
+test_that("Call isCohortDefinitionSet with empty cohort definition set and expect TRUE" , {
+  expect_true(isCohortDefinitionSet(createEmptyCohortDefinitionSet()))
+})
+
+test_that("Call isCohortDefinitionSet with real cohort definition set and expect TRUE" , {
+  cohortDefinitionSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/id/Cohorts.csv",
+    jsonFolder = "testdata/id/cohorts",
+    sqlFolder = "testdata/id/sql/sql_server",
+    packageName = "CohortGenerator"
+  )
+  cohortDefinitionSet <- checkAndFixCohortDefinitionSetDataTypes(x = cohortDefinitionSet,
+                                                                 fixDataTypes = TRUE,
+                                                                 emitWarning = FALSE)$x
+  expect_true(isCohortDefinitionSet(cohortDefinitionSet))
+})
+
+test_that("Call isCohortDefinitionSet with incorrect cohort definition set and expect FALSE" , {
+  cohortDefinitionSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/id/Cohorts.csv",
+    jsonFolder = "testdata/id/cohorts",
+    sqlFolder = "testdata/id/sql/sql_server",
+    packageName = "CohortGenerator"
+  )
+  cohortDefinitionSet <- checkAndFixCohortDefinitionSetDataTypes(x = cohortDefinitionSet,
+                                                                 fixDataTypes = TRUE,
+                                                                 emitWarning = FALSE)$x
+  cohortDefinitionSetError <- cohortDefinitionSet[,!(names(cohortDefinitionSet) %in% c("json"))]
+  expect_warning(expect_false(isCohortDefinitionSet(cohortDefinitionSetError)))
+})
+
+test_that("Call isCohortDefinitionSet with cohort definition set with incorrect data type and expect FALSE" , {
+  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
+  cohortDefinitionSet$cohortName <- as.integer(cohortDefinitionSet$cohortName)
+  expect_warning(expect_false(isCohortDefinitionSet(cohortDefinitionSet)))
+})
+
+test_that("Call checkAndFixCohortDefinitionSetDataTypes with empty data.frame() and expect error" , {
+  expect_error(checkAndFixCohortDefinitionSetDataTypes(x = data.frame()))
+})
+
