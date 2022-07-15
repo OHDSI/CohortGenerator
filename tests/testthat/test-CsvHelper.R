@@ -131,3 +131,18 @@ test_that("writeCsv writes a file with a message on plural file name", {
   ))
   unlink(testfile)
 })
+
+
+test_that("writeCsv writes a file with a warning non snake_case name", {
+  testfile <- tempfile(pattern = "testCaseCamel", fileext = ".csv")
+  df <- createEmptyCohortDefinitionSet()
+  expect_warning(writeCsv(
+    x = df,
+    file = testfile,
+    warnOnCaseMismatch = FALSE,
+    warnOnUploadRuleViolations = TRUE
+  ))
+  unlink(testfile)
+})
+
+

@@ -4,7 +4,13 @@
 \alias{writeCsv}
 \title{Used to write a .csv file}
 \usage{
-writeCsv(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE)
+writeCsv(
+  x,
+  file,
+  warnOnCaseMismatch = TRUE,
+  warnOnFileNameCaseMismatch = TRUE,
+  warnOnUploadRuleViolations = TRUE
+)
 }
 \arguments{
 \item{x}{A data frame or tibble to write to disk.}
@@ -13,6 +19,9 @@ writeCsv(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE)
 
 \item{warnOnCaseMismatch}{When TRUE, raise a warning if columns in the
 data.frame are NOT in camelCase format.}
+
+\item{warnOnFileNameCaseMismatch}{When TRUE, raise a warning if the file
+name specified is not in snake_case format.}
 
 \item{warnOnUploadRuleViolations}{When TRUE, this function will provide
 warning messages that may indicate if the data is stored in a format in the

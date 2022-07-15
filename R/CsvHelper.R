@@ -87,6 +87,9 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #'
 #' @param warnOnCaseMismatch  When TRUE, raise a warning if columns in the
 #' data.frame are NOT in camelCase format.
+#' 
+#' @param warnOnFileNameCaseMismatch When TRUE, raise a warning if the file
+#' name specified is not in snake_case format.
 #'
 #' @param warnOnUploadRuleViolations When TRUE, this function will provide
 #' warning messages that may indicate if the data is stored in a format in the
@@ -96,7 +99,7 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #'  Returns the input x invisibly.
 #'
 #' @export
-writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE) {
+writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnFileNameCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE) {
   columnNames <- colnames(x)
   columnNamesInCamelCaseFormat <- isCamelCase(columnNames)
   if (!all(columnNamesInCamelCaseFormat) && warnOnCaseMismatch) {
@@ -112,7 +115,7 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolati
 
     # Check if the file name is in lower snake case format
     fileName <- gsub(x = basename(file), pattern = ".csv", replacement = "")
-    if (!isSnakeCase(fileName)) {
+    if (!isSnakeCase(fileName) && warnOnFileNameCaseMismatch) {
       warning(paste("The filename:", basename(file), "is not in snake case format"))
     }
 
