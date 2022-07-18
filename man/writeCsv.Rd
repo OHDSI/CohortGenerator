@@ -7,6 +7,7 @@
 writeCsv(
   x,
   file,
+  append = FALSE,
   warnOnCaseMismatch = TRUE,
   warnOnFileNameCaseMismatch = TRUE,
   warnOnUploadRuleViolations = TRUE
@@ -16,6 +17,8 @@ writeCsv(
 \item{x}{A data frame or tibble to write to disk.}
 
 \item{file}{The .csv file to write.}
+
+\item{append}{When TRUE, append the values of x to an existing file.}
 
 \item{warnOnCaseMismatch}{When TRUE, raise a warning if columns in the
 data.frame are NOT in camelCase format.}
