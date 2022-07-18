@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
       </span>
     </div>
 
@@ -77,6 +77,10 @@ tables</p></td>
           <p class="section-desc"></p><p>Functions that support working with a cohort definition set</p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="saveCohortDefinitionSet.html">saveCohortDefinitionSet()</a></code> </p>
+        </td>
+        <td><p>Save the cohort definition set to the file system</p></td>
+      </tr><tr><td>
           <p><code><a href="getCohortDefinitionSet.html">getCohortDefinitionSet()</a></code> </p>
         </td>
         <td><p>Get a cohort definition set</p></td>
@@ -84,6 +88,14 @@ tables</p></td>
           <p><code><a href="createEmptyCohortDefinitionSet.html">createEmptyCohortDefinitionSet()</a></code> </p>
         </td>
         <td><p>Create an empty cohort definition set</p></td>
+      </tr><tr><td>
+          <p><code><a href="checkAndFixCohortDefinitionSetDataTypes.html">checkAndFixCohortDefinitionSetDataTypes()</a></code> </p>
+        </td>
+        <td><p>Check if a cohort definition set is using the proper data types</p></td>
+      </tr><tr><td>
+          <p><code><a href="isCohortDefinitionSet.html">isCohortDefinitionSet()</a></code> </p>
+        </td>
+        <td><p>Is the data.frame a cohort definition set?</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cohort-generation">Cohort Generation <a href="#cohort-generation" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions that support generating cohorts.</p>
@@ -98,8 +110,7 @@ tables</p></td>
         <td><p>Create an empty cohort definition set</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cohort-counts">Cohort Counts <a href="#cohort-counts" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Function for obtaining the counts of subjects and events for one or
-more cohorts</p>
+          <p class="section-desc"></p><p>Function for obtaining the counts of subjects and events for one or more cohorts</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="getCohortCounts.html">getCohortCounts()</a></code> </p>
@@ -107,10 +118,7 @@ more cohorts</p>
         <td><p>Count the cohort(s)</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cohort-statistics">Cohort Statistics <a href="#cohort-statistics" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Functions for insertint inclusion rule names from a cohort
-definition, exporting the cohort statistics to the file system and a
-helper function for dropping those tables when they are no longer
-needed.</p>
+          <p class="section-desc"></p><p>Functions for insertint inclusion rule names from a cohort definition, exporting the cohort statistics to the file system and a helper function for dropping those tables when they are no longer needed.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="getCohortStats.html">getCohortStats()</a></code> </p>
@@ -131,8 +139,7 @@ when generating cohorts that include cohort statistics</p></td>
         <td><p>Drop cohort statistics tables</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="csv-file-helpers">CSV File Helpers <a href="#csv-file-helpers" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Functions for reading and writing CSV files to ensure adherance to
-the HADES standard when interfacing between R and SQL/File System: <a href="https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL" class="external-link uri">https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL</a></p>
+          <p class="section-desc"></p><p>Functions for reading and writing CSV files to ensure adherance to the HADES standard when interfacing between R and SQL/File System: <a href="https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL" class="external-link uri">https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL</a></p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="readCsv.html">readCsv()</a></code> </p>
@@ -142,12 +149,21 @@ the HADES standard when interfacing between R and SQL/File System: <a href="http
           <p><code><a href="writeCsv.html">writeCsv()</a></code> </p>
         </td>
         <td><p>Used to write a .csv file</p></td>
+      </tr><tr><td>
+          <p><code><a href="isCamelCase.html">isCamelCase()</a></code> </p>
+        </td>
+        <td><p>Used to check if a string is in lower camel case</p></td>
+      </tr><tr><td>
+          <p><code><a href="isSnakeCase.html">isSnakeCase()</a></code> </p>
+        </td>
+        <td><p>Used to check if a string is in snake case</p></td>
+      </tr><tr><td>
+          <p><code><a href="isFormattedForDatabaseUpload.html">isFormattedForDatabaseUpload()</a></code> </p>
+        </td>
+        <td><p>Is the data.frame formatted for uploading to a database?</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="record-keeping">Record Keeping <a href="#record-keeping" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Functions that support record keeping of tasks performed.
-CohortGenerator uses these functions when running in incremental mode to
-only generate cohorts when their definition has changed from a previous
-run.</p>
+          <p class="section-desc"></p><p>Functions that support record keeping of tasks performed. CohortGenerator uses these functions when running in incremental mode to only generate cohorts when their definition has changed from a previous run.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="getRequiredTasks.html">getRequiredTasks()</a></code> </p>
@@ -182,8 +198,7 @@ run.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

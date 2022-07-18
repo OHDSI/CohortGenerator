@@ -185,6 +185,8 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
 #' @return
 #' Returns a data.frame that defines a cohortDefinitionSet
 #'
+#' @noRd
+#' @keywords internal
 .getCohortDefinitionSetSpecification <- function() {
   return(readCsv(system.file("cohortDefinitionSetSpecificationDescription.csv",
     package = "CohortGenerator",
@@ -437,6 +439,8 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
 #'                         in a data.frame representation of the cohortDefinitionSet
 #' @return
 #' Returns TRUE if all required columns are found otherwise it returns an error
+#' @noRd
+#' @keywords internal
 checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
   settingsColumns <- .getSettingsFileRequiredColumns()
   res <- all(settingsColumns %in% columnNames)

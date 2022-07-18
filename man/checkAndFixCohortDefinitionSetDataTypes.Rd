@@ -16,7 +16,7 @@ checkAndFixCohortDefinitionSetDataTypes(
 \item{fixDataTypes}{When TRUE, this function will attempt to fix the data types
 to match the specification. @seealso [createEmptyCohortDefinitionSet()].}
 
-\item{emitWarning}{When TRUE, this function will emit warning messages when problems are 
+\item{emitWarning}{When TRUE, this function will emit warning messages when problems are
 encountered.}
 }
 \value{
@@ -30,7 +30,7 @@ list(
 dataTypesMatch == TRUE when the supplied data.frame x matches the cohortDefinitionSet
 specification's data types.
 
-If fixDataTypes == TRUE, x will hold the original data from x with the 
+If fixDataTypes == TRUE, x will hold the original data from x with the
 data types corrected. Otherwise x will hold the original value passed to this
 function.
 }

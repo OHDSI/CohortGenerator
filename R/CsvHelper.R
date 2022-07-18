@@ -56,6 +56,8 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #' @return
 #'  Returns the file contents invisibly.
 #'
+#' @noRd
+#' @keywords internal
 .readCsv <- function(file) {
   invisible(readr::read_csv(
     file = file,
@@ -144,6 +146,8 @@ writeCsv <- function(x, file, append = FALSE, warnOnCaseMismatch = TRUE, warnOnF
 #' @return
 #'  Returns the input x invisibly.
 #'
+#' @noRd
+#' @keywords internal
 .writeCsv <- function(x, file, append = FALSE) {
   # Write the file
   readr::write_csv(
