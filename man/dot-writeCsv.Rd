@@ -4,12 +4,14 @@
 \alias{.writeCsv}
 \title{Internal write.csv file when control over column formatting is required.}
 \usage{
-.writeCsv(x, file)
+.writeCsv(x, file, append = FALSE)
 }
 \arguments{
 \item{x}{A data frame or tibble to write to disk.}
 
 \item{file}{The .csv file to write.}
+
+\item{append}{When TRUE, append the values of x to an existing file.}
 }
 \value{
 Returns the input x invisibly.

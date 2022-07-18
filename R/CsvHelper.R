@@ -84,6 +84,8 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #' @param x  A data frame or tibble to write to disk.
 #'
 #' @param file  The .csv file to write.
+#' 
+#' @param append When TRUE, append the values of x to an existing file. 
 #'
 #' @param warnOnCaseMismatch  When TRUE, raise a warning if columns in the
 #' data.frame are NOT in camelCase format.
@@ -99,7 +101,7 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #'  Returns the input x invisibly.
 #'
 #' @export
-writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnFileNameCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE) {
+writeCsv <- function(x, file, append = FALSE, warnOnCaseMismatch = TRUE, warnOnFileNameCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE) {
   columnNames <- colnames(x)
   columnNamesInCamelCaseFormat <- isCamelCase(columnNames)
   if (!all(columnNamesInCamelCaseFormat) && warnOnCaseMismatch) {
@@ -121,7 +123,7 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnFileNameCaseMisma
   }
 
   # Write the file
-  .writeCsv(x = x, file = file)
+  .writeCsv(x = x, file = file, append = append)
 }
 
 
@@ -136,15 +138,18 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnFileNameCaseMisma
 #' @param x  A data frame or tibble to write to disk.
 #'
 #' @param file  The .csv file to write.
+#' 
+#' @param append When TRUE, append the values of x to an existing file. 
 #'
 #' @return
 #'  Returns the input x invisibly.
 #'
-.writeCsv <- function(x, file) {
+.writeCsv <- function(x, file, append = FALSE) {
   # Write the file
   readr::write_csv(
     x = x,
-    file = file
+    file = file,
+    append = append
   )
   invisible(x)
 }
