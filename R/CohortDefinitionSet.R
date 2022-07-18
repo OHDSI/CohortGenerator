@@ -365,7 +365,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   for (i in 1:nrow(cohortDefinitionSet)) {
     cohortId <- cohortDefinitionSet$cohortId[i]
     cohortName <- .removeNonAsciiCharacters(cohortDefinitionSet$cohortName[i])
-    json <- ifelse(is.na(cohortDefinitionSet$json[i]), cohortDefinitionSet$json[i], .removeNonAsciiCharacters(cohortDefinitionSet$json[i]))
+    json <- ifelse("json" %in% names(cohortDefinitionSet), .removeNonAsciiCharacters(cohortDefinitionSet$json[i]), "{}")
     sql <- cohortDefinitionSet$sql[i]
     fileNameRoot <- .getFileNameFromCohortDefinitionSet(
       cohortDefinitionSetRow = cohortDefinitionSet[i, ],
@@ -375,7 +375,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
     if (verbose) {
       ParallelLogger::logInfo("Exporting (", i, "/", nrow(cohortDefinitionSet), "): ", cohortName)
     }
-    if (!is.na(json)) {
+    if (!is.na(json) && nchar(json) > 0) {
       SqlRender::writeSql(sql = json, targetFile = file.path(jsonFolder, paste0(fileNameRoot, ".json")))
     }
     SqlRender::writeSql(sql = sql, targetFile = file.path(sqlFolder, paste0(fileNameRoot, ".sql")))
