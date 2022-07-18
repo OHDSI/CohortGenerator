@@ -41,7 +41,8 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
     problemColumnsWarning <- paste(problemColumns, collapse = ", ")
     warning(paste("The following columns were not in snake case format:", problemColumnsWarning))
   }
-  colnames(fileContents) <- SqlRender::snakeCaseToCamelCase(colnames(fileContents))
+  colIdxToConvert <- which(isSnakeCase(columnNames))
+  names(fileContents)[colIdxToConvert] <- SqlRender::snakeCaseToCamelCase(names(fileContents)[colIdxToConvert])
   invisible(fileContents)
 }
 
@@ -55,6 +56,8 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #' @return
 #'  Returns the file contents invisibly.
 #'
+#' @noRd
+#' @keywords internal
 .readCsv <- function(file) {
   invisible(readr::read_csv(
     file = file,
@@ -84,8 +87,13 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #'
 #' @param file  The .csv file to write.
 #'
+#' @param append When TRUE, append the values of x to an existing file.
+#'
 #' @param warnOnCaseMismatch  When TRUE, raise a warning if columns in the
 #' data.frame are NOT in camelCase format.
+#'
+#' @param warnOnFileNameCaseMismatch When TRUE, raise a warning if the file
+#' name specified is not in snake_case format.
 #'
 #' @param warnOnUploadRuleViolations When TRUE, this function will provide
 #' warning messages that may indicate if the data is stored in a format in the
@@ -95,7 +103,7 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #'  Returns the input x invisibly.
 #'
 #' @export
-writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE) {
+writeCsv <- function(x, file, append = FALSE, warnOnCaseMismatch = TRUE, warnOnFileNameCaseMismatch = TRUE, warnOnUploadRuleViolations = TRUE) {
   columnNames <- colnames(x)
   columnNamesInCamelCaseFormat <- isCamelCase(columnNames)
   if (!all(columnNamesInCamelCaseFormat) && warnOnCaseMismatch) {
@@ -111,19 +119,13 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolati
 
     # Check if the file name is in lower snake case format
     fileName <- gsub(x = basename(file), pattern = ".csv", replacement = "")
-    if (!isSnakeCase(fileName)) {
+    if (!isSnakeCase(fileName) && warnOnFileNameCaseMismatch) {
       warning(paste("The filename:", basename(file), "is not in snake case format"))
-    }
-
-    # Also perform a check to see if the fileName end in "s" which might indicate
-    # that the resulting file name is plural
-    if (endsWith(fileName, "s")) {
-      rlang::inform(paste("The filename:", basename(file), "may be plural since it ends in 's'. Please ensure you are using singular nouns for your file names."))
     }
   }
 
   # Write the file
-  .writeCsv(x = x, file = file)
+  .writeCsv(x = x, file = file, append = append)
 }
 
 
@@ -139,14 +141,19 @@ writeCsv <- function(x, file, warnOnCaseMismatch = TRUE, warnOnUploadRuleViolati
 #'
 #' @param file  The .csv file to write.
 #'
+#' @param append When TRUE, append the values of x to an existing file.
+#'
 #' @return
 #'  Returns the input x invisibly.
 #'
-.writeCsv <- function(x, file) {
+#' @noRd
+#' @keywords internal
+.writeCsv <- function(x, file, append = FALSE) {
   # Write the file
   readr::write_csv(
     x = x,
-    file = file
+    file = file,
+    append = append
   )
   invisible(x)
 }

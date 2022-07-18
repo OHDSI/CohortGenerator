@@ -21,7 +21,8 @@
 #' @importFrom grDevices rgb
 #' @importFrom stats aggregate setNames
 #' @importFrom utils write.csv install.packages menu packageVersion sessionInfo
-#' @importFrom rlang .data
+#' @importFrom dplyr "%>%"
+#' @importFrom rlang .data ':='
 NULL
 
 # Add custom assertions

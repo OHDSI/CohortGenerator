@@ -19,7 +19,7 @@ call."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
       </span>
     </div>
 
@@ -90,33 +90,50 @@ call.</p>
 <code><a href="https://ohdsi.github.io/DatabaseConnector/reference/createConnectionDetails.html" class="external-link">createConnectionDetails</a></code> function in the
 DatabaseConnector package. Can be left NULL if <code>connection</code> is
 provided.</p></dd>
+
+
 <dt>connection</dt>
 <dd><p>An object of type <code>connection</code> as created using the
 <code><a href="https://ohdsi.github.io/DatabaseConnector/reference/connect.html" class="external-link">connect</a></code> function in the
 DatabaseConnector package. Can be left NULL if <code>connectionDetails</code>
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.</p></dd>
+
+
 <dt>cohortDatabaseSchema</dt>
 <dd><p>Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.</p></dd>
+
+
 <dt>cohortTableNames</dt>
 <dd><p>The names of the cohort tables. See <code><a href="getCohortTableNames.html">getCohortTableNames</a></code>
 for more details.</p></dd>
+
+
 <dt>cohortStatisticsFolder</dt>
 <dd><p>The path to the folder where the cohort statistics folder
 where the results will be written</p></dd>
+
+
 <dt>snakeCaseToCamelCase</dt>
 <dd><p>Should column names in the exported files
 convert from snake_case to camelCase? Default is FALSE</p></dd>
+
+
 <dt>fileNamesInSnakeCase</dt>
 <dd><p>Should the exported files use snake_case? Default is FALSE</p></dd>
+
+
 <dt>incremental</dt>
 <dd><p>If <code>incremental = TRUE</code>, results are written to update values instead of
 overwriting an existing results</p></dd>
+
+
 <dt>databaseId</dt>
 <dd><p>Optional - when specified, the databaseId will be added
 to the exported results</p></dd>
+
 </dl></div>
 
   </div>
@@ -131,8 +148,7 @@ to the exported results</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

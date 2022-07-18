@@ -131,3 +131,45 @@ test_that("writeCsv writes a file with a message on plural file name", {
   ))
   unlink(testfile)
 })
+
+
+test_that("writeCsv writes a file with a warning non snake_case name", {
+  testfile <- tempfile(pattern = "testCaseCamel", fileext = ".csv")
+  df <- createEmptyCohortDefinitionSet()
+  expect_warning(writeCsv(
+    x = df,
+    file = testfile,
+    warnOnCaseMismatch = FALSE,
+    warnOnUploadRuleViolations = TRUE
+  ))
+  unlink(testfile)
+})
+
+test_that("writeCsv to a file and then use append to add additional information", {
+  testfile <- tempfile(pattern = "append", fileext = ".csv")
+  df1 <- data.frame(a = 1, b = 2)
+  writeCsv(
+    x = df1,
+    file = testfile,
+    append = FALSE,
+    warnOnCaseMismatch = FALSE
+  )
+  # Read and confirm the # of rows
+  expect_equal(
+    object = nrow(readCsv(file = testfile)),
+    expected = nrow(df1)
+  )
+  # Append another row
+  df2 <- data.frame(a = 3, b = 4)
+  writeCsv(
+    x = df2,
+    file = testfile,
+    append = TRUE,
+    warnOnCaseMismatch = FALSE
+  )
+  expect_equal(
+    object = nrow(readCsv(file = testfile)),
+    expected = (nrow(df1) + nrow(df2))
+  )
+  unlink(testfile)
+})

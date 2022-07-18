@@ -179,6 +179,8 @@ generateCohortSet <- function(connectionDetails = NULL,
 #'
 #' @param recordKeepingFile If \code{incremental = TRUE}, this file will contain
 #'                          information on cohorts already generated
+#' @noRd
+#' @keywords internal
 generateCohort <- function(cohortId = NULL,
                            cohortDefinitionSet,
                            connection = NULL,
