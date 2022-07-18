@@ -176,7 +176,12 @@ test_that("Call saveCohortDefinitionSet with missing json", {
                                                          stringsAsFactors = FALSE))
   }
   
-  expect_silent(saveCohortDefinitionSet(cohortsToCreate))
+  expect_output(
+    saveCohortDefinitionSet(cohortDefinitionSet = cohortsToCreate, 
+                            settingsFileName = file.path(tempdir(), "settings"), 
+                            jsonFolder = file.path(tempdir(), "json"), 
+                            sqlFolder = file.path(tempdir(), "json"))
+  )
 })
 
 # createEmptyCohortDefinitionSet ----------------
