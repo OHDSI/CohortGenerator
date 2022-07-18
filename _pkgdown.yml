@@ -19,9 +19,11 @@ reference:
     desc: >
       Functions that support working with a cohort definition set
     contents:
-      - saveCohortDefintionSet
+      - saveCohortDefinitionSet
       - getCohortDefinitionSet
       - createEmptyCohortDefinitionSet
+      - checkAndFixCohortDefinitionSetDataTypes
+      - isCohortDefinitionSet
       
   - title: "Cohort Generation"
     desc: >
@@ -56,6 +58,9 @@ reference:
     contents:
       - readCsv
       - writeCsv
+      - isCamelCase
+      - isSnakeCase
+      - isFormattedForDatabaseUpload
 
   - title: "Record Keeping"
     desc: >

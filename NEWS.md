@@ -1,3 +1,10 @@
+CohortGenerator 0.6.0
+=======================
+- Add more flexibility when reading/writing CSV files including appending (Issue #44), flags for disabling warnings (Issue #38) and removing unhelpful warnings (Iusse #43).
+- Added better error handling to `saveCohortDefinitionSet` (Issue #25)
+- Add better handling of column name casing in CSV files that hold cohort settings. (Issue #37)
+- Added functions to check if a data.frame conforms to a cohortDefinitionSet (Issue #21)
+
 CohortGenerator 0.5.0
 =======================
 - Allow for specification of the database_id in export methods. (Issue #18)

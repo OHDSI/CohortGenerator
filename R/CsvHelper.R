@@ -56,6 +56,8 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #' @return
 #'  Returns the file contents invisibly.
 #'
+#' @noRd
+#' @keywords internal
 .readCsv <- function(file) {
   invisible(readr::read_csv(
     file = file,
@@ -84,12 +86,12 @@ readCsv <- function(file, warnOnCaseMismatch = TRUE) {
 #' @param x  A data frame or tibble to write to disk.
 #'
 #' @param file  The .csv file to write.
-#' 
-#' @param append When TRUE, append the values of x to an existing file. 
+#'
+#' @param append When TRUE, append the values of x to an existing file.
 #'
 #' @param warnOnCaseMismatch  When TRUE, raise a warning if columns in the
 #' data.frame are NOT in camelCase format.
-#' 
+#'
 #' @param warnOnFileNameCaseMismatch When TRUE, raise a warning if the file
 #' name specified is not in snake_case format.
 #'
@@ -138,12 +140,14 @@ writeCsv <- function(x, file, append = FALSE, warnOnCaseMismatch = TRUE, warnOnF
 #' @param x  A data frame or tibble to write to disk.
 #'
 #' @param file  The .csv file to write.
-#' 
-#' @param append When TRUE, append the values of x to an existing file. 
+#'
+#' @param append When TRUE, append the values of x to an existing file.
 #'
 #' @return
 #'  Returns the input x invisibly.
 #'
+#' @noRd
+#' @keywords internal
 .writeCsv <- function(x, file, append = FALSE) {
   # Write the file
   readr::write_csv(
