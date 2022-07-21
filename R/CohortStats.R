@@ -93,8 +93,8 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
           inclusionRules <- rbind(
             inclusionRules,
             data.frame(
-              cohortDefinitionId = cohortDefinitionSet$cohortId[i],
-              ruleSequence = j - 1,
+              cohortDefinitionId = as.integer(cohortDefinitionSet$cohortId[i]),
+              ruleSequence = as.integer(j - 1),
               name = ruleName,
               description = ruleDescription
             )
