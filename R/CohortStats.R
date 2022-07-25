@@ -130,7 +130,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
     warning("No inclusion rules found in the cohortDefinitionSet")
   }
 
-  return(inclusionRules)
+  invisible(inclusionRules)
 }
 
 # Get stats data
@@ -139,11 +139,17 @@ getStatsTable <- function(connectionDetails,
                           cohortDatabaseSchema,
                           table,
                           snakeCaseToCamelCase = FALSE,
-                          databaseId = NULL) {
+                          databaseId = NULL,
+                          includeDatabaseId = TRUE) {
   if (is.null(connection)) {
     # Establish the connection and ensure the cleanup is performed
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
+  }
+  
+  # Force databaseId to NULL when includeDatabaseId is FALSE
+  if (!includeDatabaseId) {
+    databaseId <- NULL
   }
 
   ParallelLogger::logInfo("- Fetching data from ", table)
@@ -154,7 +160,9 @@ getStatsTable <- function(connectionDetails,
     snakeCaseToCamelCase = snakeCaseToCamelCase,
     table = table,
     cohort_database_schema = cohortDatabaseSchema,
-    database_id = ifelse(is.null(databaseId), yes = "", no = databaseId)
+    database_id = ifelse(test = is.null(databaseId), 
+                         yes = "", 
+                         no = databaseId)
   )
 
   if (!snakeCaseToCamelCase) {
@@ -217,13 +225,19 @@ getCohortStats <- function(connectionDetails,
   )
   results <- list()
   for (table in outputTables) {
+    # The cohortInclusionTable does not hold database
+    # specific information so the databaseId
+    # should NOT be included.
+    includeDatabaseId = ifelse(test = table != "cohortInclusionTable",
+                               yes = TRUE,
+                               no = FALSE)
     results[[table]] <- getStatsTable(
       connectionDetails = connectionDetails,
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       table = cohortTableNames[[table]],
       snakeCaseToCamelCase = snakeCaseToCamelCase,
-      databaseId = databaseId
+      includeDatabaseId = includeDatabaseId
     )
   }
   return(results)
