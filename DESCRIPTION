@@ -15,6 +15,7 @@ Depends:
   DatabaseConnector (>= 5.0.0),
   R (>= 3.6.0)
 Imports:
+  bit64,
   checkmate,
   digest,
   dplyr,

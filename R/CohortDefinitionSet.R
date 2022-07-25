@@ -38,7 +38,11 @@ createEmptyCohortDefinitionSet <- function(verbose = FALSE) {
   for (i in 1:nrow(cohortDefinitionSetSpec)) {
     colName <- cohortDefinitionSetSpec$columnName[i]
     dataType <- cohortDefinitionSetSpec$dataType[i]
-    df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
+    if (dataType == "integer64") {
+      df <- df %>% dplyr::mutate(!!colName := do.call(what = bit64::as.integer64, args = list()))
+    } else {
+      df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
+    }
   }
   invisible(df)
 }
