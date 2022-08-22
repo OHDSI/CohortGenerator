@@ -187,6 +187,11 @@ saveIncremental <- function(data, fileName, ...) {
     if (length(idx) > 0) {
       previousData <- previousData[-idx, ]
     }
+    # force description to be character
+    if ('description' %in% colnames(data)) {
+      data <- data |> 
+        dplyr::mutate(as.character(.data$description))
+    }
     data <- dplyr::bind_rows(previousData, data)
   }
   .writeCsv(x = data, file = fileName)
