@@ -189,8 +189,8 @@ saveIncremental <- function(data, fileName, ...) {
     }
     # force description to be character
     if ('description' %in% colnames(data)) {
-      data <- data |> 
-        dplyr::mutate(as.character(.data$description))
+      data <- data %>%  
+        dplyr::mutate(description = as.character(.data$description))
     }
     data <- dplyr::bind_rows(previousData, data)
   }
