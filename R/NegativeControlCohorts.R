@@ -71,10 +71,8 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #' @template CdmDatabaseSchema
 #'
 #' @template TempEmulationSchema
-#'
-#' @template CohortTableNames
 #' 
-#' @template CohortDefinitionSet
+#' @template CohortDatabaseSchema
 #'
 #' @param cohortTable                  Name of the cohort table.
 #' 

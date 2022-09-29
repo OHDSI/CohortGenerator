@@ -54,17 +54,6 @@ or all times the outcomeConceptId occurs for a person. Values accepted: 'all' or
 \item{detectOnDescendants}{When set to TRUE, detectOnDescendants will use the vocabulary to find negative control
 outcomes using the outcomeConceptId and all descendants via the concept_ancestor table. 
 When FALSE, only the exact outcomeConceptId will be used to detect the outcome.}
-
-\item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
-for more details.}
-
-\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
-the following columns: \describe{
-\item{cohortId}{The unique integer identifier of the cohort} 
-\item{cohortName}{The cohort's name}
-\item{sql}{The OHDSI-SQL used to generate the cohort}}
-Optionally, this data frame may contain: \describe{
-\item{json}{The Circe JSON representation of the cohort}}}
 }
 \value{
 Invisibly returns an empty negative control outcome cohort set data.frame
