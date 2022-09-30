@@ -1,6 +1,12 @@
+CohortGenerator 0.7.0
+=======================
+- Fixes data type issue for Google Big Query (Issue #51).
+- Removes the `databaseId` field from the cohort inclusion table (Issue #52)
+- Adds the ability to generate negative control outcome cohorts for use in population-level estimation. (Issue #9)
+
 CohortGenerator 0.6.0
 =======================
-- Add more flexibility when reading/writing CSV files including appending (Issue #44), flags for disabling warnings (Issue #38) and removing unhelpful warnings (Iusse #43).
+- Add more flexibility when reading/writing CSV files including appending (Issue #44), flags for disabling warnings (Issue #38) and removing unhelpful warnings (Issue #43).
 - Added better error handling to `saveCohortDefinitionSet` (Issue #25)
 - Add better handling of column name casing in CSV files that hold cohort settings. (Issue #37)
 - Added functions to check if a data.frame conforms to a cohortDefinitionSet (Issue #21)

@@ -69,7 +69,7 @@ isCohortDefinitionSet <- function(x) {
 #' @description
 #' This function checks a data.frame to verify it holds the expected format
 #' for a cohortDefinitionSet's data types and can optionally fix data types
-#' that do not match the specifcation.
+#' that do not match the specification.
 #'
 #' @param x  The cohortDefinitionSet data.frame to check
 #'
