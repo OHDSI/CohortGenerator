@@ -54,8 +54,9 @@ for (i in 1:length(cohortJsonFiles)) {
   ))
 }
 
+# Helper function
 getNegativeControlOutcomeCohortsForTest <- function(setCohortIdToConceptId = TRUE) {
-  negativeControlOutcomes <- readCsv(file = system.file("testdata/negativecontrols/negativecontrolOutcomes.csv",
+  negativeControlOutcomes <- readCsv(file = system.file("testdata/negativecontrols/negativeControlOutcomes.csv",
                                                         package = "CohortGenerator",
                                                         mustWork = TRUE))
   if (setCohortIdToConceptId) {
