@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
       </span>
     </div>
 
@@ -61,8 +61,14 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.7.0" id="cohortgenerator-070">CohortGenerator 0.7.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-070"></a></h2>
+<ul><li>Fixes data type issue for Google Big Query (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/51" class="external-link">#51</a>).</li>
+<li>Removes the <code>databaseId</code> field from the cohort inclusion table (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/52" class="external-link">#52</a>)</li>
+<li>Adds the ability to generate negative control outcome cohorts for use in population-level estimation. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/9" class="external-link">#9</a>)</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6.0" id="cohortgenerator-060">CohortGenerator 0.6.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-060"></a></h2>
-<ul><li>Add more flexibility when reading/writing CSV files including appending (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/44" class="external-link">#44</a>), flags for disabling warnings (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/38" class="external-link">#38</a>) and removing unhelpful warnings (Iusse <a href="https://github.com/OHDSI/CohortGenerator/issues/43" class="external-link">#43</a>).</li>
+<ul><li>Add more flexibility when reading/writing CSV files including appending (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/44" class="external-link">#44</a>), flags for disabling warnings (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/38" class="external-link">#38</a>) and removing unhelpful warnings (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/43" class="external-link">#43</a>).</li>
 <li>Added better error handling to <code>saveCohortDefinitionSet</code> (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/25" class="external-link">#25</a>)</li>
 <li>Add better handling of column name casing in CSV files that hold cohort settings. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/37" class="external-link">#37</a>)</li>
 <li>Added functions to check if a data.frame conforms to a cohortDefinitionSet (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/21" class="external-link">#21</a>)</li>
