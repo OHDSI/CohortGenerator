@@ -34,12 +34,7 @@ createEmptyCohortDefinitionSet <- function(verbose = FALSE) {
     print(cohortDefinitionSetSpec)
   }
   # Build the data.frame dynamically from the cohort definition set spec
-  df <- data.frame()
-  for (i in 1:nrow(cohortDefinitionSetSpec)) {
-    colName <- cohortDefinitionSetSpec$columnName[i]
-    dataType <- cohortDefinitionSetSpec$dataType[i]
-    df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
-  }
+  df <- .createEmptyDataFrameFromSpecification(cohortDefinitionSetSpec)
   invisible(df)
 }
 
@@ -74,7 +69,7 @@ isCohortDefinitionSet <- function(x) {
 #' @description
 #' This function checks a data.frame to verify it holds the expected format
 #' for a cohortDefinitionSet's data types and can optionally fix data types
-#' that do not match the specifcation.
+#' that do not match the specification.
 #'
 #' @param x  The cohortDefinitionSet data.frame to check
 #'
@@ -454,4 +449,19 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
   } else {
     return(TRUE)
   }
+}
+
+.createEmptyDataFrameFromSpecification <- function(specifications) {
+  # Build the data.frame dynamically from the cohort definition set spec
+  df <- data.frame()
+  for (i in 1:nrow(specifications)) {
+    colName <- specifications$columnName[i]
+    dataType <- specifications$dataType[i]
+    if (dataType == "integer64") {
+      df <- df %>% dplyr::mutate(!!colName := do.call(what = bit64::as.integer64, args = list()))
+    } else {
+      df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
+    }
+  }
+  invisible(df)
 }

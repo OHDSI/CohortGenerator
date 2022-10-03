@@ -41,7 +41,7 @@ reference:
       
   - title: "Cohort Statistics"
     desc: >
-      Functions for insertint inclusion rule names from a cohort definition,
+      Functions for inserting inclusion rule names from a cohort definition,
       exporting the cohort statistics to the file system and a helper function 
       for dropping those tables when they are no longer needed.
     contents:
@@ -50,6 +50,14 @@ reference:
       - exportCohortStatsTables
       - dropCohortStatsTables
       
+  - title: "Negative Control Outcomes"
+    desc: >
+      Functions for creating negative control outcome cohorts for use in
+      population-level estimation.
+    contents:
+      - createEmptyNegativeControlOutcomeCohortSet
+      - generateNegativeControlOutcomeCohorts
+
   - title: "CSV File Helpers"
     desc: >
       Functions for reading and writing CSV files to ensure adherance to

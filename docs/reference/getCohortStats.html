@@ -27,7 +27,7 @@ See exportCohortStatsTables function for saving data to csv."><!-- mathjax --><s
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
       </span>
     </div>
 
@@ -83,17 +83,17 @@ See <code>exportCohortStatsTables</code> function for saving data to csv.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">getCohortStats</span><span class="op">(</span>
-  <span class="va">connectionDetails</span>,
-  connection <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">cohortDatabaseSchema</span>,
-  databaseId <span class="op">=</span> <span class="cn">NULL</span>,
-  snakeCaseToCamelCase <span class="op">=</span> <span class="cn">TRUE</span>,
-  outputTables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cohortInclusionTable"</span>, <span class="st">"cohortInclusionResultTable"</span>,
-    <span class="st">"cohortInclusionStatsTable"</span>, <span class="st">"cohortInclusionStatsTable"</span>, <span class="st">"cohortSummaryStatsTable"</span>,
-    <span class="st">"cohortCensorStatsTable"</span><span class="op">)</span>,
-  cohortTableNames <span class="op">=</span> <span class="fu"><a href="getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getCohortStats</span><span class="op">(</span></span>
+<span>  <span class="va">connectionDetails</span>,</span>
+<span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">cohortDatabaseSchema</span>,</span>
+<span>  databaseId <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  snakeCaseToCamelCase <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  outputTables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cohortInclusionTable"</span>, <span class="st">"cohortInclusionResultTable"</span>,</span>
+<span>    <span class="st">"cohortInclusionStatsTable"</span>, <span class="st">"cohortInclusionStatsTable"</span>, <span class="st">"cohortSummaryStatsTable"</span>,</span>
+<span>    <span class="st">"cohortCensorStatsTable"</span><span class="op">)</span>,</span>
+<span>  cohortTableNames <span class="op">=</span> <span class="fu"><a href="getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">

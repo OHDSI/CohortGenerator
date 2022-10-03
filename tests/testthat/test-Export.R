@@ -92,6 +92,14 @@ test_that("Export cohort stats with databaseId", {
     cohortDatabaseSchema = "main",
     incremental = FALSE
   )
+  
+  # Insert the inclusion rules
+  insertInclusionRuleNames(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortsWithStats,
+    cohortDatabaseSchema = "main",
+    cohortInclusionTable = cohortTableNames$cohortInclusionTable
+  )
 
   # Export the results
   exportCohortStatsTables(
@@ -108,7 +116,11 @@ test_that("Export cohort stats with databaseId", {
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   for (i in 1:length(exportedFiles)) {
     data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
-    expect_true(toupper(c("databaseId")) %in% toupper(names(data)))
+    if (basename(exportedFiles[i]) == "cohortInclusion.csv") {
+      expect_false(toupper(c("databaseId")) %in% toupper(names(data)))
+    } else {
+      expect_true(toupper(c("databaseId")) %in% toupper(names(data)))
+    }
   }
   unlink(cohortStatsFolder)
 })

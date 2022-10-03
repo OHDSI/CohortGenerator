@@ -61,13 +61,15 @@ exportCohortStatsTables <- function(connectionDetails,
 
   # Export the stats
   exportStats <- function(table,
-                          fileName) {
+                          fileName,
+                          includeDatabaseId) {
     data <- getStatsTable(
       connection = connection,
       table = table,
       snakeCaseToCamelCase = snakeCaseToCamelCase,
       databaseId = databaseId,
-      cohortDatabaseSchema = cohortDatabaseSchema
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      includeDatabaseId = includeDatabaseId
     )
 
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
@@ -87,23 +89,28 @@ exportCohortStatsTables <- function(connectionDetails,
 
   tablesToExport <- data.frame(
     tableName = cohortTableNames$cohortInclusionTable,
-    fileName = "cohort_inclusion.csv"
+    fileName = "cohort_inclusion.csv",
+    includeDatabaseId = FALSE
   )
   tablesToExport <- rbind(tablesToExport, data.frame(
     tableName = cohortTableNames$cohortInclusionResultTable,
-    fileName = "cohort_inc_result.csv"
+    fileName = "cohort_inc_result.csv",
+    includeDatabaseId = TRUE
   ))
   tablesToExport <- rbind(tablesToExport, data.frame(
     tableName = cohortTableNames$cohortInclusionStatsTable,
-    fileName = "cohort_inc_stats.csv"
+    fileName = "cohort_inc_stats.csv",
+    includeDatabaseId = TRUE
   ))
   tablesToExport <- rbind(tablesToExport, data.frame(
     tableName = cohortTableNames$cohortSummaryStatsTable,
-    fileName = "cohort_summary_stats.csv"
+    fileName = "cohort_summary_stats.csv",
+    includeDatabaseId = TRUE
   ))
   tablesToExport <- rbind(tablesToExport, data.frame(
     tableName = cohortTableNames$cohortCensorStatsTable,
-    fileName = "cohort_censor_stats.csv"
+    fileName = "cohort_censor_stats.csv",
+    includeDatabaseId = TRUE
   ))
   for (i in 1:nrow(tablesToExport)) {
     fileName <- ifelse(test = fileNamesInSnakeCase,
@@ -112,7 +119,8 @@ exportCohortStatsTables <- function(connectionDetails,
     )
     exportStats(
       table = tablesToExport$tableName[i],
-      fileName = fileName
+      fileName = fileName,
+      includeDatabaseId = tablesToExport$includeDatabaseId[i]
     )
   }
 }

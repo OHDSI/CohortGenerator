@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
       </span>
     </div>
 
@@ -118,7 +118,7 @@ tables</p></td>
         <td><p>Count the cohort(s)</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cohort-statistics">Cohort Statistics <a href="#cohort-statistics" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Functions for insertint inclusion rule names from a cohort definition, exporting the cohort statistics to the file system and a helper function for dropping those tables when they are no longer needed.</p>
+          <p class="section-desc"></p><p>Functions for inserting inclusion rule names from a cohort definition, exporting the cohort statistics to the file system and a helper function for dropping those tables when they are no longer needed.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="getCohortStats.html">getCohortStats()</a></code> </p>
@@ -137,6 +137,18 @@ when generating cohorts that include cohort statistics</p></td>
           <p><code><a href="dropCohortStatsTables.html">dropCohortStatsTables()</a></code> </p>
         </td>
         <td><p>Drop cohort statistics tables</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="negative-control-outcomes">Negative Control Outcomes <a href="#negative-control-outcomes" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for creating negative control outcome cohorts for use in population-level estimation.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="createEmptyNegativeControlOutcomeCohortSet.html">createEmptyNegativeControlOutcomeCohortSet()</a></code> </p>
+        </td>
+        <td><p>Create an empty negative control outcome cohort set</p></td>
+      </tr><tr><td>
+          <p><code><a href="generateNegativeControlOutcomeCohorts.html">generateNegativeControlOutcomeCohorts()</a></code> </p>
+        </td>
+        <td><p>Generate a set of negative control outcome cohorts</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="csv-file-helpers">CSV File Helpers <a href="#csv-file-helpers" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions for reading and writing CSV files to ensure adherance to the HADES standard when interfacing between R and SQL/File System: <a href="https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL" class="external-link uri">https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL</a></p>

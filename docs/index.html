@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
       </span>
     </div>
 
@@ -105,51 +105,51 @@
 <h1 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h1>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># First construct a cohort definition set: an empty </span>
-<span class="co"># data frame with the cohorts to generate</span>
-<span class="va">cohortsToCreate</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/createEmptyCohortDefinitionSet.html">createEmptyCohortDefinitionSet</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># Fill the cohort set using  cohorts included in this </span>
-<span class="co"># package as an example</span>
-<span class="va">cohortJsonFiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/name/cohorts"</span>, package <span class="op">=</span> <span class="st">"CohortGenerator"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">cohortJsonFiles</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">cohortJsonFileName</span> <span class="op">&lt;-</span> <span class="va">cohortJsonFiles</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>
-  <span class="va">cohortName</span> <span class="op">&lt;-</span> <span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/fileutils.html" class="external-link">file_path_sans_ext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">)</span>
-  <span class="co"># Here we read in the JSON in order to create the SQL</span>
-  <span class="co"># using [CirceR](https://ohdsi.github.io/CirceR/)</span>
-  <span class="co"># If you have your JSON and SQL stored differenly, you can</span>
-  <span class="co"># modify this to read your JSON/SQL files however you require</span>
-  <span class="va">cohortJson</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readChar.html" class="external-link">readChar</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">$</span><span class="va">size</span><span class="op">)</span>
-  <span class="va">cohortExpression</span> <span class="op">&lt;-</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/cohortExpressionFromJson.html" class="external-link">cohortExpressionFromJson</a></span><span class="op">(</span><span class="va">cohortJson</span><span class="op">)</span>
-  <span class="va">cohortSql</span> <span class="op">&lt;-</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/buildCohortQuery.html" class="external-link">buildCohortQuery</a></span><span class="op">(</span><span class="va">cohortExpression</span>, options <span class="op">=</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/createGenerateOptions.html" class="external-link">createGenerateOptions</a></span><span class="op">(</span>generateStats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">cohortsToCreate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">cohortsToCreate</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>cohortId <span class="op">=</span> <span class="va">i</span>,
-                                                       cohortName <span class="op">=</span> <span class="va">cohortName</span>, 
-                                                       sql <span class="op">=</span> <span class="va">cohortSql</span>,
-                                                       stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="co"># Generate the cohort set against Eunomia. </span>
-<span class="co"># cohortsGenerated contains a list of the cohortIds </span>
-<span class="co"># successfully generated against the CDM</span>
-<span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># Create the cohort tables to hold the cohort generation results</span>
-<span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"my_cohort_table"</span><span class="op">)</span>
-<span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                                                        cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                                        cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">)</span>
-<span class="co"># Generate the cohorts</span>
-<span class="va">cohortsGenerated</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                                                       cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                                       cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                                       cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                                                       cohortDefinitionSet <span class="op">=</span> <span class="va">cohortsToCreate</span><span class="op">)</span>
-
-<span class="co"># Get the cohort counts</span>
-<span class="va">cohortCounts</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/getCohortCounts.html">getCohortCounts</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                                                 cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                                 cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">cohortCounts</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># First construct a cohort definition set: an empty </span></span>
+<span><span class="co"># data frame with the cohorts to generate</span></span>
+<span><span class="va">cohortsToCreate</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/createEmptyCohortDefinitionSet.html">createEmptyCohortDefinitionSet</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Fill the cohort set using  cohorts included in this </span></span>
+<span><span class="co"># package as an example</span></span>
+<span><span class="va">cohortJsonFiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata/name/cohorts"</span>, package <span class="op">=</span> <span class="st">"CohortGenerator"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">cohortJsonFiles</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">cohortJsonFileName</span> <span class="op">&lt;-</span> <span class="va">cohortJsonFiles</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="va">cohortName</span> <span class="op">&lt;-</span> <span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/fileutils.html" class="external-link">file_path_sans_ext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="co"># Here we read in the JSON in order to create the SQL</span></span>
+<span>  <span class="co"># using [CirceR](https://ohdsi.github.io/CirceR/)</span></span>
+<span>  <span class="co"># If you have your JSON and SQL stored differenly, you can</span></span>
+<span>  <span class="co"># modify this to read your JSON/SQL files however you require</span></span>
+<span>  <span class="va">cohortJson</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readChar.html" class="external-link">readChar</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="va">cohortJsonFileName</span><span class="op">)</span><span class="op">$</span><span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="va">cohortExpression</span> <span class="op">&lt;-</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/cohortExpressionFromJson.html" class="external-link">cohortExpressionFromJson</a></span><span class="op">(</span><span class="va">cohortJson</span><span class="op">)</span></span>
+<span>  <span class="va">cohortSql</span> <span class="op">&lt;-</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/buildCohortQuery.html" class="external-link">buildCohortQuery</a></span><span class="op">(</span><span class="va">cohortExpression</span>, options <span class="op">=</span> <span class="fu">CirceR</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/CirceR/reference/createGenerateOptions.html" class="external-link">createGenerateOptions</a></span><span class="op">(</span>generateStats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">cohortsToCreate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">cohortsToCreate</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>cohortId <span class="op">=</span> <span class="va">i</span>,</span>
+<span>                                                       cohortName <span class="op">=</span> <span class="va">cohortName</span>, </span>
+<span>                                                       sql <span class="op">=</span> <span class="va">cohortSql</span>,</span>
+<span>                                                       stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Generate the cohort set against Eunomia. </span></span>
+<span><span class="co"># cohortsGenerated contains a list of the cohortIds </span></span>
+<span><span class="co"># successfully generated against the CDM</span></span>
+<span><span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create the cohort tables to hold the cohort generation results</span></span>
+<span><span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"my_cohort_table"</span><span class="op">)</span></span>
+<span><span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                                                        cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                                                        cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">)</span></span>
+<span><span class="co"># Generate the cohorts</span></span>
+<span><span class="va">cohortsGenerated</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                                                       cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                                                       cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                                                       cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                                                       cohortDefinitionSet <span class="op">=</span> <span class="va">cohortsToCreate</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get the cohort counts</span></span>
+<span><span class="va">cohortCounts</span> <span class="op">&lt;-</span> <span class="fu">CohortGenerator</span><span class="fu">::</span><span class="fu"><a href="reference/getCohortCounts.html">getCohortCounts</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                                                 cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                                                 cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">cohortCounts</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="technology">Technology<a class="anchor" aria-label="anchor" href="#technology"></a>
@@ -169,7 +169,7 @@
 <li>
 <p>In R, use the following commands to download and install CohortGenerator:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"OHDSI/CohortGenerator"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"OHDSI/CohortGenerator"</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ol>
 </div>

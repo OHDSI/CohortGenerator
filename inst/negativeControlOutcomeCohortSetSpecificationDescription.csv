@@ -1,0 +1,4 @@
+column_name,description,data_type
+cohortId,The identifier for the cohort in the negative control outcome cohort set.,integer64
+cohortName,The name of the cohort in the negative control outcome cohort set.,character
+outcomeConceptId,The concept_id used to construct the negative control cohort. This concept_id must be in the condition domain,integer64
