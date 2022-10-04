@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@
                         <h4 data-toc-skip class="author">Anthony G. Sena
 and Martijn J. Schuemie</h4>
             
-            <h4 data-toc-skip class="date">2022-07-18</h4>
+            <h4 data-toc-skip class="date">2022-09-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/HEAD/vignettes/GeneratingCohorts.Rmd" class="external-link"><code>vignettes/GeneratingCohorts.Rmd</code></a></small>
       <div class="hidden name"><code>GeneratingCohorts.Rmd</code></div>
@@ -112,11 +112,11 @@ cohorts.</p>
 generation in R. To do this, we will use the <code>ROhdsiWebApi</code>
 package to download some cohort definitions to R:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># A list of cohort IDs for use in this vignette</span>
-<span class="va">cohortIds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1778211</span>,<span class="fl">1778212</span>,<span class="fl">1778213</span><span class="op">)</span>
-<span class="co"># Get the SQL/JSON for the cohorts</span>
-<span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html" class="external-link">exportCohortDefinitionSet</a></span><span class="op">(</span>baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,
-                                                               cohortIds <span class="op">=</span> <span class="va">cohortIds</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># A list of cohort IDs for use in this vignette</span></span>
+<span><span class="va">cohortIds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1778211</span>,<span class="fl">1778212</span>,<span class="fl">1778213</span><span class="op">)</span></span>
+<span><span class="co"># Get the SQL/JSON for the cohorts</span></span>
+<span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html" class="external-link">exportCohortDefinitionSet</a></span><span class="op">(</span>baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,</span>
+<span>                                                               cohortIds <span class="op">=</span> <span class="va">cohortIds</span><span class="op">)</span></span></code></pre></div>
 <p>The code above connects to ATLAS’ WebAPI, retrieves all of the
 <code>cohortDefinitions</code> and then filters them based on the name
 to produce the <code>cohortsForGeneration</code> dataframe.
@@ -126,9 +126,9 @@ for calling the function
 of cohort definitions into <code>cohortDefinitionSet</code>. The cohort
 definition set data frame has the following columns:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">#&gt; [1] "atlasId"          "cohortId"         "cohortName"       "sql"             </span>
-<span class="co">#&gt; [5] "json"             "logicDescription" "generateStats"</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [1] "atlasId"          "cohortId"         "cohortName"       "sql"             </span></span>
+<span><span class="co">#&gt; [5] "json"             "logicDescription" "generateStats"</span></span></code></pre>
 <p>Here is how these columns are used:</p>
 <ul>
 <li>
@@ -159,10 +159,10 @@ practice, we recommend that you embed these cohort details into a study
 package. To do this, we’ve created a function to save the cohort
 definition set to the file system:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/saveCohortDefinitionSet.html">saveCohortDefinitionSet</a></span><span class="op">(</span>cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,
-                        settingsFileName <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/settings/CohortsToCreate.csv"</span><span class="op">)</span>,
-                        jsonFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/cohorts"</span><span class="op">)</span>,
-                        sqlFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/sql/sql_server"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/saveCohortDefinitionSet.html">saveCohortDefinitionSet</a></span><span class="op">(</span>cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,</span>
+<span>                        settingsFileName <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/settings/CohortsToCreate.csv"</span><span class="op">)</span>,</span>
+<span>                        jsonFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/cohorts"</span><span class="op">)</span>,</span>
+<span>                        sqlFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/sql/sql_server"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>By default, saving the cohort definition set will create the files
 under a folder called <code>inst</code> which is where resources for a
 study package will live. Under <code>inst</code> the following folders
@@ -182,9 +182,9 @@ per cohort definition.</li>
 reading in these resources using the <code>getCohortDefinitionSet</code>
 function.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortDefinitionSet.html">getCohortDefinitionSet</a></span><span class="op">(</span>settingsFileName <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/settings/CohortsToCreate.csv"</span><span class="op">)</span>,
-                                              jsonFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/cohorts"</span><span class="op">)</span>,
-                                              sqlFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/sql/sql_server"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortDefinitionSet.html">getCohortDefinitionSet</a></span><span class="op">(</span>settingsFileName <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/settings/CohortsToCreate.csv"</span><span class="op">)</span>,</span>
+<span>                                              jsonFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/cohorts"</span><span class="op">)</span>,</span>
+<span>                                              sqlFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">packageRoot</span>, <span class="st">"inst/sql/sql_server"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="generating-cohorts">Generating Cohorts<a class="anchor" aria-label="anchor" href="#generating-cohorts"></a>
@@ -194,23 +194,23 @@ ROhdsiWebApi, we’re ready to generate our cohorts against our OMOP CDM.
 In this example, we will use the <a href="https://github.com/OHDSI/Eunomia" class="external-link">Eunomia</a> data set as our
 CDM.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Get the Eunomia connection details</span>
-<span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># First get the cohort table names to use for this generation task</span>
-<span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"cg_example"</span><span class="op">)</span>
-
-<span class="co"># Next create the tables on the database</span>
-<span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span>
-
-<span class="co"># Generate the cohort set</span>
-<span class="va">cohortsGenerated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,
-                                      cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                      cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                                      cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                                      cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Get the Eunomia connection details</span></span>
+<span><span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># First get the cohort table names to use for this generation task</span></span>
+<span><span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"cg_example"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Next create the tables on the database</span></span>
+<span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate the cohort set</span></span>
+<span><span class="va">cohortsGenerated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                                      cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                                      cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                                      cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                                      cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span><span class="op">)</span></span></code></pre></div>
 <p>The code above starts by obtaining the <code>connectionDetails</code>
 from Eunomia. This is where you’ll likely want to substitute your own
 connection information. Next, we call <code>getCohortTableNames</code>
@@ -230,16 +230,16 @@ Options</a> section.</p>
 the <code>getCohortCounts</code> method to query the cohort table for a
 summary of the persons and events for each cohort:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/getCohortCounts.html">getCohortCounts</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">#&gt; Connecting using SQLite driver</span>
-<span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Counting cohorts took 0.05 secs</span></code></pre>
-<pre><code><span class="co">#&gt;   cohortId cohortEntries cohortSubjects</span>
-<span class="co">#&gt; 1  1778211          1800           1800</span>
-<span class="co">#&gt; 2  1778212           569            569</span>
-<span class="co">#&gt; 3  1778213           266            266</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/getCohortCounts.html">getCohortCounts</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span>
+<span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Counting cohorts took 0.0474 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;   cohortId cohortEntries cohortSubjects</span></span>
+<span><span class="co">#&gt; 1  1778211          1800           1800</span></span>
+<span><span class="co">#&gt; 2  1778212           569            569</span></span>
+<span><span class="co">#&gt; 3  1778213           266            266</span></span></code></pre>
 </div>
 </div>
 <div class="section level3">
@@ -260,43 +260,43 @@ CohortDiagnostics. Building on our basic example, let’s export the
 cohorts from WebAPI but this time indicate that we’d like to also
 include the code that <code>generatesStats</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Get the cohorts and include the code to generate inclusion rule stats</span>
-<span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html" class="external-link">exportCohortDefinitionSet</a></span><span class="op">(</span>baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,
-                                                               cohortIds <span class="op">=</span> <span class="va">cohortIds</span>,
-                                                               generateStats <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Get the cohorts and include the code to generate inclusion rule stats</span></span>
+<span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html" class="external-link">exportCohortDefinitionSet</a></span><span class="op">(</span>baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,</span>
+<span>                                                               cohortIds <span class="op">=</span> <span class="va">cohortIds</span>,</span>
+<span>                                                               generateStats <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Next we’ll create the tables to store the cohort and the cohort
 statistics. Then we can generate the cohorts.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># First get the cohort table names to use for this generation task</span>
-<span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"stats_example"</span><span class="op">)</span>
-
-<span class="co"># Next create the tables on the database</span>
-<span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span>
-
-<span class="co"># We can then generate the cohorts the same way as before and it will use the </span>
-<span class="co"># cohort statstics tables to store the results</span>
-<span class="co"># Generate the cohort set</span>
-<span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,
-                  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># First get the cohort table names to use for this generation task</span></span>
+<span><span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"stats_example"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Next create the tables on the database</span></span>
+<span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># We can then generate the cohorts the same way as before and it will use the </span></span>
+<span><span class="co"># cohort statstics tables to store the results</span></span>
+<span><span class="co"># Generate the cohort set</span></span>
+<span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span><span class="op">)</span></span></code></pre></div>
 <p>At this stage, your cohorts are generated and any cohort statistics
 are available in the cohort statistics tables. The next step is to
 export the results to the file system which is done using the code
 below:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/insertInclusionRuleNames.html">insertInclusionRuleNames</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                         cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,
-                         cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                         cohortInclusionTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortInclusionTable</span><span class="op">)</span>
-
-<span class="fu"><a href="../reference/exportCohortStatsTables.html">exportCohortStatsTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                        cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                        cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                        cohortStatisticsFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"InclusionStats"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/insertInclusionRuleNames.html">insertInclusionRuleNames</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                         cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,</span>
+<span>                         cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                         cohortInclusionTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortInclusionTable</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/exportCohortStatsTables.html">exportCohortStatsTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                        cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                        cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                        cohortStatisticsFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"InclusionStats"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The code above performs two steps. First, we insert the inclusion
 rule names from the Circe expressions in the
 <code>cohortDefinitionSet</code>. This is important since these names
@@ -307,9 +307,9 @@ table in the <code>InclusionStats</code> folder.</p>
 <p>Once you have exported your cohort statistics, you can optionally
 drop the statistics tables by using the following command:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/dropCohortStatsTables.html">dropCohortStatsTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                      cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                      cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/dropCohortStatsTables.html">dropCohortStatsTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                      cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                      cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="incremental-mode">Incremental Mode<a class="anchor" aria-label="anchor" href="#incremental-mode"></a>
@@ -323,46 +323,46 @@ against a source and skip it if we know the cohort definition has not
 changed. To illustrate incremental mode and explain how it works, we’ll
 continue along with our example from earlier.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Create a set of tables for this example</span>
-<span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"cohort"</span><span class="op">)</span>
-<span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                   incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Create a set of tables for this example</span></span>
+<span><span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"cohort"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                   incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>As expected, the code created the cohort tables as requested. Under
 the hood, since <code>incremental = TRUE</code> was set, the code did a
 check against the database to see if the tables already exist before
 creating them. To verify this, we can call the function again and check
 the results:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,
-                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                   incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">#&gt; Connecting using SQLite driver</span>
-<span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Table "cohort" already exists and in incremental mode, so not recreating it.</span></code></pre>
-<pre><code><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Table "cohort_inclusion" already exists and in incremental mode, so not recreating it.</span></code></pre>
-<pre><code><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Table "cohort_inclusion_result" already exists and in incremental mode, so not recreating it.</span></code></pre>
-<pre><code><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Table "cohort_inclusion_stats" already exists and in incremental mode, so not recreating it.</span></code></pre>
-<pre><code><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Table "cohort_summary_stats" already exists and in incremental mode, so not recreating it.</span></code></pre>
-<pre><code><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Table "cohort_censor_stats" already exists and in incremental mode, so not recreating it.</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                   cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                   incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span>
+<span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Table "cohort" already exists and in incremental mode, so not recreating it.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Table "cohort_inclusion" already exists and in incremental mode, so not recreating it.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Table "cohort_inclusion_result" already exists and in incremental mode, so not recreating it.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Table "cohort_inclusion_stats" already exists and in incremental mode, so not recreating it.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Table "cohort_summary_stats" already exists and in incremental mode, so not recreating it.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Table "cohort_censor_stats" already exists and in incremental mode, so not recreating it.</span></span></code></pre>
 <p>The use of <code>incremental = TRUE</code> here allows for assurance
 that tables and results from previous runs are preserved. Next, we can
 generate our <code>cohortDefinitionSet</code> in incremental mode.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,
-                  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,
-                  incremental <span class="op">=</span> <span class="cn">TRUE</span>,
-                  incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,</span>
+<span>                  incremental <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                  incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Here we indicate that we are performing this operational
 incrementally by specifying <code>incremental = TRUE</code> and by
 specifying a folder for holding a record keeping file to track where
@@ -378,23 +378,23 @@ and if the checksum of that cohort matches the checksum found in the
 <code>incrementalFolder</code> for the same cohort ID, the generation is
 skipped. To illustrate how this looks:</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,
-                  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,
-                  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,
-                  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,
-                  incremental <span class="op">=</span> <span class="cn">TRUE</span>,
-                  incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">#&gt; Connecting using SQLite driver</span>
-<span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Skipping cohortId = '1778211' because it is unchanged from earlier run</span></code></pre>
-<pre><code><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Skipping cohortId = '1778212' because it is unchanged from earlier run</span></code></pre>
-<pre><code><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></code></pre>
-<pre><code><span class="co">#&gt; Skipping cohortId = '1778213' because it is unchanged from earlier run</span>
-<span class="co">#&gt; Generating cohort set took 0.07 secs</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span>connectionDetails<span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>                  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
+<span>                  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,</span>
+<span>                  incremental <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                  incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span>
+<span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Skipping cohortId = '1778211' because it is unchanged from earlier run</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Skipping cohortId = '1778212' because it is unchanged from earlier run</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Currently in a tryCatch or withCallingHandlers block, so unable to add global calling handlers. ParallelLogger will not capture R messages, errors, and warnings, only explicit calls to ParallelLogger.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Skipping cohortId = '1778213' because it is unchanged from earlier run</span></span>
+<span><span class="co">#&gt; Generating cohort set took 0.09 secs</span></span></code></pre>
 <div class="section level5">
 <h5 id="potential-pitfalls-of-incremental-mode">Potential Pitfalls of Incremental Mode<a class="anchor" aria-label="anchor" href="#potential-pitfalls-of-incremental-mode"></a>
 </h5>
