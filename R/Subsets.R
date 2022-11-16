@@ -87,7 +87,7 @@ CohortSubset <- R6::R6Class(
 
       # TODO: valid json check
       checkmate::assertCharacter(cohortJson)
-      privat$.cohortJson <- cohortJson
+      private$.cohortJson <- cohortJson
       self
     }
   )
@@ -140,22 +140,22 @@ DemographicCriteria <- R6::R6Class(
     #'@field    ageMin
     ageMin = function(ageMin) {
       if(missing(ageMin)) return(private$.ageMin)
-      checkmate::assertInt(ageMin, len = 1, lower = 0, upper = 99999)
+      checkmate::assertInt(ageMin, lower = 0, upper = 99999)
       private$.ageMin <- ageMin
       return(self)
     },
     #'@field    ageMax
     ageMax = function(ageMax) {
       if(missing(ageMax)) return(private$.ageMax)
-      checkmate::assertInt(ageMax, len = 1, lower = 0, upper = 99999)
+      checkmate::assertInt(ageMax, lower = 0, upper = 99999)
       private$.ageMax <- ageMax
       return(self)
     },
     #' @field gender
     gender = function(gender) {
       if(missing(gender)) return(private$gender)
-      checkmate::assertCharacter(gender, min.chars = 1, len = 1)
-      private$gender <- gender
+      checkmate::assertCharacter(gender, min.chars = 1, len = 1, null.ok = TRUE)
+      private$.gender <- gender
       return(self)
     }
   )
@@ -167,7 +167,7 @@ DemographicCriteria <- R6::R6Class(
 #' @param gender       gender demographics
 #' # TODO: more criteria than this - calendarYearMin/Max, what else?
 #' @export
-createDemographicCriteria <- function(ageMin, ageMax, gender) {
+createDemographicCriteria <- function(ageMin = 0, ageMax = 9999, gender = NULL) {
   criteria <- DemographicCriteria$new()
   criteria$ageMin <- ageMin
   criteria$ageMax <- ageMax
@@ -199,7 +199,7 @@ DemographicCriteriaSubset <- R6::R6Class(
         return(private$.criteria)
 
       checkmate::assertR6(criteria, "DemographicCriteria")
-      privat$.criteria <- criteria
+      private$.criteria <- criteria
       self
     }
   )
@@ -244,7 +244,7 @@ ObservationCriteriaSubset <- R6::R6Class(
         return(private$.followUpTimepriorTime)
 
       checkmate::assertInt(priorTime, lower = 0, upper = 999999)
-      privat$.priorTime <- priorTime
+      private$.priorTime <- priorTime
       self
     },
     #' @field followUpTime            minimum required follow up time in days
@@ -253,7 +253,7 @@ ObservationCriteriaSubset <- R6::R6Class(
         return(private$.followUpTime)
 
       checkmate::assertInt(followUpTime, lower = 0, upper = 999999)
-      privat$.priorTime <- followUpTime
+      private$.priorTime <- followUpTime
       self
     },
     #' @field first             Limit to first observation only
@@ -264,11 +264,11 @@ ObservationCriteriaSubset <- R6::R6Class(
       if (any(private$.last, private$.random) & first)
         warning("Overriding last/random observation")
 
-      privat$.last <- FALSE
-      privat$.random <- FALSE
+      private$.last <- FALSE
+      private$.random <- FALSE
 
       checkmate::assertLogical(first, len = 1)
-      privat$.first <- first
+      private$.first <- first
       self
     },
 
@@ -280,11 +280,11 @@ ObservationCriteriaSubset <- R6::R6Class(
       if (any(private$.first, private$.random) & last)
         warning("Overriding first/random observation")
 
-      privat$.first <- FALSE
-      privat$.random <- FALSE
+      private$.first <- FALSE
+      private$.random <- FALSE
 
       checkmate::assertLogical(last, len = 1)
-      privat$.last <- last
+      private$.last <- last
       self
     },
 
@@ -294,7 +294,7 @@ ObservationCriteriaSubset <- R6::R6Class(
         return(private$.random)
 
       checkmate::assertLogical(random, len = 1)
-      privat$.random <- random
+      private$.random <- random
       self
     }
   )
@@ -315,8 +315,8 @@ createObservationCriteriaSubset <- function(id, name, priorTime, followUpTime, f
   subset <- ObservationCriteriaSubset$new()
   subset$id <- id
   subset$name <- name
-  subset$name <- priorTime
-  subset$name <- followUpTime
+  subset$priorTime <- priorTime
+  subset$followUpTime <- followUpTime
   subset$first <- first
   subset$last <- last
   subset$random <- random
@@ -328,21 +328,28 @@ createObservationCriteriaSubset <- function(id, name, priorTime, followUpTime, f
 SubsetDefinition <- R6::R6Class(
   classname = "SubsetDefinition",
   private = list(
-    .subsets = c(),
+    .subsets = list(),
     .cohortIds = NULL,
-    toJSONRepr = function(subset) {
-      checkmate::assertR6(subset, "Subset")
-      subset$toJSON()
+    getSubsetList = function(subset) {
+      res <- list()
+      for (s in names(private$.subsets)) {
+        subset <- private$.subsets[[s]]
+        res[[s]] <- subset$toList()
+      }
+      res
     }
   ),
   public = list(
     #'
-    toJSON = function() {
-      repr <- list(
+    toList = function() {
+      list(
         cohortIds = private$.cohortIds,
-        subsets = unlist(lapply(private$.subsets, private$toJSONRepr))
+        subsets = private$getSubsetList()
       )
-      return(ParallelLogger::convertSettingsToJson(repr))
+    },
+
+    toJSON = function() {
+      return(ParallelLogger::convertSettingsToJson(self$toList()))
     }
   ),
 
@@ -358,9 +365,13 @@ SubsetDefinition <- R6::R6Class(
     },
     #' @field subsets
     subsets = function(subsets) {
-      if (missing(subset))
+      if (missing(subsets))
         return(private$.subsets)
-      checkmate::assertR6(subset, "Subset")
+
+      checkmate::assertList(subsets)
+      for (s in names(subsets)) {
+        checkmate::assertR6(subsets[[s]], "Subset")
+      }
       # comment allows appending subsets to existing rather than setting
       # private$.subsets <- c(private$.subsets, subsets)
       private$.subsets <- subsets
