@@ -24,14 +24,10 @@ Subset <- R6::R6Class(
   classname = "Subset",
   private = list(
     .name = "",
-    .id = NA,
-    .publicFields = c()
+    .id = NA
   ),
   public = list(
     initialize = function(definition = NULL) {
-      # TODO: R makes me miss python - i think the setters will need be defined manually as self$active is NULL
-      # TODO: Figure out a way to get the class definition from an instantiated object dynamically
-      private$.publicFields <- names(self$active)
       if (!is.null(definition)) {
         if (is.character(definition)) {
           definition <- jsonlite::fromJSON(definition)
@@ -41,18 +37,19 @@ Subset <- R6::R6Class(
           stop("Cannot instanitate object invalid type ", class(definition))
         }
 
-        for (n in names(definition)) {
-          if (n %in% names(private$.publicFields)) {
-            self[[n]] <- definition[[n]]
+        for (field in names(definition)) {
+          if (field %in% self$publicFields()) {
+            self[[field]] <- definition[[field]]
           }
         }
       }
       self
     },
 
-    # I find it very annoying that this needs to be defined.
-    # Why is there no implementation that gets the class def from the object??
-    # R6 makes you define classname and it MUST be the same as the var name!!
+    publicFields = function () {
+      c("id", "name")
+    },
+
     classname = function() {
       class(self)[1]
     },
@@ -67,7 +64,7 @@ Subset <- R6::R6Class(
     },
 
     toJSON = function () {
-      jsonlite::toJSON(self$toList())
+      jsonlite::toJSON(self$toList(), pretty = TRUE)
     }
   ),
 
@@ -104,6 +101,10 @@ CohortSubset <- R6::R6Class(
     .cohortIds = integer(0)
   ),
   public = list(
+    publicFields = function () {
+      c(super$publicFields(), "cohortIds")
+    },
+
     toList = function() {
       objRepr <- super$toList()
       objRepr$cohortIds <- private$.cohortIds
@@ -114,10 +115,12 @@ CohortSubset <- R6::R6Class(
     #'@field cohortJson             circe cohort definition json
     cohortIds = function(cohortIds) {
       if(missing(cohortIds))
-        return(private$.cohortJson)
+        return(private$.cohortIds)
 
+      cohortIds <- as.integer(cohortIds)
       # TODO: valid cohorts check. Do we want to allow multiple cohorts or a single cohort?
       checkmate::assertIntegerish(cohortIds, min.len = 1)
+      checkmate::assertFALSE(any(is.na(cohortIds)))
       private$.cohortIds <- cohortIds
       self
     }
@@ -127,7 +130,7 @@ CohortSubset <- R6::R6Class(
 #' A definition of subset functions to be applied to a set of cohorts
 #' @param id
 #' @param name
-#' @param cohortJson
+#' @param cohortIds
 #' @returns a CohortSubset instance
 #' @export
 createCohortSubset <- function(id, name, cohortIds) {
@@ -164,7 +167,7 @@ DemographicCriteria <- R6::R6Class(
     },
 
     toJSON = function() {
-      jsonlite::toJSON(self$toList())
+      jsonlite::toJSON(self$toList(), pretty = TRUE)
     }
   ),
   active = list(
@@ -213,10 +216,13 @@ DemographicSubset <- R6::R6Class(
   classname = "DemographicSubset",
   inherit = Subset,
   private = list(
-    .criteria = NULL,
-    .atLeast = logical(0)
+    .criteria = NULL
   ),
   public = list(
+    publicFields = function () {
+      c(super$publicFields(), "criteria")
+    },
+
     toList = function() {
       objRef <- super$toList()
       objRef$criteria <- private$.criteria$toList()
@@ -231,11 +237,7 @@ DemographicSubset <- R6::R6Class(
 
       # Allows criteria definition to be loaded from serialized form
       if (is.list(criteria)) {
-        .criteriaObj <- DemographicCriteria$new()
-        .criteriaObj$ageMin <- criteria$ageMin
-        .criteriaObj$ageMax <- criteria$ageMax
-        .criteriaObj$gender <- criteria$gender
-        criteria <- .criteriaObj
+        criteria <- do.call(createDemographicCriteria, criteria)
       }
 
       checkmate::assertR6(criteria, "DemographicCriteria")
@@ -267,15 +269,17 @@ LimitSubset <- R6::R6Class(
   private = list(
     .priorTime = 0,
     .followUpTime = 0,
-    .first = FALSE,
-    .last = FALSE,
-    .random = FALSE
+    .limitTo = character(0)
   ),
   public = list(
+    publicFields = function () {
+      c(super$publicFields(), "priorTime", "followUpTime", "limitTo")
+    },
     toList = function() {
       objRef <- super$toList()
-      objRef$priorTime <- jsonlite::unbox(private$.priorObservation)
-      objRef$followUpTime <- jsonlite::unbox(private$.priorObservation)
+      objRef$priorTime <- jsonlite::unbox(private$.priorTime)
+      objRef$followUpTime <- jsonlite::unbox(private$.followUpTime)
+      objRef$limitTo <- jsonlite::unbox(private$.limitTo)
       objRef
     }
   ),
@@ -283,7 +287,7 @@ LimitSubset <- R6::R6Class(
     #' @field priorTime             minimum washout time in days
     priorTime = function(priorTime) {
       if(missing(priorTime))
-        return(private$.followUpTimepriorTime)
+        return(private$.priorTime)
 
       checkmate::assertInt(priorTime, lower = 0, upper = 999999)
       private$.priorTime <- priorTime
@@ -298,45 +302,23 @@ LimitSubset <- R6::R6Class(
       private$.priorTime <- followUpTime
       self
     },
-    #' @field first             Limit to first observation only
-    first = function(first) {
-      if(missing(first))
-        return(private$.first)
-
-      if (any(private$.last, private$.random) & first)
-        warning("Overriding last/random observation")
-
-      private$.last <- FALSE
-      private$.random <- FALSE
-
-      checkmate::assertLogical(first, len = 1)
-      private$.first <- first
-      self
-    },
-
-    #' @field last             Limit to last observation only
-    last = function(last) {
-      if(missing(last))
-        return(private$.last)
-
-      if (any(private$.first, private$.random) & last)
-        warning("Overriding first/random observation")
-
-      private$.first <- FALSE
-      private$.random <- FALSE
-
-      checkmate::assertLogical(last, len = 1)
-      private$.last <- last
-      self
-    },
-
-    #' @field random             Limit to a random observation only
-    random = function(random) {
-      if(missing(random))
-        return(private$.random)
-
-      checkmate::assertLogical(random, len = 1)
-      private$.random <- random
+    #' @field limitTo           Limit to first observation only
+    #'
+    #' @param limitTo           charachter one of:
+    #'                              "earliest" - only first entry in patient history
+    #'                              "earliestRemaining" - only first entry after washout set by priorTime
+    #'                              "last" - only last entry in patient history
+    #'                              "lastRemaining" - only last entry in patient history inside
+    #'
+    #'                          Note, when using earliest and last with follow up and washout, patients with events
+    #'                          outside this will be censored.
+    #'
+    limitTo = function(limitTo) {
+      if(missing(limitTo))
+        return(private$.limitTo)
+      checkmate::assertCharacter(limitTo)
+      checkmate::assertChoice(limitTo, choices = c("", "earliest", "earliestRemaining", "last", "lastRemaining"))
+      private$.limitTo <- limitTo
       self
     }
   )
@@ -353,15 +335,13 @@ LimitSubset <- R6::R6Class(
 #' @param first                     limit to first entry only
 #' @param last                      limit to last entry only
 #' @param random                    limit to random entry only
-createLimitSubset <- function(id, name, priorTime, followUpTime, first, last, random) {
+createLimitSubset <- function(id, name, priorTime, followUpTime, limitTo) {
   subset <- LimitSubset$new()
   subset$id <- id
   subset$name <- name
   subset$priorTime <- priorTime
   subset$followUpTime <- followUpTime
-  subset$first <- first
-  subset$last <- last
-  subset$random <- random
+  subset$limitTo <- limitTo
 
   subset
 }
@@ -399,7 +379,7 @@ SubsetCollection <- R6::R6Class(
         if (!is.list(definition)) {
           stop("Cannot instanitate object invalid type ", class(definition))
         }
-        private$.targetCohortIds <- definition$targetCohortIds
+        private$.targetCohortIds <- as.integer(definition$targetCohortIds)
         private$.cohortId <- definition$cohortIds
 
         for (item in definition$subsets) {
@@ -411,24 +391,34 @@ SubsetCollection <- R6::R6Class(
     #'
     toList = function() {
       list(
-        targetCohortIds = private$.targetCohortIds,
+        targetCohortIds = as.integer(private$.targetCohortIds),
         subsets = lapply(self$subsets, function(subset) { subset$toList() }),
-        cohortId = private$.cohortId
+        cohortId = jsonlite::unbox(private$.cohortId)
       )
     },
 
     toJSON = function() {
-      return(jsonlite::toJSON(self$toList()))
+      return(jsonlite::toJSON(self$toList(), pretty = TRUE))
     }
   ),
 
   active = list(
     #' @field cohortIds
-    cohortIds = function(targetCohortIds) {
+    cohortId = function(cohortId) {
+      if(missing(cohortId))
+        return(private$.cohortId)
+
+      checkmate::assertInt(cohortId)
+      private$.cohortId <- cohortId
+      self
+    },
+
+    #' @field cohortIds
+    targetCohortIds = function(targetCohortIds) {
       if(missing(targetCohortIds))
         return(private$.targetCohortIds)
-
       checkmate::assertIntegerish(targetCohortIds, min.len = 1)
+      checkmate::assertFALSE(any(is.na(targetCohortIds)))
       private$.targetCohortIds <- targetCohortIds
       self
     },
@@ -453,7 +443,7 @@ SubsetCollection <- R6::R6Class(
 #' @description
 #' Create subset definition from subset objects
 #'
-#' @param cohortIds                 cohort identifiers to apply subset functions to
+#' @param targetCohortIds                 cohort identifiers to apply subset functions to
 #' @param subsets                   vector of subset instances to apply
 #' @export
 #'
@@ -462,10 +452,11 @@ SubsetCollection <- R6::R6Class(
 #'  createCohortSubset(id = 12, name = "foo", cohortJson = cohortDefinition)
 #' )
 #'
-#' subsetDef <- createSubsetDefinition(c(1,3,4), mySubsets)
-createSubsetCollection <- function(cohortIds, subsets) {
+#' subsetDef <- createSubsetDefinition(c(1,3,4), 11, mySubsets)
+createSubsetCollection <- function(targetCohortIds, cohortId, subsets) {
   subsetDef <- SubsetCollection$new()
-  subsetDef$cohortIds <- cohortIds
+  subsetDef$targetCohortIds <- targetCohortIds
+  subsetDef$cohortId <- cohortId
   subsetDef$subsets <- subsets
   return(subsetDef)
 }
