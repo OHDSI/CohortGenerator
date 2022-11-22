@@ -50,6 +50,9 @@ Subset <- R6::R6Class(
       self
     },
 
+    # I find it very annoying that this needs to be defined.
+    # Why is there no implementation that gets the class def from the object??
+    # R6 makes you define classname and it MUST be the same as the var name!!
     classname = function() {
       class(self)[1]
     },
