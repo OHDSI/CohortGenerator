@@ -21,10 +21,10 @@ test_that("Subset definition", {
                             ageMin = 18,
                             ageMax = 64)
   )
-  subsetDef <- createSubsetCollection(c(1, 3, 4), 11, subsetsVec)
-
+  subsetDef <- createCohortSubsetDefinition(c(1, 3, 4), 11, subsetsVec)
+  
   for (s in subsetDef$subsets) {
-    checkmate::expect_class(s, "Subset")
+    checkmate::expect_class(s, "SubsetOperator")
   }
 
   listDef <- subsetDef$toList()
@@ -34,18 +34,21 @@ test_that("Subset definition", {
   checkmate::expect_character(subsetDef$toJSON())
 
   # Check serialized version is identical to code defined version
-  subsetDef2 <- SubsetCollection$new(subsetDef$toJSON())
+  subsetDef2 <- CohortSubsetDefinition$new(subsetDef$toJSON())
 
-  checkmate::expect_class(subsetDef2, "SubsetCollection")
+  checkmate::expect_class(subsetDef2, "CohortSubsetDefinition")
   expect_equal(subsetDef2$targetCohortIds, subsetDef$targetCohortIds)
-  expect_equal(subsetDef$cohortId, subsetDef$cohortId)
+  expect_equal(subsetDef$outcomeCohortId, subsetDef$outcomeCohortId)
   expect_equal(length(subsetDef2$subsets), length(subsetDef$subsets))
 
+  expect_true(subsetDef$subsets[[1]]$isEqualTo(subsetDef$subsets[[1]]))
+  
   for (i in 1:length(subsetDef2$subsets)) {
     item <- subsetDef2$subsets[[i]]
     itemMatch <- subsetDef$subsets[[i]]
     checkmate::expect_class(item, class(itemMatch))
-
+    expect_true(item$isEqualTo(itemMatch), label = paste(i, "isEqualTo"))
+    
     for (field in itemMatch$publicFields()) {
       if (field == "criteria") {
         expect_equal(itemMatch[[field]]$ageMax, item[[field]]$ageMax)
@@ -56,4 +59,22 @@ test_that("Subset definition", {
       }
     }
   }
+  
+  testDemoSubset <- createDemographicSubset(id = 1003,
+                                            name = "Demographic Criteria",
+                                            ageMin = 18,
+                                            ageMax = 64)
+  
+  expect_true(testDemoSubset$isEqualTo(testDemoSubset))
+  
+  testDemoSubset2 <- createDemographicSubset(id = 1003,
+                                            name = "Demographic Criteria",
+                                            gender = "nb",
+                                            ageMin = 18,
+                                            ageMax = 64)
+  
+  expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
+  
+  ccs <- createCohortSubset(id = 1001, name = "Cohort Subset", cohortIds = 11)
+  expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
 })
