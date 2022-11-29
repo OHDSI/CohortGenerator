@@ -475,8 +475,10 @@ CohortSubsetDefinition <- R6::R6Class(
     toList = function() {
       list(
         targetCohortIds = as.integer(private$.targetCohortIds),
+        outputCohortId = jsonlite::unbox(private$.outputCohortId),
+        # Note - when there is a base definition that includes multiple calls to the same subset this should be replaced
         subsets = lapply(self$subsets, function(subset) { subset$toList() }),
-        outputCohortId = jsonlite::unbox(private$.outputCohortId)
+        subsetOperatorIds = private$.subsetIds
       )
     },
     #' @title to JSON
@@ -489,15 +491,35 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @description add subset to class - checks if equivalent id is present
     #' Will throw an error if a matching ID is found but reference object is different
     #' @param subsetOperator a SubsetOperator isntance
-    addSubsetOperator = function(subsetOperator) {
+    #' @param overwrite if a subset operator of the same ID is present, replace it with a new definition
+    addSubsetOperator = function(subsetOperator, overwrite = FALSE) {
       checkmate::assertR6(subsetOperator, "SubsetOperator")
-      if (!subsetOperator$id %in% private$.subsetsIds) {
+      existingOperator <- self$getSubsetOperatorById(!subsetOperator$id)
+      if (is.null(existingOperator)) {
         private$.subsets <- c(private$.subsets, subsetOperator)
         private$.subsetIds <- c(private$.subsetIds, subsetOperator$id)
-      } else {
-        # TODO Check if subset is equivalent to existing with the same ID or throw error
+      } else if (overwrite && subsetOperator$isEqualTo(existingOperator)) {
+
+      } else if (subsetOperator$isEqualTo(existingOperator) ) {
+        stop("Non-equivalent subset operator with the same id is present in definition. Use overwrite = TRUE to replace")
       }
       self
+    },
+
+    #' @title Get SubsetOperator By Id
+    #' @description get a subset operator by its id field
+    #' @param id    Integer subset id
+    getSubsetOperatorById = function(id) {
+      # This implementation seems weird but if you store int ids in a list then R will store every int lower than that
+      # Value as a NULL, which breaks any calls to "x %in% names(listObj)"
+      if (!id %in% private$.subsetId) {
+        return(NULL)
+      }
+
+      for (subset in private$.subsets) {
+        if (subset$id == id)
+          return(subset)
+      }
     }
   ),
 
