@@ -48,18 +48,19 @@
 SubsetOperator <- R6::R6Class(
   classname = "SubsetOperator",
   private = list(
+    suffixStr = "S",
     .name = "",
     .id = NA
   ),
 
   public = list(
-    #' @title Subset class
-    #' @description 
-    #' Subset class - Abstract Base Class, do not implement directly
-    #'
-    #' @param definition json character or list - definition of subset operator
-    #'
-    #' @return instance of object
+        #' @title Subset class
+        #' @description
+        #' Subset class - Abstract Base Class, do not implement directly
+        #'
+        #' @param definition json character or list - definition of subset operator
+        #'
+        #' @return instance of object
     initialize = function(definition = NULL) {
       if (!is.null(definition)) {
         definition <- .loadJson(definition)
@@ -72,24 +73,24 @@ SubsetOperator <- R6::R6Class(
       }
       self
     },
-    #' @title Class Name
-    #' @description Class name of object
+        #' @title Class Name
+        #' @description Class name of object
     classname = function() {
       class(self)[1]
     },
-    
-    #' @title Public Fields
-    #' @description Publicly settable fields of object 
+
+        #' @title Public Fields
+        #' @description Publicly settable fields of object
     publicFields = function() {
       return(names(get(self$classname())$active))
     },
-    
 
-    #' @title is Equal to
-    #' @description Compare Subsets - are they identical or not?
-    #' Checks all fields and settings
-    #'
-    #' @param  subsetOperatorB A subset to test equivalence to
+
+        #' @title is Equal to
+        #' @description Compare Subsets - are they identical or not?
+        #' Checks all fields and settings
+        #'
+        #' @param  subsetOperatorB A subset to test equivalence to
     isEqualTo = function(subsetOperatorB) {
       checkmate::assertR6(subsetOperatorB, "SubsetOperator")
       if (!all(class(self) == class(subsetOperatorB))) {
@@ -108,8 +109,8 @@ SubsetOperator <- R6::R6Class(
       return(TRUE)
     },
 
-    #' @title To list
-    #' @description convert to List representation
+        #' @title To list
+        #' @description convert to List representation
     toList = function() {
       repr <- list(
         id = jsonlite::unbox(private$.id),
@@ -119,9 +120,9 @@ SubsetOperator <- R6::R6Class(
       return(repr)
     },
 
-    #' @title To Json
-    #' @description convert to json serialized representation
-    #' @return list representation of object as json character
+        #' @title To Json
+        #' @description convert to json serialized representation
+        #' @return list representation of object as json character
     toJSON = function() {
       .toJSON(self$toList())
     }
@@ -157,17 +158,18 @@ CohortSubsetOperator <- R6::R6Class(
   classname = "CohortSubsetOperator",
   inherit = SubsetOperator,
   private = list(
+    suffixStr = "Coh",
     .cohortIds = integer(0)
   ),
   public = list(
-    #' @title Public Fields
-    #' @description publicly settable fields
+        #' @title Public Fields
+        #' @description publicly settable fields
     publicFields = function() {
       c(super$publicFields(), "cohortIds")
     },
-    
-    #' @title to List
-    #' @description List representation of object
+
+        #' @title to List
+        #' @description List representation of object
     toList = function() {
       objRepr <- super$toList()
       objRepr$cohortIds <- private$.cohortIds
@@ -175,7 +177,7 @@ CohortSubsetOperator <- R6::R6Class(
     }
   ),
   active = list(
-    #'@field cohortIds Integer ids of cohorts to subset to
+        #'@field cohortIds Integer ids of cohorts to subset to
     cohortIds = function(cohortIds) {
       if (missing(cohortIds))
         return(private$.cohortIds)
@@ -216,8 +218,8 @@ DemographicCriteria <- R6::R6Class(
     .gender = ""
   ),
   public = list(
-     #' @title to List
-    #' @description List representation of object
+         #' @title to List
+        #' @description List representation of object
     toList = function() {
       objRepr <- list()
       if (length(private$.ageMin))
@@ -229,15 +231,15 @@ DemographicCriteria <- R6::R6Class(
 
       objRepr
     },
-    #' @title to JSON
-    #' @description json serialized representation of object
+        #' @title to JSON
+        #' @description json serialized representation of object
     toJSON = function() {
       .toJSON(self$toList())
     },
 
-    #' @title is Equal to
-    #' @description Compare Subset to another
-    #' @param criteria DemographicCriteria instance
+        #' @title is Equal to
+        #' @description Compare Subset to another
+        #' @param criteria DemographicCriteria instance
     isEqualTo = function(criteria) {
       checkmate::assertR6(criteria, "DemographicCriteria")
       return(all(self$ageMin == criteria$ageMin,
@@ -246,21 +248,21 @@ DemographicCriteria <- R6::R6Class(
     }
   ),
   active = list(
-    #'@field    ageMin Int between 0 and 9999 - minimum age
+        #'@field    ageMin Int between 0 and 9999 - minimum age
     ageMin = function(ageMin) {
       if (missing(ageMin)) return(private$.ageMin)
       checkmate::assertInt(ageMin, lower = 0, upper = min(self$ageMax, 99999))
       private$.ageMin <- ageMin
       return(self)
     },
-    #'@field  ageMax  Int between 0 and 9999 - maximum age
+        #'@field  ageMax  Int between 0 and 9999 - maximum age
     ageMax = function(ageMax) {
       if (missing(ageMax)) return(private$.ageMax)
       checkmate::assertInt(ageMax, lower = max(0, self$ageMin), upper = 99999)
       private$.ageMax <- ageMax
       return(self)
     },
-    #' @field gender character string denoting gender
+        #' @field gender character string denoting gender
     gender = function(gender) {
       if (missing(gender)) return(private$.gender)
       checkmate::assertCharacter(gender, len = 1, null.ok = FALSE)
@@ -291,25 +293,26 @@ DemographicSubsetOperator <- R6::R6Class(
   classname = "DemographicSubsetOperator",
   inherit = SubsetOperator,
   private = list(
+    suffixStr = "Dem",
     .criteria = NULL
   ),
   public = list(
-    #' @title Public Fields
-    #' @description Publicly settable fields of object
+        #' @title Public Fields
+        #' @description Publicly settable fields of object
     publicFields = function() {
       c(super$publicFields(), "criteria")
     },
-    #' @title to List
-    #' @description List representation of object
+        #' @title to List
+        #' @description List representation of object
     toList = function() {
       objRef <- super$toList()
       objRef$criteria <- private$.criteria$toList()
       objRef
     },
 
-    #' @title is Equal to
-    #' @description Compare Subset to another
-    #' @param           subsetOperatorB A subset to test equivalence to
+        #' @title is Equal to
+        #' @description Compare Subset to another
+        #' @param           subsetOperatorB A subset to test equivalence to
     isEqualTo = function(subsetOperatorB) {
       if (!super$isEqualTo(subsetOperatorB)) {
         return(FALSE)
@@ -319,7 +322,7 @@ DemographicSubsetOperator <- R6::R6Class(
     }
   ),
   active = list(
-    #'@field criteria   DemographicCriteria to subset to
+        #'@field criteria   DemographicCriteria to subset to
     criteria = function(criteria) {
       if (missing(criteria))
         return(private$.criteria)
@@ -355,13 +358,14 @@ LimitSubsetOperator <- R6::R6Class(
   classname = "LimitSubsetOperator",
   inherit = SubsetOperator,
   private = list(
+    suffixStr = "Lim",
     .priorTime = 0,
     .followUpTime = 0,
     .limitTo = character(0)
   ),
   public = list(
-    #' @title to List
-    #' @description List representation of object
+        #' @title to List
+        #' @description List representation of object
     toList = function() {
       objRef <- super$toList()
       objRef$priorTime <- jsonlite::unbox(private$.priorTime)
@@ -371,7 +375,7 @@ LimitSubsetOperator <- R6::R6Class(
     }
   ),
   active = list(
-    #' @field priorTime             minimum washout time in days
+        #' @field priorTime             minimum washout time in days
     priorTime = function(priorTime) {
       if (missing(priorTime))
         return(private$.priorTime)
@@ -380,7 +384,7 @@ LimitSubsetOperator <- R6::R6Class(
       private$.priorTime <- priorTime
       self
     },
-    #' @field followUpTime            minimum required follow up time in days
+        #' @field followUpTime            minimum required follow up time in days
     followUpTime = function(followUpTime) {
       if (missing(followUpTime))
         return(private$.followUpTime)
@@ -389,15 +393,15 @@ LimitSubsetOperator <- R6::R6Class(
       private$.priorTime <- followUpTime
       self
     },
-    #' @field limitTo     charachter one of:
-    #'                              "earliest" - only first entry in patient history
-    #'                              "earliestRemaining" - only first entry after washout set by priorTime
-    #'                              "last" - only last entry in patient history
-    #'                              "lastRemaining" - only last entry in patient history inside
-    #'
-    #'                          Note, when using earliest and last with follow up and washout, patients with events
-    #'                          outside this will be censored.
-    #'
+        #' @field limitTo     charachter one of:
+        #'                              "earliest" - only first entry in patient history
+        #'                              "earliestRemaining" - only first entry after washout set by priorTime
+        #'                              "last" - only last entry in patient history
+        #'                              "lastRemaining" - only last entry in patient history inside
+        #'
+        #'                          Note, when using earliest and last with follow up and washout, patients with events
+        #'                          outside this will be censored.
+        #'
     limitTo = function(limitTo) {
       if (missing(limitTo))
         return(private$.limitTo)
@@ -444,10 +448,11 @@ createLimitSubset <- function(id, name, priorTime, followUpTime, limitTo) {
 CohortSubsetDefinition <- R6::R6Class(
   classname = "CohortSubsetDefinition",
   private = list(
+    .name = "",
+    .definitionId = integer(0),
     .subsets = list(),
     .subsetIds = c(),
-    .targetCohortIds = integer(0),
-    .outputCohortId = integer(0),
+    .targetOutcomePairs = c(),
 
     ## Creates objects if they are in the namespace
     createSubset = function(item, itemClass = item$subsetType) {
@@ -464,8 +469,9 @@ CohortSubsetDefinition <- R6::R6Class(
     initialize = function(definition = NULL) {
       if (!is.null(definition)) {
         definition <- .loadJson(definition)
-        self$targetCohortIds <- as.integer(definition$targetCohortIds)
-        self$outputCohortId <- definition$outputCohortId
+        self$name <- definition$name
+        self$definitionId <- definition$definitionId
+        self$targetOutcomePairs <- definition$targetOutcomePairs
         self$subsets <- lapply(definition$subsets, private$createSubset)
       }
       self
@@ -474,11 +480,13 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @description List representation of object
     toList = function() {
       list(
-        targetCohortIds = as.integer(private$.targetCohortIds),
-        outputCohortId = jsonlite::unbox(private$.outputCohortId),
+        name = jsonlite::unbox(self$name),
+        definitionId = jsonlite::unbox(self$definitionId),
+        targetOutcomePairs = self$targetOutcomePairs,
         # Note - when there is a base definition that includes multiple calls to the same subset this should be replaced
         subsets = lapply(self$subsets, function(subset) { subset$toList() }),
-        subsetOperatorIds = private$.subsetIds
+        subsetOperatorIds = private$.subsetIds,
+        packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName())))
       )
     },
     #' @title to JSON
@@ -492,16 +500,14 @@ CohortSubsetDefinition <- R6::R6Class(
     #' Will throw an error if a matching ID is found but reference object is different
     #' @param subsetOperator a SubsetOperator isntance
     #' @param overwrite if a subset operator of the same ID is present, replace it with a new definition
-    addSubsetOperator = function(subsetOperator, overwrite = FALSE) {
+    addSubsetOperator = function(subsetOperator) {
       checkmate::assertR6(subsetOperator, "SubsetOperator")
       existingOperator <- self$getSubsetOperatorById(!subsetOperator$id)
       if (is.null(existingOperator)) {
         private$.subsets <- c(private$.subsets, subsetOperator)
         private$.subsetIds <- c(private$.subsetIds, subsetOperator$id)
-      } else if (overwrite && subsetOperator$isEqualTo(existingOperator)) {
-
-      } else if (subsetOperator$isEqualTo(existingOperator) ) {
-        stop("Non-equivalent subset operator with the same id is present in definition. Use overwrite = TRUE to replace")
+      } else if (subsetOperator$isEqualTo(existingOperator)) {
+        stop("Non-equivalent subset operator with the same id is present in definition.")
       }
       self
     },
@@ -524,23 +530,21 @@ CohortSubsetDefinition <- R6::R6Class(
   ),
 
   active = list(
-    #' @field outputCohortId   integer for output cohort id for subset
-    outputCohortId = function(outputCohortId) {
-      if (missing(outputCohortId))
-        return(private$.outputCohortId)
+    #' @field targetOutcomePairs  list of pairs of intgers - (targetCohortId, outputCohortId)
+    targetOutcomePairs = function(targetOutcomePairs) {
+      if (missing(targetOutcomePairs))
+        return(private$.targetOutcomePairs)
+      checkmate::assertList(targetOutcomePairs, types = c("numeric", "list"), min.len = 1, unique = TRUE)
 
-      checkmate::assertInt(outputCohortId)
-      private$.outputCohortId <- outputCohortId
-      self
-    },
+      targetOutcomePairs <- lapply(targetOutcomePairs,
+                                   function(targetOutcomePair) {
+                                     targetOutcomePair <- as.numeric(targetOutcomePair)
+                                     checkmate::assertIntegerish(targetOutcomePair, len = 2)
+                                     checkmate::assertFALSE(targetOutcomePair[[1]] == targetOutcomePair[[2]])
+                                     targetOutcomePair
+                                   })
 
-    #' @field targetCohortIds   Integer ofor optional subset of cohort ids to use
-    targetCohortIds = function(targetCohortIds) {
-      if (missing(targetCohortIds))
-        return(private$.targetCohortIds)
-      checkmate::assertIntegerish(targetCohortIds, min.len = 1)
-      checkmate::assertFALSE(any(is.na(targetCohortIds)))
-      private$.targetCohortIds <- targetCohortIds
+      private$.targetOutcomePairs <- targetOutcomePairs
       self
     },
     #' @field subsets list of subset operations
@@ -551,6 +555,24 @@ CohortSubsetDefinition <- R6::R6Class(
       checkmate::assertList(subsets, types = "SubsetOperator")
       lapply(subsets, self$addSubsetOperator)
       self
+    },
+
+    name = function(name) {
+      if (missing(name))
+        return(private$.name)
+
+      checkmate::assertCharacter(name)
+      private$.name <- name
+      self
+    },
+
+    definitionId = function(definitionId) {
+      if (missing(definitionId))
+        return(private$.definitionId)
+
+      checkmate::assertInt(definitionId)
+      private$.definitionId <- definitionId
+      self
     }
   )
 )
@@ -558,8 +580,9 @@ CohortSubsetDefinition <- R6::R6Class(
 #' Create Subset Definition
 #' @description
 #' Create subset definition from subset objects
-#'
-#' @param targetCohortIds                 cohort identifiers to apply subset functions to
+#' @param name                      Name of definition
+#' @param definitionId              Definition identifier
+#' @param targetOutcomePairs        Vector of pairs targetCohortId, outcomeCohortId
 #' @param subsets                   vector of subset instances to apply
 #' @export
 #'
@@ -569,10 +592,11 @@ CohortSubsetDefinition <- R6::R6Class(
 #' )
 #'
 #' subsetDef <- createSubsetDefinition(c(1,3,4), 11, mySubsets)
-createCohortSubsetDefinition <- function(targetCohortIds, outputCohortId, subsets) {
+createCohortSubsetDefinition <- function(name, definitionId, targetOutcomePairs, subsets) {
   subsetDef <- CohortSubsetDefinition$new()
-  subsetDef$targetCohortIds <- targetCohortIds
-  subsetDef$outputCohortId <- outputCohortId
+  subsetDef$name <- name
+  subsetDef$definitionId <- definitionId
+  subsetDef$targetOutcomePairs <- targetOutcomePairs
   subsetDef$subsets <- subsets
   return(subsetDef)
 }

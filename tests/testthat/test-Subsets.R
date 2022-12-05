@@ -6,8 +6,8 @@ test_that("Subset definition", {
                                                 cohortFileNameFormat = "%s",
                                                 cohortFileNameValue = c("cohortName"),
                                                 packageName = "CohortGenerator",
-                                                verbose = TRUE)
-  subsetsVec <- list(
+                                                verbose = FALSE)
+  subsetOperations <- list(
     createCohortSubset(id = 1001,
                        name = "Cohort Subset",
                        cohortIds = 11),
@@ -21,7 +21,10 @@ test_that("Subset definition", {
                             ageMin = 18,
                             ageMax = 64)
   )
-  subsetDef <- createCohortSubsetDefinition(c(1, 3, 4), 11, subsetsVec)
+  subsetDef <- createCohortSubsetDefinition(name = "test definition",
+                                            definitionId = 1,
+                                            targetOutcomePairs = list(c(1,1003), c(2,1002)),
+                                            subsets = subsetOperations)
   
   for (s in subsetDef$subsets) {
     checkmate::expect_class(s, "SubsetOperator")
@@ -37,8 +40,6 @@ test_that("Subset definition", {
   subsetDef2 <- CohortSubsetDefinition$new(subsetDef$toJSON())
 
   checkmate::expect_class(subsetDef2, "CohortSubsetDefinition")
-  expect_equal(subsetDef2$targetCohortIds, subsetDef$targetCohortIds)
-  expect_equal(subsetDef$outcomeCohortId, subsetDef$outcomeCohortId)
   expect_equal(length(subsetDef2$subsets), length(subsetDef$subsets))
 
   expect_true(subsetDef$subsets[[1]]$isEqualTo(subsetDef$subsets[[1]]))
