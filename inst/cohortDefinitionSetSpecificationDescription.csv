@@ -1,0 +1,5 @@
+column_name,description,data_type
+cohortId,The identifier for the cohort in the cohort definition set.,integer64
+cohortName,The name of the cohort in the cohort definition set.,character
+sql,The SQL code used to construct the cohort,character
+json,The optional Circe compliant JSON representation of the cohort definition.,character

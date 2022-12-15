@@ -285,28 +285,31 @@ test_that("Record keeping of multiple tasks at once", {
 
 test_that("Incremental save", {
   tmpFile <- tempfile()
-  data <- dplyr::tibble(cohortId = c(1, 1, 2, 2, 3),
-                        count = c(100, 200, 300, 400, 500))
+  data <- dplyr::tibble(
+    cohortId = c(1, 1, 2, 2, 3),
+    count = c(100, 200, 300, 400, 500)
+  )
   saveIncremental(data, tmpFile, cohortId = c(1, 2, 3))
 
-  newData <- dplyr::tibble(cohortId = c(1, 2, 2),
-                           count = c(600, 700, 800))
+  newData <- dplyr::tibble(
+    cohortId = c(1, 2, 2),
+    count = c(600, 700, 800)
+  )
 
   saveIncremental(newData, tmpFile, cohortId = c(1, 2))
 
 
 
-  goldStandard <- dplyr::tibble(cohortId = c(3, 1, 2, 2),
-                                count = c(500, 600, 700, 800))
-
-  incrementalFileContents <- readr::read_csv(
-    tmpFile,
-    col_types = readr::cols()
+  goldStandard <- dplyr::tibble(
+    cohortId = c(3, 1, 2, 2),
+    count = c(500, 600, 700, 800)
   )
 
+  incrementalFileContents <- .readCsv(file = tmpFile)
+
   expect_equal(nrow(goldStandard), nrow(incrementalFileContents))
-  for(i in 1:nrow(goldStandard)) {
-    for(j in colnames(goldStandard)) {
+  for (i in 1:nrow(goldStandard)) {
+    for (j in colnames(goldStandard)) {
       expect_equal(goldStandard[[j]][i], incrementalFileContents[[j]][i])
     }
   }
@@ -315,21 +318,20 @@ test_that("Incremental save", {
 
 test_that("Incremental save with empty key", {
   tmpFile <- tempfile()
-  data <- dplyr::tibble(cohortId = c(1, 1, 2, 2, 3),
-                        count = c(100, 200, 300, 400, 500))
+  data <- dplyr::tibble(
+    cohortId = c(1, 1, 2, 2, 3),
+    count = c(100, 200, 300, 400, 500)
+  )
   saveIncremental(data, tmpFile, cohortId = c(1, 2, 3))
 
   newData <- dplyr::tibble()
 
   saveIncremental(newData, tmpFile, cohortId = c())
 
-  incrementalFileContents <- readr::read_csv(
-    tmpFile,
-    col_types = readr::cols()
-  )
+  incrementalFileContents <- .readCsv(file = tmpFile)
   expect_equal(nrow(data), nrow(incrementalFileContents))
-  for(i in 1:nrow(data)) {
-    for(j in colnames(data)) {
+  for (i in 1:nrow(data)) {
+    for (j in colnames(data)) {
       expect_equal(data[[j]][i], incrementalFileContents[[j]][i])
     }
   }
@@ -339,7 +341,7 @@ test_that("Incremental save with empty key", {
 
 test_that("isTaskRequired stops if duplicates detected", {
   rkf <- tempfile()
-  
+
   sql1 <- "SELECT * FROM my_table WHERE x = 1;"
   checksum1 <- computeChecksum(sql1)
   recordTasksDone(
@@ -348,17 +350,19 @@ test_that("isTaskRequired stops if duplicates detected", {
     checksum = checksum1,
     recordKeepingFile = rkf
   )
-  
+
   # Manually hack the file to include a duplicate entry
-  data <- readr::read_csv(file = rkf, col_types = readr::cols(), lazy=FALSE)
+  data <- .readCsv(file = rkf)
   data <- rbind(data, data)
-  readr::write_csv(data, file = rkf)
-  
+  .writeCsv(data, file = rkf)
+
   # Now we'd expect an error if attempting to call isTaskRequired
-  expect_error(isTaskRequired(cohortId = 1, 
-                              task = "Run SQL", 
-                              checksum = checksum,
-                              recordKeepingFile = rkf))
+  expect_error(isTaskRequired(
+    cohortId = 1,
+    task = "Run SQL",
+    checksum = checksum,
+    recordKeepingFile = rkf
+  ))
   unlink(rkf)
 })
 
@@ -375,13 +379,13 @@ test_that("recordTasksDone exits if incremental = FALSE", {
 
 test_that("recordTasksDone exits if no key(s) provided", {
   rkf <- tempfile()
-  
+
   expect_null(
     recordTasksDone(
       checksum = "x",
       recordKeepingFile = rkf
     )
   )
-  
+
   unlink(rkf)
 })

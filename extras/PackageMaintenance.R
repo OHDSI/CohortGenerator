@@ -20,6 +20,7 @@
 OhdsiRTools::formatRFolder("./R") #(note: this function has been impacted by change in formatR)
 OhdsiRTools::checkUsagePackage("CohortGenerator")
 OhdsiRTools::updateCopyrightYearFolder()
+styler::style_pkg()
 devtools::document()
 devtools::spell_check()
 
@@ -34,5 +35,6 @@ rmarkdown::render("vignettes/GeneratingCohorts.Rmd",
                                           toc = TRUE,
                                           number_sections = TRUE))
 
+unloadNamespace("CohortGenerator")
 pkgdown::build_site()
 OhdsiRTools::fixHadesLogo()

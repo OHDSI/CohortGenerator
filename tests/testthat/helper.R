@@ -39,15 +39,30 @@ getCohortsForTest <- function(cohorts, generateStats = FALSE) {
 
 # This will gather all of the cohort JSON in the package for use in the tests
 cohortJsonFiles <- list.files(path = system.file("testdata/name/cohorts", package = "CohortGenerator"), full.names = TRUE)
-cohorts <- setNames(data.frame(matrix(ncol = 5, nrow = 0), stringsAsFactors = FALSE), c("atlasId", "cohortId","cohortName", "json", "cohortJsonFile"))
+cohorts <- setNames(data.frame(matrix(ncol = 5, nrow = 0), stringsAsFactors = FALSE), c("atlasId", "cohortId", "cohortName", "json", "cohortJsonFile"))
 for (i in 1:length(cohortJsonFiles)) {
   cohortJsonFileName <- cohortJsonFiles[i]
   cohortFullName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
   cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
-  cohorts <- rbind(cohorts, data.frame(atlasId = i,
-                                       cohortId = i, 
-                                       cohortName = cohortFullName, 
-                                       json = cohortJson,
-                                       cohortJsonFile = cohortJsonFileName,
-                                       stringsAsFactors = FALSE))
+  cohorts <- rbind(cohorts, data.frame(
+    atlasId = i,
+    cohortId = i,
+    cohortName = cohortFullName,
+    json = cohortJson,
+    cohortJsonFile = cohortJsonFileName,
+    stringsAsFactors = FALSE
+  ))
+}
+
+# Helper function
+getNegativeControlOutcomeCohortsForTest <- function(setCohortIdToConceptId = TRUE) {
+  negativeControlOutcomes <- readCsv(file = system.file("testdata/negativecontrols/negativeControlOutcomes.csv",
+                                                        package = "CohortGenerator",
+                                                        mustWork = TRUE))
+  if (setCohortIdToConceptId) {
+    negativeControlOutcomes$cohortId <- negativeControlOutcomes$outcomeConceptId
+  } else {
+    negativeControlOutcomes$cohortId <- seq.int(nrow(negativeControlOutcomes))
+  }
+  invisible(negativeControlOutcomes)
 }

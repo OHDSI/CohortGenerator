@@ -19,6 +19,9 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/checkAndFixCohortDefinitionSetDataTypes.html</loc>
+  </url>
+  <url>
     <loc>/reference/checkSettingsColumns.html</loc>
   </url>
   <url>
@@ -40,6 +43,15 @@
     <loc>/reference/createEmptyCohortSet.html</loc>
   </url>
   <url>
+    <loc>/reference/createEmptyNegativeControlOutcomeCohortSet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-readCsv.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-writeCsv.html</loc>
+  </url>
+  <url>
     <loc>/reference/dropCohortStatsTables.html</loc>
   </url>
   <url>
@@ -52,10 +64,16 @@
     <loc>/reference/generateCohortSet.html</loc>
   </url>
   <url>
+    <loc>/reference/generateNegativeControlOutcomeCohorts.html</loc>
+  </url>
+  <url>
     <loc>/reference/getCohortCounts.html</loc>
   </url>
   <url>
     <loc>/reference/getCohortDefinitionSet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getCohortStats.html</loc>
   </url>
   <url>
     <loc>/reference/getCohortTableNames.html</loc>
@@ -70,7 +88,22 @@
     <loc>/reference/insertInclusionRuleNames.html</loc>
   </url>
   <url>
+    <loc>/reference/isCamelCase.html</loc>
+  </url>
+  <url>
+    <loc>/reference/isCohortDefinitionSet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/isFormattedForDatabaseUpload.html</loc>
+  </url>
+  <url>
+    <loc>/reference/isSnakeCase.html</loc>
+  </url>
+  <url>
     <loc>/reference/isTaskRequired.html</loc>
+  </url>
+  <url>
+    <loc>/reference/readCsv.html</loc>
   </url>
   <url>
     <loc>/reference/recordTasksDone.html</loc>
@@ -83,5 +116,8 @@
   </url>
   <url>
     <loc>/reference/sqlContainsInclusionRuleStats.html</loc>
+  </url>
+  <url>
+    <loc>/reference/writeCsv.html</loc>
   </url>
 </urlset>

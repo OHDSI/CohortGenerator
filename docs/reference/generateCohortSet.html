@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -66,18 +66,18 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">generateCohortSet</span><span class="op">(</span>
-  connectionDetails <span class="op">=</span> <span class="cn">NULL</span>,
-  connection <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">cdmDatabaseSchema</span>,
-  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span>,
-  cohortDatabaseSchema <span class="op">=</span> <span class="va">cdmDatabaseSchema</span>,
-  cohortTableNames <span class="op">=</span> <span class="fu"><a href="getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span><span class="op">)</span>,
-  cohortDefinitionSet <span class="op">=</span> <span class="cn">NULL</span>,
-  stopOnError <span class="op">=</span> <span class="cn">TRUE</span>,
-  incremental <span class="op">=</span> <span class="cn">FALSE</span>,
-  incrementalFolder <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generateCohortSet</span><span class="op">(</span></span>
+<span>  connectionDetails <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">cdmDatabaseSchema</span>,</span>
+<span>  tempEmulationSchema <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"sqlRenderTempEmulationSchema"</span><span class="op">)</span>,</span>
+<span>  cohortDatabaseSchema <span class="op">=</span> <span class="va">cdmDatabaseSchema</span>,</span>
+<span>  cohortTableNames <span class="op">=</span> <span class="fu"><a href="getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  cohortDefinitionSet <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  stopOnError <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  incremental <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  incrementalFolder <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -87,27 +87,39 @@
 <code><a href="https://ohdsi.github.io/DatabaseConnector/reference/createConnectionDetails.html" class="external-link">createConnectionDetails</a></code> function in the
 DatabaseConnector package. Can be left NULL if <code>connection</code> is
 provided.</p></dd>
+
+
 <dt>connection</dt>
 <dd><p>An object of type <code>connection</code> as created using the
 <code><a href="https://ohdsi.github.io/DatabaseConnector/reference/connect.html" class="external-link">connect</a></code> function in the
 DatabaseConnector package. Can be left NULL if <code>connectionDetails</code>
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.</p></dd>
+
+
 <dt>cdmDatabaseSchema</dt>
 <dd><p>Schema name where your patient-level data in OMOP CDM format resides.
 Note that for SQL Server, this should include both the database and
 schema name, for example 'cdm_data.dbo'.</p></dd>
+
+
 <dt>tempEmulationSchema</dt>
 <dd><p>Some database platforms like Oracle and Impala do not truly support
 temp tables. To emulate temp tables, provide a schema with write
 privileges where temp tables can be created.</p></dd>
+
+
 <dt>cohortDatabaseSchema</dt>
 <dd><p>Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.</p></dd>
+
+
 <dt>cohortTableNames</dt>
 <dd><p>The names of the cohort tables. See <code><a href="getCohortTableNames.html">getCohortTableNames</a></code>
 for more details.</p></dd>
+
+
 <dt>cohortDefinitionSet</dt>
 <dd><p>The <code>cohortDefinitionSet</code> argument must be a data frame with 
 the following columns:</p><dl><dt>cohortId</dt>
@@ -123,22 +135,31 @@ the following columns:</p><dl><dt>cohortId</dt>
 <dd><p>The Circe JSON representation of the cohort</p></dd>
 
 </dl></dd>
+
+
 <dt>stopOnError</dt>
-<dd><p>If an error happens while generating one of the cohorts in the 
+<dd><p>If an error happens while generating one of the cohorts in the
 cohortDefinitionSet, should we stop processing the other
 cohorts? The default is TRUE; when set to FALSE, failures will
 be identified in the return value from this function.</p></dd>
+
+
 <dt>incremental</dt>
 <dd><p>Create only cohorts that haven't been created before?</p></dd>
+
+
 <dt>incrementalFolder</dt>
 <dd><p>If <code>incremental = TRUE</code>, specify a folder where records are
 kept of which definition has been executed.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data.frame consisting of the following columns:</p><dl><dt>cohortId</dt>
+    
+
+<p>A data.frame consisting of the following columns:</p><dl><dt>cohortId</dt>
 <dd><p>The unique integer identifier of the cohort</p></dd>
- 
+
    <dt>cohortName</dt>
 <dd><p>The cohort's name</p></dd>
 
@@ -150,8 +171,8 @@ kept of which definition has been executed.</p></dd>
 <dd><p>The generation failed (see logs for details)</p></dd>
 
                <dt>SKIPPED</dt>
-<dd><p>If using incremental == 'TRUE', this status indicates 
-                              that the cohort's generation was skipped since it 
+<dd><p>If using incremental == 'TRUE', this status indicates
+                              that the cohort's generation was skipped since it
                               was previously completed.</p></dd>
 
           
@@ -161,7 +182,7 @@ kept of which definition has been executed.</p></dd>
 <dd><p>The start time of the cohort generation. If the generationStatus == 'SKIPPED', the startTime will be NA.</p></dd>
 
    <dt>endTime</dt>
-<dd><p>The end time of the cohort generation. If the generationStatus == 'FAILED', the endTime will be the time of the failure. 
+<dd><p>The end time of the cohort generation. If the generationStatus == 'FAILED', the endTime will be the time of the failure.
                   If the generationStatus == 'SKIPPED', endTime will be NA.</p></dd>
 
    
@@ -179,8 +200,7 @@ kept of which definition has been executed.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -61,43 +61,47 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.4.0" id="cohortgenerator-040">CohortGenerator 0.4.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-040"></a></h2>
-<ul><li>Update dependency versions in DESCRIPTION to resolve issues when
-using older versions of readr/stringi. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/13" class="external-link">#13</a>)</li>
-<li>Breaking change: change the defaults for saving/getting a
-cohortDefinitionSet to/from the file system. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/16" class="external-link">#16</a>)</li>
+<h2 class="page-header" data-toc-text="0.7.0" id="cohortgenerator-070">CohortGenerator 0.7.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-070"></a></h2>
+<ul><li>Fixes data type issue for Google Big Query (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/51" class="external-link">#51</a>).</li>
+<li>Removes the <code>databaseId</code> field from the cohort inclusion table (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/52" class="external-link">#52</a>)</li>
+<li>Adds the ability to generate negative control outcome cohorts for use in population-level estimation. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/9" class="external-link">#9</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.6.0" id="cohortgenerator-060">CohortGenerator 0.6.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-060"></a></h2>
+<ul><li>Add more flexibility when reading/writing CSV files including appending (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/44" class="external-link">#44</a>), flags for disabling warnings (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/38" class="external-link">#38</a>) and removing unhelpful warnings (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/43" class="external-link">#43</a>).</li>
+<li>Added better error handling to <code>saveCohortDefinitionSet</code> (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/25" class="external-link">#25</a>)</li>
+<li>Add better handling of column name casing in CSV files that hold cohort settings. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/37" class="external-link">#37</a>)</li>
+<li>Added functions to check if a data.frame conforms to a cohortDefinitionSet (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/21" class="external-link">#21</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.5.0" id="cohortgenerator-050">CohortGenerator 0.5.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-050"></a></h2>
+<ul><li>Allow for specification of the database_id in export methods. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/18" class="external-link">#18</a>)</li>
 <li>
-<code>getCohortCounts</code> now supports an optional parameter
-<code>cohortDefinitionSet</code> which will join the cohort counts with
-the cohort definition set when desired (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/14" class="external-link">#14</a>)</li>
+<code>getCohortStats</code> function allows for exporting cohort statistics into data frames (Pull Request <a href="https://github.com/OHDSI/CohortGenerator/issues/24" class="external-link">#24</a>)</li>
+<li>Add utility methods for reading/writing CSV files. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/16" class="external-link">#16</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.0" id="cohortgenerator-040">CohortGenerator 0.4.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-040"></a></h2>
+<ul><li>Update dependency versions in DESCRIPTION to resolve issues when using older versions of readr/stringi. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/13" class="external-link">#13</a>)</li>
+<li>Breaking change: change the defaults for saving/getting a cohortDefinitionSet to/from the file system. (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/16" class="external-link">#16</a>)</li>
+<li>
+<code>getCohortCounts</code> now supports an optional parameter <code>cohortDefinitionSet</code> which will join the cohort counts with the cohort definition set when desired (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/14" class="external-link">#14</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0" id="cohortgenerator-030">CohortGenerator 0.3.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-030"></a></h2>
-<ul><li>Added <code>getCohortDefintionSet</code> function for retrieving a
-cohort definition set from either a package or the file system</li>
-<li>Re-factored <code>saveCohortDefinitionSet</code> to remove the
-<code>settingsFolder</code>. The <code>settingsFileName</code> should
-include the path to the file.</li>
+<ul><li>Added <code>getCohortDefintionSet</code> function for retrieving a cohort definition set from either a package or the file system</li>
+<li>Re-factored <code>saveCohortDefinitionSet</code> to remove the <code>settingsFolder</code>. The <code>settingsFileName</code> should include the path to the file.</li>
 <li>Bug fixes</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.0" id="cohortgenerator-020">CohortGenerator 0.2.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-020"></a></h2>
-<ul><li>Renamed <code>createCohortTable</code> to
-<code>createCohortTables</code> to include all cohort statistics
-tables</li>
-<li>Renamed <code>createEmptyCohortSet</code> to
-<code>createEmptyCohortDefinitionSet</code> to make this consistent with
-ROhdsiWebApi and CohortDiagnostics</li>
-<li>Added <code>dropCohortStatsTables</code> function for removing
-cohort statistics tables</li>
-<li>Added <code>exportCohortStatsTables</code> function for exporting
-cohort statistics to CSV files</li>
-<li>Added <code>getCohortTableNames</code> function to define the list
-of cohort table names to create</li>
-<li>Added <code>insertInclusionRuleNames</code> for inserting the
-inclusion rule names into the cohort stats table</li>
-<li>Added <code>saveCohortDefinitionSet</code> to save the cohort
-definition set to the file system for use by study packages</li>
+<ul><li>Renamed <code>createCohortTable</code> to <code>createCohortTables</code> to include all cohort statistics tables</li>
+<li>Renamed <code>createEmptyCohortSet</code> to <code>createEmptyCohortDefinitionSet</code> to make this consistent with ROhdsiWebApi and CohortDiagnostics</li>
+<li>Added <code>dropCohortStatsTables</code> function for removing cohort statistics tables</li>
+<li>Added <code>exportCohortStatsTables</code> function for exporting cohort statistics to CSV files</li>
+<li>Added <code>getCohortTableNames</code> function to define the list of cohort table names to create</li>
+<li>Added <code>insertInclusionRuleNames</code> for inserting the inclusion rule names into the cohort stats table</li>
+<li>Added <code>saveCohortDefinitionSet</code> to save the cohort definition set to the file system for use by study packages</li>
 <li>Added a vignette and updated documentation</li>
 <li>Remove CirceR dependency and related functions</li>
 </ul></div>
@@ -107,8 +111,7 @@ definition set to the file system for use by study packages</li>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.0" id="cohortgenerator-010">CohortGenerator 0.1.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-010"></a></h2>
-<p>Updating function calls to use “generate” instead of
-“instantiate”</p>
+<p>Updating function calls to use “generate” instead of “instantiate”</p>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.1" id="cohortgenerator-001">CohortGenerator 0.0.1<a class="anchor" aria-label="anchor" href="#cohortgenerator-001"></a></h2>
@@ -128,8 +131,7 @@ definition set to the file system for use by study packages</li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

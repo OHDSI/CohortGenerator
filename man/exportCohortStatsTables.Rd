@@ -10,6 +10,8 @@ exportCohortStatsTables(
   cohortDatabaseSchema,
   cohortTableNames = getCohortTableNames(),
   cohortStatisticsFolder,
+  snakeCaseToCamelCase = TRUE,
+  fileNamesInSnakeCase = FALSE,
   incremental = FALSE,
   databaseId = NULL
 )
@@ -33,10 +35,15 @@ this should include both the database and schema name, for example
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
 
-\item{cohortStatisticsFolder}{The path to the folder where the cohort statistics folder 
+\item{cohortStatisticsFolder}{The path to the folder where the cohort statistics folder
 where the results will be written}
 
-\item{incremental}{If \code{incremental = TRUE}, results are written to update values instead of 
+\item{snakeCaseToCamelCase}{Should column names in the exported files
+convert from snake_case to camelCase? Default is FALSE}
+
+\item{fileNamesInSnakeCase}{Should the exported files use snake_case? Default is FALSE}
+
+\item{incremental}{If \code{incremental = TRUE}, results are written to update values instead of
 overwriting an existing results}
 
 \item{databaseId}{Optional - when specified, the databaseId will be added

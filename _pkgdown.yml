@@ -19,9 +19,11 @@ reference:
     desc: >
       Functions that support working with a cohort definition set
     contents:
-      - saveCohortDefintionSet
+      - saveCohortDefinitionSet
       - getCohortDefinitionSet
       - createEmptyCohortDefinitionSet
+      - checkAndFixCohortDefinitionSetDataTypes
+      - isCohortDefinitionSet
       
   - title: "Cohort Generation"
     desc: >
@@ -39,13 +41,34 @@ reference:
       
   - title: "Cohort Statistics"
     desc: >
-      Functions for insertint inclusion rule names from a cohort definition,
+      Functions for inserting inclusion rule names from a cohort definition,
       exporting the cohort statistics to the file system and a helper function 
       for dropping those tables when they are no longer needed.
     contents:
+      - getCohortStats
       - insertInclusionRuleNames
       - exportCohortStatsTables
       - dropCohortStatsTables
+      
+  - title: "Negative Control Outcomes"
+    desc: >
+      Functions for creating negative control outcome cohorts for use in
+      population-level estimation.
+    contents:
+      - createEmptyNegativeControlOutcomeCohortSet
+      - generateNegativeControlOutcomeCohorts
+
+  - title: "CSV File Helpers"
+    desc: >
+      Functions for reading and writing CSV files to ensure adherance to
+      the HADES standard when interfacing between R and SQL/File System:
+      https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL
+    contents:
+      - readCsv
+      - writeCsv
+      - isCamelCase
+      - isSnakeCase
+      - isFormattedForDatabaseUpload
 
   - title: "Record Keeping"
     desc: >
