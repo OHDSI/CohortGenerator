@@ -300,13 +300,15 @@ CohortSubsetOperator <- R6::R6Class(
     suffixStr = "Coh",
     .cohortIds = integer(0),
     .cohortCombinationOperator = "all",
-    .negate = FALSE
+    .negate = FALSE,
+    .targetCohortWindow = Window$new(),
+    .subsetCohortWindow = Window$new()
   ),
   public = list(
         #' @title Public Fields
         #' @description publicly settable fields
     publicFields = function() {
-      c(super$publicFields(), "cohortIds")
+      c(super$publicFields(), "cohortIds", "cohortCombinationOperator", "negate")
     },
 
         #' @title to List
@@ -314,6 +316,11 @@ CohortSubsetOperator <- R6::R6Class(
     toList = function() {
       objRepr <- super$toList()
       objRepr$cohortIds <- private$.cohortIds
+      objRepr$cohortCombinationOperator <- jsonlite::unbox(private$.cohortCombinationOperator)
+      objRepr$negate <- jsonlite::unbox(private$.negate)
+      objRepr$targetCohortWindow <- private$.targetCohortWindow$toList()
+      objRepr$subsetCohortWindow <- private$.subsetCohortWindow$toList()
+
       objRepr
     }
   ),
@@ -325,11 +332,49 @@ CohortSubsetOperator <- R6::R6Class(
 
       cohortIds <- as.integer(cohortIds)
       # TODO: valid cohorts check. Do we want to allow multiple cohorts or a single cohort?
+      # Per https://github.com/OHDSI/CohortGenerator/issues/67#issuecomment-1353624538
+      # "Subset cohort x to only patients contained in {y,z}. This can be an any/all for the cohorts in {y,z}"
       checkmate::assertIntegerish(cohortIds, min.len = 1)
       checkmate::assertFALSE(any(is.na(cohortIds)))
       private$.cohortIds <- cohortIds
       self
-    }
+    },
+    #'@field cohortCombinationOperator How to combine the cohorts
+    cohortCombinationOperator = function(cohortCombinationOperator) {
+      if (missing(cohortCombinationOperator))
+        return(private$.cohortCombinationOperator)
+
+      checkmate::assertChoice(x = cohortCombinationOperator, choices = c("any", "all"))
+      private$.cohortCombinationOperator <- cohortCombinationOperator
+      self
+    },
+    #'@field negate Inverse the subset rule? TRUE will take the patients NOT in the subset
+    negate = function(negate) {
+      if (missing(negate))
+        return(private$.negate)
+
+      checkmate::assertLogical(x = negate)
+      private$.negate <- negate
+      self
+    },
+    #'@field targetCohortWindow The time window to use for the target cohort
+    targetCohortWindow = function(targetCohortWindow) {
+      if (missing(targetCohortWindow))
+        return(private$.targetCohortWindow)
+      
+      checkmate::assertClass(x = targetCohortWindow, classes = "Window")
+      private$.targetCohortWindow = targetCohortWindow
+      self
+    },
+    #'@field subsetCohortWindow The time window to use for the subset cohort
+    subsetCohortWindow = function(subsetCohortWindow) {
+      if (missing(subsetCohortWindow))
+        return(private$.subsetCohortWindow)
+      
+      checkmate::assertClass(x = subsetCohortWindow, classes = "Window")
+      private$.subsetCohortWindow = subsetCohortWindow
+      self
+    }    
   )
 )
 
@@ -339,11 +384,15 @@ CohortSubsetOperator <- R6::R6Class(
 #' @param cohortIds integer - set of cohort ids to subset to
 #' @returns a CohortSubset instance
 #' @export
-createCohortSubset <- function(id, name, cohortIds) {
+createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, negate, targetCohortWindow, subsetCohortWindow) {
   subset <- CohortSubsetOperator$new()
   subset$id <- id
   subset$name <- name
   subset$cohortIds <- cohortIds
+  subset$cohortCombinationOperator <- cohortCombinationOperator
+  subset$negate <- negate
+  subset$targetCohortWindow <- targetCohortWindow
+  subset$subsetCohortWindow <- subsetCohortWindow
 
   subset
 }
@@ -602,9 +651,9 @@ LimitSubsetOperator <- R6::R6Class(
   )
 )
 
-#' Create Observation Criteria Subset
+#' Create Limit Subset
 #' @description
-#' Subset cohorts using specificed observation criteria
+#' Subset cohorts using specified limit criteria
 #'
 #'
 #' @param priorTime                 Required prior observation window
@@ -645,8 +694,6 @@ CohortSubsetDefinition <- R6::R6Class(
     .subsets = list(),
     .subsetIds = c(),
     .targetOutcomePairs = c(),
-    .targetCohortWindow = Window$new(),
-    .subsetCohortWindow = Window$new(),
 
     ## Creates objects if they are in the namespace
     createSubset = function(item, itemClass = item$subsetType) {
@@ -682,8 +729,6 @@ CohortSubsetDefinition <- R6::R6Class(
         # Note - when there is a base definition that includes multiple calls to the same subset this should be replaced
         subsets = lapply(self$subsets, function(subset) { subset$toList() }),
         subsetOperatorIds = private$.subsetIds,
-        targetCohortWindow = private$.targetCohortWindow$toList(),
-        subsetCohortWindow = private$.subsetCohortWindow$toList(),
         packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName())))
       )
     },
@@ -779,24 +824,6 @@ CohortSubsetDefinition <- R6::R6Class(
       
       checkmate::assertVector(subsetIds, min.len = 1, unique = TRUE)
       private$.subsetIds <- subsetIds
-      self
-    },
-    
-    targetCohortWindow = function(targetCohortWindow) {
-      if (missing(targetCohortWindow))
-        return(private$.targetCohortWindow)
-      
-      checkmate::assertClass(x = targetCohortWindow, classes = "Window")
-      private$.targetCohortWindow = targetCohortWindow
-      self
-    },
-    
-    subsetCohortWindow = function(subsetCohortWindow) {
-      if (missing(subsetCohortWindow))
-        return(private$.subsetCohortWindow)
-      
-      checkmate::assertClass(x = subsetCohortWindow, classes = "Window")
-      private$.subsetCohortWindow = subsetCohortWindow
       self
     }
   )

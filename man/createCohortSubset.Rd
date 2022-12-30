@@ -4,7 +4,15 @@
 \alias{createCohortSubset}
 \title{A definition of subset functions to be applied to a set of cohorts}
 \usage{
-createCohortSubset(id, name, cohortIds)
+createCohortSubset(
+  id,
+  name,
+  cohortIds,
+  cohortCombinationOperator,
+  negate,
+  targetCohortWindow,
+  subsetCohortWindow
+)
 }
 \arguments{
 \item{id}{unique integer identifier}

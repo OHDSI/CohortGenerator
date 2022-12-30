@@ -5,6 +5,7 @@
 \title{to List}
 \description{
 Representation of a time window
+Based on https://github.com/OHDSI/circe-be/blob/master/src/main/java/org/ohdsi/circe/cohortdefinition/Window.java
 }
 \details{
 Window settings

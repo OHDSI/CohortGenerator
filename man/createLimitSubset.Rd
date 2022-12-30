@@ -2,7 +2,7 @@
 % Please edit documentation in R/Subsets.R
 \name{createLimitSubset}
 \alias{createLimitSubset}
-\title{Create Observation Criteria Subset}
+\title{Create Limit Subset}
 \usage{
 createLimitSubset(id, name, priorTime, followUpTime, limitTo)
 }
@@ -23,5 +23,5 @@ createLimitSubset(id, name, priorTime, followUpTime, limitTo)
                          criteria are applied (i.e. after applying prior/post time and calendar time).}
 }
 \description{
-Subset cohorts using specificed observation criteria
+Subset cohorts using specified limit criteria
 }

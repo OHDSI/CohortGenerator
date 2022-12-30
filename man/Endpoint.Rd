@@ -5,6 +5,7 @@
 \title{to List}
 \description{
 Representation of an endpoint
+Based on https://github.com/OHDSI/circe-be/blob/master/src/main/java/org/ohdsi/circe/cohortdefinition/Window.java
 }
 \details{
 Endpoint settings

@@ -40,11 +40,37 @@ cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(baseUrl = baseUrl
 A definition can include different subset operations - these are applied strictly in order:
 
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
+# TODO: Need more description of how to use the window classes
+# to define the intersection between a target & subset cohort
+targetStartEndpoint <- Endpoint$new()
+targetStartEndpoint$coeff <- -1
+
+targetEndEndpoint <- Endpoint$new()
+targetEndEndpoint$coeff <- -1
+
+targetCohortWindow <- Window$new()
+targetCohortWindow$useIndexEnd <- FALSE
+targetCohortWindow$useEventEnd <- FALSE
+targetCohortWindow$start <- targetStartEndpoint
+targetCohortWindow$end <- targetEndEndpoint
+
+# This is a nonsense example for now
+subsetCohortWindow <- Window$new()
+subsetCohortWindow$useIndexEnd <- FALSE
+subsetCohortWindow$useEventEnd <- FALSE
+subsetCohortWindow$start <- targetStartEndpoint
+subsetCohortWindow$end <- targetEndEndpoint
+
 subsetOperations <- list(
   # here we are saying 'first subset to only those patients in cohort 1778213'
   createCohortSubset(id = 1001,
                      name = "Cohort Subset",
-                     cohortIds = 1778213),
+                     cohortIds = 1778213,
+                     cohortCombinationOperator = "any",
+                     negate = FALSE,
+                     targetCohortWindow = targetCohortWindow,
+                     subsetCohortWindow = subsetCohortWindow),
+  
   # Next, subset to only those with 365 days of prior observation
   createLimitSubset(id = 1002,
                     name = "Observation of at least 365 days prior",

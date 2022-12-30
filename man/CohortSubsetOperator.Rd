@@ -14,6 +14,14 @@ A subset of type cohort - subset a population to only those contained within def
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{cohortIds}}{Integer ids of cohorts to subset to}
+
+\item{\code{cohortCombinationOperator}}{How to combine the cohorts}
+
+\item{\code{negate}}{Inverse the subset rule? TRUE will take the patients NOT in the subset}
+
+\item{\code{targetCohortWindow}}{The time window to use for the target cohort}
+
+\item{\code{subsetCohortWindow}}{The time window to use for the subset cohort}
 }
 \if{html}{\out{</div>}}
 }
