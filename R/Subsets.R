@@ -34,6 +34,144 @@
   jsonlite::toJSON(obj, pretty = TRUE)
 }
 
+
+#' Endpoint settings
+#' @description
+#' Representation of an endpoint
+#' Based on https://github.com/OHDSI/circe-be/blob/master/src/main/java/org/ohdsi/circe/cohortdefinition/Window.java
+#' @export
+Endpoint <- R6::R6Class(
+  classname = "Endpoint",
+  private = list(
+    .days = 0,
+    .coeff = 0
+  ),
+  public = list(
+    #' @title to List
+    #' @description List representation of object
+    toList = function() {
+      objRepr <- list()
+      if (length(private$.days))
+        objRepr$days <- jsonlite::unbox(private$.days)
+      if (length(private$.coeff))
+        objRepr$coeff <- jsonlite::unbox(private$.coeff)
+      
+      objRepr
+    },
+    #' @title to JSON
+    #' @description json serialized representation of object
+    toJSON = function() {
+      .toJSON(self$toList())
+    },
+    
+    #' @title is Equal to
+    #' @description Compare Endpoint to another
+    #' @param criteria Endpoint instance
+    isEqualTo = function(criteria) {
+      checkmate::assertR6(criteria, "Endpoint")
+      return(all(self$days == criteria$days,
+                 self$coeff == criteria$coeff))
+    }
+  ),
+  active = list(
+    #'@field    days Int
+    days = function(days) {
+      if (missing(days)) return(private$.days)
+      checkmate::assertInt(days)
+      private$.days <- days
+      return(self)
+    },
+    #'@field  coeff Int
+    coeff = function(coeff) {
+      if (missing(coeff)) return(private$.coeff)
+      checkmate::assertInt(coeff)
+      private$.coeff <- coeff
+      return(self)
+    }
+  )
+)
+
+
+
+#' Window settings
+#' @description
+#' Representation of a time window
+#' Based on https://github.com/OHDSI/circe-be/blob/master/src/main/java/org/ohdsi/circe/cohortdefinition/Window.java
+#' @export
+Window <- R6::R6Class(
+  classname = "Window",
+  private = list(
+    .start = Endpoint$new(),
+    .end = Endpoint$new(),
+    .useIndexEnd = FALSE,
+    .useEventEnd = FALSE
+  ),
+  public = list(
+    #' @title to List
+    #' @description List representation of object
+    toList = function() {
+      objRepr <- list()
+      if (length(private$.start$toList()))
+        objRepr$start <- private$.start$toList()
+      if (length(private$.end$toList()))
+        objRepr$end <- private$.end$toList()
+      if (length(private$.useIndexEnd))
+        objRepr$useIndexEnd <- jsonlite::unbox(private$.useIndexEnd)
+      if (length(private$.useEventEnd))
+        objRepr$useEventEnd <- jsonlite::unbox(private$.useEventEnd)
+      
+      objRepr
+    },
+    #' @title to JSON
+    #' @description json serialized representation of object
+    toJSON = function() {
+      .toJSON(self$toList())
+    },
+    
+    #' @title is Equal to
+    #' @description Compare Window to another
+    #' @param criteria Window instance
+    isEqualTo = function(criteria) {
+      checkmate::assertR6(criteria, "Window")
+      return(all(self$start == criteria$start,
+                 self$end == criteria$end,
+                 self$useIndexEnd == criteria$useIndexEnd,
+                 self$useEventEnd == criteria$useEventEnd))
+    }
+  ),
+  active = list(
+    #'@field start Endpoint
+    start = function(start) {
+      if (missing(start)) return(private$.start)
+      checkmate::assertClass(x = start, classes = "Endpoint")
+      private$.start <- start
+      return(self)
+    },
+    #'@field end Endpoint
+    end = function(end) {
+      if (missing(end)) return(private$.end)
+      checkmate::assertClass(x = end, classes = "Endpoint")
+      private$.end <- end
+      return(self)
+    },
+    #'@field useIndexEnd Boolean
+    useIndexEnd = function(useIndexEnd) {
+      if (missing(useIndexEnd)) return(private$.useIndexEnd)
+      checkmate::assertLogical(x = useIndexEnd)
+      private$.useIndexEnd <- useIndexEnd
+      return(self)
+    },
+    #'@field useEventEnd Boolean
+    useEventEnd = function(useEventEnd) {
+      if (missing(useEventEnd)) return(private$.useEventEnd)
+      checkmate::assertLogical(x = useEventEnd)
+      private$.useEventEnd <- useEventEnd
+      return(self)
+    }
+  )
+)
+
+
 #' @title SubsetOperator
 #' @description
 #' Abstract Base Class for subsets. Subsets should inherit from this and implement their own requirements.
@@ -153,13 +291,16 @@ SubsetOperator <- R6::R6Class(
 #' @title Cohort Subset
 #' @description
 #' A subset of type cohort - subset a population to only those contained within defined cohort
+#' # TODO - Add the time windowing settings for T/S
 #' @export
 CohortSubsetOperator <- R6::R6Class(
   classname = "CohortSubsetOperator",
   inherit = SubsetOperator,
   private = list(
     suffixStr = "Coh",
-    .cohortIds = integer(0)
+    .cohortIds = integer(0),
+    .cohortCombinationOperator = "all",
+    .negate = FALSE
   ),
   public = list(
         #' @title Public Fields
@@ -215,7 +356,9 @@ DemographicCriteria <- R6::R6Class(
   private = list(
     .ageMin = 0,
     .ageMax = 99999,
-    .gender = ""
+    .gender = "",
+    .race = "",
+    .ethnicity = ""
   ),
   public = list(
          #' @title to List
@@ -228,7 +371,11 @@ DemographicCriteria <- R6::R6Class(
         objRepr$ageMax <- jsonlite::unbox(private$.ageMax)
       if (length(private$.gender))
         objRepr$gender <- jsonlite::unbox(private$.gender)
-
+      if (length(private$.race))
+        objRepr$race <- jsonlite::unbox(private$.race)
+      if (length(private$.ethnicity))
+        objRepr$ethnicity <- jsonlite::unbox(private$.ethnicity)
+      
       objRepr
     },
         #' @title to JSON
@@ -244,7 +391,9 @@ DemographicCriteria <- R6::R6Class(
       checkmate::assertR6(criteria, "DemographicCriteria")
       return(all(self$ageMin == criteria$ageMin,
                  self$ageMax == criteria$ageMax,
-                 self$gender == criteria$gender))
+                 self$gender == criteria$gender,
+                 self$race == criteria$race,
+                 self$ethnicity == criteria$ethnicity))
     }
   ),
   active = list(
@@ -257,6 +406,7 @@ DemographicCriteria <- R6::R6Class(
     },
         #'@field  ageMax  Int between 0 and 9999 - maximum age
     ageMax = function(ageMax) {
+      
       if (missing(ageMax)) return(private$.ageMax)
       checkmate::assertInt(ageMax, lower = max(0, self$ageMin), upper = 99999)
       private$.ageMax <- ageMax
@@ -268,6 +418,20 @@ DemographicCriteria <- R6::R6Class(
       checkmate::assertCharacter(gender, len = 1, null.ok = FALSE)
       private$.gender <- gender
       return(self)
+    },
+    #' @field race character string denoting race
+    race = function(race) {
+      if (missing(race)) return(private$.race)
+      checkmate::assertCharacter(race, len = 1, null.ok = FALSE)
+      private$.race <- race
+      return(self)
+    },
+    #' @field ethnicity character string denoting ethnicity
+    ethnicity = function(ethnicity) {
+      if (missing(ethnicity)) return(private$.ethnicity)
+      checkmate::assertCharacter(ethnicity, len = 1, null.ok = FALSE)
+      private$.ethnicity <- ethnicity
+      return(self)
     }
   )
 )
@@ -275,14 +439,17 @@ DemographicCriteria <- R6::R6Class(
 #' Create demographic criteria
 #' @param ageMin       age demographics
 #' @param ageMax       age demographics
-#' @param gender       gender demographics
-#' # TODO: more criteria than this - calendarYearMin/Max, what else?
+#' @param gender       gender demographics - concept ID list
+#' @param race         race demographics - concept ID list
+#' @param ethnicity    ethnicity demographics - concept ID list
 #' @export
-createDemographicCriteria <- function(ageMin = 0, ageMax = 9999, gender = "") {
+createDemographicCriteria <- function(ageMin = 0, ageMax = 9999, gender = "", race = "", ethnicity = "") {
   criteria <- DemographicCriteria$new()
   criteria$ageMin <- ageMin
   criteria$ageMax <- ageMax
   criteria$gender <- gender
+  criteria$race <- race
+  criteria$ethnicity <- ethnicity
 
   criteria
 }
@@ -343,6 +510,7 @@ DemographicSubsetOperator <- R6::R6Class(
 #' @param id            Id number
 #' @param name          char name
 #' @param ...           Demographic criteria @seealso createDemographicCriteria
+#' @export
 createDemographicSubset <- function(id, name, ...) {
   subset <- DemographicSubsetOperator$new()
   subset$id <- id
@@ -361,7 +529,9 @@ LimitSubsetOperator <- R6::R6Class(
     suffixStr = "Lim",
     .priorTime = 0,
     .followUpTime = 0,
-    .limitTo = character(0)
+    .limitTo = character(0),
+    .calendarStartDate = "",
+    .calendarEndDate = ""
   ),
   public = list(
         #' @title to List
@@ -371,7 +541,8 @@ LimitSubsetOperator <- R6::R6Class(
       objRef$priorTime <- jsonlite::unbox(private$.priorTime)
       objRef$followUpTime <- jsonlite::unbox(private$.followUpTime)
       objRef$limitTo <- jsonlite::unbox(private$.limitTo)
-      objRef
+      objRef$calendarStartDate <- jsonlite::unbox(private$.calendarStartDate)
+      objRef$calendarEndDate <- jsonlite::unbox(private$.calendarEndDate)
     }
   ),
   active = list(
@@ -393,21 +564,39 @@ LimitSubsetOperator <- R6::R6Class(
       private$.priorTime <- followUpTime
       self
     },
-        #' @field limitTo     charachter one of:
-        #'                              "earliest" - only first entry in patient history
+        #' @field limitTo     character one of:
+        #'                              "firstEver" - only first entry in patient history
         #'                              "earliestRemaining" - only first entry after washout set by priorTime
-        #'                              "last" - only last entry in patient history
-        #'                              "lastRemaining" - only last entry in patient history inside
+        #'                              "latestRemaining" -  the latest remaining after washout set by followUpTime
+        #'                              "lastEver" - only last entry in patient history inside
         #'
-        #'                          Note, when using earliest and last with follow up and washout, patients with events
+        #'                          Note, when using firstEver and lastEver with follow up and washout, patients with events
         #'                          outside this will be censored.
         #'
     limitTo = function(limitTo) {
       if (missing(limitTo))
         return(private$.limitTo)
       checkmate::assertCharacter(limitTo)
-      checkmate::assertChoice(limitTo, choices = c("", "earliest", "earliestRemaining", "last", "lastRemaining"))
+      checkmate::assertChoice(limitTo, choices = c("", "firstEver", "earliestRemaining", "latestRemaining", "lastEver"))
       private$.limitTo <- limitTo
+      self
+    },
+    #' @field calendarStartDate            The calendar start date for limiting by date
+    calendarStartDate = function(calendarStartDate) {
+      if (missing(calendarStartDate))
+        return(private$.calendarStartDate)
+      
+      checkmate::assertDate(calendarStartDate)
+      private$.calendarStartDate <- calendarStartDate
+      self
+    },
+    #' @field calendarEndDate            The calendar end date for limiting by date
+    calendarEndDate = function(calendarEndDate) {
+      if (missing(calendarEndDate))
+        return(private$.calendarEndDate)
+      
+      checkmate::assertDate(calendarEndDate)
+      private$.calendarEndDate <- calendarEndDate
       self
     }
   )
@@ -420,15 +609,18 @@ LimitSubsetOperator <- R6::R6Class(
 #'
 #' @param priorTime                 Required prior observation window
 #' @param followUpTime              Required post observation window
-#' @param limitTo           charachter one of:
-#'                              "earliest" - only first entry in patient history
+#' @param limitTo           character one of:
+#'                              "firstEver" - only first entry in patient history
 #'                              "earliestRemaining" - only first entry after washout set by priorTime
-#'                              "last" - only last entry in patient history
-#'                              "lastRemaining" - only last entry in patient history inside
+#'                              "latestRemaining" -  the latest remaining after washout set by followUpTime
+#'                              "lastEver" - only last entry in patient history inside
 #'
-#'                          Note, when using earliest and last with follow up and washout, patients with events
-#'                          outside this will be censored.
+#'                          Note, when using firstEver and lastEver with follow up and washout, patients with events
+#'                          outside this will be censored. The "firstEver" and "lastEver" are applied first. 
+#'                          The "earliestRemaining" and "latestRemaining" are applied after all other limit 
+#'                          criteria are applied (i.e. after applying prior/post time and calendar time).
 #'                    
+#' @export
 createLimitSubset <- function(id, name, priorTime, followUpTime, limitTo) {
   subset <- LimitSubsetOperator$new()
   subset$id <- id
@@ -453,6 +645,8 @@ CohortSubsetDefinition <- R6::R6Class(
     .subsets = list(),
     .subsetIds = c(),
     .targetOutcomePairs = c(),
+    .targetCohortWindow = Window$new(),
+    .subsetCohortWindow = Window$new(),
 
     ## Creates objects if they are in the namespace
     createSubset = function(item, itemClass = item$subsetType) {
@@ -473,6 +667,8 @@ CohortSubsetDefinition <- R6::R6Class(
         self$definitionId <- definition$definitionId
         self$targetOutcomePairs <- definition$targetOutcomePairs
         self$subsets <- lapply(definition$subsets, private$createSubset)
+        self$targetCohortWindow <- definition$targetCohortWindow
+        self$subsetCohortWindow <- definition$subsetCohortWindow
       }
       self
     },
@@ -486,6 +682,8 @@ CohortSubsetDefinition <- R6::R6Class(
         # Note - when there is a base definition that includes multiple calls to the same subset this should be replaced
         subsets = lapply(self$subsets, function(subset) { subset$toList() }),
         subsetOperatorIds = private$.subsetIds,
+        targetCohortWindow = private$.targetCohortWindow$toList(),
+        subsetCohortWindow = private$.subsetCohortWindow$toList(),
         packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName())))
       )
     },
@@ -572,6 +770,33 @@ CohortSubsetDefinition <- R6::R6Class(
 
       checkmate::assertInt(definitionId)
       private$.definitionId <- definitionId
+      self
+    },
+    
+    subsetIds = function(subsetIds) {
+      if (missing(subsetIds))
+        return(private$.subsetIds)
+      
+      checkmate::assertVector(subsetIds, min.len = 1, unique = TRUE)
+      private$.subsetIds <- subsetIds
+      self
+    },
+    
+    targetCohortWindow = function(targetCohortWindow) {
+      if (missing(targetCohortWindow))
+        return(private$.targetCohortWindow)
+      
+      checkmate::assertClass(x = targetCohortWindow, classes = "Window")
+      private$.targetCohortWindow = targetCohortWindow
+      self
+    },
+    
+    subsetCohortWindow = function(subsetCohortWindow) {
+      if (missing(subsetCohortWindow))
+        return(private$.subsetCohortWindow)
+      
+      checkmate::assertClass(x = subsetCohortWindow, classes = "Window")
+      private$.subsetCohortWindow = subsetCohortWindow
       self
     }
   )

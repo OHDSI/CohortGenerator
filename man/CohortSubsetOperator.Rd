@@ -5,6 +5,7 @@
 \title{Cohort Subset}
 \description{
 A subset of type cohort - subset a population to only those contained within defined cohort
+# TODO - Add the time windowing settings for T/S
 }
 \section{Super class}{
 \code{\link[CohortGenerator:SubsetOperator]{CohortGenerator::SubsetOperator}} -> \code{CohortSubsetOperator}
@@ -19,24 +20,24 @@ A subset of type cohort - subset a population to only those contained within def
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-publicFields}{\code{CohortSubsetOperator$publicFields()}}
-\item \href{#method-toList}{\code{CohortSubsetOperator$toList()}}
-\item \href{#method-clone}{\code{CohortSubsetOperator$clone()}}
+\item \href{#method-CohortSubsetOperator-publicFields}{\code{CohortSubsetOperator$publicFields()}}
+\item \href{#method-CohortSubsetOperator-toList}{\code{CohortSubsetOperator$toList()}}
+\item \href{#method-CohortSubsetOperator-clone}{\code{CohortSubsetOperator$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname">}\href{../../CohortGenerator/html/SubsetOperator.html#method-classname}{\code{CohortGenerator::SubsetOperator$classname()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize">}\href{../../CohortGenerator/html/SubsetOperator.html#method-initialize}{\code{CohortGenerator::SubsetOperator$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="isEqualTo">}\href{../../CohortGenerator/html/SubsetOperator.html#method-isEqualTo}{\code{CohortGenerator::SubsetOperator$isEqualTo()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON">}\href{../../CohortGenerator/html/SubsetOperator.html#method-toJSON}{\code{CohortGenerator::SubsetOperator$toJSON()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-classname'><code>CohortGenerator::SubsetOperator$classname()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-initialize'><code>CohortGenerator::SubsetOperator$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="isEqualTo"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-isEqualTo'><code>CohortGenerator::SubsetOperator$isEqualTo()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-toJSON'><code>CohortGenerator::SubsetOperator$toJSON()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-publicFields"></a>}}
-\if{latex}{\out{\hypertarget{method-publicFields}{}}}
+\if{html}{\out{<a id="method-CohortSubsetOperator-publicFields"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortSubsetOperator-publicFields}{}}}
 \subsection{Method \code{publicFields()}}{
 publicly settable fields
 \subsection{Usage}{
@@ -45,8 +46,8 @@ publicly settable fields
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-toList"></a>}}
-\if{latex}{\out{\hypertarget{method-toList}{}}}
+\if{html}{\out{<a id="method-CohortSubsetOperator-toList"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortSubsetOperator-toList}{}}}
 \subsection{Method \code{toList()}}{
 List representation of object
 \subsection{Usage}{
@@ -55,8 +56,8 @@ List representation of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-CohortSubsetOperator-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortSubsetOperator-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

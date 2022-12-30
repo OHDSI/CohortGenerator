@@ -28,24 +28,24 @@ Criteria Subset
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-publicFields}{\code{DemographicSubsetOperator$publicFields()}}
-\item \href{#method-toList}{\code{DemographicSubsetOperator$toList()}}
-\item \href{#method-isEqualTo}{\code{DemographicSubsetOperator$isEqualTo()}}
-\item \href{#method-clone}{\code{DemographicSubsetOperator$clone()}}
+\item \href{#method-DemographicSubsetOperator-publicFields}{\code{DemographicSubsetOperator$publicFields()}}
+\item \href{#method-DemographicSubsetOperator-toList}{\code{DemographicSubsetOperator$toList()}}
+\item \href{#method-DemographicSubsetOperator-isEqualTo}{\code{DemographicSubsetOperator$isEqualTo()}}
+\item \href{#method-DemographicSubsetOperator-clone}{\code{DemographicSubsetOperator$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname">}\href{../../CohortGenerator/html/SubsetOperator.html#method-classname}{\code{CohortGenerator::SubsetOperator$classname()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize">}\href{../../CohortGenerator/html/SubsetOperator.html#method-initialize}{\code{CohortGenerator::SubsetOperator$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON">}\href{../../CohortGenerator/html/SubsetOperator.html#method-toJSON}{\code{CohortGenerator::SubsetOperator$toJSON()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-classname'><code>CohortGenerator::SubsetOperator$classname()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-initialize'><code>CohortGenerator::SubsetOperator$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-toJSON'><code>CohortGenerator::SubsetOperator$toJSON()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-publicFields"></a>}}
-\if{latex}{\out{\hypertarget{method-publicFields}{}}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-publicFields"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-publicFields}{}}}
 \subsection{Method \code{publicFields()}}{
 Publicly settable fields of object
 \subsection{Usage}{
@@ -54,8 +54,8 @@ Publicly settable fields of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-toList"></a>}}
-\if{latex}{\out{\hypertarget{method-toList}{}}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-toList"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-toList}{}}}
 \subsection{Method \code{toList()}}{
 List representation of object
 \subsection{Usage}{
@@ -64,8 +64,8 @@ List representation of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-isEqualTo"></a>}}
-\if{latex}{\out{\hypertarget{method-isEqualTo}{}}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-isEqualTo"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-isEqualTo}{}}}
 \subsection{Method \code{isEqualTo()}}{
 Compare Subset to another
 \subsection{Usage}{
@@ -81,8 +81,8 @@ Compare Subset to another
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

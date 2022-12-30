@@ -4,15 +4,24 @@
 \alias{createDemographicCriteria}
 \title{Create demographic criteria}
 \usage{
-createDemographicCriteria(ageMin = 0, ageMax = 9999, gender = "")
+createDemographicCriteria(
+  ageMin = 0,
+  ageMax = 9999,
+  gender = "",
+  race = "",
+  ethnicity = ""
+)
 }
 \arguments{
 \item{ageMin}{age demographics}
 
 \item{ageMax}{age demographics}
 
-\item{gender}{gender demographics
-# TODO: more criteria than this - calendarYearMin/Max, what else?}
+\item{gender}{gender demographics - concept ID list}
+
+\item{race}{race demographics - concept ID list}
+
+\item{ethnicity}{ethnicity demographics - concept ID list}
 }
 \description{
 Create demographic criteria

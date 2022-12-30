@@ -17,21 +17,25 @@ Demographics settings
 \item{\code{ageMax}}{Int between 0 and 9999 - maximum age}
 
 \item{\code{gender}}{character string denoting gender}
+
+\item{\code{race}}{character string denoting race}
+
+\item{\code{ethnicity}}{character string denoting ethnicity}
 }
 \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-toList}{\code{DemographicCriteria$toList()}}
-\item \href{#method-toJSON}{\code{DemographicCriteria$toJSON()}}
-\item \href{#method-isEqualTo}{\code{DemographicCriteria$isEqualTo()}}
-\item \href{#method-clone}{\code{DemographicCriteria$clone()}}
+\item \href{#method-DemographicCriteria-toList}{\code{DemographicCriteria$toList()}}
+\item \href{#method-DemographicCriteria-toJSON}{\code{DemographicCriteria$toJSON()}}
+\item \href{#method-DemographicCriteria-isEqualTo}{\code{DemographicCriteria$isEqualTo()}}
+\item \href{#method-DemographicCriteria-clone}{\code{DemographicCriteria$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-toList"></a>}}
-\if{latex}{\out{\hypertarget{method-toList}{}}}
+\if{html}{\out{<a id="method-DemographicCriteria-toList"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicCriteria-toList}{}}}
 \subsection{Method \code{toList()}}{
 List representation of object
 \subsection{Usage}{
@@ -40,8 +44,8 @@ List representation of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-toJSON"></a>}}
-\if{latex}{\out{\hypertarget{method-toJSON}{}}}
+\if{html}{\out{<a id="method-DemographicCriteria-toJSON"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicCriteria-toJSON}{}}}
 \subsection{Method \code{toJSON()}}{
 json serialized representation of object
 \subsection{Usage}{
@@ -50,8 +54,8 @@ json serialized representation of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-isEqualTo"></a>}}
-\if{latex}{\out{\hypertarget{method-isEqualTo}{}}}
+\if{html}{\out{<a id="method-DemographicCriteria-isEqualTo"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicCriteria-isEqualTo}{}}}
 \subsection{Method \code{isEqualTo()}}{
 Compare Subset to another
 \subsection{Usage}{
@@ -67,8 +71,8 @@ Compare Subset to another
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-DemographicCriteria-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicCriteria-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -50,7 +50,7 @@ subsetOperations <- list(
                     name = "Observation of at least 365 days prior",
                     priorTime = 365,
                     followUpTime = 0,
-                    limitTo = "earliest")
+                    limitTo = "firstEver")
 )
 ```
 We then need to capture these definitions in a definition object
@@ -86,7 +86,7 @@ The following is not yet implemented but serves as a straw man for how we would 
 
 Executing CohortGenerator, we can now include the subset operations when our cohorts are generated:
 
-```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
+```{r results='hide', error=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
 
 ### As subsets are a big side effect we need to be clear what was generated and have good naming conventions
 generatedCohortDefinitionSetSummary <- generateCohortSet(connectionDetails = connectionDetails,
@@ -100,3 +100,14 @@ generatedCohortDefinitionSetSummary <- generateCohortSet(connectionDetails = con
 ```
 The object ```generatedCohortDefinitionSetSummary``` contains the base set of cohorts as well as the named set of these subset cohorts,
 the names will be automatically generated based on the base id and then the subset operations that are applied.
+
+<!-- ### Saving the JSON -->
+
+<!-- ```{r eval=FALSE} -->
+<!-- subsetDefinitions <- list(subsetDef, subsetDef2) -->
+
+<!-- # Does not work due to use of R6 classes: -->
+<!-- ParallelLogger::saveSettingsToJson(object = subsetDefinitions, fileName = "subset.json") -->
+
+<!-- # TODO: We need to implement a way to seralize the lis of subset definitions -->
+<!-- ``` -->
