@@ -35,27 +35,30 @@
 }
 
 
-#' Endpoint settings
+# SubsetCohortWindow -------------
+#' SubsetCohortWindow settings
 #' @description
-#' Representation of an endpoint
-#' Based on https://github.com/OHDSI/circe-be/blob/master/src/main/java/org/ohdsi/circe/cohortdefinition/Window.java
+#' Representation of a time window to use when subsetting a target cohort with a subset cohort
 #' @export
-Endpoint <- R6::R6Class(
-  classname = "Endpoint",
+SubsetCohortWindow <- R6::R6Class(
+  classname = "SubsetCohortWindow",
   private = list(
-    .days = 0,
-    .coeff = 0
+    .startDay = as.integer(0),
+    .endDay = as.integer(0),
+    .targetAnchor = "cohortStart"
   ),
   public = list(
     #' @title to List
     #' @description List representation of object
     toList = function() {
       objRepr <- list()
-      if (length(private$.days))
-        objRepr$days <- jsonlite::unbox(private$.days)
-      if (length(private$.coeff))
-        objRepr$coeff <- jsonlite::unbox(private$.coeff)
-      
+      if (length(private$.startDay))
+        objRepr$startDay <- jsonlite::unbox(private$.startDay)
+      if (length(private$.endDay))
+        objRepr$endDay <- jsonlite::unbox(private$.endDay)
+      if (length(private$.targetAnchor))
+        objRepr$targetAnchor <- jsonlite::unbox(private$.targetAnchor)
+
       objRepr
     },
     #' @title to JSON
@@ -65,113 +68,58 @@ Endpoint <- R6::R6Class(
     },
     
     #' @title is Equal to
-    #' @description Compare Endpoint to another
-    #' @param criteria Endpoint instance
+    #' @description Compare SubsetCohortWindow to another
+    #' @param criteria SubsetCohortWindow instance
     isEqualTo = function(criteria) {
-      checkmate::assertR6(criteria, "Endpoint")
-      return(all(self$days == criteria$days,
-                 self$coeff == criteria$coeff))
+      checkmate::assertR6(criteria, "SubsetCohortWindow")
+      return(all(self$startDay == criteria$startDay,
+                 self$endDay == criteria$endDay,
+                 self$targetAnchor == criteria$targetAnchor))
     }
   ),
   active = list(
-    #'@field    days Int
-    days = function(days) {
-      if (missing(days)) return(private$.days)
-      checkmate::assertInt(days)
-      private$.days <- days
+    #'@field startDay Integer
+    startDay = function(startDay) {
+      if (missing(startDay)) return(private$.startDay)
+      checkmate::assertIntegerish(x = startDay)
+      private$.startDay <- as.integer(startDay)
       return(self)
     },
-    #'@field  coeff Int
-    coeff = function(coeff) {
-      if (missing(coeff)) return(private$.coeff)
-      checkmate::assertInt(coeff)
-      private$.coeff <- coeff
+    #'@field endDay Integer
+    endDay = function(endDay) {
+      if (missing(endDay)) return(private$.endDay)
+      checkmate::assertIntegerish(x = endDay)
+      private$.endDay <- as.integer(endDay)
+      return(self)
+    },
+    #'@field targetAnchor Boolean
+    targetAnchor = function(targetAnchor) {
+      if (missing(targetAnchor)) return(private$.targetAnchor)
+      checkmate::assertChoice(x = targetAnchor, choices = c("cohortStart", "cohortEnd"))
+      private$.targetAnchor <- targetAnchor
       return(self)
     }
   )
 )
 
-
-
-#' Window settings
-#' @description
-#' Representation of a time window
-#' Based on https://github.com/OHDSI/circe-be/blob/master/src/main/java/org/ohdsi/circe/cohortdefinition/Window.java
+# createSubsetCohortWindow ------------------------------
+#' A definition of subset functions to be applied to a set of cohorts
+#' @param startDay  The start day for the window
+#' @param endDay The end day for the window
+#' @param targetAncthor To anchor using the target cohort's start date or end date
+#' @returns a SubsetCohortWindow instance
 #' @export
-Window <- R6::R6Class(
-  classname = "Window",
-  private = list(
-    .start = Endpoint$new(),
-    .end = Endpoint$new(),
-    .useIndexEnd = FALSE,
-    .useEventEnd = FALSE
-  ),
-  public = list(
-    #' @title to List
-    #' @description List representation of object
-    toList = function() {
-      objRepr <- list()
-      if (length(private$.start$toList()))
-        objRepr$start <- private$.start$toList()
-      if (length(private$.end$toList()))
-        objRepr$end <- private$.end$toList()
-      if (length(private$.useIndexEnd))
-        objRepr$useIndexEnd <- jsonlite::unbox(private$.useIndexEnd)
-      if (length(private$.useEventEnd))
-        objRepr$useEventEnd <- jsonlite::unbox(private$.useEventEnd)
-      
-      objRepr
-    },
-    #' @title to JSON
-    #' @description json serialized representation of object
-    toJSON = function() {
-      .toJSON(self$toList())
-    },
-    
-    #' @title is Equal to
-    #' @description Compare Window to another
-    #' @param criteria Window instance
-    isEqualTo = function(criteria) {
-      checkmate::assertR6(criteria, "Window")
-      return(all(self$start == criteria$start,
-                 self$end == criteria$end,
-                 self$useIndexEnd == criteria$useIndexEnd,
-                 self$useEventEnd == criteria$useEventEnd))
-    }
-  ),
-  active = list(
-    #'@field start Endpoint
-    start = function(start) {
-      if (missing(start)) return(private$.start)
-      checkmate::assertClass(x = start, classes = "Endpoint")
-      private$.start <- start
-      return(self)
-    },
-    #'@field end Endpoint
-    end = function(end) {
-      if (missing(end)) return(private$.end)
-      checkmate::assertClass(x = end, classes = "Endpoint")
-      private$.end <- end
-      return(self)
-    },
-    #'@field useIndexEnd Boolean
-    useIndexEnd = function(useIndexEnd) {
-      if (missing(useIndexEnd)) return(private$.useIndexEnd)
-      checkmate::assertLogical(x = useIndexEnd)
-      private$.useIndexEnd <- useIndexEnd
-      return(self)
-    },
-    #'@field useEventEnd Boolean
-    useEventEnd = function(useEventEnd) {
-      if (missing(useEventEnd)) return(private$.useEventEnd)
-      checkmate::assertLogical(x = useEventEnd)
-      private$.useEventEnd <- useEventEnd
-      return(self)
-    }
-  )
-)
+createSubsetCohortWindow <- function(startDay, endDay, targetAnchor) {
+  window <- SubsetCohortWindow$new()
+  window$startDay <- startDay
+  window$endDay <- endDay
+  window$targetAnchor <- targetAnchor
+  window
+}
 
 
+
+# SubsetOperator ------------------------------
 #' @title SubsetOperator
 #' @description
 #' Abstract Base Class for subsets. Subsets should inherit from this and implement their own requirements.
@@ -288,7 +236,8 @@ SubsetOperator <- R6::R6Class(
 )
 
 
-#' @title Cohort Subset
+# CohortSubsetOperator ------------------------------
+#' @title Cohort Subset Operator
 #' @description
 #' A subset of type cohort - subset a population to only those contained within defined cohort
 #' # TODO - Add the time windowing settings for T/S
@@ -301,14 +250,14 @@ CohortSubsetOperator <- R6::R6Class(
     .cohortIds = integer(0),
     .cohortCombinationOperator = "all",
     .negate = FALSE,
-    .targetCohortWindow = Window$new(),
-    .subsetCohortWindow = Window$new()
+    .startWindow = SubsetCohortWindow$new(),
+    .endWindow = SubsetCohortWindow$new()
   ),
   public = list(
         #' @title Public Fields
         #' @description publicly settable fields
     publicFields = function() {
-      c(super$publicFields(), "cohortIds", "cohortCombinationOperator", "negate")
+      c(super$publicFields(), "cohortIds", "cohortCombinationOperator", "negate", "startWindow", "endWindow")
     },
 
         #' @title to List
@@ -318,9 +267,9 @@ CohortSubsetOperator <- R6::R6Class(
       objRepr$cohortIds <- private$.cohortIds
       objRepr$cohortCombinationOperator <- jsonlite::unbox(private$.cohortCombinationOperator)
       objRepr$negate <- jsonlite::unbox(private$.negate)
-      objRepr$targetCohortWindow <- private$.targetCohortWindow$toList()
-      objRepr$subsetCohortWindow <- private$.subsetCohortWindow$toList()
-
+      objRepr$startWindow <- private$.startWindow$toList()
+      objRepr$endWindow <- private$.endWindow$toList()
+      
       objRepr
     }
   ),
@@ -357,46 +306,50 @@ CohortSubsetOperator <- R6::R6Class(
       private$.negate <- negate
       self
     },
-    #'@field targetCohortWindow The time window to use for the target cohort
-    targetCohortWindow = function(targetCohortWindow) {
-      if (missing(targetCohortWindow))
-        return(private$.targetCohortWindow)
+    #'@field startWindow The time window to use evaluating the subset cohort
+    #'start relative to the target cohort
+    startWindow = function(startWindow) {
+      if (missing(startWindow))
+        return(private$.startWindow)
       
-      checkmate::assertClass(x = targetCohortWindow, classes = "Window")
-      private$.targetCohortWindow = targetCohortWindow
+      checkmate::assertClass(x = startWindow, classes = "SubsetCohortWindow")
+      private$.startWindow = startWindow
       self
-    },
-    #'@field subsetCohortWindow The time window to use for the subset cohort
-    subsetCohortWindow = function(subsetCohortWindow) {
-      if (missing(subsetCohortWindow))
-        return(private$.subsetCohortWindow)
+    },   
+    #'@field endWindow The time window to use evaluating the subset cohort
+    #'end relative to the target cohort
+    endWindow = function(endWindow) {
+      if (missing(endWindow))
+        return(private$.endWindow)
       
-      checkmate::assertClass(x = subsetCohortWindow, classes = "Window")
-      private$.subsetCohortWindow = subsetCohortWindow
+      checkmate::assertClass(x = endWindow, classes = "SubsetCohortWindow")
+      private$.endWindow = endWindow
       self
-    }    
+    } 
   )
 )
 
+# createCohortSubset ------------------------------
 #' A definition of subset functions to be applied to a set of cohorts
 #' @param id  unique integer identifier
 #' @param name name of operator
 #' @param cohortIds integer - set of cohort ids to subset to
-#' @returns a CohortSubset instance
+#' @returns a CohortSubsetOperator instance
 #' @export
-createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, negate, targetCohortWindow, subsetCohortWindow) {
+createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, negate, startWindow, endWindow) {
   subset <- CohortSubsetOperator$new()
   subset$id <- id
   subset$name <- name
   subset$cohortIds <- cohortIds
   subset$cohortCombinationOperator <- cohortCombinationOperator
   subset$negate <- negate
-  subset$targetCohortWindow <- targetCohortWindow
-  subset$subsetCohortWindow <- subsetCohortWindow
+  subset$startWindow <- startWindow
+  subset$endWindow
 
   subset
 }
 
+# DemographicCriteria ------------------------------
 #' Demographics settings
 #' @description
 #' Representation of demographic settings to be used in a subset instance
@@ -485,6 +438,7 @@ DemographicCriteria <- R6::R6Class(
   )
 )
 
+# createDemographicCriteria ------------------------------
 #' Create demographic criteria
 #' @param ageMin       age demographics
 #' @param ageMax       age demographics
@@ -503,6 +457,7 @@ createDemographicCriteria <- function(ageMin = 0, ageMax = 9999, gender = "", ra
   criteria
 }
 
+# DemographicSubsetOperator ------------------------------
 #' Criteria Subset
 #' @export
 DemographicSubsetOperator <- R6::R6Class(
@@ -555,6 +510,7 @@ DemographicSubsetOperator <- R6::R6Class(
   )
 )
 
+# createDemographicSubset ------------------------------
 #' Create DemographicCriteria Subset
 #' @param id            Id number
 #' @param name          char name
@@ -569,6 +525,7 @@ createDemographicSubset <- function(id, name, ...) {
   subset
 }
 
+# LimitSubsetOperator ------------------------------
 #' Criteria Subset
 #' @export
 LimitSubsetOperator <- R6::R6Class(
@@ -592,6 +549,8 @@ LimitSubsetOperator <- R6::R6Class(
       objRef$limitTo <- jsonlite::unbox(private$.limitTo)
       objRef$calendarStartDate <- jsonlite::unbox(private$.calendarStartDate)
       objRef$calendarEndDate <- jsonlite::unbox(private$.calendarEndDate)
+      
+      objRef
     }
   ),
   active = list(
@@ -651,6 +610,7 @@ LimitSubsetOperator <- R6::R6Class(
   )
 )
 
+# createLimitSubset ------------------------------
 #' Create Limit Subset
 #' @description
 #' Subset cohorts using specified limit criteria
@@ -682,6 +642,7 @@ createLimitSubset <- function(id, name, priorTime, followUpTime, limitTo) {
 }
 
 
+# CohortSubsetDefinition ------------------------------
 #' @title Cohort Subset Definition
 #' @description
 #' Set of subset definitions
@@ -714,8 +675,6 @@ CohortSubsetDefinition <- R6::R6Class(
         self$definitionId <- definition$definitionId
         self$targetOutcomePairs <- definition$targetOutcomePairs
         self$subsets <- lapply(definition$subsets, private$createSubset)
-        self$targetCohortWindow <- definition$targetCohortWindow
-        self$subsetCohortWindow <- definition$subsetCohortWindow
       }
       self
     },
@@ -829,6 +788,7 @@ CohortSubsetDefinition <- R6::R6Class(
   )
 )
 
+# createCohortSubsetDefinition ------------------------------
 #' Create Subset Definition
 #' @description
 #' Create subset definition from subset objects
