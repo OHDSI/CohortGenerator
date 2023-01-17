@@ -13,12 +13,12 @@
 
 SELECT
     @output_cohort_id as cohort_definition_id
-    t.subject_id,
-    t.cohort_start_date,
-    t.cohort_end_date
-FROM @cohort_database_schema.@cohort_table t
+    T.subject_id,
+    T.cohort_start_date,
+    T.cohort_end_date
+FROM @cohort_database_schema.@cohort_table T
 @join_statements
-WHERE t.cohort_definition_id IN (@target_cohort_id)
+WHERE T.cohort_definition_id IN (@target_cohort_id)
 @and_clauses
-GROUP BY t.subject_id, t.cohort_start_date, t.cohort_end_date
+GROUP BY T.subject_id, T.cohort_start_date, T.cohort_end_date
 @having_clauses;

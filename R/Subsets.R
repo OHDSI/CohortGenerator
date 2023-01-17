@@ -778,9 +778,9 @@ CohortSubsetDefinition <- R6::R6Class(
       }
     },
 
-        #' @title get join statments
-        #'
-        #' Returns vector of join, logic, having statments returned by subset operations
+    #' @title get query parts
+    #'
+    #' Returns vector of join, logic, having statments returned by subset operations
     getQueryParts = function() {
       results <- lapply(self$subsets, function(subset) {
         subset$getQueryBuilder()$getQueryParts()
@@ -792,6 +792,11 @@ CohortSubsetDefinition <- R6::R6Class(
           combinedList[[key]] <- c(combinedList[[key]], result[[key]])
         }
       }
+
+      # Allow multiple having clauses across table object ids
+      # NOTE - this logic could be more complex (e.g. 3 entries from cohort 1 OR 2 entries from cohort 2)
+      if (length(combinedList$havingClauses) >= 1)
+       combinedList$havingClauses <- paste("HAVING", paste(combinedList$havingClauses, collapse = " AND "))
 
       return(combinedList)
     },
