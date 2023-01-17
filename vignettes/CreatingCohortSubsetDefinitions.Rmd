@@ -40,36 +40,21 @@ cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(baseUrl = baseUrl
 A definition can include different subset operations - these are applied strictly in order:
 
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
-# TODO: Need more description of how to use the window classes
-# to define the intersection between a target & subset cohort
-targetStartEndpoint <- Endpoint$new()
-targetStartEndpoint$coeff <- -1
-
-targetEndEndpoint <- Endpoint$new()
-targetEndEndpoint$coeff <- -1
-
-targetCohortWindow <- Window$new()
-targetCohortWindow$useIndexEnd <- FALSE
-targetCohortWindow$useEventEnd <- FALSE
-targetCohortWindow$start <- targetStartEndpoint
-targetCohortWindow$end <- targetEndEndpoint
-
-# This is a nonsense example for now
-subsetCohortWindow <- Window$new()
-subsetCohortWindow$useIndexEnd <- FALSE
-subsetCohortWindow$useEventEnd <- FALSE
-subsetCohortWindow$start <- targetStartEndpoint
-subsetCohortWindow$end <- targetEndEndpoint
-
+# Example, we want to have a HTN cohort that starts any time prior to the index start
+# and the HTN cohort ends any time after the index start
 subsetOperations <- list(
   # here we are saying 'first subset to only those patients in cohort 1778213'
   createCohortSubset(id = 1001,
-                     name = "Cohort Subset",
+                     name = "Subset to patients in cohort 1778213",
                      cohortIds = 1778213,
                      cohortCombinationOperator = "any",
                      negate = FALSE,
-                     targetCohortWindow = targetCohortWindow,
-                     subsetCohortWindow = subsetCohortWindow),
+                     startWindow = createSubsetCohortWindow(startDay = -9999,
+                                                            endDay = 0,
+                                                            targetAnchor = "cohortStart"),
+                     endWindow = createSubsetCohortWindow(startDay = 0,
+                                                          endDay = 9999,
+                                                          targetAnchor = "cohortStart")),
   
   # Next, subset to only those with 365 days of prior observation
   createLimitSubset(id = 1002,
@@ -82,7 +67,7 @@ subsetOperations <- list(
 We then need to capture these definitions in a definition object
 
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
-subsetDef <- createCohortSubsetDefinition(name = "365 days prior",
+subsetDef <- createCohortSubsetDefinition(name = "Patients in cohort 1778213 with 365 days prior observation",
                                           definitionId = 1,
                                           targetOutcomePairs = list(c(1778211, 1778211001), c(1778212, 1778212001)),
                                           subsets = subsetOperations)
@@ -100,7 +85,7 @@ subsetOperations2[[3]] <- createDemographicSubset(id = 1003,
                                                   ageMin = 18,
                                                   ageMax = 64)
 
-subsetDef2 <- createCohortSubsetDefinition(name = "365 days prior, aged 18 - 64",
+subsetDef2 <- createCohortSubsetDefinition(name = "Patients in cohort 1778213 with 365 days prior observation, aged 18 - 64",
                                            definitionId = 2,
                                            # NOTE: The output ids should not clash with any that already exist
                                            targetOutcomePairs = list(c(1778211, 1778211002), c(1778212, 1778212002)),
@@ -114,15 +99,22 @@ Executing CohortGenerator, we can now include the subset operations when our coh
 
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
 
-### As subsets are a big side effect we need to be clear what was generated and have good naming conventions
-generatedCohortDefinitionSetSummary <- generateCohortSet(connectionDetails = connectionDetails,
-                                                         cdmDatabaseSchema = cdmDatabaseSchema,
-                                                         cohortDatabaseSchema = cohortDatabaseSchema,
-                                                         cohortTableNames = "my_cohort",
-                                                         cohortDefinitionSet = cohortDefinitionSet,
-                                                         subsetDefinitions = list(subsetDef, subsetDef2),
-                                                         incremental = TRUE,
-                                                         incrementalFolder = file.path(someFolder, "RecordKeeping"))
+connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+Eunomia::createCohorts(connectionDetails, cohortTable = "my_cohort")
+CohortGenerator::generateCohortSubset(connectionDetails = connectionDetails,
+                                      cohortDatabaseSchema = "main",
+                                      cohortTable = "my_cohort",
+                                      subsetDefinitions = list(subsetDef, subsetDef2))
+
+# ### As subsets are a big side effect we need to be clear what was generated and have good naming conventions
+# generatedCohortDefinitionSetSummary <- generateCohortSet(connectionDetails = connectionDetails,
+#                                                          cdmDatabaseSchema = cdmDatabaseSchema,
+#                                                          cohortDatabaseSchema = cohortDatabaseSchema,
+#                                                          cohortTableNames = "my_cohort",
+#                                                          cohortDefinitionSet = cohortDefinitionSet,
+#                                                          subsetDefinitions = list(subsetDef, subsetDef2),
+#                                                          incremental = TRUE,
+#                                                          incrementalFolder = file.path(someFolder, "RecordKeeping"))
 ```
 The object ```generatedCohortDefinitionSetSummary``` contains the base set of cohorts as well as the named set of these subset cohorts,
 the names will be automatically generated based on the base id and then the subset operations that are applied.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Subsets.R
 \name{CohortSubsetOperator}
 \alias{CohortSubsetOperator}
-\title{Cohort Subset}
+\title{Cohort Subset Operator}
 \description{
 A subset of type cohort - subset a population to only those contained within defined cohort
 # TODO - Add the time windowing settings for T/S
@@ -19,9 +19,11 @@ A subset of type cohort - subset a population to only those contained within def
 
 \item{\code{negate}}{Inverse the subset rule? TRUE will take the patients NOT in the subset}
 
-\item{\code{targetCohortWindow}}{The time window to use for the target cohort}
+\item{\code{startWindow}}{The time window to use evaluating the subset cohort
+start relative to the target cohort}
 
-\item{\code{subsetCohortWindow}}{The time window to use for the subset cohort}
+\item{\code{endWindow}}{The time window to use evaluating the subset cohort
+end relative to the target cohort}
 }
 \if{html}{\out{</div>}}
 }

@@ -10,8 +10,8 @@ createCohortSubset(
   cohortIds,
   cohortCombinationOperator,
   negate,
-  targetCohortWindow,
-  subsetCohortWindow
+  startWindow,
+  endWindow
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ createCohortSubset(
 \item{cohortIds}{integer - set of cohort ids to subset to}
 }
 \value{
-a CohortSubset instance
+a CohortSubsetOperator instance
 }
 \description{
 A definition of subset functions to be applied to a set of cohorts
