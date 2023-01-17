@@ -23,7 +23,7 @@ test_that("Subset definition", {
   )
   subsetDef <- createCohortSubsetDefinition(name = "test definition",
                                             definitionId = 1,
-                                            targetOutcomePairs = list(c(1,1003), c(2,1002)),
+                                            targetOutputPairs = list(c(1,1003), c(2,1002)),
                                             subsets = subsetOperations)
   
   for (s in subsetDef$subsets) {

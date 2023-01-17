@@ -700,7 +700,7 @@ CohortSubsetDefinition <- R6::R6Class(
     .definitionId = integer(0),
     .subsets = list(),
     .subsetIds = c(),
-    .targetOutcomePairs = c(),
+    .targetOutputPairs = c(),
 
     ## Creates objects if they are in the namespace
     createSubset = function(item, itemClass = item$subsetType) {
@@ -719,7 +719,7 @@ CohortSubsetDefinition <- R6::R6Class(
         definition <- .loadJson(definition)
         self$name <- definition$name
         self$definitionId <- definition$definitionId
-        self$targetOutcomePairs <- definition$targetOutcomePairs
+        self$targetOutputPairs <- definition$targetOutputPairs
         self$subsets <- lapply(definition$subsets, private$createSubset)
         self$targetCohortWindow <- definition$targetCohortWindow
         self$subsetCohortWindow <- definition$subsetCohortWindow
@@ -732,7 +732,7 @@ CohortSubsetDefinition <- R6::R6Class(
       list(
         name = jsonlite::unbox(self$name),
         definitionId = jsonlite::unbox(self$definitionId),
-        targetOutcomePairs = self$targetOutcomePairs,
+        targetOutputPairs = self$targetOutputPairs,
         # Note - when there is a base definition that includes multiple calls to the same subset this should be replaced
         subsets = lapply(self$subsets, function(subset) { subset$toList() }),
         subsetOperatorIds = private$.subsetIds,
@@ -803,13 +803,13 @@ CohortSubsetDefinition <- R6::R6Class(
   ),
 
   active = list(
-        #' @field targetOutcomePairs  list of pairs of intgers - (targetCohortId, outputCohortId)
-    targetOutcomePairs = function(targetOutcomePairs) {
-      if (missing(targetOutcomePairs))
-        return(private$.targetOutcomePairs)
-      checkmate::assertList(targetOutcomePairs, types = c("numeric", "list"), min.len = 1, unique = TRUE)
+        #' @field targetOutputPairs  list of pairs of intgers - (targetCohortId, outputCohortId)
+    targetOutputPairs = function(targetOutputPairs) {
+      if (missing(targetOutputPairs))
+        return(private$.targetOutputPairs)
+      checkmate::assertList(targetOutputPairs, types = c("numeric", "list"), min.len = 1, unique = TRUE)
 
-      targetOutcomePairs <- lapply(targetOutcomePairs,
+      targetOutputPairs <- lapply(targetOutputPairs,
                                    function(targetOutcomePair) {
                                      targetOutcomePair <- as.numeric(targetOutcomePair)
                                      checkmate::assertIntegerish(targetOutcomePair, len = 2)
@@ -817,7 +817,7 @@ CohortSubsetDefinition <- R6::R6Class(
                                      targetOutcomePair
                                    })
 
-      private$.targetOutcomePairs <- targetOutcomePairs
+      private$.targetOutputPairs <- targetOutputPairs
       self
     },
         #' @field subsets list of subset operations
@@ -864,7 +864,7 @@ CohortSubsetDefinition <- R6::R6Class(
 #' Create subset definition from subset objects
 #' @param name                      Name of definition
 #' @param definitionId              Definition identifier
-#' @param targetOutcomePairs        Vector of pairs targetCohortId, outcomeCohortId
+#' @param targetOutputPairs        Vector of pairs targetCohortId, outcomeCohortId
 #' @param subsets                   vector of subset instances to apply
 #' @export
 #'
@@ -874,11 +874,11 @@ CohortSubsetDefinition <- R6::R6Class(
 #' )
 #'
 #' subsetDef <- createSubsetDefinition(c(1,3,4), 11, mySubsets)
-createCohortSubsetDefinition <- function(name, definitionId, targetOutcomePairs, subsets) {
+createCohortSubsetDefinition <- function(name, definitionId, targetOutputPairs, subsets) {
   subsetDef <- CohortSubsetDefinition$new()
   subsetDef$name <- name
   subsetDef$definitionId <- definitionId
-  subsetDef$targetOutcomePairs <- targetOutcomePairs
+  subsetDef$targetOutputPairs <- targetOutputPairs
   subsetDef$subsets <- subsets
   return(subsetDef)
 }
@@ -912,7 +912,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion
 
   queryParts <- cohortSubsetDefintion$getQueryParts()
 
-  for (targetOutcomePair in cohortSubsetDefintion$targetOutcomePairs) {
+  for (targetOutcomePair in cohortSubsetDefintion$targetOutputPairs) {
     if (!targetOutcomePair[1] %in% cohortDefinitionSet$cohortId) {
       stop("Target cohortid ", targetOutcomePair[1], " not found in cohort definition set")
     }
@@ -927,13 +927,13 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion
     # --  @output_cohort_id
     # -- OPTIONAL PARAMETERS
     # {DEFAULT @join_statements = ''}
-    # {DEFAULT @and_clauses = ''}
+    # {DEFAULT @logic_clauses = ''}
     # {DEFAULT @having_clauses = ''}
     subsetSql <- SqlRender::loadRenderTranslateSql(file.path("subsets", "CohortSubsetDefinition.sql"),
                                                    target_cohort_id = targetOutcomePair[1],
                                                    output_cohort_id = targetOutcomePair[2],
                                                    join_statments = queryParts$joins,
-                                                   and_clauses = queryParts$logic,
+                                                   logic_clauses = queryParts$logic,
                                                    having_clauses = queryParts$havingClauses,
                                                    packageName = "CohortGenerator")
 
