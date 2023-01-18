@@ -10,6 +10,8 @@ Public Fields
 
 to List
 
+to JSON
+
 is Equal to
 }
 \details{
@@ -21,7 +23,15 @@ Criteria Subset
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{criteria}}{DemographicCriteria to subset to}
+\item{\code{ageMin}}{Int between 0 and 9999 - minimum age}
+
+\item{\code{ageMax}}{Int between 0 and 9999 - maximum age}
+
+\item{\code{gender}}{character string denoting gender}
+
+\item{\code{race}}{character string denoting race}
+
+\item{\code{ethnicity}}{character string denoting ethnicity}
 }
 \if{html}{\out{</div>}}
 }
@@ -30,6 +40,7 @@ Criteria Subset
 \itemize{
 \item \href{#method-DemographicSubsetOperator-publicFields}{\code{DemographicSubsetOperator$publicFields()}}
 \item \href{#method-DemographicSubsetOperator-toList}{\code{DemographicSubsetOperator$toList()}}
+\item \href{#method-DemographicSubsetOperator-toJSON}{\code{DemographicSubsetOperator$toJSON()}}
 \item \href{#method-DemographicSubsetOperator-isEqualTo}{\code{DemographicSubsetOperator$isEqualTo()}}
 \item \href{#method-DemographicSubsetOperator-clone}{\code{DemographicSubsetOperator$clone()}}
 }
@@ -39,7 +50,6 @@ Criteria Subset
 <ul>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-classname'><code>CohortGenerator::SubsetOperator$classname()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-initialize'><code>CohortGenerator::SubsetOperator$initialize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-toJSON'><code>CohortGenerator::SubsetOperator$toJSON()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -64,18 +74,28 @@ List representation of object
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-toJSON"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-toJSON}{}}}
+\subsection{Method \code{toJSON()}}{
+json serialized representation of object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$toJSON()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DemographicSubsetOperator-isEqualTo"></a>}}
 \if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-isEqualTo}{}}}
 \subsection{Method \code{isEqualTo()}}{
 Compare Subset to another
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$isEqualTo(subsetOperatorB)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$isEqualTo(criteria)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{subsetOperatorB}}{A subset to test equivalence to}
+\item{\code{criteria}}{DemographicSubsetOperator instance}
 }
 \if{html}{\out{</div>}}
 }

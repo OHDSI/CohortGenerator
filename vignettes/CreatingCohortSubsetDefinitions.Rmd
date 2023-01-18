@@ -100,7 +100,24 @@ Executing CohortGenerator, we can now include the subset operations when our coh
 
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
 
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
+                                                                user = "postgres",
+                                                                password = "ohdsi",
+                                                                server = "localhost/synthea1k",
+                                                                port = 5432)
+
+cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = "cohort_subset")
+CohortGenerator::createCohortTables(connectionDetails = connectionDetails,
+                                    cohortDatabaseSchema = "results",
+                                    cohortTableNames = cohortTableNames)
+
+CohortGenerator::generateCohortSet(connectionDetails = connectionDetails,
+                                   cdmDatabaseSchema = "public",
+                                   cohortDatabaseSchema = "results",
+                                   cohortTableNames = cohortTableNames,
+                                   cohortDefinitionSet = cohortDefinitionSet,
+                                   incremental = FALSE)
+
 Eunomia::createCohorts(connectionDetails, cohortTable = "my_cohort")
 CohortGenerator::generateCohortSubset(connectionDetails = connectionDetails,
                                       cdmDatabaseSchema = "main",

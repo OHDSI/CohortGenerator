@@ -9,13 +9,13 @@ WITH subset AS (
     XREF.TARGET_ID = c.cohort_definition_id
 )
 SELECT 
-  S.cohort_definition_id,
-  S.subject_id,
-  S.cohort_start_date,
-  S.cohort_end_date
+  c.cohort_definition_id,
+  c.subject_id,
+  c.cohort_start_date,
+  c.cohort_end_date
 INTO @target_cohort_table
 FROM subset c
-JOIN @cdm_database_schema.PERSON p ON p.PERSON_ID = c.PERSON_ID
+JOIN @cdm_database_schema.PERSON p ON p.PERSON_ID = c.subject_id
 WHERE YEAR(c.cohort_start_date) - p.year_of_birth >= @age_min
   AND YEAR(c.cohort_start_date) - p.year_of_birth <= @age_max
 {@gender != ''}?{

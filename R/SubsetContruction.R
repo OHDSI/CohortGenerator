@@ -210,7 +210,7 @@ executeLimitSubsetOperator <- function(connection,
     calendar_start_date = ifelse(is.null(cohortSubsetOperator$calendarStartDate), yes = '0', no = '1'),
     calendar_start_date_day = ifelse(is.null(cohortSubsetOperator$calendarStartDate), yes = '', no = lubridate::day(cohortSubsetOperator$calendarStartDate)),
     calendar_start_date_month = ifelse(is.null(cohortSubsetOperator$calendarStartDate), yes = '', no = lubridate::month(cohortSubsetOperator$calendarStartDate)),
-    calendar_start_date_year = ifelse(is.null(cohortSubsetOperator$calendarStartDate), yes = '', no = lubridate::year(cohortSubsetOperator$calendarEndDate)),
+    calendar_start_date_year = ifelse(is.null(cohortSubsetOperator$calendarStartDate), yes = '', no = lubridate::year(cohortSubsetOperator$calendarStartDate)),
     cdm_database_schema = cdmDatabaseSchema,
     follow_up_time = cohortSubsetOperator$followUpTime,
     limit_to = cohortSubsetOperator$limitTo,
@@ -286,7 +286,9 @@ removeTempTable <- function(connection,
   )
   
   DatabaseConnector::executeSql(connection = connection,
-                                sql = sql)
+                                sql = sql,
+                                progressBar = FALSE,
+                                reportOverallTime = FALSE)
 }
 
 insertCohortSubset <- function(connection, 

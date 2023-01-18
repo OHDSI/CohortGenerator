@@ -349,13 +349,14 @@ createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, n
   subset
 }
 
-# DemographicCriteria ------------------------------
-#' Demographics settings
-#' @description
-#' Representation of demographic settings to be used in a subset instance
-DemographicCriteria <- R6::R6Class(
-  classname = "DemographicCriteria",
+# DemographicSubsetOperator ------------------------------
+#' Criteria Subset
+#' @export
+DemographicSubsetOperator <- R6::R6Class(
+  classname = "DemographicSubsetOperator",
+  inherit = SubsetOperator,
   private = list(
+    suffixStr = "Dem",
     .ageMin = 0,
     .ageMax = 99999,
     .gender = "",
@@ -363,10 +364,15 @@ DemographicCriteria <- R6::R6Class(
     .ethnicity = ""
   ),
   public = list(
-         #' @title to List
+        #' @title Public Fields
+        #' @description Publicly settable fields of object
+    publicFields = function() {
+      c(super$publicFields(), "ageMin", "ageMax", "gender", "race", "ethnicity")
+    },
+        #' @title to List
         #' @description List representation of object
     toList = function() {
-      objRepr <- list()
+      objRepr <- super$toList()
       if (length(private$.ageMin))
         objRepr$ageMin <- jsonlite::unbox(private$.ageMin)
       if (length(private$.ageMax))
@@ -380,17 +386,19 @@ DemographicCriteria <- R6::R6Class(
       
       objRepr
     },
-        #' @title to JSON
-        #' @description json serialized representation of object
+    
+    #' @title to JSON
+    #' @description json serialized representation of object
     toJSON = function() {
       .toJSON(self$toList())
     },
+    
 
-        #' @title is Equal to
-        #' @description Compare Subset to another
-        #' @param criteria DemographicCriteria instance
+    #' @title is Equal to
+    #' @description Compare Subset to another
+    #' @param criteria DemographicSubsetOperator instance
     isEqualTo = function(criteria) {
-      checkmate::assertR6(criteria, "DemographicCriteria")
+      checkmate::assertR6(criteria, "DemographicSubsetOperator")
       return(all(self$ageMin == criteria$ageMin,
                  self$ageMax == criteria$ageMax,
                  self$gender == criteria$gender,
@@ -399,14 +407,14 @@ DemographicCriteria <- R6::R6Class(
     }
   ),
   active = list(
-        #'@field    ageMin Int between 0 and 9999 - minimum age
+    #'@field    ageMin Int between 0 and 9999 - minimum age
     ageMin = function(ageMin) {
       if (missing(ageMin)) return(private$.ageMin)
       checkmate::assertInt(ageMin, lower = 0, upper = min(self$ageMax, 99999))
       private$.ageMin <- ageMin
       return(self)
     },
-        #'@field  ageMax  Int between 0 and 9999 - maximum age
+    #'@field  ageMax  Int between 0 and 9999 - maximum age
     ageMax = function(ageMax) {
       
       if (missing(ageMax)) return(private$.ageMax)
@@ -414,7 +422,7 @@ DemographicCriteria <- R6::R6Class(
       private$.ageMax <- ageMax
       return(self)
     },
-        #' @field gender character string denoting gender
+    #' @field gender character string denoting gender
     gender = function(gender) {
       if (missing(gender)) return(private$.gender)
       checkmate::assertCharacter(gender, len = 1, null.ok = FALSE)
@@ -438,90 +446,26 @@ DemographicCriteria <- R6::R6Class(
   )
 )
 
-# createDemographicCriteria ------------------------------
-#' Create demographic criteria
-#' @param ageMin       age demographics
-#' @param ageMax       age demographics
-#' @param gender       gender demographics - concept ID list
-#' @param race         race demographics - concept ID list
-#' @param ethnicity    ethnicity demographics - concept ID list
-#' @export
-createDemographicCriteria <- function(ageMin = 0, ageMax = 9999, gender = "", race = "", ethnicity = "") {
-  criteria <- DemographicCriteria$new()
-  criteria$ageMin <- ageMin
-  criteria$ageMax <- ageMax
-  criteria$gender <- gender
-  criteria$race <- race
-  criteria$ethnicity <- ethnicity
-
-  criteria
-}
-
-# DemographicSubsetOperator ------------------------------
-#' Criteria Subset
-#' @export
-DemographicSubsetOperator <- R6::R6Class(
-  classname = "DemographicSubsetOperator",
-  inherit = SubsetOperator,
-  private = list(
-    suffixStr = "Dem",
-    .criteria = NULL
-  ),
-  public = list(
-        #' @title Public Fields
-        #' @description Publicly settable fields of object
-    publicFields = function() {
-      c(super$publicFields(), "criteria")
-    },
-        #' @title to List
-        #' @description List representation of object
-    toList = function() {
-      objRef <- super$toList()
-      objRef$criteria <- private$.criteria$toList()
-      objRef
-    },
-
-        #' @title is Equal to
-        #' @description Compare Subset to another
-        #' @param           subsetOperatorB A subset to test equivalence to
-    isEqualTo = function(subsetOperatorB) {
-      if (!super$isEqualTo(subsetOperatorB)) {
-        return(FALSE)
-      }
-
-      return(self$criteria$isEqualTo(subsetOperatorB$criteria))
-    }
-  ),
-  active = list(
-        #'@field criteria   DemographicCriteria to subset to
-    criteria = function(criteria) {
-      if (missing(criteria))
-        return(private$.criteria)
-
-      # Allows criteria definition to be loaded from serialized form
-      if (is.list(criteria)) {
-        criteria <- do.call(createDemographicCriteria, criteria)
-      }
-
-      checkmate::assertR6(criteria, "DemographicCriteria")
-      private$.criteria <- criteria
-      self
-    }
-  )
-)
-
 # createDemographicSubset ------------------------------
-#' Create DemographicCriteria Subset
+#' Create createDemographicSubset Subset
 #' @param id            Id number
 #' @param name          char name
-#' @param ...           Demographic criteria @seealso createDemographicCriteria
+#' @param ageMin       The minimum age 
+#' @param ageMax       The maximum age
+#' @param gender       Gender demographics - concept ID list
+#' @param race         Race demographics - concept ID list
+#' @param ethnicity    Ethnicity demographics - concept ID list
 #' @export
-createDemographicSubset <- function(id, name, ...) {
+createDemographicSubset <- function(id, name, ageMin = 0, ageMax = 9999, gender = "", race = "", ethnicity = "") {
   subset <- DemographicSubsetOperator$new()
   subset$id <- id
   subset$name <- name
-  subset$criteria <- createDemographicCriteria(...)
-
+  subset$ageMin <- ageMin
+  subset$ageMax <- ageMax
+  subset$gender <- gender
+  subset$race <- race
+  subset$ethnicity <- ethnicity
+  
   subset
 }
 

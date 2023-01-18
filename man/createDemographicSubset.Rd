@@ -2,17 +2,33 @@
 % Please edit documentation in R/Subsets.R
 \name{createDemographicSubset}
 \alias{createDemographicSubset}
-\title{Create DemographicCriteria Subset}
+\title{Create createDemographicSubset Subset}
 \usage{
-createDemographicSubset(id, name, ...)
+createDemographicSubset(
+  id,
+  name,
+  ageMin = 0,
+  ageMax = 9999,
+  gender = "",
+  race = "",
+  ethnicity = ""
+)
 }
 \arguments{
 \item{id}{Id number}
 
 \item{name}{char name}
 
-\item{...}{Demographic criteria @seealso createDemographicCriteria}
+\item{ageMin}{The minimum age}
+
+\item{ageMax}{The maximum age}
+
+\item{gender}{Gender demographics - concept ID list}
+
+\item{race}{Race demographics - concept ID list}
+
+\item{ethnicity}{Ethnicity demographics - concept ID list}
 }
 \description{
-Create DemographicCriteria Subset
+Create createDemographicSubset Subset
 }

@@ -19,10 +19,10 @@ WITH subset AS (
   }
 )
 SELECT 
-  S.cohort_definition_id,
-  S.subject_id,
-  S.cohort_start_date,
-  S.cohort_end_date
+  c.cohort_definition_id,
+  c.subject_id,
+  c.cohort_start_date,
+  c.cohort_end_date
 INTO @target_cohort_table
 FROM subset c
 {@limit_to == 'firstEver' | @limit_to == 'lastEver'}?{
@@ -31,7 +31,7 @@ FROM subset c
     AND c.cohort_start_date >= op.observation_period_start_date 
     AND c.cohort_start_date <= op.observation_period_end_date
 }
-{@limit_to == 'firstEver' | @limit_to == 'lastEver' | @calendar_start_date != '1' | @calendar_end_date != '1'}?{
+{@limit_to == 'firstEver' | @limit_to == 'lastEver' | @calendar_start_date == '1' | @calendar_end_date == '1'}?{
 WHERE 
   1 = 1
 }
@@ -40,10 +40,10 @@ WHERE
   AND DATEDIFF(day, op.observation_period_start_date, c.cohort_start_date) >= @prior_time
   AND DATEDIFF(day, c.cohort_start_date, op.observation_period_end_date) >= @follow_up_time 
 }
-{@calendar_start_date != '1'}?{
+{@calendar_start_date == '1'}?{
   AND c.cohort_start_date >= DATEFROMPARTS(@calendar_start_date_year,@calendar_start_date_month,@calendar_start_date_day)
 }
-{@calendar_end_date != '1'}?{
+{@calendar_end_date == '1'}?{
   AND c.cohort_start_date <= DATEFROMPARTS(@calendar_end_date_year,@calendar_end_date_month,@calendar_end_date_day)
 }
 ;
