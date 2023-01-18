@@ -536,8 +536,8 @@ LimitSubsetOperator <- R6::R6Class(
     .priorTime = 0,
     .followUpTime = 0,
     .limitTo = character(0),
-    .calendarStartDate = "",
-    .calendarEndDate = ""
+    .calendarStartDate = NULL,
+    .calendarEndDate = NULL
   ),
   public = list(
         #' @title to List
@@ -594,7 +594,7 @@ LimitSubsetOperator <- R6::R6Class(
       if (missing(calendarStartDate))
         return(private$.calendarStartDate)
       
-      checkmate::assertDate(calendarStartDate)
+      checkmate::assertDate(calendarStartDate, null.ok = TRUE)
       private$.calendarStartDate <- calendarStartDate
       self
     },
@@ -603,7 +603,7 @@ LimitSubsetOperator <- R6::R6Class(
       if (missing(calendarEndDate))
         return(private$.calendarEndDate)
       
-      checkmate::assertDate(calendarEndDate)
+      checkmate::assertDate(calendarEndDate, null.ok = TRUE)
       private$.calendarEndDate <- calendarEndDate
       self
     }
@@ -630,13 +630,15 @@ LimitSubsetOperator <- R6::R6Class(
 #'                          criteria are applied (i.e. after applying prior/post time and calendar time).
 #'                    
 #' @export
-createLimitSubset <- function(id, name, priorTime, followUpTime, limitTo) {
+createLimitSubset <- function(id, name, priorTime, followUpTime, limitTo, calendarStartDate = NULL, calendarEndDate = NULL) {
   subset <- LimitSubsetOperator$new()
   subset$id <- id
   subset$name <- name
   subset$priorTime <- priorTime
   subset$followUpTime <- followUpTime
   subset$limitTo <- limitTo
+  subset$calendarStartDate <- calendarStartDate
+  subset$calendarEndDate <- calendarEndDate
 
   subset
 }

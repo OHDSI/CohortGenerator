@@ -4,7 +4,15 @@
 \alias{createLimitSubset}
 \title{Create Limit Subset}
 \usage{
-createLimitSubset(id, name, priorTime, followUpTime, limitTo)
+createLimitSubset(
+  id,
+  name,
+  priorTime,
+  followUpTime,
+  limitTo,
+  calendarStartDate = NULL,
+  calendarEndDate = NULL
+)
 }
 \arguments{
 \item{priorTime}{Required prior observation window}

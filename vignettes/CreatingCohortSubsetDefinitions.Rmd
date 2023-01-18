@@ -61,7 +61,8 @@ subsetOperations <- list(
                     name = "Observation of at least 365 days prior",
                     priorTime = 365,
                     followUpTime = 0,
-                    limitTo = "firstEver")
+                    limitTo = "firstEver",
+                    calendarStartDate = lubridate::as_date('2015-01-31'))
 )
 ```
 We then need to capture these definitions in a definition object
@@ -102,6 +103,7 @@ Executing CohortGenerator, we can now include the subset operations when our coh
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 Eunomia::createCohorts(connectionDetails, cohortTable = "my_cohort")
 CohortGenerator::generateCohortSubset(connectionDetails = connectionDetails,
+                                      cdmDatabaseSchema = "main",
                                       cohortDatabaseSchema = "main",
                                       cohortTable = "my_cohort",
                                       subsetDefinitions = list(subsetDef, subsetDef2))
