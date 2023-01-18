@@ -119,11 +119,30 @@ generateCohortSet <- function(connectionDetails = NULL,
 
 
   if (incremental) {
-    cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
+
+    if (isTRUE(attr(cohortDefinitionSet, 'hasSubsetDefinitions'))) {
+      cohortDefinitionSet$checksum <- ""
+      for (i in nrow(cohortDefinitionSet)) {
+        # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
+        if(cohortDefinitionSet[i]$subsetParent != cohortDefinitionSet[i]$cohortId) {
+          j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet[i]$subsetParent)
+          cohortDefinitionSet[i]$checksum <- computeChecksum(paste(cohortDefinitionSet[j]$sql,
+                                                                   cohortDefinitionSet[i]$sql))
+        } else {
+          cohortDefinitionSet[i]$checksum <- computeChecksum(cohortDefinitionSet$sql)
+        }
+      }
+    } else {
+      cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
+    }
   }
 
   # Create the cluster
+  # DEV NOTE :: running subsets in a multiprocess setup will not work with subsets that subset other subsets
+  # To resolve this issue we need to execute the dependency tree.
+  # This could be done in an manner where all dependent cohorts are guaranteed to be sent to the same process and
+  # the execution is in order. If you set numberOfThreads > 1 you should implement this!
   cluster <- ParallelLogger::makeCluster(numberOfThreads = 1)
   on.exit(ParallelLogger::stopCluster(cluster), add = TRUE)
   cohortsToGenerate <- cohortDefinitionSet$cohortId

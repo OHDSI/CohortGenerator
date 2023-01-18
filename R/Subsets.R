@@ -897,13 +897,11 @@ createCohortSubsetDefinition <- function(name, definitionId, targetOutputPairs, 
 addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion) {
   checkmate::assertR6(cohortSubsetDefintion, "CohortSubsetDefinition")
   checkmate::assertTRUE(isCohortDefinitionSet(cohortDefinitionSet))
-  # DEV NOTE: In principle, this function could be be applied recursively to any existing subsets if such behaviour is desired,
-  # however - this would require functionality that checks to see if parent cohorts have already been generated and places
-  # order restrictions on tob - these if statments are commented
-  # if (!"subsetParent" %in% colnames(cohortDefinitionSet))
-  cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
-  #if (!"isSubset" %in% colnames(cohortDefinitionSet))
-  cohortDefinitionSet$isSubset <- FALSE
+
+  if (!"subsetParent" %in% colnames(cohortDefinitionSet))
+    cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
+  if (!"isSubset" %in% colnames(cohortDefinitionSet))
+    cohortDefinitionSet$isSubset <- FALSE
 
   for (targetOutputPair in cohortSubsetDefintion$targetOutputPairs) {
     if (!targetOutputPair[1] %in% cohortDefinitionSet$cohortId) {
