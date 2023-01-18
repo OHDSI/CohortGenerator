@@ -275,17 +275,15 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion
       subsetDefinitionId = cohortSubsetDefintion$definitionId
     )
     cohortDefinitionSet <-
-      rbind(
-        cohortDefinitionSet,
-        data.frame(
-          cohortId = toPair[2],
-          cohortName = subsetCohortName,
-          subsetParent = toPair[1],
-          isSubset = TRUE,
-          sql = subsetSql,
-          json =  as.character(.toJSON(repr))
-        )
-      )
+      dplyr::bind_rows(cohortDefinitionSet,
+                       data.frame(
+                         cohortId = toPair[2],
+                         cohortName = subsetCohortName,
+                         subsetParent = toPair[1],
+                         isSubset = TRUE,
+                         sql = subsetSql,
+                         json = as.character(.toJSON(repr))
+                       ))
   }
 
   attr(cohortDefinitionSet, "hasSubsetDefinitions") <- TRUE
