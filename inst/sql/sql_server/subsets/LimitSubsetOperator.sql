@@ -40,4 +40,3 @@ WHERE
 {@calendar_end_date == '1'}?{
   AND c.cohort_start_date <= DATEFROMPARTS(@calendar_end_date_year,@calendar_end_date_month,@calendar_end_date_day)
 }
-;
