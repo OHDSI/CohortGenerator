@@ -1,3 +1,7 @@
 dbmsPlatforms <- c("sqlite", "redshift", "postgresql", "oracle", "sql server")
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-outputFolder <- tempdir()
+outputFolder <- tempfile()
+dir.create(outputFolder)
+withr::defer({
+  unlink(outputFolder)
+}, testthat::teardown_env())

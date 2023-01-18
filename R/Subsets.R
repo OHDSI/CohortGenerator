@@ -760,22 +760,27 @@ CohortSubsetDefinition <- R6::R6Class(
         "WHERE cohort_definition_id = @target_cohort_id;"
       )
 
+      dropTables <- c(targetTable)
       for (subsetOperator in self$subsets) {
         queryBuilder <- subsetOperator$getQueryBuilder()
         sql <- c(sql, queryBuilder$getQuery(targetTable))
         targetTable <- queryBuilder$getTableObjectId()
+        dropTables <- c(dropTables, targetTable)
       }
 
-      sql <- c(
-        sql,
-        SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetDefinition.sql", package = "CohortGenerator"))
-      )
+      sql <- c(sql, SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetDefinition.sql", package = "CohortGenerator")))
+      # Cleanup after exectuion
+      for (table in dropTables) {
+        sql <- c(sql, SqlRender::render("DROP TABLE IF EXISTS @table;", table = table))
+      }
       sql <- paste(sql, collapse = "\n")
+
       sql <- SqlRender::render(sql,
                                output_cohort_id = targetOutputPair[2],
                                target_cohort_id = targetOutputPair[1],
                                target_table = targetTable,
                                warnOnMissingParameters = FALSE)
+
       return(sql)
     },
 
@@ -889,7 +894,6 @@ createCohortSubsetDefinition <- function(name, definitionId, targetOutputPairs, 
 #' Also adds the columns subsetParent and isSubset that denote if the cohort is a subset and what the parent definition
 #' is.
 #'
-#'
 #' @param cohortDefinitionSet       data.frame that conforms to CohortDefinitionSet
 #' @param cohortSubsetDefintion     CohortSubsetDefinition instance
 #'
@@ -903,31 +907,37 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion
   if (!"isSubset" %in% colnames(cohortDefinitionSet))
     cohortDefinitionSet$isSubset <- FALSE
 
-  for (targetOutputPair in cohortSubsetDefintion$targetOutputPairs) {
-    if (!targetOutputPair[1] %in% cohortDefinitionSet$cohortId) {
-      stop("Target cohortid ", targetOutputPair[1], " not found in cohort definition set")
+  for (toPair in cohortSubsetDefintion$targetOutputPairs) {
+    if (!toPair[1] %in% cohortDefinitionSet$cohortId) {
+      stop("Target cohortid ", toPair[1], " not found in cohort definition set")
     }
 
-    if (targetOutputPair[2] %in% cohortDefinitionSet$cohortId) {
-      stop("Output cohort id ", targetOutputPair[2], " found in cohort definition set - must be a unique indentifier")
+    if (toPair[2] %in% cohortDefinitionSet$cohortId) {
+      stop("Output cohort id ", toPair[2], " found in cohort definition set - must be a unique indentifier")
     }
 
-    subsetSql <- cohortSubsetDefintion$getSubsetQuery(targetOutputPair)
-    subsetCohortName <- cohortSubsetDefintion$getSubsetCohortName(cohortDefinitionSet, targetOutputPair)
-
-    cohortDefinitionSet <- rbind(
-      cohortDefinitionSet,
-      data.frame(
-        cohortId = targetOutputPair[2],
-        cohortName = subsetCohortName,
-        subsetParent = targetOutputPair[1],
-        isSubset = TRUE,
-        sql = subsetSql,
-        json = "{}" # NOTE - not sure what to put here.
-      )
+    subsetSql <- cohortSubsetDefintion$getSubsetQuery(toPair)
+    subsetCohortName <- cohortSubsetDefintion$getSubsetCohortName(cohortDefinitionSet, toPair)
+    repr <- list(
+      cohortId = toPair[2],
+      targetCohortId = toPair[1],
+      subsetDefinitionId = cohortSubsetDefintion$definitionId
     )
+    cohortDefinitionSet <-
+      rbind(
+        cohortDefinitionSet,
+        data.frame(
+          cohortId = toPair[2],
+          cohortName = subsetCohortName,
+          subsetParent = toPair[1],
+          isSubset = TRUE,
+          sql = subsetSql,
+          json = .toJSON(repr)
+        )
+      )
   }
 
   attr(cohortDefinitionSet, "hasSubsetDefinitions") <- TRUE
+
   return(cohortDefinitionSet)
 }

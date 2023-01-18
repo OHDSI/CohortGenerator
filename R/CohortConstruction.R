@@ -123,21 +123,20 @@ generateCohortSet <- function(connectionDetails = NULL,
 
     if (isTRUE(attr(cohortDefinitionSet, 'hasSubsetDefinitions'))) {
       cohortDefinitionSet$checksum <- ""
-      for (i in nrow(cohortDefinitionSet)) {
+      for (i in 1:nrow(cohortDefinitionSet)) {
         # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
-        if(cohortDefinitionSet[i]$subsetParent != cohortDefinitionSet[i]$cohortId) {
-          j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet[i]$subsetParent)
-          cohortDefinitionSet[i]$checksum <- computeChecksum(paste(cohortDefinitionSet[j]$sql,
-                                                                   cohortDefinitionSet[i]$sql))
+        if(cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
+          j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet$subsetParent[i])
+          cohortDefinitionSet$checksum[i] <- computeChecksum(paste(cohortDefinitionSet$sql[j],
+                                                                   cohortDefinitionSet$sql[i]))
         } else {
-          cohortDefinitionSet[i]$checksum <- computeChecksum(cohortDefinitionSet$sql)
+          cohortDefinitionSet$checksum[i] <- computeChecksum(cohortDefinitionSet$sql[i])
         }
       }
     } else {
       cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
     }
   }
-
   # Create the cluster
   # DEV NOTE :: running subsets in a multiprocess setup will not work with subsets that subset other subsets
   # To resolve this issue we need to execute the dependency tree.

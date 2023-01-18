@@ -102,19 +102,18 @@ As with all cohorts, any cohorts with these ids will be deleted upon execution.
 ### Generating subsets
 Executing CohortGenerator, we can now include the subset operations when our cohorts are generated:
 
-```{r results='hide', error=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
+```{r results='hide', error=FALSE, warning=FALSE, message=FALSE, eval = FALSE}
 
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-Eunomia::createCohorts(connectionDetails, cohortTable = "my_cohort")
-
-
+createCohortTables(connectionDetails = connectionDetails, 
+                   cohortDatabaseSchema = "main",
+                   cohortTableNames = getCohortTableNames("my_cohort"))
 # ### As subsets are a big side effect we need to be clear what was generated and have good naming conventions
 generatedCohorts <- generateCohortSet(connectionDetails = connectionDetails,
                                       cdmDatabaseSchema = "main",
                                       cohortDatabaseSchema = "main",
-                                      cohortTableNames = "my_cohort",
+                                      cohortTableNames = getCohortTableNames("my_cohort"),
                                       cohortDefinitionSet = cohortDefinitionSet,
-                                      subsetDefinitions = list(subsetDef, subsetDef2),
                                       incremental = TRUE,
                                       incrementalFolder = file.path(someFolder, "RecordKeeping"))
 ```
@@ -122,13 +121,14 @@ Cohort subset definitions can be run incrementally.
 In fact, if the base cohort definition changes for any reason, any subsets will automatically be re-executed when calling
 `generateCohortSet`.
 
-<!-- ### Saving the JSON -->
+# Saving subset definitions
+Subset definitions can be converted to JSON objects as follows:
+```{r results='hide', eval=FALSE}
+jsonDefinition <- subsetDef$toJSON()
+```
 
-<!-- ```{r eval=FALSE} -->
-<!-- subsetDefinitions <- list(subsetDef, subsetDef2) -->
-
-<!-- # Does not work due to use of R6 classes: -->
-<!-- ParallelLogger::saveSettingsToJson(object = subsetDefinitions, fileName = "subset.json") -->
-
-<!-- # TODO: We need to implement a way to seralize the lis of subset definitions -->
-<!-- ``` -->
+For the purpose of writing to disk we recommend the use of `ParallelLogger` for consistency.
+```{r results='hide', eval=FALSE}
+# Save to a file
+ParallelLogger::saveSettingsToJson(subsetDef$toList(), "subsetDefinition1.json")
+```

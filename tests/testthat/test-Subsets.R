@@ -120,13 +120,17 @@ test_that("subset generation", {
                                             targetOutputPairs = list(c(1, 1003), c(2, 1002)),
                                             subsets = subsetOperations)
 
-  cohortDefinitionSetWithSubset <- cohortDefinitionSet %>% addCohortSubsetDefinition(subsetDef)
+  cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
+    addCohortSubsetDefinition(subsetDef)
 
+  expect_true(nrow(cohortDefinitionSetWithSubset) == 5)
   expect_true(attr(cohortDefinitionSetWithSubset, "hasSubsetDefinitions"))
   expect_true("isSubset" %in% colnames(cohortDefinitionSetWithSubset))
   expect_true("subsetParent" %in% colnames(cohortDefinitionSetWithSubset))
 
-  recordKeepingFolder <- file.path(outputFolder, "RecordKeeping")
+  recordKeepingFolder <- tempfile("gen_subsets")
+  unlink(recordKeepingFolder)
+  on.exit(unlink(recordKeepingFolder), add = TRUE)
   cohortTableNames <- getCohortTableNames(cohortTable = "gen_subsets")
   createCohortTables(
     connectionDetails = connectionDetails,
@@ -154,6 +158,7 @@ test_that("subset generation", {
     incremental = TRUE,
     incrementalFolder = recordKeepingFolder
   )
+
   expect_equal(nrow(cohortsGenerated), nrow(cohortDefinitionSetWithSubset))
   expect_true(all(cohortsGenerated$generationStatus == "SKIPPED"))
   unlink(recordKeepingFolder, recursive = TRUE)

@@ -33,7 +33,8 @@ Suggests:
   knitr,
   rmarkdown,
   ROhdsiWebApi,
-  testthat
+  testthat,
+  withr
 Remotes:
   ohdsi/CirceR,
   ohdsi/Eunomia,
