@@ -4,7 +4,15 @@
 \alias{createLimitSubset}
 \title{Create Limit Subset}
 \usage{
-createLimitSubset(id, name, priorTime, followUpTime, limitTo)
+createLimitSubset(
+  id,
+  name,
+  priorTime,
+  followUpTime,
+  limitTo,
+  calendarStartDate = NULL,
+  calendarEndDate = NULL
+)
 }
 \arguments{
 \item{priorTime}{Required prior observation window}
@@ -21,6 +29,10 @@ createLimitSubset(id, name, priorTime, followUpTime, limitTo)
                          outside this will be censored. The "firstEver" and "lastEver" are applied first. 
                          The "earliestRemaining" and "latestRemaining" are applied after all other limit 
                          criteria are applied (i.e. after applying prior/post time and calendar time).}
+
+\item{calendarStartDate}{End date to allow periods (e.g. 2020/1/1/)}
+
+\item{calendarEndDate}{Start date to allow period (e.g. 2015/1/1)}
 }
 \description{
 Subset cohorts using specified limit criteria

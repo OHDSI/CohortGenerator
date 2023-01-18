@@ -29,6 +29,10 @@ Criteria Subset
 
                          Note, when using firstEver and lastEver with follow up and washout, patients with events
                          outside this will be censored.}
+
+\item{\code{calendarStartDate}}{The calendar start date for limiting by date}
+
+\item{\code{calendarEndDate}}{The calendar end date for limiting by date}
 }
 \if{html}{\out{</div>}}
 }

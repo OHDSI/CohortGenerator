@@ -1,4 +1,4 @@
-dbmsPlatforms <- c("sqlite", "redshift", "postgresql", "oracle", "sql server")
+dbmsPlatforms <- c("redshift", "postgresql", "oracle", "sql server")
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 outputFolder <- tempfile()
 dir.create(outputFolder)

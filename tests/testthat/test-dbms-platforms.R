@@ -12,7 +12,13 @@ testPlatform <- function(dbmsDetails) {
     cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
     cohortTableNames = cohortTableNames
   )
-  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  cohortsWithStats <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                             jsonFolder = "testdata/name/cohorts",
+                                             sqlFolder = "testdata/name/sql/sql_server",
+                                             cohortFileNameFormat = "%s",
+                                             cohortFileNameValue = c("cohortName"),
+                                             packageName = "CohortGenerator",
+                                             verbose = FALSE)
 
   cohortsGenerated <- generateCohortSet(
     connectionDetails = dbmsDetails$connectionDetails,
@@ -24,6 +30,43 @@ testPlatform <- function(dbmsDetails) {
     incrementalFolder = file.path(outputFolder, "RecordKeeping", dbmsDetails$connectionDetails$dbms)
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
+
+  subsetOperations <- list(
+    createCohortSubset(id = 1001,
+                       name = "Cohort Subset",
+                       cohortIds = 2,
+                       cohortCombinationOperator = "all",
+                       negate = FALSE,
+                       startWindow = createSubsetCohortWindow(-999999, 99999, "cohortStart"),
+                       endWindow = createSubsetCohortWindow(-999999, 99999, "cohortEnd")),
+    createLimitSubset(id = 1002,
+                      name = "Observation Criteria",
+                      priorTime = 365,
+                      followUpTime = 0,
+                      calendarStartDate = lubridate::date("2001/1/1"),
+                      calendarEndDate = lubridate::date("2019/1/31"),
+                      limitTo = "earliestRemaining"),
+    createDemographicSubset(id = 1003,
+                            name = "Demographic Criteria",
+                            ageMin = 18,
+                            ageMax = 64)
+  )
+  subsetDef <- createCohortSubsetDefinition(name = "test definition",
+                                            definitionId = 1,
+                                            targetOutputPairs = list(c(1, 1003)),
+                                            subsets = subsetOperations)
+  cohortsWithSubsets <- addCohortSubsetDefinition(cohortsWithStats, subsetDef)
+  cohortsGenerated <- generateCohortSet(
+    connectionDetails = dbmsDetails$connectionDetails,
+    cdmDatabaseSchema = dbmsDetails$cdmDatabaseSchema,
+    cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
+    cohortTableNames = cohortTableNames,
+    cohortDefinitionSet = cohortsWithSubsets,
+    incremental = TRUE,
+    incrementalFolder = file.path(outputFolder, "RecordKeeping", dbmsDetails$connectionDetails$dbms)
+  )
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithSubsets))
+
 }
 
 # This file contains platform specific tests

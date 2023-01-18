@@ -6,7 +6,7 @@ SELECT
   T.cohort_end_date
 FROM @target_table T
 JOIN @cdm_database_schema.person p ON T.subject_id = p.person_id
-WHERE 1 -- simplifies ternary logic
+WHERE 1 = 1-- simplifies ternary logic
 {@gender_concept_id != ''} ? {AND p.gender_concept_id IN (@gender_concept_id)}
 {@race_concept_id != ''} ? {AND p.race_concept_id IN (@race_concept_id)}
 {@ethnicity_concept_id != ''} ? {AND p.ethnicity_concept_id IN (@ethnicity_concept_id)}

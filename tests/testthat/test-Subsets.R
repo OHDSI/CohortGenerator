@@ -7,8 +7,6 @@ test_that("Subset definition", {
                                                 cohortFileNameValue = c("cohortName"),
                                                 packageName = "CohortGenerator",
                                                 verbose = FALSE)
-
-
   subsetOperations <- list(
     createCohortSubset(id = 1001,
                        name = "Cohort Subset",
@@ -119,7 +117,7 @@ test_that("subset generation", {
                                             definitionId = 1,
                                             targetOutputPairs = list(c(1, 1003), c(2, 1002)),
                                             subsets = subsetOperations)
-
+  
   cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
     addCohortSubsetDefinition(subsetDef)
 

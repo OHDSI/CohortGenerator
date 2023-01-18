@@ -76,7 +76,15 @@ LimitSubsetQb <- R6::R6Class(
     innerQuery = function(targetTable) {
       sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "LimitSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
-                               target_table = targetTable)
+                               target_table = targetTable,
+                               calendar_end_date = ifelse(is.null(private$operator$calendarEndDate), yes = '0', no = '1'),
+                               calendar_end_date_day = ifelse(is.null(private$operator$calendarEndDate), yes = '', no = lubridate::day(private$operator$calendarEndDate)),
+                               calendar_end_date_month = ifelse(is.null(private$operator$calendarEndDate), yes = '', no = lubridate::month(private$operator$calendarEndDate)),
+                               calendar_end_date_year = ifelse(is.null(private$operator$calendarEndDate), yes = '', no = lubridate::year(private$operator$calendarEndDate)),
+                               calendar_start_date = ifelse(is.null(private$operator$calendarStartDate), yes = '0', no = '1'),
+                               calendar_start_date_day = ifelse(is.null(private$operator$calendarStartDate), yes = '', no = lubridate::day(private$operator$calendarStartDate)),
+                               calendar_start_date_month = ifelse(is.null(private$operator$calendarStartDate), yes = '', no = lubridate::month(private$operator$calendarStartDate)),
+                               calendar_start_date_year = ifelse(is.null(private$operator$calendarStartDate), yes = '', no = lubridate::year(private$operator$calendarStartDate)),)
       return(sql)
     }
   )
