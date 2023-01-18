@@ -15,6 +15,10 @@ createLimitSubset(
 )
 }
 \arguments{
+\item{id}{id of operation}
+
+\item{name}{Name of operation}
+
 \item{priorTime}{Required prior observation window}
 
 \item{followUpTime}{Required post observation window}

@@ -20,6 +20,15 @@ createCohortSubset(
 \item{name}{name of operator}
 
 \item{cohortIds}{integer - set of cohort ids to subset to}
+
+\item{cohortCombinationOperator}{"any" or "all" if using more than one cohort id allow a subject to be in any cohort
+or require that they are in all cohorts in specefied windows}
+
+\item{negate}{The opposite of this definition - include patients who do NOT meet the specified criteria (NOT YET IMPLEMENTED)}
+
+\item{startWindow}{A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)}
+
+\item{endWindow}{A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)}
 }
 \value{
 a CohortSubsetOperator instance

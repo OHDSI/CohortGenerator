@@ -11,7 +11,7 @@ createSubsetCohortWindow(startDay, endDay, targetAnchor)
 
 \item{endDay}{The end day for the window}
 
-\item{targetAncthor}{To anchor using the target cohort's start date or end date}
+\item{targetAnchor}{To anchor using the target cohort's start date or end date}
 }
 \value{
 a SubsetCohortWindow instance

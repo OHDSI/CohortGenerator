@@ -25,6 +25,7 @@ Imports:
   readr (>= 2.1.0),
   rlang,
   RJSONIO,
+  jsonlite,
   SqlRender (>= 1.7.0),
   stringi (>= 1.7.6),
   lubridate

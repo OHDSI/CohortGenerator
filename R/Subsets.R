@@ -105,7 +105,7 @@ SubsetCohortWindow <- R6::R6Class(
 #' @export
 #' @param startDay  The start day for the window
 #' @param endDay The end day for the window
-#' @param targetAncthor To anchor using the target cohort's start date or end date
+#' @param targetAnchor To anchor using the target cohort's start date or end date
 #' @returns a SubsetCohortWindow instance
 createSubsetCohortWindow <- function(startDay, endDay, targetAnchor) {
   window <- SubsetCohortWindow$new()
@@ -350,6 +350,12 @@ CohortSubsetOperator <- R6::R6Class(
 #' @param id  unique integer identifier
 #' @param name name of operator
 #' @param cohortIds integer - set of cohort ids to subset to
+#' @param cohortCombinationOperator "any" or "all" if using more than one cohort id allow a subject to be in any cohort
+#'                                  or require that they are in all cohorts in specefied windows
+#'
+#' @param startWindow               A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
+#' @param endWindow                 A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
+#' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria (NOT YET IMPLEMENTED)
 #' @returns a CohortSubsetOperator instance
 createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, negate, startWindow, endWindow) {
   subset <- CohortSubsetOperator$new()
@@ -359,7 +365,7 @@ createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, n
   subset$cohortCombinationOperator <- cohortCombinationOperator
   subset$negate <- negate
   subset$startWindow <- startWindow
-  subset$endWindow
+  subset$endWindow <- endWindow
 
   subset
 }
@@ -650,7 +656,8 @@ LimitSubsetOperator <- R6::R6Class(
 #' @description
 #' Subset cohorts using specified limit criteria
 #' @export
-#'
+#' @param id                id of operation
+#' @param name              Name of operation
 #' @param priorTime                 Required prior observation window
 #' @param followUpTime              Required post observation window
 #' @param limitTo           character one of:
