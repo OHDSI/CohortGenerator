@@ -2,14 +2,11 @@
 % Please edit documentation in R/Subsets.R
 \name{LimitSubsetOperator}
 \alias{LimitSubsetOperator}
-\title{to List}
+\title{Limit Subset Operator}
 \description{
-to List
+operator to apply limiting subset operations (e.g. washout periods, calendar ranges or earliest entries)
 
-to List
-}
-\details{
-Criteria Subset
+To List
 }
 \section{Super class}{
 \code{\link[CohortGenerator:SubsetOperator]{CohortGenerator::SubsetOperator}} -> \code{LimitSubsetOperator}
@@ -39,25 +36,25 @@ Criteria Subset
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-toList}{\code{LimitSubsetOperator$toList()}}
-\item \href{#method-clone}{\code{LimitSubsetOperator$clone()}}
+\item \href{#method-LimitSubsetOperator-toList}{\code{LimitSubsetOperator$toList()}}
+\item \href{#method-LimitSubsetOperator-clone}{\code{LimitSubsetOperator$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname">}\href{../../CohortGenerator/html/SubsetOperator.html#method-classname}{\code{CohortGenerator::SubsetOperator$classname()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="getQueryBuilder">}\href{../../CohortGenerator/html/SubsetOperator.html#method-getQueryBuilder}{\code{CohortGenerator::SubsetOperator$getQueryBuilder()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize">}\href{../../CohortGenerator/html/SubsetOperator.html#method-initialize}{\code{CohortGenerator::SubsetOperator$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="isEqualTo">}\href{../../CohortGenerator/html/SubsetOperator.html#method-isEqualTo}{\code{CohortGenerator::SubsetOperator$isEqualTo()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="publicFields">}\href{../../CohortGenerator/html/SubsetOperator.html#method-publicFields}{\code{CohortGenerator::SubsetOperator$publicFields()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON">}\href{../../CohortGenerator/html/SubsetOperator.html#method-toJSON}{\code{CohortGenerator::SubsetOperator$toJSON()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-classname'><code>CohortGenerator::SubsetOperator$classname()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="getQueryBuilder"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-getQueryBuilder'><code>CohortGenerator::SubsetOperator$getQueryBuilder()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-initialize'><code>CohortGenerator::SubsetOperator$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="isEqualTo"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-isEqualTo'><code>CohortGenerator::SubsetOperator$isEqualTo()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="publicFields"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-publicFields'><code>CohortGenerator::SubsetOperator$publicFields()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-toJSON'><code>CohortGenerator::SubsetOperator$toJSON()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-toList"></a>}}
-\if{latex}{\out{\hypertarget{method-toList}{}}}
+\if{html}{\out{<a id="method-LimitSubsetOperator-toList"></a>}}
+\if{latex}{\out{\hypertarget{method-LimitSubsetOperator-toList}{}}}
 \subsection{Method \code{toList()}}{
 List representation of object
 \subsection{Usage}{
@@ -66,8 +63,8 @@ List representation of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-LimitSubsetOperator-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-LimitSubsetOperator-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

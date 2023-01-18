@@ -18,10 +18,3 @@ createCohortSubsetDefinition(name, definitionId, targetOutputPairs, subsets)
 \description{
 Create subset definition from subset objects
 }
-\examples{
-mySubsets <- c(
- createCohortSubset(id = 12, name = "foo", cohortJson = cohortDefinition)
-)
-
-subsetDef <- createSubsetDefinition(c(1,3,4), 11, mySubsets)
-}

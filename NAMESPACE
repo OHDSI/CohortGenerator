@@ -2,6 +2,7 @@
 
 export(CohortSubsetDefinition)
 export(CohortSubsetOperator)
+export(DemographicCriteria)
 export(DemographicSubsetOperator)
 export(LimitSubsetOperator)
 export(SubsetCohortWindow)

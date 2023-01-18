@@ -28,8 +28,6 @@
   definition
 }
 
-#' @title to JSON
-#' @description json serialized representation of object
 .toJSON <- function(obj) {
   jsonlite::toJSON(obj, pretty = TRUE)
 }
@@ -37,9 +35,9 @@
 
 # SubsetCohortWindow -------------
 #' SubsetCohortWindow settings
+#' @export
 #' @description
 #' Representation of a time window to use when subsetting a target cohort with a subset cohort
-#' @export
 SubsetCohortWindow <- R6::R6Class(
   classname = "SubsetCohortWindow",
   private = list(
@@ -61,13 +59,13 @@ SubsetCohortWindow <- R6::R6Class(
 
       objRepr
     },
-    #' @title to JSON
+    #' To JSON
     #' @description json serialized representation of object
     toJSON = function() {
       .toJSON(self$toList())
     },
 
-    #' @title is Equal to
+    #' Is Equal to
     #' @description Compare SubsetCohortWindow to another
     #' @param criteria SubsetCohortWindow instance
     isEqualTo = function(criteria) {
@@ -104,11 +102,11 @@ SubsetCohortWindow <- R6::R6Class(
 
 # createSubsetCohortWindow ------------------------------
 #' A definition of subset functions to be applied to a set of cohorts
+#' @export
 #' @param startDay  The start day for the window
 #' @param endDay The end day for the window
 #' @param targetAncthor To anchor using the target cohort's start date or end date
 #' @returns a SubsetCohortWindow instance
-#' @export
 createSubsetCohortWindow <- function(startDay, endDay, targetAnchor) {
   window <- SubsetCohortWindow$new()
   window$startDay <- startDay
@@ -119,6 +117,7 @@ createSubsetCohortWindow <- function(startDay, endDay, targetAnchor) {
 
 # SubsetOperator ------------------------------
 #' @title SubsetOperator
+#' @export
 #' @description
 #' Abstract Base Class for subsets. Subsets should inherit from this and implement their own requirements.
 #' @seealso CohortSubsetOperator
@@ -128,7 +127,6 @@ createSubsetCohortWindow <- function(startDay, endDay, targetAnchor) {
 #' @field name  name of subset operation - should describe what the operation does e.g. "Males under the age of 18", "Exposed to Celecoxib"
 #' @field id    id of subset operation - must be unique (to design) int
 #'
-#' @export
 SubsetOperator <- R6::R6Class(
   classname = "SubsetOperator",
   private = list(
@@ -139,10 +137,6 @@ SubsetOperator <- R6::R6Class(
   ),
 
   public = list(
-    #' @title Subset class
-    #' @description
-    #' Subset class - Abstract Base Class, do not implement directly
-    #'
     #' @param definition json character or list - definition of subset operator
     #'
     #' @return instance of object
@@ -158,24 +152,25 @@ SubsetOperator <- R6::R6Class(
       }
       self
     },
-    #' @title Class Name
+    #' Class Name
     #' @description Class name of object
     classname = function() {
       class(self)[1]
     },
 
-    #' @title return query builder instance
+    #' Return query builder instance
+    #' @description Return query builder instance
     getQueryBuilder = function() {
       private$queryBuilder$new(self)
     },
-    #' @title Public Fields
+    #' Public Fields
     #' @description Publicly settable fields of object
     publicFields = function() {
       return(names(get(self$classname())$active))
     },
 
 
-    #' @title is Equal to
+    #' Is Equal to
     #' @description Compare Subsets - are they identical or not?
     #' Checks all fields and settings
     #'
@@ -207,7 +202,7 @@ SubsetOperator <- R6::R6Class(
       return(TRUE)
     },
 
-    #' @title To list
+    #' To list
     #' @description convert to List representation
     toList = function() {
       repr <- list(
@@ -218,7 +213,7 @@ SubsetOperator <- R6::R6Class(
       return(repr)
     },
 
-    #' @title To Json
+    #' To Json
     #' @description convert to json serialized representation
     #' @return list representation of object as json character
     toJSON = function() {
@@ -250,10 +245,9 @@ SubsetOperator <- R6::R6Class(
 
 # CohortSubsetOperator ------------------------------
 #' @title Cohort Subset Operator
+#' @export
 #' @description
 #' A subset of type cohort - subset a population to only those contained within defined cohort
-#' # TODO - Add the time windowing settings for T/S
-#' @export
 CohortSubsetOperator <- R6::R6Class(
   classname = "CohortSubsetOperator",
   inherit = SubsetOperator,
@@ -267,13 +261,13 @@ CohortSubsetOperator <- R6::R6Class(
     .endWindow = SubsetCohortWindow$new()
   ),
   public = list(
-    #' @title Public Fields
+    #' Public Fields
     #' @description publicly settable fields
     publicFields = function() {
       c(super$publicFields(), "cohortIds", "cohortCombinationOperator", "negate", "startWindow", "endWindow")
     },
 
-    #' @title to List
+    #' to List
     #' @description List representation of object
     toList = function() {
       objRepr <- super$toList()
@@ -352,11 +346,11 @@ CohortSubsetOperator <- R6::R6Class(
 
 # createCohortSubset ------------------------------
 #' A definition of subset functions to be applied to a set of cohorts
+#' @export
 #' @param id  unique integer identifier
 #' @param name name of operator
 #' @param cohortIds integer - set of cohort ids to subset to
 #' @returns a CohortSubsetOperator instance
-#' @export
 createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, negate, startWindow, endWindow) {
   subset <- CohortSubsetOperator$new()
   subset$id <- id
@@ -372,8 +366,9 @@ createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, n
 
 # DemographicCriteria ------------------------------
 #' Demographics settings
+#' @export
 #' @description
-#' Representation of demographic settings to be used in a subset instance
+#' Representation of demographic settings to be used in a subset instance'
 DemographicCriteria <- R6::R6Class(
   classname = "DemographicCriteria",
   private = list(
@@ -384,7 +379,7 @@ DemographicCriteria <- R6::R6Class(
     .ethnicity = ""
   ),
   public = list(
-    #' @title to List
+    #' to List
     #' @description List representation of object
     toList = function() {
       objRepr <- list()
@@ -401,13 +396,13 @@ DemographicCriteria <- R6::R6Class(
 
       objRepr
     },
-    #' @title to JSON
+    #' to JSON
     #' @description json serialized representation of object
     toJSON = function() {
       .toJSON(self$toList())
     },
 
-    #' @title is Equal to
+    #' is Equal to
     #' @description Compare Subset to another
     #' @param criteria DemographicCriteria instance
     isEqualTo = function(criteria) {
@@ -461,12 +456,12 @@ DemographicCriteria <- R6::R6Class(
 
 # createDemographicCriteria ------------------------------
 #' Create demographic criteria
+#' @export
 #' @param ageMin       age demographics
 #' @param ageMax       age demographics
 #' @param gender       gender demographics - concept ID list
 #' @param race         race demographics - concept ID list
 #' @param ethnicity    ethnicity demographics - concept ID list
-#' @export
 createDemographicCriteria <- function(ageMin = 0, ageMax = 9999, gender = "", race = "", ethnicity = "") {
   criteria <- DemographicCriteria$new()
   criteria$ageMin <- ageMin
@@ -479,8 +474,9 @@ createDemographicCriteria <- function(ageMin = 0, ageMax = 9999, gender = "", ra
 }
 
 # DemographicSubsetOperator ------------------------------
-#' Criteria Subset
+#' DemographicSubsetOperator
 #' @export
+#' @description subetting to patient demographics (age, race, gender, ethnicity concepts)
 DemographicSubsetOperator <- R6::R6Class(
   classname = "DemographicSubsetOperator",
   inherit = SubsetOperator,
@@ -490,12 +486,12 @@ DemographicSubsetOperator <- R6::R6Class(
     .criteria = NULL
   ),
   public = list(
-    #' @title Public Fields
+    #' Public Fields
     #' @description Publicly settable fields of object
     publicFields = function() {
       c(super$publicFields(), "criteria")
     },
-    #' @title to List
+    #' to List
     #' @description List representation of object
     toList = function() {
       objRef <- super$toList()
@@ -503,7 +499,7 @@ DemographicSubsetOperator <- R6::R6Class(
       objRef
     },
 
-    #' @title is Equal to
+    #' is Equal to
     #' @description Compare Subset to another
     #' @param           subsetOperatorB A subset to test equivalence to
     isEqualTo = function(subsetOperatorB) {
@@ -534,10 +530,10 @@ DemographicSubsetOperator <- R6::R6Class(
 
 # createDemographicSubset ------------------------------
 #' Create DemographicCriteria Subset
+#' @export
 #' @param id            Id number
 #' @param name          char name
 #' @param ...           Demographic criteria @seealso createDemographicCriteria
-#' @export
 createDemographicSubset <- function(id, name, ...) {
   subset <- DemographicSubsetOperator$new()
   subset$id <- id
@@ -548,8 +544,10 @@ createDemographicSubset <- function(id, name, ...) {
 }
 
 # LimitSubsetOperator ------------------------------
-#' Criteria Subset
+#' @title Limit Subset Operator
 #' @export
+#' @description operator to apply limiting subset operations (e.g. washout periods, calendar ranges or earliest entries)
+#'
 LimitSubsetOperator <- R6::R6Class(
   classname = "LimitSubsetOperator",
   inherit = SubsetOperator,
@@ -563,7 +561,7 @@ LimitSubsetOperator <- R6::R6Class(
     .calendarEndDate = NULL
   ),
   public = list(
-    #' @title to List
+    #' To List
     #' @description List representation of object
     toList = function() {
       objRef <- super$toList()
@@ -651,7 +649,7 @@ LimitSubsetOperator <- R6::R6Class(
 #' Create Limit Subset
 #' @description
 #' Subset cohorts using specified limit criteria
-#'
+#' @export
 #'
 #' @param priorTime                 Required prior observation window
 #' @param followUpTime              Required post observation window
@@ -665,11 +663,8 @@ LimitSubsetOperator <- R6::R6Class(
 #'                          outside this will be censored. The "firstEver" and "lastEver" are applied first. 
 #'                          The "earliestRemaining" and "latestRemaining" are applied after all other limit 
 #'                          criteria are applied (i.e. after applying prior/post time and calendar time).
-#'
 #' @param calendarEndDate       Start date to allow period (e.g. 2015/1/1)
 #' @param calendarStartDate     End date to allow periods (e.g. 2020/1/1/)
-#'
-#' @export
 createLimitSubset <- function(id, name, priorTime, followUpTime, limitTo, calendarStartDate = NULL, calendarEndDate = NULL) {
   subset <- LimitSubsetOperator$new()
   subset$id <- id

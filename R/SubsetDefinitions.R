@@ -16,9 +16,9 @@
 
 # CohortSubsetDefinition ------------------------------
 #' @title Cohort Subset Definition
+#' @export
 #' @description
 #' Set of subset definitions
-#' @export
 CohortSubsetDefinition <- R6::R6Class(
   classname = "CohortSubsetDefinition",
   private = list(
@@ -38,7 +38,6 @@ CohortSubsetDefinition <- R6::R6Class(
     }
   ),
   public = list(
-    #' initialize
     #' @param definition  json or list representation of object
     initialize = function(definition = NULL) {
       if (!is.null(definition)) {
@@ -50,7 +49,7 @@ CohortSubsetDefinition <- R6::R6Class(
       }
       self
     },
-    #'  to List
+    #' to List
     #' @description List representation of object
     toList = function() {
       list(
@@ -179,7 +178,7 @@ CohortSubsetDefinition <- R6::R6Class(
       private$.targetOutputPairs <- targetOutputPairs
       self
     },
-    #'` @field subsets list of subset operations
+    #'@field subsets list of subset operations
     subsets = function(subsets) {
       if (missing(subsets))
         return(private$.subsets)
@@ -188,7 +187,7 @@ CohortSubsetDefinition <- R6::R6Class(
       lapply(subsets, self$addSubsetOperator)
       self
     },
-
+    #'@field name name of definition
     name = function(name) {
       if (missing(name))
         return(private$.name)
@@ -197,7 +196,7 @@ CohortSubsetDefinition <- R6::R6Class(
       private$.name <- name
       self
     },
-
+    #'@field definitionId numeric definition id
     definitionId = function(definitionId) {
       if (missing(definitionId))
         return(private$.definitionId)
@@ -206,7 +205,7 @@ CohortSubsetDefinition <- R6::R6Class(
       private$.definitionId <- definitionId
       self
     },
-
+    #'@field subsetIds vector of subset operator ids
     subsetIds = function(subsetIds) {
       if (missing(subsetIds))
         return(private$.subsetIds)
@@ -222,11 +221,11 @@ CohortSubsetDefinition <- R6::R6Class(
 #' Create Subset Definition
 #' @description
 #' Create subset definition from subset objects
+#' @export
 #' @param name                      Name of definition
 #' @param definitionId              Definition identifier
 #' @param targetOutputPairs        Vector of pairs targetCohortId, outcomeCohortId
 #' @param subsets                   vector of subset instances to apply
-#' @export
 createCohortSubsetDefinition <- function(name, definitionId, targetOutputPairs, subsets) {
   subsetDef <- CohortSubsetDefinition$new()
   subsetDef$name <- name
@@ -244,11 +243,9 @@ createCohortSubsetDefinition <- function(name, definitionId, targetOutputPairs, 
 #'
 #' Also adds the columns subsetParent and isSubset that denote if the cohort is a subset and what the parent definition
 #' is.
-#'
+#' @export
 #' @param cohortDefinitionSet       data.frame that conforms to CohortDefinitionSet
 #' @param cohortSubsetDefintion     CohortSubsetDefinition instance
-#'
-#' @export
 addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion) {
   checkmate::assertR6(cohortSubsetDefintion, "CohortSubsetDefinition")
   checkmate::assertTRUE(isCohortDefinitionSet(cohortDefinitionSet))
