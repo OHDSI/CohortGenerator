@@ -14,46 +14,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Query Builder
-#' @description
-#' Base class for all subset operator query builders.
-#' These turn subset class representations into query builder instances that can be used to construct fully formed
-#' SQL queries
-#'
-#' This base class is intented to be used in an abstract way. All subset operators should map to the functions within
-#' Note, that a query may have no modifications to the join, logic or having clauses, in which case no implementation is
-#' required - NULL is the default representation
+
 QueryBuilder <- R6::R6Class(
   classname = "QueryBuilder",
   private = list(
-    operator = NULL
+    operator = NULL,
+    innerQuery = function(targetTable) {
+      stop("Error: not implemented for base class")
+    }
   ),
   public = list(
     initialize = function(operator) {
       checkmate::assertR6(operator, "SubsetOperator")
       private$operator <- operator
     },
-    #' Get Join Statments for subsetting query
-    getJoinStatments = function() {
-      NULL
+    getTableObjectId = function() {
+      return(paste0("#S_", private$operator$id))
     },
-
-                #' Get Having Cluases Statments for subsetting query
-    getHavingClauses = function() {
-      NULL
-    },
-
-                #' Get Logic Statments for subsetting query
-    getLogic = function() {
-      NULL
-    },
-
-    getQueryParts = function() {
-      return(list(
-        logic = self$getLogic(),
-        havingClauses = self$getHavingClauses(),
-        joins = self$getJoinStatments()
-      ))
+    getQuery = function(targetTable) {
+      sql <- SqlRender::render("
+      DROP TABLE IF EXISTS @object_id;
+      CREATE TABLE @object_id AS @inner_query;",
+                               object_id = self$getTableObjectId(),
+                               inner_query = private$innerQuery(targetTable))
+      return(sql)
     }
   )
 )
@@ -61,46 +45,26 @@ QueryBuilder <- R6::R6Class(
 CohortSubsetQb <- R6::R6Class(
   classname = "CohortSubsetQb",
   inherit = QueryBuilder,
-  public = list(
-    #' return unqiue identifier to be used in the resulting subset query based on operator id
-    #' This is required because the subset operation may specify multiple cohorts to subset to
-    getTableObjectId = function() {
-      return(paste0("S_", private$operatorId))
-    },
-
-    getJoinStatements = function() {
-      SqlRender::render(
-        " JOIN @cohort_database_schema.@cohort_table @o_id ON T.subject_id = @o_id.subject_id",
-        o_id = self$getTableObjectId())
-    },
-
-    getLogic = function() {
-      SqlRender::render(
-        "
-       AND @o_id.cohort_definition_id IN (@subset_cohort_ids)
-       AND (
-        @o_id.cohort_start_date >= DATEADD(d, @start_window_start_day, T.@start_window_anchor)
-        AND @o_id.cohort_start_date <= DATEADD(d, @start_window_end_day, T.@start_window_anchor)
-       )
-       AND (
-        @o_id.cohort_end_date >= DATEADD(d, @end_window_start_day, T.@end_window_anchor)
-        AND @o_id.cohort_end_date <= DATEADD(d, @end_window_end_day, T.@end_window_anchor)
-       )",
-        o_id = self$getTableObjectId(),
-        subset_cohort_ids = private$operator$cohortIds,
-        end_window_anchor = ifelse(private$operator$endWindow$targetAnchor == "cohortStart", yes = "cohort_start_date", no = "cohort_end_date"),
-        end_window_end_day = private$operator$endWindow$endDay,
-        end_window_start_day = private$operator$endWindow$startDay,
-        start_window_anchor = ifelse(private$operator$startWindow$targetAnchor == "cohortStart", yes = "cohort_start_date", no = "cohort_end_date"),
-        start_window_end_day = private$operator$startWindow$endDay,
-        start_window_start_day = private$operator$startWindow$startDay
-      )
-    },
-
-    getHavingClauses = function() {
-      SqlRender::render("COUNT (DISTINCT @o_id.COHORT_DEFINITION_ID) >= @subset_length",
-                        o_id = self$getTableObjectId(),
-                        subset_length = ifelse(private$operator$cohortCombinationOperator == "any", yes = 1, no = length(private$operator$cohortIds)))
+  private = list(
+    innerQuery = function(targetTable) {
+      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetOperator.sql", package = "CohortGenerator"))
+      sql <- SqlRender::render(sql,
+                               target_table = targetTable,
+                               end_window_anchor = ifelse(private$operator$endWindow$targetAnchor == "cohortStart",
+                                                          yes = "cohort_start_date",
+                                                          no = "cohort_end_date"),
+                               end_window_end_day = private$operator$endWindow$endDay,
+                               end_window_start_day = private$operator$endWindow$startDay,
+                               start_window_anchor = ifelse(private$operator$startWindow$targetAnchor == "cohortStart",
+                                                            yes = "cohort_start_date",
+                                                            no = "cohort_end_date"),
+                               start_window_end_day = private$operator$startWindow$endDay,
+                               start_window_start_day = private$operator$startWindow$startDay,
+                               subset_length = ifelse(private$operator$cohortCombinationOperator == "any",
+                                                      yes = 1,
+                                                      no = length(private$operator$cohortIds)),
+                               warnOnMissingParameters = TRUE)
+      return(sql)
     }
   )
 )
@@ -108,11 +72,31 @@ CohortSubsetQb <- R6::R6Class(
 LimitSubsetQb <- R6::R6Class(
   classname = "LimitSubsetQb",
   inherit = QueryBuilder,
-  public = list()
+  private = list(
+    innerQuery = function(targetTable) {
+      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "LimitSubsetOperator.sql", package = "CohortGenerator"))
+      sql <- SqlRender::render(sql,
+                               target_table = targetTable)
+      return(sql)
+    }
+  )
 )
 
 DemographicSubsetQb <- R6::R6Class(
-  classname = "LimitSubsetQb",
+  classname = "DemographicSubsetQb",
   inherit = QueryBuilder,
-  public = list()
+  private = list(
+    innerQuery = function(targetTable) {
+      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "DemographicSubsetOperator.sql", package = "CohortGenerator"))
+      sql <- SqlRender::render(sql,
+                               target_table = targetTable,
+                               age_min = private$operator$criteria$ageMin,
+                               age_max = private$operator$criteria$ageMax,
+                               gender_concept_id = private$operator$criteria$gender,
+                               race_concept_id = private$operator$criteria$race,
+                               ethnicity_concept_id = private$operator$criteria$ethnicicty,
+                               warnOnMissingParameters = TRUE)
+      return(sql)
+    }
+  )
 )

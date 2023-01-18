@@ -23,15 +23,15 @@ SubsetCohortWindow settings
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-SubsetCohortWindow-toList}{\code{SubsetCohortWindow$toList()}}
-\item \href{#method-SubsetCohortWindow-toJSON}{\code{SubsetCohortWindow$toJSON()}}
-\item \href{#method-SubsetCohortWindow-isEqualTo}{\code{SubsetCohortWindow$isEqualTo()}}
-\item \href{#method-SubsetCohortWindow-clone}{\code{SubsetCohortWindow$clone()}}
+\item \href{#method-toList}{\code{SubsetCohortWindow$toList()}}
+\item \href{#method-toJSON}{\code{SubsetCohortWindow$toJSON()}}
+\item \href{#method-isEqualTo}{\code{SubsetCohortWindow$isEqualTo()}}
+\item \href{#method-clone}{\code{SubsetCohortWindow$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetCohortWindow-toList"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetCohortWindow-toList}{}}}
+\if{html}{\out{<a id="method-toList"></a>}}
+\if{latex}{\out{\hypertarget{method-toList}{}}}
 \subsection{Method \code{toList()}}{
 List representation of object
 \subsection{Usage}{
@@ -40,8 +40,8 @@ List representation of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetCohortWindow-toJSON"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetCohortWindow-toJSON}{}}}
+\if{html}{\out{<a id="method-toJSON"></a>}}
+\if{latex}{\out{\hypertarget{method-toJSON}{}}}
 \subsection{Method \code{toJSON()}}{
 json serialized representation of object
 \subsection{Usage}{
@@ -50,8 +50,8 @@ json serialized representation of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetCohortWindow-isEqualTo"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetCohortWindow-isEqualTo}{}}}
+\if{html}{\out{<a id="method-isEqualTo"></a>}}
+\if{latex}{\out{\hypertarget{method-isEqualTo}{}}}
 \subsection{Method \code{isEqualTo()}}{
 Compare SubsetCohortWindow to another
 \subsection{Usage}{
@@ -67,8 +67,8 @@ Compare SubsetCohortWindow to another
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetCohortWindow-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetCohortWindow-clone}{}}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

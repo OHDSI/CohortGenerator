@@ -4,14 +4,14 @@
 \alias{createCohortSubsetDefinition}
 \title{Create Subset Definition}
 \usage{
-createCohortSubsetDefinition(name, definitionId, targetOutcomePairs, subsets)
+createCohortSubsetDefinition(name, definitionId, targetOutputPairs, subsets)
 }
 \arguments{
 \item{name}{Name of definition}
 
 \item{definitionId}{Definition identifier}
 
-\item{targetOutcomePairs}{Vector of pairs targetCohortId, outcomeCohortId}
+\item{targetOutputPairs}{Vector of pairs targetCohortId, outcomeCohortId}
 
 \item{subsets}{vector of subset instances to apply}
 }

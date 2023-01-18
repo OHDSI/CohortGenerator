@@ -25,18 +25,19 @@ LimitSubsetOperator
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-SubsetOperator-new}{\code{SubsetOperator$new()}}
-\item \href{#method-SubsetOperator-classname}{\code{SubsetOperator$classname()}}
-\item \href{#method-SubsetOperator-publicFields}{\code{SubsetOperator$publicFields()}}
-\item \href{#method-SubsetOperator-isEqualTo}{\code{SubsetOperator$isEqualTo()}}
-\item \href{#method-SubsetOperator-toList}{\code{SubsetOperator$toList()}}
-\item \href{#method-SubsetOperator-toJSON}{\code{SubsetOperator$toJSON()}}
-\item \href{#method-SubsetOperator-clone}{\code{SubsetOperator$clone()}}
+\item \href{#method-new}{\code{SubsetOperator$new()}}
+\item \href{#method-classname}{\code{SubsetOperator$classname()}}
+\item \href{#method-getQueryBuilder}{\code{SubsetOperator$getQueryBuilder()}}
+\item \href{#method-publicFields}{\code{SubsetOperator$publicFields()}}
+\item \href{#method-isEqualTo}{\code{SubsetOperator$isEqualTo()}}
+\item \href{#method-toList}{\code{SubsetOperator$toList()}}
+\item \href{#method-toJSON}{\code{SubsetOperator$toJSON()}}
+\item \href{#method-clone}{\code{SubsetOperator$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetOperator-new"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetOperator-new}{}}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 Subset class - Abstract Base Class, do not implement directly
 \subsection{Usage}{
@@ -55,8 +56,8 @@ instance of object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetOperator-classname"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetOperator-classname}{}}}
+\if{html}{\out{<a id="method-classname"></a>}}
+\if{latex}{\out{\hypertarget{method-classname}{}}}
 \subsection{Method \code{classname()}}{
 Class name of object
 \subsection{Usage}{
@@ -65,8 +66,17 @@ Class name of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetOperator-publicFields"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetOperator-publicFields}{}}}
+\if{html}{\out{<a id="method-getQueryBuilder"></a>}}
+\if{latex}{\out{\hypertarget{method-getQueryBuilder}{}}}
+\subsection{Method \code{getQueryBuilder()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{SubsetOperator$getQueryBuilder()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-publicFields"></a>}}
+\if{latex}{\out{\hypertarget{method-publicFields}{}}}
 \subsection{Method \code{publicFields()}}{
 Publicly settable fields of object
 \subsection{Usage}{
@@ -75,8 +85,8 @@ Publicly settable fields of object
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetOperator-isEqualTo"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetOperator-isEqualTo}{}}}
+\if{html}{\out{<a id="method-isEqualTo"></a>}}
+\if{latex}{\out{\hypertarget{method-isEqualTo}{}}}
 \subsection{Method \code{isEqualTo()}}{
 Compare Subsets - are they identical or not?
 Checks all fields and settings
@@ -93,8 +103,8 @@ Checks all fields and settings
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetOperator-toList"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetOperator-toList}{}}}
+\if{html}{\out{<a id="method-toList"></a>}}
+\if{latex}{\out{\hypertarget{method-toList}{}}}
 \subsection{Method \code{toList()}}{
 convert to List representation
 \subsection{Usage}{
@@ -103,8 +113,8 @@ convert to List representation
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetOperator-toJSON"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetOperator-toJSON}{}}}
+\if{html}{\out{<a id="method-toJSON"></a>}}
+\if{latex}{\out{\hypertarget{method-toJSON}{}}}
 \subsection{Method \code{toJSON()}}{
 convert to json serialized representation
 \subsection{Usage}{
@@ -116,8 +126,8 @@ list representation of object as json character
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SubsetOperator-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-SubsetOperator-clone}{}}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
