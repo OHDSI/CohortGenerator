@@ -9,7 +9,7 @@ html_document:
 number_sections: yes
 toc: yes
 vignette: >
-%\VignetteIndexEntry{Generating Cohorts}
+%\VignetteIndexEntry{Creating Cohort Subset Definitions}
 %\VignetteEncoding{UTF-8}
 %\VignetteEngine{knitr::rmarkdown}
 editor_options:
@@ -69,7 +69,7 @@ We then need to capture these definitions in a definition object
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
 subsetDef <- createCohortSubsetDefinition(name = "Patients in cohort 1778213 with 365 days prior observation",
                                           definitionId = 1,
-                                          targetOutcomePairs = list(c(1778211, 1778211001), c(1778212, 1778212001)),
+                                          targetOutputPairs = list(c(1778211, 1778211001), c(1778212, 1778212001)),
                                           subsets = subsetOperations)
 ```
 
@@ -88,36 +88,39 @@ subsetOperations2[[3]] <- createDemographicSubset(id = 1003,
 subsetDef2 <- createCohortSubsetDefinition(name = "Patients in cohort 1778213 with 365 days prior observation, aged 18 - 64",
                                            definitionId = 2,
                                            # NOTE: The output ids should not clash with any that already exist
-                                           targetOutcomePairs = list(c(1778211, 1778211002), c(1778212, 1778212002)),
+                                           targetOutputPairs = list(c(1778211, 1778211002), c(1778212, 1778212003)),
                                            subsets = subsetOperations2)
 
+cohortDefinitionSet <- cohortDefinitionSet |>
+      addCohortSubsetDefinition(subsetDef) |>
+      addCohortSubsetDefinition(subsetDef2)
 ```
-### Generating subsets
-The following is not yet implemented but serves as a straw man for how we would like this to work.
+Note that when adding a subset definition to a cohort definition set, the target cohort ids e.g (1778211, 1778212) must
+exist in the `cohortDefinitionSet` and the output ids (`1778211002`, `1778212003`) must be unique.
+As with all cohorts, any cohorts with these ids will be deleted upon execution.
 
+### Generating subsets
 Executing CohortGenerator, we can now include the subset operations when our cohorts are generated:
 
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
 
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 Eunomia::createCohorts(connectionDetails, cohortTable = "my_cohort")
-CohortGenerator::generateCohortSubset(connectionDetails = connectionDetails,
-                                      cohortDatabaseSchema = "main",
-                                      cohortTable = "my_cohort",
-                                      subsetDefinitions = list(subsetDef, subsetDef2))
+
 
 # ### As subsets are a big side effect we need to be clear what was generated and have good naming conventions
-# generatedCohortDefinitionSetSummary <- generateCohortSet(connectionDetails = connectionDetails,
-#                                                          cdmDatabaseSchema = cdmDatabaseSchema,
-#                                                          cohortDatabaseSchema = cohortDatabaseSchema,
-#                                                          cohortTableNames = "my_cohort",
-#                                                          cohortDefinitionSet = cohortDefinitionSet,
-#                                                          subsetDefinitions = list(subsetDef, subsetDef2),
-#                                                          incremental = TRUE,
-#                                                          incrementalFolder = file.path(someFolder, "RecordKeeping"))
+generatedCohorts <- generateCohortSet(connectionDetails = connectionDetails,
+                                      cdmDatabaseSchema = "main",
+                                      cohortDatabaseSchema = "main",
+                                      cohortTableNames = "my_cohort",
+                                      cohortDefinitionSet = cohortDefinitionSet,
+                                      subsetDefinitions = list(subsetDef, subsetDef2),
+                                      incremental = TRUE,
+                                      incrementalFolder = file.path(someFolder, "RecordKeeping"))
 ```
-The object ```generatedCohortDefinitionSetSummary``` contains the base set of cohorts as well as the named set of these subset cohorts,
-the names will be automatically generated based on the base id and then the subset operations that are applied.
+Cohort subset definitions can be run incrementally.
+In fact, if the base cohort definition changes for any reason, any subsets will automatically be re-executed when calling
+`generateCohortSet`.
 
 <!-- ### Saving the JSON -->
 
