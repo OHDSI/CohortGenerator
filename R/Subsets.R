@@ -169,7 +169,6 @@ SubsetOperator <- R6::R6Class(
       return(names(get(self$classname())$active))
     },
 
-
     #' Is Equal to
     #' @description Compare Subsets - are they identical or not?
     #' Checks all fields and settings

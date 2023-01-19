@@ -27,8 +27,7 @@ test_that("Subset definition", {
   )
   subsetDef <- createCohortSubsetDefinition(name = "test definition",
                                             definitionId = 1,
-                                            targetOutputPairs = list(c(1, 1003), c(2, 1002)),
-                                            subsets = subsetOperations)
+                                            subsetOperators = subsetOperations)
 
   for (s in subsetDef$subsets) {
     checkmate::expect_class(s, "SubsetOperator")
@@ -115,13 +114,19 @@ test_that("subset generation", {
   )
   subsetDef <- createCohortSubsetDefinition(name = "test definition",
                                             definitionId = 1,
-                                            targetOutputPairs = list(c(1, 1003), c(2, 1002)),
-                                            subsets = subsetOperations)
+                                            subsetOperators = subsetOperations)
   
   cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
     addCohortSubsetDefinition(subsetDef)
 
-  expect_true(nrow(cohortDefinitionSetWithSubset) == 5)
+  expect_true(nrow(cohortDefinitionSetWithSubset) == 6)
+
+  # Test only applying to a subset
+  cohortDefinitionSetWithSubset2 <- cohortDefinitionSet %>%
+    addCohortSubsetDefinition(subsetDef, targetCohortIds = c(1,2))
+  
+  expect_true(nrow(cohortDefinitionSetWithSubset2) == 5)
+  
   expect_true(attr(cohortDefinitionSetWithSubset, "hasSubsetDefinitions"))
   expect_true("isSubset" %in% colnames(cohortDefinitionSetWithSubset))
   expect_true("subsetParent" %in% colnames(cohortDefinitionSetWithSubset))

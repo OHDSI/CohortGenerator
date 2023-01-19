@@ -4,16 +4,24 @@
 \alias{createCohortSubsetDefinition}
 \title{Create Subset Definition}
 \usage{
-createCohortSubsetDefinition(name, definitionId, targetOutputPairs, subsets)
+createCohortSubsetDefinition(
+  name,
+  definitionId,
+  subsetOperators,
+  identifierExpression = NULL
+)
 }
 \arguments{
 \item{name}{Name of definition}
 
 \item{definitionId}{Definition identifier}
 
-\item{targetOutputPairs}{Vector of pairs targetCohortId, outcomeCohortId}
+\item{subsetOperators}{vector of subsetOperator instances to apply}
 
-\item{subsets}{vector of subset instances to apply}
+\item{identifierExpression}{Expression (or string that converts to expression) that returns an id for an output cohort
+the default is dplyr::expr(targetId * 1000 + definitionId)}
+
+\item{targetOutputPairs}{Vector of pairs targetCohortId, outcomeCohortId}
 }
 \description{
 Create subset definition from subset objects

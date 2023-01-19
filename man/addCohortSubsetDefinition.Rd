@@ -4,12 +4,24 @@
 \alias{addCohortSubsetDefinition}
 \title{Add cohort subset definition to a cohort definition set}
 \usage{
-addCohortSubsetDefinition(cohortDefinitionSet, cohortSubsetDefintion)
+addCohortSubsetDefinition(
+  cohortDefinitionSet,
+  cohortSubsetDefintion,
+  targetCohortIds = NULL,
+  overwriteExisting = FALSE
+)
 }
 \arguments{
 \item{cohortDefinitionSet}{data.frame that conforms to CohortDefinitionSet}
 
 \item{cohortSubsetDefintion}{CohortSubsetDefinition instance}
+
+\item{targetCohortIds}{Cohort ids to apply subset definition to. If not set, subset definition is applied
+to all base cohorts in set (i.e. those that are not defined by subsets).
+Applying to cohorts that are already subsets is permitted, however, this should be
+done with care and identifiers must be specified manually}
+
+\item{overwriteExisting}{Overwrite existing subset definition of the same definitionId if present}
 }
 \description{
 Given a subset definition and cohort definition set, this function returns a modified cohortDefinitionSet
