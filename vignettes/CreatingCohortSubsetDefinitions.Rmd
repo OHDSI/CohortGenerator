@@ -102,7 +102,7 @@ We can do that by copying the subset operations from our first definition and mo
 subsetOperations2 <- subsetDef$subsets
 
 # subset to those between aged 18 an 64
-subsetOperations[[3]] <-
+subsetOperations2[[3]] <-
   createDemographicSubset(id = 1003,
                           name = "18 - 65",
                           ageMin = 18,
