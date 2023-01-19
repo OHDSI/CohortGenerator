@@ -3,17 +3,17 @@ title: "Creating Cohort Subset Definitions"
 author: "James P. Gilbert"
 date: "`r Sys.Date()`"
 output:
-pdf_document:
-toc: yes
-html_document:
-number_sections: yes
-toc: yes
+  pdf_document:
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
 vignette: >
-%\VignetteIndexEntry{Creating Cohort Subset Definitions}
-%\VignetteEncoding{UTF-8}
-%\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Creating Cohort Subset Definitions}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options:
-chunk_output_type: console
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
