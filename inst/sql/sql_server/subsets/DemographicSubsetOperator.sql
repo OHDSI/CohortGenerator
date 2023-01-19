@@ -4,6 +4,7 @@ SELECT
   T.subject_id,
   T.cohort_start_date,
   T.cohort_end_date
+{@output_table != ''} ? {INTO @output_table}
 FROM @target_table T
 JOIN @cdm_database_schema.person p ON T.subject_id = p.person_id
 WHERE 1 = 1-- simplifies ternary logic

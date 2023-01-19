@@ -2,6 +2,7 @@ SELECT
   c.subject_id,
   c.cohort_start_date,
   c.cohort_end_date
+{@output_table != ''} ? {INTO @output_table}
 FROM (
   SELECT
     subject_id,

@@ -113,7 +113,7 @@ CohortSubsetDefinition <- R6::R6Class(
       sql <- c(
         "DELETE FROM @cohort_database_schema.@cohort_table WHERE cohort_definition_id = @output_cohort_id;",
         "DROP TABLE IF EXISTS #cohort_sub_base;",
-        "CREATE TABLE #cohort_sub_base AS SELECT * FROM @cohort_database_schema.@cohort_table",
+        "SELECT * INTO #cohort_sub_base FROM @cohort_database_schema.@cohort_table",
         "WHERE cohort_definition_id = @target_cohort_id;"
       )
 

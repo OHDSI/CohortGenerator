@@ -586,7 +586,7 @@ LimitSubsetOperator <- R6::R6Class(
       if (missing(priorTime))
         return(private$.priorTime)
 
-      checkmate::assertInt(priorTime, lower = 0, upper = 999999)
+      checkmate::assertInt(priorTime, lower = 0, upper = 99999)
       private$.priorTime <- priorTime
       self
     },
@@ -595,7 +595,7 @@ LimitSubsetOperator <- R6::R6Class(
       if (missing(followUpTime))
         return(private$.followUpTime)
 
-      checkmate::assertInt(followUpTime, lower = 0, upper = 999999)
+      checkmate::assertInt(followUpTime, lower = 0, upper = 99999)
       private$.priorTime <- followUpTime
       self
     },

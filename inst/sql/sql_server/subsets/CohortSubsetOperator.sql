@@ -5,6 +5,7 @@ SELECT
   T.subject_id, 
   T.cohort_start_date, 
   T.cohort_end_date
+{@output_table != ''} ? {INTO @output_table}
 FROM @target_table T
 JOIN @cohort_database_schema.@cohort_table S ON T.subject_id = S.subject_id
 WHERE 

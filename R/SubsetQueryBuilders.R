@@ -32,9 +32,7 @@ QueryBuilder <- R6::R6Class(
       return(paste0("#S_", private$operator$id))
     },
     getQuery = function(targetTable) {
-      sql <- SqlRender::render("
-      DROP TABLE IF EXISTS @object_id;
-      CREATE TABLE @object_id AS @inner_query;",
+      sql <- SqlRender::render("DROP TABLE IF EXISTS @object_id;\n @inner_query;",
                                object_id = self$getTableObjectId(),
                                inner_query = private$innerQuery(targetTable))
       return(sql)
@@ -50,6 +48,7 @@ CohortSubsetQb <- R6::R6Class(
       sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
                                target_table = targetTable,
+                               output_table = self$getTableObjectId(),
                                end_window_anchor = ifelse(private$operator$endWindow$targetAnchor == "cohortStart",
                                                           yes = "cohort_start_date",
                                                           no = "cohort_end_date"),
@@ -77,6 +76,7 @@ LimitSubsetQb <- R6::R6Class(
       sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "LimitSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
                                target_table = targetTable,
+                               output_table = self$getTableObjectId(),
                                calendar_end_date = ifelse(is.null(private$operator$calendarEndDate), yes = '0', no = '1'),
                                calendar_end_date_day = ifelse(is.null(private$operator$calendarEndDate), yes = '', no = lubridate::day(private$operator$calendarEndDate)),
                                calendar_end_date_month = ifelse(is.null(private$operator$calendarEndDate), yes = '', no = lubridate::month(private$operator$calendarEndDate)),
@@ -98,6 +98,7 @@ DemographicSubsetQb <- R6::R6Class(
       sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "DemographicSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
                                target_table = targetTable,
+                               output_table = self$getTableObjectId(),
                                age_min = private$operator$criteria$ageMin,
                                age_max = private$operator$criteria$ageMax,
                                gender_concept_id = private$operator$criteria$gender,

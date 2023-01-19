@@ -13,8 +13,8 @@ test_that("Subset definition", {
                        cohortIds = 11,
                        cohortCombinationOperator = "all",
                        negate = FALSE,
-                       startWindow = createSubsetCohortWindow(-999999, 99999, "cohortStart"),
-                       endWindow = createSubsetCohortWindow(-999999, 99999, "cohortEnd")),
+                       startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                       endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")),
     createLimitSubset(id = 1002,
                       name = "Observation Criteria",
                       priorTime = 365,
@@ -85,8 +85,8 @@ test_that("Subset definition", {
                             cohortIds = 11,
                             cohortCombinationOperator = "all",
                             negate = FALSE,
-                            startWindow = createSubsetCohortWindow(-999999, 99999, "cohortStart"),
-                            end = createSubsetCohortWindow(-999999, 99999, "cohortEnd"))
+                            startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                            end = createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
   expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
 })
 
@@ -106,8 +106,8 @@ test_that("subset generation", {
                        cohortIds = 11,
                        cohortCombinationOperator = "all",
                        negate = FALSE,
-                       startWindow = createSubsetCohortWindow(-999999, 99999, "cohortStart"),
-                       endWindow = createSubsetCohortWindow(-999999, 99999, "cohortEnd")),
+                       startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                       endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")),
     createDemographicSubset(id = 1003,
                             name = "Demographic Criteria",
                             ageMin = 18,
