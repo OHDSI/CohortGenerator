@@ -54,17 +54,18 @@ CohortSubsetQb <- R6::R6Class(
                                                           no = "cohort_end_date"),
                                end_window_end_day = private$operator$endWindow$endDay,
                                end_window_start_day = private$operator$endWindow$startDay,
-                               negate = ifelse(private$operator$startWindow$negate == TRUE, yes = "1", no = "0"),
+                               negate = ifelse(private$operator$negate == TRUE, yes = "1", no = "0"),
                                start_window_anchor = ifelse(private$operator$startWindow$targetAnchor == "cohortStart",
                                                             yes = "cohort_start_date",
                                                             no = "cohort_end_date"),
                                start_window_end_day = private$operator$startWindow$endDay,
                                start_window_start_day = private$operator$startWindow$startDay,
+                               cohort_ids = private$operator$cohortIds,
                                subset_length = ifelse(private$operator$cohortCombinationOperator == "any",
                                                       yes = 1,
                                                       no = length(private$operator$cohortIds)),
                                warnOnMissingParameters = TRUE)
-      #SqlRender::writeSql(sql, "cohort_subset_sub_query.sql")
+      SqlRender::writeSql(sql, "cohort_subset_sub_query.sql")
       return(sql)
     }
   )
