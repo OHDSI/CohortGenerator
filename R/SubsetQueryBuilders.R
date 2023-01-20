@@ -54,6 +54,7 @@ CohortSubsetQb <- R6::R6Class(
                                                           no = "cohort_end_date"),
                                end_window_end_day = private$operator$endWindow$endDay,
                                end_window_start_day = private$operator$endWindow$startDay,
+                               negate = ifelse(private$operator$startWindow$negate == TRUE, yes = "1", no = "0"),
                                start_window_anchor = ifelse(private$operator$startWindow$targetAnchor == "cohortStart",
                                                             yes = "cohort_start_date",
                                                             no = "cohort_end_date"),
@@ -63,6 +64,7 @@ CohortSubsetQb <- R6::R6Class(
                                                       yes = 1,
                                                       no = length(private$operator$cohortIds)),
                                warnOnMissingParameters = TRUE)
+      #SqlRender::writeSql(sql, "cohort_subset_sub_query.sql")
       return(sql)
     }
   )
@@ -89,7 +91,7 @@ LimitSubsetQb <- R6::R6Class(
                                output_table = self$getTableObjectId(),
                                target_table = targetTable,
                                warnOnMissingParameters = TRUE)
-      SqlRender::writeSql(sql, "limit_sub_query.sql")
+      #SqlRender::writeSql(sql, "limit_sub_query.sql")
       return(sql)
     }
   )
@@ -110,7 +112,7 @@ DemographicSubsetQb <- R6::R6Class(
                                race_concept_id = private$operator$getRace(),
                                ethnicity_concept_id = private$operator$getEthnicity(),
                                warnOnMissingParameters = TRUE)
-      SqlRender::writeSql(sql, "demographics_sub_query.sql")
+      #SqlRender::writeSql(sql, "demographics_sub_query.sql")
       return(sql)
     }
   )
