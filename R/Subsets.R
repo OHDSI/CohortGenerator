@@ -433,9 +433,9 @@ DemographicSubsetOperator <- R6::R6Class(
       checkmate::assertR6(criteria, "DemographicSubsetOperator")
       return(all(self$ageMin == criteria$ageMin,
                  self$ageMax == criteria$ageMax,
-                 self$gender == criteria$gender,
-                 self$race == criteria$race,
-                 self$ethnicity == criteria$ethnicity))
+                 self$getGender() == criteria$getGender(),
+                 self$getRace() == criteria$getRace(),
+                 self$getEthnicity() == criteria$getEthnicity()))
     },
     
     
