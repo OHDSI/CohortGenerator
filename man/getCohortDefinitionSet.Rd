@@ -10,6 +10,7 @@ getCohortDefinitionSet(
   sqlFolder = "sql/sql_server",
   cohortFileNameFormat = "\%s",
   cohortFileNameValue = c("cohortId"),
+  subsetJsonFolder = "inst/cohort_subset_definitions/",
   packageName = NULL,
   warnOnMissingJson = TRUE,
   verbose = FALSE
@@ -38,6 +39,9 @@ in conjunction with the cohortFileNameFormat parameter.}
 cohort in the settings file}
 
 \item{verbose}{When TRUE, extra logging messages are emitted}
+
+\item{subsetFileNameValue}{Defines the fields in the cohortSubsetDefinitions to use
+in conjunction with the subsetFileNameFormat parameter.}
 }
 \value{
 Returns a cohort set data.frame

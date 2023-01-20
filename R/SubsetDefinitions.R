@@ -172,6 +172,12 @@ CohortSubsetDefinition <- R6::R6Class(
       self$targetOutputPairs <- targetOutputPairs
 
       invisible(self)
+    },
+
+    #' Get json file name for subset definition in folder
+    #' @param subsetJsonFolder  path to folder to place file
+    getJsonFileName = function(subsetJsonFolder = "inst/cohort_subset_definitions/") {
+      return(file.path(subsetJsonFolder, paste0(self$definitionId, ".json")))
     }
   ),
 
@@ -336,6 +342,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
   }
 
   existingSubsetDefinitions[[subsetDefinitionCopy$definitionId]] <- subsetDefinitionCopy
+  attr(cohortDefinitionSet, "cohortSubsetDefinitions") <- existingSubsetDefinitions
 
   subsetDefinitionCopy$setTargetOutputPairs(targetCohortIds)
   for (toPair in subsetDefinitionCopy$targetOutputPairs) {
@@ -370,4 +377,40 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
   attr(cohortDefinitionSet, "hasSubsetDefinitions") <- TRUE
 
   return(cohortDefinitionSet)
+}
+
+hasSubsetDefinitions <- function(x) {
+  containsSubsetsDefs <- length(attr(x, "cohortSubsetDefinitions")) > 0
+
+  if (!containsSubsetsDefs) {
+    warns <- checkmate::checkList(attr(x, "cohortSubsetDefinitions"),
+                                  min.len = 1,
+                                  types = "CohortSubsetDefinition")
+    if (length(warns)) {
+      containsSubsetsDefs <- FALSE
+    }
+  }
+
+  hasColumns <- all(c("subsetDefinitionId", "isSubset", "subsetParent") %in% colnames(x))
+
+  return(all(hasColumns,
+             containsSubsetsDefs,
+             isTRUE(attr(x, "hasSubsetDefinitions"))))
+}
+
+#' Save cohort subset definitions to json
+#' @description
+#' This is generally used as part of saveCohortDefinitionSet
+#' @export
+#' @inheritParams saveCohortDefinitionSet
+saveCohortSubsetDefinition <- function(subsetDefinition,
+                                       subsetJsonFolder = "inst/cohort_subset_definitions/") {
+  checkmate::assertR6(subsetDefinition, classes = "CohortSubsetDefinition")
+
+  if(!dir.exists(subsetJsonFolder)) {
+    dir.create(subsetJsonFolder, recursive = TRUE)
+  }
+
+  ParallelLogger::saveSettingsToJson(subsetDefinition$toList(),
+                                     subsetDefinition$getJsonFileName(subsetJsonFolder))
 }

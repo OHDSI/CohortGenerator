@@ -11,6 +11,7 @@ saveCohortDefinitionSet(
   sqlFolder = "inst/sql/sql_server",
   cohortFileNameFormat = "\%s",
   cohortFileNameValue = c("cohortId"),
+  subsetJsonFolder = "inst/cohort_subset_definitions/",
   verbose = FALSE
 )
 }
@@ -41,6 +42,9 @@ in conjunction with the cohortFileNameFormat parameter.}
 
 \item{verbose}{When TRUE, logging messages are emitted to indicate export
 progress.}
+
+\item{subsetFileNameValue}{Defines the fields in the cohortSubsetDefinitions to use
+in conjunction with the subsetFileNameFormat parameter.}
 }
 \description{
 This function saves a cohortDefinitionSet to the file system and provides

@@ -90,6 +90,68 @@ test_that("Subset definition", {
 })
 
 
+test_that("Saving and loading definitions via attributes", {
+  
+  cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                                jsonFolder = "testdata/name/cohorts",
+                                                sqlFolder = "testdata/name/sql/sql_server",
+                                                cohortFileNameFormat = "%s",
+                                                cohortFileNameValue = c("cohortName"),
+                                                packageName = "CohortGenerator",
+                                                verbose = FALSE)
+  subsetOperations <- list(
+    createCohortSubset(id = 1001,
+                       name = "Cohort Subset",
+                       cohortIds = 11,
+                       cohortCombinationOperator = "all",
+                       negate = FALSE,
+                       startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                       endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")),
+    createLimitSubset(id = 1002,
+                      name = "Observation Criteria",
+                      priorTime = 365,
+                      followUpTime = 0,
+                      limitTo = "firstEver"),
+    createDemographicSubset(id = 1003,
+                            name = "Demographic Criteria",
+                            ageMin = 18,
+                            ageMax = 64)
+  )
+  subsetDef <- createCohortSubsetDefinition(name = "test definition",
+                                            definitionId = 1,
+                                            subsetOperators = subsetOperations)
+  
+  cohortDefinitionSet <- cohortDefinitionSet %>%
+    addCohortSubsetDefinition(subsetDef)
+  
+  expect_true(hasSubsetDefinitions(cohortDefinitionSet))
+  
+  checkmate::expect_list(attr(cohortDefinitionSet, "cohortSubsetDefinitions"),
+                         types = "CohortSubsetDefinition",
+                         len = 1)
+  
+  savePath <- tempfile()
+  unlink(savePath, recursive = T)
+  on.exit(unlink(savePath, recursive = T), add = TRUE)
+  saveCohortDefinitionSet(cohortDefinitionSet,
+                          cohortFileNameFormat = "%s",
+                          settingsFileName = file.path(savePath, "Cohorts.csv"),
+                          jsonFolder = file.path(savePath, "cohorts"),
+                          sqlFolder = file.path(savePath, "sql/sql_server"),
+                          subsetJsonFolder = file.path(savePath, "subsetDefs"))
+  checkmate::expect_directory_exists(file.path(savePath, "subsetDefs"))
+  checkmate::expect_file_exists(file.path(savePath, "subsetDefs", paste0(subsetDef$definitionId, ".json")))
+  
+  reloadedSet <- getCohortDefinitionSet(settingsFileName = file.path(savePath, "Cohorts.csv"),
+                                        jsonFolder = file.path(savePath, "cohorts"),
+                                        sqlFolder = file.path(savePath, "sql/sql_server"),
+                                        subsetJsonFolder = file.path(savePath, "subsetDefs"))
+  expect_true(hasSubsetDefinitions(reloadedSet))
+  checkmate::expect_list(attr(reloadedSet, "cohortSubsetDefinitions"), types = "CohortSubsetDefinition", min.len = 1, max.len = 1)
+})
+
+
+
 test_that("subset generation", {
 
   cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
@@ -115,7 +177,7 @@ test_that("subset generation", {
   subsetDef <- createCohortSubsetDefinition(name = "test definition",
                                             definitionId = 1,
                                             subsetOperators = subsetOperations)
-  
+
   cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
     addCohortSubsetDefinition(subsetDef)
 
@@ -123,10 +185,10 @@ test_that("subset generation", {
 
   # Test only applying to a subset
   cohortDefinitionSetWithSubset2 <- cohortDefinitionSet %>%
-    addCohortSubsetDefinition(subsetDef, targetCohortIds = c(1,2))
-  
+    addCohortSubsetDefinition(subsetDef, targetCohortIds = c(1, 2))
+
   expect_true(nrow(cohortDefinitionSetWithSubset2) == 5)
-  
+
   expect_true(attr(cohortDefinitionSetWithSubset, "hasSubsetDefinitions"))
   expect_true("isSubset" %in% colnames(cohortDefinitionSetWithSubset))
   expect_true("subsetParent" %in% colnames(cohortDefinitionSetWithSubset))
