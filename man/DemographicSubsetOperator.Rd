@@ -2,10 +2,11 @@
 % Please edit documentation in R/Subsets.R
 \name{DemographicSubsetOperator}
 \alias{DemographicSubsetOperator}
-\title{DemographicSubsetOperator}
+\title{Criteria Subset}
 \description{
-subetting to patient demographics (age, race, gender, ethnicity concepts)
-Public Fields
+Criteria Subset
+
+Criteria Subset
 }
 \section{Super class}{
 \code{\link[CohortGenerator:SubsetOperator]{CohortGenerator::SubsetOperator}} -> \code{DemographicSubsetOperator}
@@ -13,7 +14,15 @@ Public Fields
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{criteria}}{DemographicCriteria to subset to}
+\item{\code{ageMin}}{Int between 0 and 9999 - minimum age}
+
+\item{\code{ageMax}}{Int between 0 and 9999 - maximum age}
+
+\item{\code{gender}}{vector of gender concept IDs}
+
+\item{\code{race}}{character string denoting race}
+
+\item{\code{ethnicity}}{character string denoting ethnicity}
 }
 \if{html}{\out{</div>}}
 }
@@ -22,7 +31,11 @@ Public Fields
 \itemize{
 \item \href{#method-DemographicSubsetOperator-publicFields}{\code{DemographicSubsetOperator$publicFields()}}
 \item \href{#method-DemographicSubsetOperator-toList}{\code{DemographicSubsetOperator$toList()}}
+\item \href{#method-DemographicSubsetOperator-toJSON}{\code{DemographicSubsetOperator$toJSON()}}
 \item \href{#method-DemographicSubsetOperator-isEqualTo}{\code{DemographicSubsetOperator$isEqualTo()}}
+\item \href{#method-DemographicSubsetOperator-getGender}{\code{DemographicSubsetOperator$getGender()}}
+\item \href{#method-DemographicSubsetOperator-getRace}{\code{DemographicSubsetOperator$getRace()}}
+\item \href{#method-DemographicSubsetOperator-getEthnicity}{\code{DemographicSubsetOperator$getEthnicity()}}
 \item \href{#method-DemographicSubsetOperator-clone}{\code{DemographicSubsetOperator$clone()}}
 }
 }
@@ -32,7 +45,6 @@ Public Fields
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-classname'><code>CohortGenerator::SubsetOperator$classname()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="getQueryBuilder"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-getQueryBuilder'><code>CohortGenerator::SubsetOperator$getQueryBuilder()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-initialize'><code>CohortGenerator::SubsetOperator$initialize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-toJSON'><code>CohortGenerator::SubsetOperator$toJSON()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -41,7 +53,6 @@ Public Fields
 \if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-publicFields}{}}}
 \subsection{Method \code{publicFields()}}{
 Publicly settable fields of object
-to List
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$publicFields()}\if{html}{\out{</div>}}
 }
@@ -52,9 +63,18 @@ to List
 \if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-toList}{}}}
 \subsection{Method \code{toList()}}{
 List representation of object
-is Equal to
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$toList()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-toJSON"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-toJSON}{}}}
+\subsection{Method \code{toJSON()}}{
+json serialized representation of object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$toJSON()}\if{html}{\out{</div>}}
 }
 
 }
@@ -64,16 +84,49 @@ is Equal to
 \subsection{Method \code{isEqualTo()}}{
 Compare Subset to another
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$isEqualTo(subsetOperatorB)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$isEqualTo(criteria)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{subsetOperatorB}}{A subset to test equivalence to}
+\item{\code{criteria}}{DemographicSubsetOperator instance}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-getGender"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-getGender}{}}}
+\subsection{Method \code{getGender()}}{
+Gender getter - used when constructing SQL to default
+NULL to an empty string
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$getGender()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-getRace"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-getRace}{}}}
+\subsection{Method \code{getRace()}}{
+Race getter - used when constructing SQL to default
+NULL to an empty string
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$getRace()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DemographicSubsetOperator-getEthnicity"></a>}}
+\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-getEthnicity}{}}}
+\subsection{Method \code{getEthnicity()}}{
+Ethnicity getter - used when constructing SQL to default
+NULL to an empty string
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$getEthnicity()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DemographicSubsetOperator-clone"></a>}}

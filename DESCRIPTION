@@ -2,9 +2,10 @@ Package: CohortGenerator
 Type: Package
 Title: An R Package for Cohort Generation Against the OMOP CDM
 Version: 0.8.0
-Date: 2022-12-15
+Date: 2023-01-20
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
+  person("Jamie", "Gilbert", role = c("aut")),
   person("Gowtham", "Rao", email = "gowthamrao@gmail.com", role = c("aut")),
   person("Martijn", "Schuemie", email = "schuemie@ohdsi.org", role = c("aut")),
   person("Observational Health Data Science and Informatics", role = c("cph"))
@@ -26,9 +27,8 @@ Imports:
   rlang,
   RJSONIO,
   jsonlite,
-  SqlRender (>= 1.7.0),
-  stringi (>= 1.7.6),
-  lubridate
+  SqlRender (>= 1.11.1),
+  stringi (>= 1.7.6)
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,

@@ -267,7 +267,6 @@ CohortSubsetDefinition <- R6::R6Class(
 #' @export
 #' @param name                     Name of definition
 #' @param definitionId             Definition identifier
-#' @param targetOutputPairs        Vector of pairs targetCohortId, outcomeCohortId
 #' @param subsetOperators          vector of subsetOperator instances to apply
 #' @param identifierExpression     Expression (or string that converts to expression) that returns an id for an output cohort
 #'                                 the default is dplyr::expr(targetId * 1000 + definitionId)
@@ -313,7 +312,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
     checkmate::assertSubset(targetCohortIds, cohortDefinitionSet$cohortId)
   } else {
     targetCohortIds <- cohortDefinitionSet %>%
-      dplyr::filter(!isSubset) %>%
+      dplyr::filter(!.data$isSubset) %>%
       dplyr::select("cohortId") %>%
       dplyr::pull()
   }
@@ -334,7 +333,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
     if (overwriteExisting) {
       # Remove any cohorts that were created with this definition
       cohortDefinitionSet <- cohortDefinitionSet %>%
-        dplyr::filter(subsetDefinitionId != subsetDefinitionCopy$definitionId)
+        dplyr::filter(.data$subsetDefinitionId != subsetDefinitionCopy$definitionId)
     } else {
       stop("Existing definition of id ", subsetDefinitionCopy$definitionId,
            " already applied to set, use overwriteExisting = TRUE to re-apply or change definition id")
@@ -401,6 +400,9 @@ hasSubsetDefinitions <- function(x) {
 #' Save cohort subset definitions to json
 #' @description
 #' This is generally used as part of saveCohortDefinitionSet
+#' 
+#' @param subsetDefinition The subset definition object {@seealso CohortSubsetDefinition}
+#'
 #' @export
 #' @inheritParams saveCohortDefinitionSet
 saveCohortSubsetDefinition <- function(subsetDefinition,

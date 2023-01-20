@@ -18,6 +18,7 @@
 "_PACKAGE"
 
 #' @import DatabaseConnector
+#' @import R6
 #' @importFrom grDevices rgb
 #' @importFrom stats aggregate setNames
 #' @importFrom utils write.csv install.packages menu packageVersion sessionInfo

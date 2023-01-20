@@ -369,54 +369,104 @@ createCohortSubset <- function(id, name, cohortIds, cohortCombinationOperator, n
   subset
 }
 
-# DemographicCriteria ------------------------------
-#' Demographics settings
+# DemographicSubsetOperator ------------------------------
+#' Criteria Subset
 #' @export
-#' @description
-#' Representation of demographic settings to be used in a subset instance'
-DemographicCriteria <- R6::R6Class(
-  classname = "DemographicCriteria",
+DemographicSubsetOperator <- R6::R6Class(
+  classname = "DemographicSubsetOperator",
+  inherit = SubsetOperator,
   private = list(
+    queryBuilder = DemographicSubsetQb,
+    suffixStr = "Dem",
     .ageMin = 0,
     .ageMax = 99999,
-    .gender = "",
-    .race = "",
-    .ethnicity = ""
+    .gender = NULL,
+    .race = NULL,
+    .ethnicity = NULL
   ),
   public = list(
-    #' to List
+    #' @description Publicly settable fields of object
+    publicFields = function() {
+      c(super$publicFields(), "ageMin", "ageMax", "gender", "race", "ethnicity")
+    },
     #' @description List representation of object
     toList = function() {
-      objRepr <- list()
+      objRepr <- super$toList()
       if (length(private$.ageMin))
         objRepr$ageMin <- jsonlite::unbox(private$.ageMin)
       if (length(private$.ageMax))
         objRepr$ageMax <- jsonlite::unbox(private$.ageMax)
-      if (length(private$.gender))
-        objRepr$gender <- jsonlite::unbox(private$.gender)
-      if (length(private$.race))
-        objRepr$race <- jsonlite::unbox(private$.race)
-      if (length(private$.ethnicity))
-        objRepr$ethnicity <- jsonlite::unbox(private$.ethnicity)
-
+      if (!is.null(private$.gender)) {
+        if (length(private$.gender) > 1) {
+          objRepr$gender <- private$.gender
+        } else {
+          objRepr$gender <- jsonlite::unbox(private$.gender)
+        }
+      }
+      if (!is.null(private$.race)) {
+        if (length(private$.race) > 1) {
+          objRepr$race <- private$.race
+        } else {
+          objRepr$race <- jsonlite::unbox(private$.race)
+        }
+      }
+      if (!is.null(private$.ethnicity)) {
+        if (length(private$.ethnicity) > 1) {
+          objRepr$ethnicity <- private$.ethnicity
+        } else {
+          objRepr$ethnicity <- jsonlite::unbox(private$.ethnicity)
+        }
+      }
+      
       objRepr
     },
-    #' to JSON
+    
     #' @description json serialized representation of object
     toJSON = function() {
       .toJSON(self$toList())
     },
-
-    #' is Equal to
+    
+    
     #' @description Compare Subset to another
-    #' @param criteria DemographicCriteria instance
+    #' @param criteria DemographicSubsetOperator instance
     isEqualTo = function(criteria) {
-      checkmate::assertR6(criteria, "DemographicCriteria")
+      checkmate::assertR6(criteria, "DemographicSubsetOperator")
       return(all(self$ageMin == criteria$ageMin,
                  self$ageMax == criteria$ageMax,
-                 self$gender == criteria$gender,
-                 self$race == criteria$race,
-                 self$ethnicity == criteria$ethnicity))
+                 self$getGender() == criteria$getGender(),
+                 self$getRace() == criteria$getRace(),
+                 self$getEthnicity() == criteria$getEthnicity()))
+    },
+    
+    
+    #' @description Gender getter - used when constructing SQL to default
+    #' NULL to an empty string
+    getGender = function() {
+      if (is.null(private$.gender)) {
+        return('')
+      } else {
+        return(private$.gender)
+      }
+    },
+    
+    #' @description Race getter - used when constructing SQL to default
+    #' NULL to an empty string
+    getRace = function() {
+      if (is.null(private$.race)) {
+        return('')
+      } else {
+        return(private$.race)
+      }
+    },
+    
+    #' @description Ethnicity getter - used when constructing SQL to default
+    #' NULL to an empty string
+    getEthnicity = function() {
+      if (is.null(private$.ethnicity)) {
+        return('')
+      } else {
+        return(private$.ethnicity)
+      }
     }
   ),
   active = list(
@@ -429,124 +479,59 @@ DemographicCriteria <- R6::R6Class(
     },
     #'@field  ageMax  Int between 0 and 9999 - maximum age
     ageMax = function(ageMax) {
-
+      
       if (missing(ageMax)) return(private$.ageMax)
       checkmate::assertInt(ageMax, lower = max(0, self$ageMin), upper = 99999)
       private$.ageMax <- ageMax
       return(self)
     },
-    #' @field gender character string denoting gender
+    #' @field gender vector of gender concept IDs
     gender = function(gender) {
       if (missing(gender)) return(private$.gender)
-      checkmate::assertCharacter(gender, len = 1, null.ok = FALSE)
+      checkmate::assertVector(gender, null.ok = TRUE)
       private$.gender <- gender
       return(self)
     },
     #' @field race character string denoting race
     race = function(race) {
       if (missing(race)) return(private$.race)
-      checkmate::assertCharacter(race, len = 1, null.ok = FALSE)
+      checkmate::assertVector(race, null.ok = TRUE)
       private$.race <- race
       return(self)
     },
     #' @field ethnicity character string denoting ethnicity
     ethnicity = function(ethnicity) {
       if (missing(ethnicity)) return(private$.ethnicity)
-      checkmate::assertCharacter(ethnicity, len = 1, null.ok = FALSE)
+      checkmate::assertVector(ethnicity, null.ok = TRUE)
       private$.ethnicity <- ethnicity
       return(self)
     }
   )
 )
 
-# createDemographicCriteria ------------------------------
-#' Create demographic criteria
-#' @export
-#' @param ageMin       age demographics
-#' @param ageMax       age demographics
-#' @param gender       gender demographics - concept ID list
-#' @param race         race demographics - concept ID list
-#' @param ethnicity    ethnicity demographics - concept ID list
-createDemographicCriteria <- function(ageMin = 0, ageMax = 9999, gender = "", race = "", ethnicity = "") {
-  criteria <- DemographicCriteria$new()
-  criteria$ageMin <- ageMin
-  criteria$ageMax <- ageMax
-  criteria$gender <- gender
-  criteria$race <- race
-  criteria$ethnicity <- ethnicity
-
-  criteria
-}
-
-# DemographicSubsetOperator ------------------------------
-#' DemographicSubsetOperator
-#' @export
-#' @description subetting to patient demographics (age, race, gender, ethnicity concepts)
-DemographicSubsetOperator <- R6::R6Class(
-  classname = "DemographicSubsetOperator",
-  inherit = SubsetOperator,
-  private = list(
-    queryBuilder = DemographicSubsetQb,
-    suffixStr = "Dem",
-    .criteria = NULL
-  ),
-  public = list(
-    #' Public Fields
-    #' @description Publicly settable fields of object
-    publicFields = function() {
-      c(super$publicFields(), "criteria")
-    },
-    #' to List
-    #' @description List representation of object
-    toList = function() {
-      objRef <- super$toList()
-      objRef$criteria <- private$.criteria$toList()
-      objRef
-    },
-
-    #' is Equal to
-    #' @description Compare Subset to another
-    #' @param           subsetOperatorB A subset to test equivalence to
-    isEqualTo = function(subsetOperatorB) {
-      if (!super$isEqualTo(subsetOperatorB)) {
-        return(FALSE)
-      }
-
-      return(self$criteria$isEqualTo(subsetOperatorB$criteria))
-    }
-  ),
-  active = list(
-    #'@field criteria   DemographicCriteria to subset to
-    criteria = function(criteria) {
-      if (missing(criteria))
-        return(private$.criteria)
-
-      # Allows criteria definition to be loaded from serialized form
-      if (is.list(criteria)) {
-        criteria <- do.call(createDemographicCriteria, criteria)
-      }
-
-      checkmate::assertR6(criteria, "DemographicCriteria")
-      private$.criteria <- criteria
-      self
-    }
-  )
-)
-
 # createDemographicSubset ------------------------------
-#' Create DemographicCriteria Subset
-#' @export
+#' Create createDemographicSubset Subset
 #' @param id            Id number
 #' @param name          char name
-#' @param ...           Demographic criteria @seealso createDemographicCriteria
-createDemographicSubset <- function(id, name, ...) {
+#' @param ageMin       The minimum age 
+#' @param ageMax       The maximum age
+#' @param gender       Gender demographics - concept ID list
+#' @param race         Race demographics - concept ID list
+#' @param ethnicity    Ethnicity demographics - concept ID list
+#' @export
+createDemographicSubset <- function(id, name, ageMin = 0, ageMax = 9999, gender = NULL, race = NULL, ethnicity = NULL) {
   subset <- DemographicSubsetOperator$new()
   subset$id <- id
   subset$name <- name
-  subset$criteria <- createDemographicCriteria(...)
-
+  subset$ageMin <- ageMin
+  subset$ageMax <- ageMax
+  subset$gender <- gender
+  subset$race <- race
+  subset$ethnicity <- ethnicity
+  
   subset
 }
+
 
 # LimitSubsetOperator ------------------------------
 #' @title Limit Subset Operator
@@ -566,6 +551,10 @@ LimitSubsetOperator <- R6::R6Class(
     .calendarEndDate = NULL
   ),
   public = list(
+    #' @description Publicly settable fields of object
+    publicFields = function() {
+      c(super$publicFields(), "priorTime", "followUpTime", "limitTo", "calendarStartDate", "calendarEndDate")
+    },
     #' To List
     #' @description List representation of object
     toList = function() {
@@ -582,9 +571,7 @@ LimitSubsetOperator <- R6::R6Class(
   active = list(
     #' @field priorTime             minimum washout time in days
     priorTime = function(priorTime) {
-      if (missing(priorTime))
-        return(private$.priorTime)
-
+      if (missing(priorTime)) return(private$.priorTime)
       checkmate::assertInt(priorTime, lower = 0, upper = 99999)
       private$.priorTime <- priorTime
       self
@@ -595,7 +582,7 @@ LimitSubsetOperator <- R6::R6Class(
         return(private$.followUpTime)
 
       checkmate::assertInt(followUpTime, lower = 0, upper = 99999)
-      private$.priorTime <- followUpTime
+      private$.followUpTime <- followUpTime
       self
     },
     #' @field limitTo     character one of:
@@ -608,8 +595,7 @@ LimitSubsetOperator <- R6::R6Class(
     #'                          outside this will be censored.
     #'
     limitTo = function(limitTo) {
-      if (missing(limitTo))
-        return(private$.limitTo)
+      if (missing(limitTo)) return(private$.limitTo)
       checkmate::assertCharacter(limitTo)
       checkmate::assertChoice(limitTo, choices = c("", "firstEver", "earliestRemaining", "latestRemaining", "lastEver"))
       private$.limitTo <- limitTo

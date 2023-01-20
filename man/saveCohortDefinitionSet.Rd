@@ -40,11 +40,10 @@ standard defined in the base sprintf function.}
 \item{cohortFileNameValue}{Defines the columns in the cohortDefinitionSet to use
 in conjunction with the cohortFileNameFormat parameter.}
 
+\item{subsetJsonFolder}{Defines the folder to store the subset JSON}
+
 \item{verbose}{When TRUE, logging messages are emitted to indicate export
 progress.}
-
-\item{subsetFileNameValue}{Defines the fields in the cohortSubsetDefinitions to use
-in conjunction with the subsetFileNameFormat parameter.}
 }
 \description{
 This function saves a cohortDefinitionSet to the file system and provides

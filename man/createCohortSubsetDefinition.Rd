@@ -20,8 +20,6 @@ createCohortSubsetDefinition(
 
 \item{identifierExpression}{Expression (or string that converts to expression) that returns an id for an output cohort
 the default is dplyr::expr(targetId * 1000 + definitionId)}
-
-\item{targetOutputPairs}{Vector of pairs targetCohortId, outcomeCohortId}
 }
 \description{
 Create subset definition from subset objects

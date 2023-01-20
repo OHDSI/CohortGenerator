@@ -9,6 +9,11 @@ saveCohortSubsetDefinition(
   subsetJsonFolder = "inst/cohort_subset_definitions/"
 )
 }
+\arguments{
+\item{subsetDefinition}{The subset definition object {@seealso CohortSubsetDefinition}}
+
+\item{subsetJsonFolder}{Defines the folder to store the subset JSON}
+}
 \description{
 This is generally used as part of saveCohortDefinitionSet
 }
