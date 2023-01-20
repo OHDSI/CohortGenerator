@@ -75,8 +75,6 @@ LimitSubsetQb <- R6::R6Class(
     innerQuery = function(targetTable) {
       sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "LimitSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
-                               target_table = targetTable,
-                               output_table = self$getTableObjectId(),
                                calendar_end_date = ifelse(is.null(private$operator$calendarEndDate), yes = '0', no = '1'),
                                calendar_end_date_day = ifelse(is.null(private$operator$calendarEndDate), yes = '', no = lubridate::day(private$operator$calendarEndDate)),
                                calendar_end_date_month = ifelse(is.null(private$operator$calendarEndDate), yes = '', no = lubridate::month(private$operator$calendarEndDate)),
@@ -84,7 +82,14 @@ LimitSubsetQb <- R6::R6Class(
                                calendar_start_date = ifelse(is.null(private$operator$calendarStartDate), yes = '0', no = '1'),
                                calendar_start_date_day = ifelse(is.null(private$operator$calendarStartDate), yes = '', no = lubridate::day(private$operator$calendarStartDate)),
                                calendar_start_date_month = ifelse(is.null(private$operator$calendarStartDate), yes = '', no = lubridate::month(private$operator$calendarStartDate)),
-                               calendar_start_date_year = ifelse(is.null(private$operator$calendarStartDate), yes = '', no = lubridate::year(private$operator$calendarStartDate)),)
+                               calendar_start_date_year = ifelse(is.null(private$operator$calendarStartDate), yes = '', no = lubridate::year(private$operator$calendarStartDate)),
+                               follow_up_time = private$operator$followUpTime,
+                               limit_to = private$operator$limitTo,
+                               prior_time = private$operator$priorTime,
+                               output_table = self$getTableObjectId(),
+                               target_table = targetTable,
+                               warnOnMissingParameters = TRUE)
+      SqlRender::writeSql(sql, "limit_sub_query.sql")
       return(sql)
     }
   )
@@ -99,12 +104,13 @@ DemographicSubsetQb <- R6::R6Class(
       sql <- SqlRender::render(sql,
                                target_table = targetTable,
                                output_table = self$getTableObjectId(),
-                               age_min = private$operator$criteria$ageMin,
-                               age_max = private$operator$criteria$ageMax,
-                               gender_concept_id = private$operator$criteria$gender,
-                               race_concept_id = private$operator$criteria$race,
-                               ethnicity_concept_id = private$operator$criteria$ethnicicty,
+                               age_min = private$operator$ageMin,
+                               age_max = private$operator$ageMax,
+                               gender_concept_id =  private$operator$getGender(),
+                               race_concept_id = private$operator$getRace(),
+                               ethnicity_concept_id = private$operator$getEthnicity(),
                                warnOnMissingParameters = TRUE)
+      SqlRender::writeSql(sql, "demographics_sub_query.sql")
       return(sql)
     }
   )
