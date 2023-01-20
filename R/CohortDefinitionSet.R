@@ -213,6 +213,9 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
 #' @param cohortFileNameValue   Defines the columns in the cohortDefinitionSet to use
 #'                              in conjunction with the cohortFileNameFormat parameter.
 #'
+#' @param subsetFileNameValue   Defines the fields in the cohortSubsetDefinitions to use
+#'                              in conjunction with the subsetFileNameFormat parameter.
+#'
 #' @param packageName The name of the package containing the cohort definitions.
 #'
 #' @param warnOnMissingJson Provide a warning if a .JSON file is not found for a
@@ -229,6 +232,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
                                    sqlFolder = "sql/sql_server",
                                    cohortFileNameFormat = "%s",
                                    cohortFileNameValue = c("cohortId"),
+                                   subsetJsonFolder = "inst/cohort_subset_definitions/",
                                    packageName = NULL,
                                    warnOnMissingJson = TRUE,
                                    verbose = FALSE) {
@@ -276,6 +280,19 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
     }
   }
 
+  loadSubsets <- FALSE
+  subsetsToLoad <- data.frame()
+  # Do not attempt to load subset definition
+  if ("isSubset" %in% colnames(settings)) {
+    subsetsToLoad <- settings %>%
+      dplyr::filter(isSubset)
+
+    settings <- settings %>%
+      dplyr::filter(!isSubset)
+
+    loadSubsets <- TRUE
+  }
+  
   # Read the JSON/SQL files
   fileData <- data.frame()
   for (i in 1:nrow(settings)) {
@@ -294,6 +311,29 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   }
 
   cohortDefinitionSet <- cbind(settings, fileData)
+  # Loading cohort subset definitions with their associated targets
+  if (loadSubsets & nrow(subsetsToLoad) > 0) {
+    if (dir.exists(subsetJsonFolder)) {
+      ParallelLogger::logInfo("Loading Cohort Subset Definitions")
+
+      ## Loading subsets that apply to the saved definition sets
+      for (i in unique(subsetsToLoad$subsetDefinitionId)) {
+        subsetFile <- file.path(subsetJsonFolder, paste0(i, ".json"))
+        ParallelLogger::logInfo("Loading Cohort Subset Defintion ", subsetFile)
+        subsetDef <- CohortSubsetDefinition$new(ParallelLogger::loadSettingsFromJson(subsetFile))
+        # Find target cohorts for this subset definition
+        subsetTargetIds <- unique(subsetsToLoad[subsetsToLoad$subsetDefinitionId == i,]$subsetParent)
+
+        cohortDefinitionSet <- addCohortSubsetDefinition(cohortDefinitionSet,
+                                                         subsetDef,
+                                                         targetCohortIds = subsetTargetIds)
+      }
+
+    } else {
+      stop("subset definitions defined in settings file but no corresponding subset definition file is associated")
+    }
+  }
+
   invisible(cohortDefinitionSet)
 }
 
@@ -326,6 +366,9 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
 #' @param cohortFileNameValue   Defines the columns in the cohortDefinitionSet to use
 #'                              in conjunction with the cohortFileNameFormat parameter.
 #'
+#' @param subsetFileNameValue   Defines the fields in the cohortSubsetDefinitions to use
+#'                              in conjunction with the subsetFileNameFormat parameter.
+#'
 #' @param verbose           When TRUE, logging messages are emitted to indicate export
 #'                          progress.
 #'
@@ -336,6 +379,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
                                     sqlFolder = "inst/sql/sql_server",
                                     cohortFileNameFormat = "%s",
                                     cohortFileNameValue = c("cohortId"),
+                                    subsetJsonFolder = "inst/cohort_subset_definitions/",
                                     verbose = FALSE) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assert_vector(cohortFileNameValue)
@@ -365,6 +409,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
     warnOnUploadRuleViolations = FALSE
   )
 
+  hasSubsets <- hasSubsetDefinitions(cohortDefinitionSet)
   # Export the SQL & JSON for each entry
   for (i in 1:nrow(cohortDefinitionSet)) {
     cohortId <- cohortDefinitionSet$cohortId[i]
@@ -376,13 +421,26 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
       cohortFileNameValue = cohortFileNameValue,
       cohortFileNameFormat = cohortFileNameFormat
     )
+
+    if (hasSubsets && cohortDefinitionSet$isSubset[i]) {
+      next # Subsets are saved only as json
+    }
+
     if (verbose) {
       ParallelLogger::logInfo("Exporting (", i, "/", nrow(cohortDefinitionSet), "): ", cohortName)
     }
+
     if (!is.na(json) && nchar(json) > 0) {
       SqlRender::writeSql(sql = json, targetFile = file.path(jsonFolder, paste0(fileNameRoot, ".json")))
     }
+
     SqlRender::writeSql(sql = sql, targetFile = file.path(sqlFolder, paste0(fileNameRoot, ".sql")))
+  }
+
+  if (hasSubsets) {
+    for (subsetDefinition in attr(cohortDefinitionSet, "cohortSubsetDefinitions")) {
+      saveCohortSubsetDefinition(subsetDefinition, subsetJsonFolder)
+    }
   }
 
   ParallelLogger::logInfo("Cohort definition saved")

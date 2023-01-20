@@ -26,8 +26,8 @@ CohortSubsetDefinition <- R6::R6Class(
     .definitionId = integer(0),
     .subsets = list(),
     .subsetIds = c(),
-    .targetOutputPairs = c(),
-
+    .targetOutputPairs = list(),
+    .identifierExpression = expression(targetId * 1000 + definitionId),
     ## Creates objects if they are in the namespace
     createSubset = function(item, itemClass = item$subsetType) {
       classDef <- get(itemClass)
@@ -55,11 +55,11 @@ CohortSubsetDefinition <- R6::R6Class(
       list(
         name = jsonlite::unbox(self$name),
         definitionId = jsonlite::unbox(self$definitionId),
-        targetOutputPairs = self$targetOutputPairs,
         # Note - when there is a base definition that includes multiple calls to the same subset this should be replaced
-        subsets = lapply(self$subsets, function(subset) { subset$toList() }),
-        subsetOperatorIds = private$.subsetIds,
-        packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName())))
+        subsets = lapply(self$subsets, function(operator) { operator$toList() }),
+        subsetIds = private$.subsetIds,
+        packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName()))),
+        identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression))
       )
     },
     #' to JSON
@@ -157,6 +157,27 @@ CohortSubsetDefinition <- R6::R6Class(
 
       opNames <- lapply(self$subsets, function(x) { x$name })
       paste(baseName, "-", self$name, paste0("(", opNames, ")", collapse = " "))
+    },
+    #' Set the targetOutputPairs to be added to a cohort definition set
+    #' @param targetIds   list of cohort ids to apply subsetting operations to
+    setTargetOutputPairs = function(targetIds) {
+      checkmate::assertIntegerish(targetIds, min.len = 1)
+      definitionId <- self$definitionId
+      targetOutputPairs <- list()
+
+      for (targetId in targetIds) {
+        outputId <- eval(self$identifierExpression)
+        targetOutputPairs <- c(targetOutputPairs, list(c(targetId, outputId)))
+      }
+      self$targetOutputPairs <- targetOutputPairs
+
+      invisible(self)
+    },
+
+    #' Get json file name for subset definition in folder
+    #' @param subsetJsonFolder  path to folder to place file
+    getJsonFileName = function(subsetJsonFolder = "inst/cohort_subset_definitions/") {
+      return(file.path(subsetJsonFolder, paste0(self$definitionId, ".json")))
     }
   ),
 
@@ -165,8 +186,11 @@ CohortSubsetDefinition <- R6::R6Class(
     targetOutputPairs = function(targetOutputPairs) {
       if (missing(targetOutputPairs))
         return(private$.targetOutputPairs)
-      checkmate::assertList(targetOutputPairs, types = c("numeric", "list"), min.len = 1, unique = TRUE)
 
+      if (is.null(targetOutputPairs)) {
+        targetOutputPairs <- list()
+      }
+      checkmate::assertList(targetOutputPairs, types = c("numeric", "list"), unique = TRUE)
       targetOutputPairs <- lapply(targetOutputPairs,
                                   function(targetOutputPair) {
                                     targetOutputPair <- as.numeric(targetOutputPair)
@@ -213,6 +237,25 @@ CohortSubsetDefinition <- R6::R6Class(
       checkmate::assertVector(subsetIds, min.len = 1, unique = TRUE)
       private$.subsetIds <- subsetIds
       self
+    },
+
+    #'@field identifierExpression expression that can be evaluated from
+    identifierExpression = function(identifierExpression) {
+      if (missing(identifierExpression))
+        return(private$.identifierExpression)
+
+      if (is.character(identifierExpression)) {
+        identifierExpression <- parse(text = identifierExpression)
+      }
+
+      if (is.null(identifierExpression)) {
+        identifierExpression <- expression(targetId * 1000 + definitionId)
+      }
+
+      checkmate::assertTRUE(is.expression(identifierExpression))
+
+      private$.identifierExpression <- identifierExpression
+      self
     }
   )
 )
@@ -222,16 +265,18 @@ CohortSubsetDefinition <- R6::R6Class(
 #' @description
 #' Create subset definition from subset objects
 #' @export
-#' @param name                      Name of definition
-#' @param definitionId              Definition identifier
+#' @param name                     Name of definition
+#' @param definitionId             Definition identifier
 #' @param targetOutputPairs        Vector of pairs targetCohortId, outcomeCohortId
-#' @param subsets                   vector of subset instances to apply
-createCohortSubsetDefinition <- function(name, definitionId, targetOutputPairs, subsets) {
+#' @param subsetOperators          vector of subsetOperator instances to apply
+#' @param identifierExpression     Expression (or string that converts to expression) that returns an id for an output cohort
+#'                                 the default is dplyr::expr(targetId * 1000 + definitionId)
+createCohortSubsetDefinition <- function(name, definitionId, subsetOperators, identifierExpression = NULL) {
   subsetDef <- CohortSubsetDefinition$new()
   subsetDef$name <- name
   subsetDef$definitionId <- definitionId
-  subsetDef$targetOutputPairs <- targetOutputPairs
-  subsetDef$subsets <- subsets
+  subsetDef$subsets <- subsetOperators
+  subsetDef$identifierExpression <- identifierExpression
   return(subsetDef)
 }
 
@@ -246,16 +291,61 @@ createCohortSubsetDefinition <- function(name, definitionId, targetOutputPairs, 
 #' @export
 #' @param cohortDefinitionSet       data.frame that conforms to CohortDefinitionSet
 #' @param cohortSubsetDefintion     CohortSubsetDefinition instance
-addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion) {
+#' @param targetCohortIds           Cohort ids to apply subset definition to. If not set, subset definition is applied
+#'                                  to all base cohorts in set (i.e. those that are not defined by subsets).
+#'                                  Applying to cohorts that are already subsets is permitted, however, this should be
+#'                                  done with care and identifiers must be specified manually
+#' @param overwriteExisting         Overwrite existing subset definition of the same definitionId if present
+addCohortSubsetDefinition <- function(cohortDefinitionSet,
+                                      cohortSubsetDefintion,
+                                      targetCohortIds = NULL,
+                                      overwriteExisting = FALSE) {
   checkmate::assertR6(cohortSubsetDefintion, "CohortSubsetDefinition")
   checkmate::assertTRUE(isCohortDefinitionSet(cohortDefinitionSet))
 
   if (!"subsetParent" %in% colnames(cohortDefinitionSet))
     cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
+
   if (!"isSubset" %in% colnames(cohortDefinitionSet))
     cohortDefinitionSet$isSubset <- FALSE
 
-  for (toPair in cohortSubsetDefintion$targetOutputPairs) {
+  if (!is.null(targetCohortIds)) {
+    checkmate::assertSubset(targetCohortIds, cohortDefinitionSet$cohortId)
+  } else {
+    targetCohortIds <- cohortDefinitionSet %>%
+      dplyr::filter(!isSubset) %>%
+      dplyr::select("cohortId") %>%
+      dplyr::pull()
+  }
+
+  if (is.null(attr(cohortDefinitionSet, "cohortSubsetDefinitions"))) {
+    attr(cohortDefinitionSet, "cohortSubsetDefinitions") <- list()
+  }
+  existingSubsetDefinitions <- attr(cohortDefinitionSet, "cohortSubsetDefinitions")
+
+  if (!"subsetDefinitionId" %in% colnames(cohortDefinitionSet))
+    cohortDefinitionSet$subsetDefinitionId <- NA
+
+  # store a copy for simplicity with reference errors
+  subsetDefinitionCopy <- cohortSubsetDefintion$clone(deep = TRUE)
+
+  # Remove any cohorts that use this id
+  if (!is.null(existingSubsetDefinitions[subsetDefinitionCopy$definitionId][[1]])) {
+    if (overwriteExisting) {
+      # Remove any cohorts that were created with this definition
+      cohortDefinitionSet <- cohortDefinitionSet %>%
+        dplyr::filter(subsetDefinitionId != subsetDefinitionCopy$definitionId)
+    } else {
+      stop("Existing definition of id ", subsetDefinitionCopy$definitionId,
+           " already applied to set, use overwriteExisting = TRUE to re-apply or change definition id")
+    }
+  }
+
+  existingSubsetDefinitions[[subsetDefinitionCopy$definitionId]] <- subsetDefinitionCopy
+  attr(cohortDefinitionSet, "cohortSubsetDefinitions") <- existingSubsetDefinitions
+
+  subsetDefinitionCopy$setTargetOutputPairs(targetCohortIds)
+  for (toPair in subsetDefinitionCopy$targetOutputPairs) {
     if (!toPair[1] %in% cohortDefinitionSet$cohortId) {
       stop("Target cohortid ", toPair[1], " not found in cohort definition set")
     }
@@ -269,7 +359,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion
     repr <- list(
       cohortId = toPair[2],
       targetCohortId = toPair[1],
-      subsetDefinitionId = cohortSubsetDefintion$definitionId
+      subsetDefinitionId = subsetDefinitionCopy$definitionId
     )
     cohortDefinitionSet <-
       dplyr::bind_rows(cohortDefinitionSet,
@@ -279,11 +369,48 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet, cohortSubsetDefintion
                          subsetParent = toPair[1],
                          isSubset = TRUE,
                          sql = subsetSql,
-                         json = as.character(.toJSON(repr))
+                         json = as.character(.toJSON(repr)),
+                         subsetDefinitionId = subsetDefinitionCopy$definitionId
                        ))
   }
 
   attr(cohortDefinitionSet, "hasSubsetDefinitions") <- TRUE
 
   return(cohortDefinitionSet)
+}
+
+hasSubsetDefinitions <- function(x) {
+  containsSubsetsDefs <- length(attr(x, "cohortSubsetDefinitions")) > 0
+
+  if (!containsSubsetsDefs) {
+    warns <- checkmate::checkList(attr(x, "cohortSubsetDefinitions"),
+                                  min.len = 1,
+                                  types = "CohortSubsetDefinition")
+    if (length(warns)) {
+      containsSubsetsDefs <- FALSE
+    }
+  }
+
+  hasColumns <- all(c("subsetDefinitionId", "isSubset", "subsetParent") %in% colnames(x))
+
+  return(all(hasColumns,
+             containsSubsetsDefs,
+             isTRUE(attr(x, "hasSubsetDefinitions"))))
+}
+
+#' Save cohort subset definitions to json
+#' @description
+#' This is generally used as part of saveCohortDefinitionSet
+#' @export
+#' @inheritParams saveCohortDefinitionSet
+saveCohortSubsetDefinition <- function(subsetDefinition,
+                                       subsetJsonFolder = "inst/cohort_subset_definitions/") {
+  checkmate::assertR6(subsetDefinition, classes = "CohortSubsetDefinition")
+
+  if(!dir.exists(subsetJsonFolder)) {
+    dir.create(subsetJsonFolder, recursive = TRUE)
+  }
+
+  ParallelLogger::saveSettingsToJson(subsetDefinition$toList(),
+                                     subsetDefinition$getJsonFileName(subsetJsonFolder))
 }

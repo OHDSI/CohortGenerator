@@ -53,8 +53,7 @@ testPlatform <- function(dbmsDetails) {
   )
   subsetDef <- createCohortSubsetDefinition(name = "test definition",
                                             definitionId = 1,
-                                            targetOutputPairs = list(c(1, 1003)),
-                                            subsets = subsetOperations)
+                                            subsetOperators = subsetOperations)
   cohortsWithSubsets <- addCohortSubsetDefinition(cohortsWithStats, subsetDef)
   cohortsGenerated <- generateCohortSet(
     connectionDetails = dbmsDetails$connectionDetails,

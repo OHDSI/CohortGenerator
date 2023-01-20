@@ -18,6 +18,8 @@ Set of subset definitions
 \item{\code{definitionId}}{numeric definition id}
 
 \item{\code{subsetIds}}{vector of subset operator ids}
+
+\item{\code{identifierExpression}}{expression that can be evaluated from}
 }
 \if{html}{\out{</div>}}
 }
@@ -31,6 +33,8 @@ Set of subset definitions
 \item \href{#method-CohortSubsetDefinition-getSubsetOperatorById}{\code{CohortSubsetDefinition$getSubsetOperatorById()}}
 \item \href{#method-CohortSubsetDefinition-getSubsetQuery}{\code{CohortSubsetDefinition$getSubsetQuery()}}
 \item \href{#method-CohortSubsetDefinition-getSubsetCohortName}{\code{CohortSubsetDefinition$getSubsetCohortName()}}
+\item \href{#method-CohortSubsetDefinition-setTargetOutputPairs}{\code{CohortSubsetDefinition$setTargetOutputPairs()}}
+\item \href{#method-CohortSubsetDefinition-getJsonFileName}{\code{CohortSubsetDefinition$getJsonFileName()}}
 \item \href{#method-CohortSubsetDefinition-clone}{\code{CohortSubsetDefinition$clone()}}
 }
 }
@@ -146,7 +150,43 @@ Get name of an output cohort}
 \describe{
 \item{\code{cohortDefinitionSet}}{Cohort definition set containing base names}
 
-\item{\code{targetOutputPair}}{Target output pair}
+\item{\code{targetOutputPair}}{Target output pair
+Set the targetOutputPairs to be added to a cohort definition set}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CohortSubsetDefinition-setTargetOutputPairs"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-setTargetOutputPairs}{}}}
+\subsection{Method \code{setTargetOutputPairs()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$setTargetOutputPairs(targetIds)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{targetIds}}{list of cohort ids to apply subsetting operations to
+Get json file name for subset definition in folder}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CohortSubsetDefinition-getJsonFileName"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-getJsonFileName}{}}}
+\subsection{Method \code{getJsonFileName()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$getJsonFileName(
+  subsetJsonFolder = "inst/cohort_subset_definitions/"
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{subsetJsonFolder}}{path to folder to place file}
 }
 \if{html}{\out{</div>}}
 }
