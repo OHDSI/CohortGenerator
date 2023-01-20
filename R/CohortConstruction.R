@@ -149,12 +149,12 @@ generateCohortSet <- function(connectionDetails = NULL,
   # Generate top level cohorts first
   if (isTRUE(attr(cohortDefinitionSet, 'hasSubsetDefinitions'))) {
     cohortsToGenerate <- cohortDefinitionSet %>%
-      dplyr::filter(!isSubset) %>%
+      dplyr::filter(!.data$isSubset) %>%
       dplyr::select("cohortId") %>%
       dplyr::pull()
 
     subsetsToGenerate <- cohortDefinitionSet %>%
-      dplyr::filter(isSubset) %>%
+      dplyr::filter(.data$isSubset) %>%
       dplyr::select("cohortId") %>%
       dplyr::pull()
   }

@@ -213,9 +213,8 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
 #' @param cohortFileNameValue   Defines the columns in the cohortDefinitionSet to use
 #'                              in conjunction with the cohortFileNameFormat parameter.
 #'
-#' @param subsetFileNameValue   Defines the fields in the cohortSubsetDefinitions to use
-#'                              in conjunction with the subsetFileNameFormat parameter.
-#'
+#' @param subsetJsonFolder      Defines the folder to store the subset JSON
+#' 
 #' @param packageName The name of the package containing the cohort definitions.
 #'
 #' @param warnOnMissingJson Provide a warning if a .JSON file is not found for a
@@ -285,10 +284,10 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   # Do not attempt to load subset definition
   if ("isSubset" %in% colnames(settings)) {
     subsetsToLoad <- settings %>%
-      dplyr::filter(isSubset)
+      dplyr::filter(.data$isSubset)
 
     settings <- settings %>%
-      dplyr::filter(!isSubset)
+      dplyr::filter(!.data$isSubset)
 
     loadSubsets <- TRUE
   }
@@ -366,9 +365,8 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
 #' @param cohortFileNameValue   Defines the columns in the cohortDefinitionSet to use
 #'                              in conjunction with the cohortFileNameFormat parameter.
 #'
-#' @param subsetFileNameValue   Defines the fields in the cohortSubsetDefinitions to use
-#'                              in conjunction with the subsetFileNameFormat parameter.
-#'
+#' @param subsetJsonFolder      Defines the folder to store the subset JSON
+#' 
 #' @param verbose           When TRUE, logging messages are emitted to indicate export
 #'                          progress.
 #'

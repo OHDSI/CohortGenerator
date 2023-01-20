@@ -22,6 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Jamie Gilbert
   \item Gowtham Rao \email{gowthamrao@gmail.com}
   \item Martijn Schuemie \email{schuemie@ohdsi.org}
 }

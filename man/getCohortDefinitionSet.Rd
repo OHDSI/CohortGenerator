@@ -33,15 +33,14 @@ standard defined in the base sprintf function.}
 \item{cohortFileNameValue}{Defines the columns in the cohortDefinitionSet to use
 in conjunction with the cohortFileNameFormat parameter.}
 
+\item{subsetJsonFolder}{Defines the folder to store the subset JSON}
+
 \item{packageName}{The name of the package containing the cohort definitions.}
 
 \item{warnOnMissingJson}{Provide a warning if a .JSON file is not found for a
 cohort in the settings file}
 
 \item{verbose}{When TRUE, extra logging messages are emitted}
-
-\item{subsetFileNameValue}{Defines the fields in the cohortSubsetDefinitions to use
-in conjunction with the subsetFileNameFormat parameter.}
 }
 \value{
 Returns a cohort set data.frame
