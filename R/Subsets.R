@@ -392,30 +392,20 @@ DemographicSubsetOperator <- R6::R6Class(
     #' @description List representation of object
     toList = function() {
       objRepr <- super$toList()
-      if (length(private$.ageMin))
+      if (length(private$.ageMin)) {
         objRepr$ageMin <- jsonlite::unbox(private$.ageMin)
-      if (length(private$.ageMax))
+      }
+      if (length(private$.ageMax)) {
         objRepr$ageMax <- jsonlite::unbox(private$.ageMax)
+      }
       if (!is.null(private$.gender)) {
-        if (length(private$.gender) > 1) {
-          objRepr$gender <- private$.gender
-        } else {
-          objRepr$gender <- jsonlite::unbox(private$.gender)
-        }
+        objRepr$gender <- private$.gender
       }
       if (!is.null(private$.race)) {
-        if (length(private$.race) > 1) {
-          objRepr$race <- private$.race
-        } else {
-          objRepr$race <- jsonlite::unbox(private$.race)
-        }
+        objRepr$race <- private$.race
       }
       if (!is.null(private$.ethnicity)) {
-        if (length(private$.ethnicity) > 1) {
-          objRepr$ethnicity <- private$.ethnicity
-        } else {
-          objRepr$ethnicity <- jsonlite::unbox(private$.ethnicity)
-        }
+        objRepr$ethnicity <- private$.ethnicity
       }
       
       objRepr
