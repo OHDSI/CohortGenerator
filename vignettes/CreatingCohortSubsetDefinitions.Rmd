@@ -122,12 +122,11 @@ This will automatically add identifiers and OHDSI SQL for the subset cohorts as 
 for saving definition sets for re-use.
 ```{r error=FALSE, warning=FALSE, message=FALSE}
 cohortDefinitionSet <- cohortDefinitionSet |>
-  addCohortSubsetDefinition(subsetDef) |>
-  addCohortSubsetDefinition(subsetDef2, targetCohortIds = 1778212)
+  addCohortSubsetDefinition(subsetDef)
 
 cohortDefinitionSet
 ```
-We can also apply a subset definition to only a limted number of target cohorts based on their ids
+We can also apply a subset definition to only a limted number of target cohorts as follows
 
 ```{r error=FALSE, warning=FALSE, message=FALSE}
 cohortDefinitionSet <- cohortDefinitionSet |>
