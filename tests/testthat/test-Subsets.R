@@ -29,27 +29,27 @@ test_that("Subset definition", {
                                             definitionId = 1,
                                             subsetOperators = subsetOperations)
 
-  for (s in subsetDef$subsets) {
+  for (s in subsetDef$subsetOperators) {
     checkmate::expect_class(s, "SubsetOperator")
   }
 
   listDef <- subsetDef$toList()
 
   checkmate::expect_list(listDef)
-  expect_equal(length(subsetDef$subsets), length(listDef$subsets))
+  expect_equal(length(subsetDef$subsetOperators), length(listDef$subsetOperators))
   checkmate::expect_character(subsetDef$toJSON())
 
   # Check serialized version is identical to code defined version
   subsetDef2 <- CohortSubsetDefinition$new(subsetDef$toJSON())
 
   checkmate::expect_class(subsetDef2, "CohortSubsetDefinition")
-  expect_equal(length(subsetDef2$subsets), length(subsetDef$subsets))
+  expect_equal(length(subsetDef2$subsetOperators), length(subsetDef$subsetOperators))
 
-  expect_true(subsetDef$subsets[[1]]$isEqualTo(subsetDef$subsets[[1]]))
+  expect_true(subsetDef$subsetOperators[[1]]$isEqualTo(subsetDef$subsetOperators[[1]]))
 
-  for (i in 1:length(subsetDef2$subsets)) {
-    item <- subsetDef2$subsets[[i]]
-    itemMatch <- subsetDef$subsets[[i]]
+  for (i in 1:length(subsetDef2$subsetOperators)) {
+    item <- subsetDef2$subsetOperators[[i]]
+    itemMatch <- subsetDef$subsetOperators[[i]]
     checkmate::expect_class(item, class(itemMatch))
     expect_true(item$isEqualTo(itemMatch), label = paste(i, "isEqualTo"))
 
@@ -161,6 +161,8 @@ test_that("subset generation", {
                                                 cohortFileNameValue = c("cohortName"),
                                                 packageName = "CohortGenerator",
                                                 verbose = FALSE)
+  checkmate::expect_list(getSubsetDefinitions(cohortDefinitionSet), len = 0)
+
   subsetOperations <- list(
     createCohortSubset(id = 1001,
                        name = "Cohort Subset",
@@ -180,6 +182,8 @@ test_that("subset generation", {
 
   cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
     addCohortSubsetDefinition(subsetDef)
+
+  checkmate::expect_list(getSubsetDefinitions(cohortDefinitionSetWithSubset), min.len = 1, types = "CohortSubsetDefinition")
 
   expect_true(nrow(cohortDefinitionSetWithSubset) == 6)
 

@@ -11,7 +11,7 @@ Set of subset definitions
 \describe{
 \item{\code{targetOutputPairs}}{list of pairs of intgers - (targetCohortId, outputCohortId)}
 
-\item{\code{subsets}}{list of subset operations}
+\item{\code{subsetOperators}}{list of subset operations}
 
 \item{\code{name}}{name of definition}
 

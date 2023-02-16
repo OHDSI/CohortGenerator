@@ -17,7 +17,7 @@ addCohortSubsetDefinition(
 \item{cohortSubsetDefintion}{CohortSubsetDefinition instance}
 
 \item{targetCohortIds}{Cohort ids to apply subset definition to. If not set, subset definition is applied
-to all base cohorts in set (i.e. those that are not defined by subsets).
+to all base cohorts in set (i.e. those that are not defined by subsetOperators).
 Applying to cohorts that are already subsets is permitted, however, this should be
 done with care and identifiers must be specified manually}
 
