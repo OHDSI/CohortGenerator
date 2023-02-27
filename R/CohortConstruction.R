@@ -70,11 +70,11 @@ generateCohortSet <- function(connectionDetails = NULL,
                               incrementalFolder = NULL) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-    must.include = c(
-      "cohortId",
-      "cohortName",
-      "sql"
-    )
+                         must.include = c(
+                           "cohortId",
+                           "cohortName",
+                           "sql"
+                         )
   )
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
@@ -119,17 +119,50 @@ generateCohortSet <- function(connectionDetails = NULL,
 
 
   if (incremental) {
-    cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
-  }
 
+    if (isTRUE(attr(cohortDefinitionSet, 'hasSubsetDefinitions'))) {
+      cohortDefinitionSet$checksum <- ""
+      for (i in 1:nrow(cohortDefinitionSet)) {
+        # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
+        if(cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
+          j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet$subsetParent[i])
+          cohortDefinitionSet$checksum[i] <- computeChecksum(paste(cohortDefinitionSet$sql[j],
+                                                                   cohortDefinitionSet$sql[i]))
+        } else {
+          cohortDefinitionSet$checksum[i] <- computeChecksum(cohortDefinitionSet$sql[i])
+        }
+      }
+    } else {
+      cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
+    }
+  }
   # Create the cluster
+  # DEV NOTE :: running subsets in a multiprocess setup will not work with subsets that subset other subsets
+  # To resolve this issue we need to execute the dependency tree.
+  # This could be done in an manner where all dependent cohorts are guaranteed to be sent to the same process and
+  # the execution is in order. If you set numberOfThreads > 1 you should implement this!
   cluster <- ParallelLogger::makeCluster(numberOfThreads = 1)
   on.exit(ParallelLogger::stopCluster(cluster), add = TRUE)
+  cohortsToGenerate <- cohortDefinitionSet$cohortId
+  subsetsToGenerate <- c()
+  # Generate top level cohorts first
+  if (isTRUE(attr(cohortDefinitionSet, 'hasSubsetDefinitions'))) {
+    cohortsToGenerate <- cohortDefinitionSet %>%
+      dplyr::filter(!.data$isSubset) %>%
+      dplyr::select("cohortId") %>%
+      dplyr::pull()
+
+    subsetsToGenerate <- cohortDefinitionSet %>%
+      dplyr::filter(.data$isSubset) %>%
+      dplyr::select("cohortId") %>%
+      dplyr::pull()
+  }
 
   # Apply the generation operation to the cluster
-  cohortsGenerated <- ParallelLogger::clusterApply(cluster,
-    cohortDefinitionSet$cohortId,
+  cohortsGenerated <- ParallelLogger::clusterApply(
+    cluster,
+    cohortsToGenerate,
     generateCohort,
     cohortDefinitionSet = cohortDefinitionSet,
     connection = connection,
@@ -144,9 +177,29 @@ generateCohortSet <- function(connectionDetails = NULL,
     stopOnError = stopOnError,
     progressBar = TRUE
   )
+  subsetsGenerated <- c()
+  if (length(subsetsToGenerate)) {
+    subsetsGenerated <- ParallelLogger::clusterApply(
+      cluster,
+      subsetsToGenerate,
+      generateCohort,
+      cohortDefinitionSet = cohortDefinitionSet,
+      connection = connection,
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = cdmDatabaseSchema,
+      tempEmulationSchema = tempEmulationSchema,
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      cohortTableNames = cohortTableNames,
+      stopIfError = stopOnError,
+      incremental = incremental,
+      recordKeepingFile = recordKeepingFile,
+      stopOnError = stopOnError,
+      progressBar = TRUE
+    )
+  }
 
   # Convert the list to a data frame
-  cohortsGenerated <- do.call(rbind, cohortsGenerated)
+  cohortsGenerated <- do.call(rbind, c(cohortsGenerated, subsetsGenerated))
 
   delta <- Sys.time() - start
   writeLines(paste("Generating cohort set took", round(delta, 2), attr(delta, "units")))
@@ -195,6 +248,11 @@ generateCohort <- function(cohortId = NULL,
   # Get the index of the cohort record for the current cohortId
   i <- which(cohortDefinitionSet$cohortId == cohortId)
   cohortName <- cohortDefinitionSet$cohortName[i]
+  isSubset <- FALSE
+  if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
+    isSubset <- cohortDefinitionSet$isSubset[i]
+  }
+
   if (!incremental || isTaskRequired(
     cohortId = cohortDefinitionSet$cohortId[i],
     checksum = cohortDefinitionSet$checksum[i],
@@ -207,21 +265,32 @@ generateCohort <- function(cohortId = NULL,
     }
     ParallelLogger::logInfo(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName)
     sql <- cohortDefinitionSet$sql[i]
-    sql <- SqlRender::render(
-      sql = sql,
-      cdm_database_schema = cdmDatabaseSchema,
-      vocabulary_database_schema = cdmDatabaseSchema,
-      target_database_schema = cohortDatabaseSchema,
-      results_database_schema = cohortDatabaseSchema,
-      target_cohort_table = cohortTableNames$cohortTable,
-      target_cohort_id = cohortDefinitionSet$cohortId[i],
-      results_database_schema.cohort_inclusion = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionTable, sep = "."),
-      results_database_schema.cohort_inclusion_result = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionResultTable, sep = "."),
-      results_database_schema.cohort_inclusion_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionStatsTable, sep = "."),
-      results_database_schema.cohort_summary_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortSummaryStatsTable, sep = "."),
-      results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep = "."),
-      warnOnMissingParameters = FALSE
-    )
+
+    if (!isSubset) {
+      sql <- SqlRender::render(
+        sql = sql,
+        cdm_database_schema = cdmDatabaseSchema,
+        vocabulary_database_schema = cdmDatabaseSchema,
+        target_database_schema = cohortDatabaseSchema,
+        results_database_schema = cohortDatabaseSchema,
+        target_cohort_table = cohortTableNames$cohortTable,
+        target_cohort_id = cohortDefinitionSet$cohortId[i],
+        results_database_schema.cohort_inclusion = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionTable, sep = "."),
+        results_database_schema.cohort_inclusion_result = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionResultTable, sep = "."),
+        results_database_schema.cohort_inclusion_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionStatsTable, sep = "."),
+        results_database_schema.cohort_summary_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortSummaryStatsTable, sep = "."),
+        results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep = "."),
+        warnOnMissingParameters = FALSE
+      )
+    } else {
+      sql <- SqlRender::render(
+        sql = sql,
+        cdm_database_schema = cdmDatabaseSchema,
+        cohort_table = cohortTableNames$cohortTable,
+        cohort_database_schema = cohortDatabaseSchema,
+        warnOnMissingParameters = FALSE
+      )
+    }
     sql <- SqlRender::translate(
       sql = sql,
       targetDialect = connection@dbms,

@@ -2,9 +2,10 @@ Package: CohortGenerator
 Type: Package
 Title: An R Package for Cohort Generation Against the OMOP CDM
 Version: 0.8.0
-Date: 2022-12-15
+Date: 2023-01-20
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
+  person("Jamie", "Gilbert", role = c("aut")),
   person("Gowtham", "Rao", email = "gowthamrao@gmail.com", role = c("aut")),
   person("Martijn", "Schuemie", email = "schuemie@ohdsi.org", role = c("aut")),
   person("Observational Health Data Science and Informatics", role = c("cph"))
@@ -13,7 +14,8 @@ Maintainer: Anthony Sena <sena@ohdsi.org>
 Description: An R package for that encapsulates the functions for generating cohorts against the OMOP CDM.
 Depends:
   DatabaseConnector (>= 5.0.0),
-  R (>= 3.6.0)
+  R (>= 3.6.0),
+  R6
 Imports:
   bit64,
   checkmate,
@@ -24,7 +26,8 @@ Imports:
   readr (>= 2.1.0),
   rlang,
   RJSONIO,
-  SqlRender (>= 1.7.0),
+  jsonlite,
+  SqlRender (>= 1.11.1),
   stringi (>= 1.7.6)
 Suggests:
   CirceR (>= 1.1.1),
@@ -32,7 +35,8 @@ Suggests:
   knitr,
   rmarkdown,
   ROhdsiWebApi,
-  testthat
+  testthat,
+  withr
 Remotes:
   ohdsi/CirceR,
   ohdsi/Eunomia,
@@ -41,6 +45,6 @@ License: Apache License
 VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
 BugReports: https://github.com/OHDSI/CohortGenerator/issues
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Encoding: UTF-8
 Language: en-US
