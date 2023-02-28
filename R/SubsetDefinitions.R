@@ -329,7 +329,18 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
   subsetDefinitionCopy <- cohortSubsetDefintion$clone(deep = TRUE)
 
   # Remove any cohorts that use this id
-  if (!is.null(existingSubsetDefinitions[subsetDefinitionCopy$definitionId][[1]])) {
+  findSubsetIndexById <- function(existingSubsetDefinitions, id) {
+    ind <- sapply(existingSubsetDefinitions, function(y) existingSubsetDefinitions$definitionId == id)
+    if (length(ind) > 0) {
+      ind <- which(ind)
+    } else {
+      ind <- NA
+    }
+    return(ind)
+  }
+  
+  subsetIndex <- findSubsetIndexById(existingSubsetDefinitions, subsetDefinitionCopy$definitionId)
+  if (!is.na(subsetIndex)) {
     if (overwriteExisting) {
       # Remove any cohorts that were created with this definition
       cohortDefinitionSet <- cohortDefinitionSet %>%
@@ -338,9 +349,11 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
       stop("Existing definition of id ", subsetDefinitionCopy$definitionId,
            " already applied to set, use overwriteExisting = TRUE to re-apply or change definition id")
     }
+  } else {
+    subsetIndex <- length(existingSubsetDefinitions) + 1
   }
 
-  existingSubsetDefinitions[[subsetDefinitionCopy$definitionId]] <- subsetDefinitionCopy
+  existingSubsetDefinitions[[subsetIndex]] <- subsetDefinitionCopy
   attr(cohortDefinitionSet, "cohortSubsetDefinitions") <- existingSubsetDefinitions
 
   subsetDefinitionCopy$setTargetOutputPairs(targetCohortIds)
