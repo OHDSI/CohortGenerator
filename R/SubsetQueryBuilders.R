@@ -65,7 +65,6 @@ CohortSubsetQb <- R6::R6Class(
                                                       yes = 1,
                                                       no = length(private$operator$cohortIds)),
                                warnOnMissingParameters = TRUE)
-      SqlRender::writeSql(sql, "cohort_subset_sub_query.sql")
       return(sql)
     }
   )
@@ -92,7 +91,6 @@ LimitSubsetQb <- R6::R6Class(
                                output_table = self$getTableObjectId(),
                                target_table = targetTable,
                                warnOnMissingParameters = TRUE)
-      #SqlRender::writeSql(sql, "limit_sub_query.sql")
       return(sql)
     }
   )
@@ -113,7 +111,6 @@ DemographicSubsetQb <- R6::R6Class(
                                race_concept_id = private$operator$getRace(),
                                ethnicity_concept_id = private$operator$getEthnicity(),
                                warnOnMissingParameters = TRUE)
-      #SqlRender::writeSql(sql, "demographics_sub_query.sql")
       return(sql)
     }
   )

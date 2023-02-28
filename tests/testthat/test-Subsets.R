@@ -232,3 +232,67 @@ test_that("subset generation", {
   expect_true(all(cohortsGenerated$generationStatus == "SKIPPED"))
   unlink(recordKeepingFolder, recursive = TRUE)
 })
+
+test_that("Subset definition creation and retrieval with definitionId != 1", {
+  sampleCohorts <- CohortGenerator::createEmptyCohortDefinitionSet()
+  cohortJsonFiles <- list.files(path = system.file("testdata/name/cohorts", package = "CohortGenerator"), full.names = TRUE)
+  cohortJsonFileName <- cohortJsonFiles[1]
+  cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
+  cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
+  sampleCohorts <- rbind(sampleCohorts, data.frame(
+    cohortId = as.double(1),
+    cohortName = cohortName,
+    json = cohortJson,
+    sql = "",
+    stringsAsFactors = FALSE
+  ))
+  
+  
+  # Limit to male only
+  subsetDef2 <- CohortGenerator::createCohortSubsetDefinition(
+    name ="Male Only",
+    definitionId = 2,
+    subsetOperators = list(
+      CohortGenerator::createDemographicSubset(id = 4,
+                                               name = "Male",
+                                               gender = 8507)
+    )
+  )
+  
+  sampleCohortsWithSubsets <- sampleCohorts %>%
+    CohortGenerator::addCohortSubsetDefinition(subsetDef2)
+  
+  sampleSubsetDefinitions <- CohortGenerator::getSubsetDefinitions(sampleCohortsWithSubsets)
+  expect_equal(length(sampleSubsetDefinitions), 1)
+})
+
+test_that("Test overwriteExisting", {
+  cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                                jsonFolder = "testdata/name/cohorts",
+                                                sqlFolder = "testdata/name/sql/sql_server",
+                                                cohortFileNameFormat = "%s",
+                                                cohortFileNameValue = c("cohortName"),
+                                                packageName = "CohortGenerator",
+                                                verbose = FALSE)
+  subsetOperations <- list(
+    createDemographicSubset(id = 1001,
+                            name = "Demographic Criteria",
+                            ageMin = 18,
+                            ageMax = 64)
+  )
+  subsetDef <- createCohortSubsetDefinition(name = "test definition",
+                                            definitionId = 1,
+                                            subsetOperators = subsetOperations)
+
+  # Expect to work the 1st time
+  cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
+    CohortGenerator::addCohortSubsetDefinition(subsetDef)
+  
+  # Expect to fail the 2nd time
+  expect_error(CohortGenerator::addCohortSubsetDefinition(cohortDefinitionSetWithSubset, subsetDef))
+  
+  # Use the overwrite option
+  cohortDefinitionSetWithSubset2 <- cohortDefinitionSetWithSubset %>%
+    CohortGenerator::addCohortSubsetDefinition(subsetDef, overwriteExisting = TRUE)
+})
+
