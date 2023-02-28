@@ -330,21 +330,21 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
 
   # Remove any cohorts that use this id
   findSubsetIndexById <- function(existingSubsetDefinitions, id) {
-    ind <- sapply(existingSubsetDefinitions, function(y) existingSubsetDefinitions$definitionId == id)
-    if (length(ind) > 0) {
-      ind <- which(ind)
-    } else {
-      ind <- NA
+    if (length(existingSubsetDefinitions)) {
+      for (i in 1:length(existingSubsetDefinitions)) {
+        if (existingSubsetDefinitions[[i]]$definitionId == id)
+          return(i)
+      }
     }
-    return(ind)
-  }
+    return(NA)
+  } 
   
   subsetIndex <- findSubsetIndexById(existingSubsetDefinitions, subsetDefinitionCopy$definitionId)
   if (!is.na(subsetIndex)) {
     if (overwriteExisting) {
       # Remove any cohorts that were created with this definition
       cohortDefinitionSet <- cohortDefinitionSet %>%
-        dplyr::filter(.data$subsetDefinitionId != subsetDefinitionCopy$definitionId)
+        dplyr::filter(is.na(.data$subsetDefinitionId) | .data$subsetDefinitionId != subsetDefinitionCopy$definitionId)
     } else {
       stop("Existing definition of id ", subsetDefinitionCopy$definitionId,
            " already applied to set, use overwriteExisting = TRUE to re-apply or change definition id")
