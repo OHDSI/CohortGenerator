@@ -133,7 +133,8 @@ SubsetOperator <- R6::R6Class(
     queryBuilder = QueryBuilder,
     suffixStr = "S",
     .name = "",
-    .id = NA
+    .id = NA,
+    baseFields = c("name", "id")
   ),
 
   public = list(
@@ -143,7 +144,6 @@ SubsetOperator <- R6::R6Class(
     initialize = function(definition = NULL) {
       if (!is.null(definition)) {
         definition <- .loadJson(definition)
-
         for (field in names(definition)) {
           if (field %in% self$publicFields()) {
             self[[field]] <- definition[[field]]
@@ -166,7 +166,8 @@ SubsetOperator <- R6::R6Class(
     #' Public Fields
     #' @description Publicly settable fields of object
     publicFields = function() {
-      return(names(get(self$classname())$active))
+      # Note that this will probably break if you subclass a subclass
+      return(c(private$baseFields, names(get(self$classname())$active)))
     },
 
     #' Is Equal to
@@ -260,12 +261,6 @@ CohortSubsetOperator <- R6::R6Class(
     .endWindow = SubsetCohortWindow$new()
   ),
   public = list(
-    #' Public Fields
-    #' @description publicly settable fields
-    publicFields = function() {
-      c(super$publicFields(), "cohortIds", "cohortCombinationOperator", "negate", "startWindow", "endWindow")
-    },
-
     #' to List
     #' @description List representation of object
     toList = function() {
@@ -385,10 +380,6 @@ DemographicSubsetOperator <- R6::R6Class(
     .ethnicity = NULL
   ),
   public = list(
-    #' @description Publicly settable fields of object
-    publicFields = function() {
-      c(super$publicFields(), "ageMin", "ageMax", "gender", "race", "ethnicity")
-    },
     #' @description List representation of object
     toList = function() {
       objRepr <- super$toList()
@@ -541,10 +532,6 @@ LimitSubsetOperator <- R6::R6Class(
     .calendarEndDate = NULL
   ),
   public = list(
-    #' @description Publicly settable fields of object
-    publicFields = function() {
-      c(super$publicFields(), "priorTime", "followUpTime", "limitTo", "calendarStartDate", "calendarEndDate")
-    },
     #' To List
     #' @description List representation of object
     toList = function() {

@@ -39,9 +39,11 @@ test_that("Subset definition", {
   expect_equal(length(subsetDef$subsetOperators), length(listDef$subsetOperators))
   checkmate::expect_character(subsetDef$toJSON())
 
+
   # Check serialized version is identical to code defined version
   subsetDef2 <- CohortSubsetDefinition$new(subsetDef$toJSON())
 
+  expect_equal(subsetDef2$toJSON(), subsetDef$toJSON())
   checkmate::expect_class(subsetDef2, "CohortSubsetDefinition")
   expect_equal(length(subsetDef2$subsetOperators), length(subsetDef$subsetOperators))
 
@@ -87,6 +89,37 @@ test_that("Subset definition", {
                             startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
                             end = createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
   expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
+  
+  # Attempt to add an existing operator to a cohort subset definition
+  csd <- createCohortSubsetDefinition(name = "Test cohort subset definition",
+                                      definitionId = 1,
+                                      subsetOperators = list(ccs))
+  
+  expect_error(csd$addSubsetOperator(ccs))
+  
+  
+  # Create a cohort subset operator that does not reference a cohort ID
+  # in the cohort definition set
+  invalidCohortSubsetOperator <- createCohortSubset(id = 2001,
+                                                    name = "Invalid Cohort Subset",
+                                                    cohortIds = 0,
+                                                    cohortCombinationOperator = "all",
+                                                    negate = FALSE,
+                                                    startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                                                    end = createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
+  invalidCohortSubsetDefintion <- createCohortSubsetDefinition(
+    name = "Invalid cohort subset definition",
+    definitionId = 100,
+    identifierExpression = expression(targetId), # This expression will yield duplicate IDs by design
+    subsetOperators = list(invalidCohortSubsetOperator)
+  )
+  
+  expect_error(addCohortSubsetDefinition(cohortDefinitionSet = cohortDefinitionSet, 
+                                         cohortSubsetDefintion = invalidCohortSubsetDefintion))
+  
+  invalidCohortSubsetOperator$id <- 2002
+  invalidCohortSubsetOperator2 <- csd$addSubsetOperator(invalidCohortSubsetOperator)
+  expect_equal(invalidCohortSubsetOperator2$toJSON(), csd$toJSON())
 })
 
 
@@ -296,3 +329,59 @@ test_that("Test overwriteExisting", {
     CohortGenerator::addCohortSubsetDefinition(subsetDef, overwriteExisting = TRUE)
 })
 
+test_that("Subset operator serialization tests", {
+  # Confirm .loadJson fails when a non-list object is passed
+  expect_error(CohortGenerator:::.loadJson(definition = 1))
+  
+  # Subset Window
+  sw1 <- createSubsetCohortWindow(-99999, 99999, "cohortStart")
+  sw2 <- createSubsetCohortWindow(-99999, 99999, "cohortEnd")
+  
+  expect_false(sw1$isEqualTo(sw2))
+  expect_silent(sw1$toJSON())
+  
+  # SubsetOperator base class tests
+  so1 <- SubsetOperator$new()
+  so1$id <- 1
+  so1$name <- "SubsetOp1"
+  
+  so2 <- SubsetOperator$new()
+  so2$name <- "SubsetOp2"
+  
+  ds1<- createDemographicSubset(id = 1001,
+                                name = "Demographic Criteria",
+                                ageMin = 18,
+                                ageMax = 64,
+                                gender = 8532,
+                                race = 8527,
+                                ethnicity = 38003563)
+  
+  expect_warning(so1$isEqualTo(ds1))
+  expect_false(so1$isEqualTo(so2))
+  expect_false(so2$isEqualTo(so1))
+  expect_silent(so1$toJSON())
+  expect_silent(so2$toJSON())
+  expect_silent(ds1$toJSON())
+  
+  # Test getters
+  expect_equal(ds1$getRace(), 8527)
+  expect_equal(ds1$getEthnicity(), 38003563)
+  
+  ls1 <- createLimitSubset(id = 1002,
+                           name = "Limit Subset 1",
+                           priorTime = 365,
+                           followUpTime = 0,
+                           limitTo = "firstEver",
+                           calendarStartDate = "",
+                           calendarEndDate = "")
+  expect_silent(ls1$toJSON())
+
+  ls2 <- createLimitSubset(id = 1003,
+                           name = "Limit Subset 2",
+                           priorTime = 365,
+                           followUpTime = 0,
+                           limitTo = "firstEver",
+                           calendarStartDate = "2000-01-01",
+                           calendarEndDate = "2013-12-31")
+  expect_silent(ls2$toJSON())  
+})
