@@ -39,9 +39,11 @@ test_that("Subset definition", {
   expect_equal(length(subsetDef$subsetOperators), length(listDef$subsetOperators))
   checkmate::expect_character(subsetDef$toJSON())
 
+
   # Check serialized version is identical to code defined version
   subsetDef2 <- CohortSubsetDefinition$new(subsetDef$toJSON())
 
+  expect_equal(subsetDef2$toJSON(), subsetDef$toJSON())
   checkmate::expect_class(subsetDef2, "CohortSubsetDefinition")
   expect_equal(length(subsetDef2$subsetOperators), length(subsetDef$subsetOperators))
 
