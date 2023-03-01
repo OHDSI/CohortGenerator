@@ -75,7 +75,7 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @param overwrite if a subset operator of the same ID is present, replace it with a new definition
     addSubsetOperator = function(subsetOperator) {
       checkmate::assertR6(subsetOperator, "SubsetOperator")
-      existingOperator <- self$getSubsetOperatorById(!subsetOperator$id)
+      existingOperator <- self$getSubsetOperatorById(subsetOperator$id)
       if (is.null(existingOperator)) {
         private$.subsetOperators <- c(private$.subsetOperators, subsetOperator)
         private$.subsetIds <- c(private$.subsetIds, subsetOperator$id)
@@ -91,7 +91,7 @@ CohortSubsetDefinition <- R6::R6Class(
     getSubsetOperatorById = function(id) {
       # This implementation seems weird but if you store int ids in a list then R will store every int lower than that
       # Value as a NULL, which breaks any calls to "x %in% names(listObj)"
-      if (!id %in% private$.subsetId) {
+      if (!id %in% private$.subsetIds) {
         return(NULL)
       }
 
