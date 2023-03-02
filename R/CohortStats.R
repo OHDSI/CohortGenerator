@@ -146,7 +146,7 @@ getStatsTable <- function(connectionDetails,
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   # Force databaseId to NULL when includeDatabaseId is FALSE
   if (!includeDatabaseId) {
     databaseId <- NULL
@@ -160,9 +160,10 @@ getStatsTable <- function(connectionDetails,
     snakeCaseToCamelCase = snakeCaseToCamelCase,
     table = table,
     cohort_database_schema = cohortDatabaseSchema,
-    database_id = ifelse(test = is.null(databaseId), 
-                         yes = "", 
-                         no = databaseId)
+    database_id = ifelse(test = is.null(databaseId),
+      yes = "",
+      no = databaseId
+    )
   )
 
   if (!snakeCaseToCamelCase) {
@@ -228,9 +229,10 @@ getCohortStats <- function(connectionDetails,
     # The cohortInclusionTable does not hold database
     # specific information so the databaseId
     # should NOT be included.
-    includeDatabaseId = ifelse(test = table != "cohortInclusionTable",
-                               yes = TRUE,
-                               no = FALSE)
+    includeDatabaseId <- ifelse(test = table != "cohortInclusionTable",
+      yes = TRUE,
+      no = FALSE
+    )
     results[[table]] <- getStatsTable(
       connectionDetails = connectionDetails,
       connection = connection,

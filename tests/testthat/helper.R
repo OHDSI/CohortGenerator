@@ -54,8 +54,9 @@ for (i in 1:length(cohortJsonFiles)) {
 # Helper function
 getNegativeControlOutcomeCohortsForTest <- function(setCohortIdToConceptId = TRUE) {
   negativeControlOutcomes <- readCsv(file = system.file("testdata/negativecontrols/negativeControlOutcomes.csv",
-                                                        package = "CohortGenerator",
-                                                        mustWork = TRUE))
+    package = "CohortGenerator",
+    mustWork = TRUE
+  ))
   if (setCohortIdToConceptId) {
     negativeControlOutcomes$cohortId <- negativeControlOutcomes$outcomeConceptId
   } else {
@@ -83,7 +84,6 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
     options("sqlRenderTempEmulationSchema" = NULL)
     cohortTable <- "cohort"
   } else {
-
     if (dbmsPlatform == "postgresql") {
       dbUser <- Sys.getenv("CDM5_POSTGRESQL_USER")
       dbPassword <- Sys.getenv("CDM5_POSTGRESQL_PASSWORD")
@@ -134,9 +134,11 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
     cohortTable <- paste0("cgc_", gsub("[: -]", "", Sys.Date(), perl = TRUE), "_", randCode)
   }
 
-  return(list(connectionDetails = connectionDetails,
-              cohortDatabaseSchema = cohortDatabaseSchema,
-              cohortTable = cohortTable,
-              cdmDatabaseSchema = cdmDatabaseSchema,
-              vocabularyDatabaseSchema = vocabularyDatabaseSchema))
+  return(list(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = cohortTable,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    vocabularyDatabaseSchema = vocabularyDatabaseSchema
+  ))
 }

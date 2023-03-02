@@ -1,10 +1,12 @@
 testPlatform <- function(dbmsDetails) {
   cohortTableNames <- getCohortTableNames(cohortTable = dbmsDetails$cohortTable)
   on.exit({
-    dropCohortStatsTables(connectionDetails = dbmsDetails$connectionDetails,
-                          cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
-                          cohortTableNames = cohortTableNames,
-                          dropCohortTable = TRUE)
+    dropCohortStatsTables(
+      connectionDetails = dbmsDetails$connectionDetails,
+      cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
+      cohortTableNames = cohortTableNames,
+      dropCohortTable = TRUE
+    )
   })
 
   createCohortTables(
@@ -12,13 +14,15 @@ testPlatform <- function(dbmsDetails) {
     cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
     cohortTableNames = cohortTableNames
   )
-  cohortsWithStats <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
-                                             jsonFolder = "testdata/name/cohorts",
-                                             sqlFolder = "testdata/name/sql/sql_server",
-                                             cohortFileNameFormat = "%s",
-                                             cohortFileNameValue = c("cohortName"),
-                                             packageName = "CohortGenerator",
-                                             verbose = FALSE)
+  cohortsWithStats <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
 
   cohortsGenerated <- generateCohortSet(
     connectionDetails = dbmsDetails$connectionDetails,
@@ -32,28 +36,36 @@ testPlatform <- function(dbmsDetails) {
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
 
   subsetOperations <- list(
-    createCohortSubset(id = 1001,
-                       name = "Cohort Subset",
-                       cohortIds = 2,
-                       cohortCombinationOperator = "all",
-                       negate = FALSE,
-                       startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-                       endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")),
-    createLimitSubset(id = 1002,
-                      name = "Observation Criteria",
-                      priorTime = 365,
-                      followUpTime = 0,
-                      calendarStartDate = lubridate::date("2001/1/1"),
-                      calendarEndDate = lubridate::date("2019/1/31"),
-                      limitTo = "earliestRemaining"),
-    createDemographicSubset(id = 1003,
-                            name = "Demographic Criteria",
-                            ageMin = 18,
-                            ageMax = 64)
+    createCohortSubset(
+      id = 1001,
+      name = "Cohort Subset",
+      cohortIds = 2,
+      cohortCombinationOperator = "all",
+      negate = FALSE,
+      startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+      endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")
+    ),
+    createLimitSubset(
+      id = 1002,
+      name = "Observation Criteria",
+      priorTime = 365,
+      followUpTime = 0,
+      calendarStartDate = lubridate::date("2001/1/1"),
+      calendarEndDate = lubridate::date("2019/1/31"),
+      limitTo = "earliestRemaining"
+    ),
+    createDemographicSubset(
+      id = 1003,
+      name = "Demographic Criteria",
+      ageMin = 18,
+      ageMax = 64
+    )
   )
-  subsetDef <- createCohortSubsetDefinition(name = "test definition",
-                                            definitionId = 1,
-                                            subsetOperators = subsetOperations)
+  subsetDef <- createCohortSubsetDefinition(
+    name = "test definition",
+    definitionId = 1,
+    subsetOperators = subsetOperations
+  )
   cohortsWithSubsets <- addCohortSubsetDefinition(cohortsWithStats, subsetDef)
   cohortsGenerated <- generateCohortSet(
     connectionDetails = dbmsDetails$connectionDetails,
@@ -65,7 +77,6 @@ testPlatform <- function(dbmsDetails) {
     incrementalFolder = file.path(outputFolder, "RecordKeeping", dbmsDetails$connectionDetails$dbms)
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithSubsets))
-
 }
 
 # This file contains platform specific tests

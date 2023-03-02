@@ -17,9 +17,10 @@
 .loadJson <- function(definition, simplifyVector = FALSE, simplifyDataFrame = FALSE, ...) {
   if (is.character(definition)) {
     definition <- jsonlite::fromJSON(definition,
-                                     simplifyVector = simplifyVector,
-                                     simplifyDataFrame = simplifyDataFrame,
-                                     ...)
+      simplifyVector = simplifyVector,
+      simplifyDataFrame = simplifyDataFrame,
+      ...
+    )
   }
 
   if (!is.list(definition)) {
@@ -50,12 +51,15 @@ SubsetCohortWindow <- R6::R6Class(
     #' @description List representation of object
     toList = function() {
       objRepr <- list()
-      if (length(private$.startDay))
+      if (length(private$.startDay)) {
         objRepr$startDay <- jsonlite::unbox(private$.startDay)
-      if (length(private$.endDay))
+      }
+      if (length(private$.endDay)) {
         objRepr$endDay <- jsonlite::unbox(private$.endDay)
-      if (length(private$.targetAnchor))
+      }
+      if (length(private$.targetAnchor)) {
         objRepr$targetAnchor <- jsonlite::unbox(private$.targetAnchor)
+      }
 
       objRepr
     },
@@ -70,29 +74,37 @@ SubsetCohortWindow <- R6::R6Class(
     #' @param criteria SubsetCohortWindow instance
     isEqualTo = function(criteria) {
       checkmate::assertR6(criteria, "SubsetCohortWindow")
-      return(all(self$startDay == criteria$startDay,
-                 self$endDay == criteria$endDay,
-                 self$targetAnchor == criteria$targetAnchor))
+      return(all(
+        self$startDay == criteria$startDay,
+        self$endDay == criteria$endDay,
+        self$targetAnchor == criteria$targetAnchor
+      ))
     }
   ),
   active = list(
-    #'@field startDay Integer
+    #' @field startDay Integer
     startDay = function(startDay) {
-      if (missing(startDay)) return(private$.startDay)
+      if (missing(startDay)) {
+        return(private$.startDay)
+      }
       checkmate::assertIntegerish(x = startDay)
       private$.startDay <- as.integer(startDay)
       return(self)
     },
-    #'@field endDay Integer
+    #' @field endDay Integer
     endDay = function(endDay) {
-      if (missing(endDay)) return(private$.endDay)
+      if (missing(endDay)) {
+        return(private$.endDay)
+      }
       checkmate::assertIntegerish(x = endDay)
       private$.endDay <- as.integer(endDay)
       return(self)
     },
-    #'@field targetAnchor Boolean
+    #' @field targetAnchor Boolean
     targetAnchor = function(targetAnchor) {
-      if (missing(targetAnchor)) return(private$.targetAnchor)
+      if (missing(targetAnchor)) {
+        return(private$.targetAnchor)
+      }
       checkmate::assertChoice(x = targetAnchor, choices = c("cohortStart", "cohortEnd"))
       private$.targetAnchor <- targetAnchor
       return(self)
@@ -136,7 +148,6 @@ SubsetOperator <- R6::R6Class(
     .id = NA,
     baseFields = c("name", "id")
   ),
-
   public = list(
     #' @param definition json character or list - definition of subset operator
     #'
@@ -183,20 +194,25 @@ SubsetOperator <- R6::R6Class(
 
       for (field in self$publicFields()) {
         # DemographicCriteriaSubsetOpertior has additional equality test
-        if (!is.atomic(self[[field]]))
+        if (!is.atomic(self[[field]])) {
           next
+        }
 
-        if (is.null(self[[field]]) & is.null(subsetOperatorB[[field]]))
+        if (is.null(self[[field]]) & is.null(subsetOperatorB[[field]])) {
           next
+        }
 
-        if (is.null(self[[field]]) & !is.null(subsetOperatorB[[field]]))
+        if (is.null(self[[field]]) & !is.null(subsetOperatorB[[field]])) {
           return(FALSE)
+        }
 
-        if (!is.null(self[[field]]) & is.null(subsetOperatorB[[field]]))
+        if (!is.null(self[[field]]) & is.null(subsetOperatorB[[field]])) {
           return(FALSE)
+        }
 
-        if (self[[field]] != subsetOperatorB[[field]])
+        if (self[[field]] != subsetOperatorB[[field]]) {
           return(FALSE)
+        }
       }
 
       return(TRUE)
@@ -220,20 +236,20 @@ SubsetOperator <- R6::R6Class(
       .toJSON(self$toList())
     }
   ),
-
   active = list(
     id = function(id) {
-      if (missing(id))
+      if (missing(id)) {
         return(private$.id)
+      }
 
       checkmate::assertInt(id)
       private$.id <- id
       self
     },
-
     name = function(name) {
-      if (missing(name))
+      if (missing(name)) {
         return(private$.name)
+      }
 
       checkmate::assertCharacter(name)
       private$.name <- name
@@ -275,10 +291,11 @@ CohortSubsetOperator <- R6::R6Class(
     }
   ),
   active = list(
-    #'@field cohortIds Integer ids of cohorts to subset to
+    #' @field cohortIds Integer ids of cohorts to subset to
     cohortIds = function(cohortIds) {
-      if (missing(cohortIds))
+      if (missing(cohortIds)) {
         return(private$.cohortIds)
+      }
 
       cohortIds <- as.integer(cohortIds)
       # TODO: valid cohorts check. Do we want to allow multiple cohorts or a single cohort?
@@ -289,29 +306,32 @@ CohortSubsetOperator <- R6::R6Class(
       private$.cohortIds <- cohortIds
       self
     },
-    #'@field cohortCombinationOperator How to combine the cohorts
+    #' @field cohortCombinationOperator How to combine the cohorts
     cohortCombinationOperator = function(cohortCombinationOperator) {
-      if (missing(cohortCombinationOperator))
+      if (missing(cohortCombinationOperator)) {
         return(private$.cohortCombinationOperator)
+      }
 
       checkmate::assertChoice(x = cohortCombinationOperator, choices = c("any", "all"))
       private$.cohortCombinationOperator <- cohortCombinationOperator
       self
     },
-    #'@field negate Inverse the subset rule? TRUE will take the patients NOT in the subset
+    #' @field negate Inverse the subset rule? TRUE will take the patients NOT in the subset
     negate = function(negate) {
-      if (missing(negate))
+      if (missing(negate)) {
         return(private$.negate)
+      }
 
       checkmate::assertLogical(x = negate)
       private$.negate <- negate
       self
     },
-    #'@field startWindow The time window to use evaluating the subset cohort
-    #'start relative to the target cohort
+    #' @field startWindow The time window to use evaluating the subset cohort
+    #' start relative to the target cohort
     startWindow = function(startWindow) {
-      if (missing(startWindow))
+      if (missing(startWindow)) {
         return(private$.startWindow)
+      }
 
       if (is.list(startWindow)) {
         startWindow <- do.call(createSubsetCohortWindow, startWindow)
@@ -321,11 +341,12 @@ CohortSubsetOperator <- R6::R6Class(
       private$.startWindow <- startWindow
       self
     },
-    #'@field endWindow The time window to use evaluating the subset cohort
-    #'end relative to the target cohort
+    #' @field endWindow The time window to use evaluating the subset cohort
+    #' end relative to the target cohort
     endWindow = function(endWindow) {
-      if (missing(endWindow))
+      if (missing(endWindow)) {
         return(private$.endWindow)
+      }
 
       if (is.list(endWindow)) {
         endWindow <- do.call(createSubsetCohortWindow, endWindow)
@@ -398,91 +419,102 @@ DemographicSubsetOperator <- R6::R6Class(
       if (!is.null(private$.ethnicity)) {
         objRepr$ethnicity <- private$.ethnicity
       }
-      
+
       objRepr
     },
-    
+
     #' @description json serialized representation of object
     toJSON = function() {
       .toJSON(self$toList())
     },
-    
-    
+
+
     #' @description Compare Subset to another
     #' @param criteria DemographicSubsetOperator instance
     isEqualTo = function(criteria) {
       checkmate::assertR6(criteria, "DemographicSubsetOperator")
-      return(all(self$ageMin == criteria$ageMin,
-                 self$ageMax == criteria$ageMax,
-                 self$getGender() == criteria$getGender(),
-                 self$getRace() == criteria$getRace(),
-                 self$getEthnicity() == criteria$getEthnicity()))
+      return(all(
+        self$ageMin == criteria$ageMin,
+        self$ageMax == criteria$ageMax,
+        self$getGender() == criteria$getGender(),
+        self$getRace() == criteria$getRace(),
+        self$getEthnicity() == criteria$getEthnicity()
+      ))
     },
-    
-    
+
+
     #' @description Gender getter - used when constructing SQL to default
     #' NULL to an empty string
     getGender = function() {
       if (is.null(private$.gender)) {
-        return('')
+        return("")
       } else {
         return(private$.gender)
       }
     },
-    
+
     #' @description Race getter - used when constructing SQL to default
     #' NULL to an empty string
     getRace = function() {
       if (is.null(private$.race)) {
-        return('')
+        return("")
       } else {
         return(private$.race)
       }
     },
-    
+
     #' @description Ethnicity getter - used when constructing SQL to default
     #' NULL to an empty string
     getEthnicity = function() {
       if (is.null(private$.ethnicity)) {
-        return('')
+        return("")
       } else {
         return(private$.ethnicity)
       }
     }
   ),
   active = list(
-    #'@field    ageMin Int between 0 and 9999 - minimum age
+    #' @field    ageMin Int between 0 and 9999 - minimum age
     ageMin = function(ageMin) {
-      if (missing(ageMin)) return(private$.ageMin)
+      if (missing(ageMin)) {
+        return(private$.ageMin)
+      }
       checkmate::assertInt(ageMin, lower = 0, upper = min(self$ageMax, 99999))
       private$.ageMin <- ageMin
       return(self)
     },
-    #'@field  ageMax  Int between 0 and 9999 - maximum age
+    #' @field  ageMax  Int between 0 and 9999 - maximum age
     ageMax = function(ageMax) {
-      
-      if (missing(ageMax)) return(private$.ageMax)
+      if (missing(ageMax)) {
+        return(private$.ageMax)
+      }
       checkmate::assertInt(ageMax, lower = max(0, self$ageMin), upper = 99999)
       private$.ageMax <- ageMax
       return(self)
     },
     #' @field gender vector of gender concept IDs
     gender = function(gender) {
-      if (missing(gender)) return(private$.gender)
+      if (missing(gender)) {
+        return(private$.gender)
+      }
       checkmate::assertVector(gender, null.ok = TRUE)
       private$.gender <- gender
       return(self)
     },
     #' @field race character string denoting race
     race = function(race) {
-      if (missing(race)) return(private$.race)
+      if (missing(race)) {
+        return(private$.race)
+      }
       checkmate::assertVector(race, null.ok = TRUE)
       private$.race <- race
       return(self)
     },
     #' @field ethnicity character string denoting ethnicity
     ethnicity = function(ethnicity) {
-      if (missing(ethnicity)) return(private$.ethnicity)
+      if (missing(ethnicity)) {
+        return(private$.ethnicity)
+      }
       checkmate::assertVector(ethnicity, null.ok = TRUE)
       private$.ethnicity <- ethnicity
       return(self)
@@ -494,7 +526,7 @@ DemographicSubsetOperator <- R6::R6Class(
 #' Create createDemographicSubset Subset
 #' @param id            Id number
 #' @param name          char name
-#' @param ageMin       The minimum age 
+#' @param ageMin       The minimum age
 #' @param ageMax       The maximum age
 #' @param gender       Gender demographics - concept ID list
 #' @param race         Race demographics - concept ID list
@@ -509,7 +541,7 @@ createDemographicSubset <- function(id, name, ageMin = 0, ageMax = 9999, gender 
   subset$gender <- gender
   subset$race <- race
   subset$ethnicity <- ethnicity
-  
+
   subset
 }
 
@@ -548,15 +580,18 @@ LimitSubsetOperator <- R6::R6Class(
   active = list(
     #' @field priorTime             minimum washout time in days
     priorTime = function(priorTime) {
-      if (missing(priorTime)) return(private$.priorTime)
+      if (missing(priorTime)) {
+        return(private$.priorTime)
+      }
       checkmate::assertInt(priorTime, lower = 0, upper = 99999)
       private$.priorTime <- priorTime
       self
     },
     #' @field followUpTime            minimum required follow up time in days
     followUpTime = function(followUpTime) {
-      if (missing(followUpTime))
+      if (missing(followUpTime)) {
         return(private$.followUpTime)
+      }
 
       checkmate::assertInt(followUpTime, lower = 0, upper = 99999)
       private$.followUpTime <- followUpTime
@@ -572,7 +607,9 @@ LimitSubsetOperator <- R6::R6Class(
     #'                          outside this will be censored.
     #'
     limitTo = function(limitTo) {
-      if (missing(limitTo)) return(private$.limitTo)
+      if (missing(limitTo)) {
+        return(private$.limitTo)
+      }
       checkmate::assertCharacter(limitTo)
       checkmate::assertChoice(limitTo, choices = c("", "firstEver", "earliestRemaining", "latestRemaining", "lastEver"))
       private$.limitTo <- limitTo
@@ -580,10 +617,11 @@ LimitSubsetOperator <- R6::R6Class(
     },
     #' @field calendarStartDate            The calendar start date for limiting by date
     calendarStartDate = function(calendarStartDate) {
-      if (missing(calendarStartDate))
+      if (missing(calendarStartDate)) {
         return(private$.calendarStartDate)
+      }
 
-      if(is.character(calendarStartDate)) {
+      if (is.character(calendarStartDate)) {
         if (calendarStartDate == "") {
           calendarStartDate <- NULL
         } else {
@@ -596,8 +634,9 @@ LimitSubsetOperator <- R6::R6Class(
     },
     #' @field calendarEndDate            The calendar end date for limiting by date
     calendarEndDate = function(calendarEndDate) {
-      if (missing(calendarEndDate))
+      if (missing(calendarEndDate)) {
         return(private$.calendarEndDate)
+      }
 
       if (is.character(calendarEndDate)) {
         if (calendarEndDate == "") {
@@ -629,8 +668,8 @@ LimitSubsetOperator <- R6::R6Class(
 #'                              "lastEver" - only last entry in patient history inside
 #'
 #'                          Note, when using firstEver and lastEver with follow up and washout, patients with events
-#'                          outside this will be censored. The "firstEver" and "lastEver" are applied first. 
-#'                          The "earliestRemaining" and "latestRemaining" are applied after all other limit 
+#'                          outside this will be censored. The "firstEver" and "lastEver" are applied first.
+#'                          The "earliestRemaining" and "latestRemaining" are applied after all other limit
 #'                          criteria are applied (i.e. after applying prior/post time and calendar time).
 #' @param calendarEndDate       Start date to allow period (e.g. 2015/1/1)
 #' @param calendarStartDate     End date to allow periods (e.g. 2020/1/1/)

@@ -214,7 +214,7 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
 #'                              in conjunction with the cohortFileNameFormat parameter.
 #'
 #' @param subsetJsonFolder      Defines the folder to store the subset JSON
-#' 
+#'
 #' @param packageName The name of the package containing the cohort definitions.
 #'
 #' @param warnOnMissingJson Provide a warning if a .JSON file is not found for a
@@ -291,7 +291,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
 
     loadSubsets <- TRUE
   }
-  
+
   # Read the JSON/SQL files
   fileData <- data.frame()
   for (i in 1:nrow(settings)) {
@@ -321,13 +321,13 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
         ParallelLogger::logInfo("Loading Cohort Subset Defintion ", subsetFile)
         subsetDef <- CohortSubsetDefinition$new(ParallelLogger::loadSettingsFromJson(subsetFile))
         # Find target cohorts for this subset definition
-        subsetTargetIds <- unique(subsetsToLoad[subsetsToLoad$subsetDefinitionId == i,]$subsetParent)
+        subsetTargetIds <- unique(subsetsToLoad[subsetsToLoad$subsetDefinitionId == i, ]$subsetParent)
 
         cohortDefinitionSet <- addCohortSubsetDefinition(cohortDefinitionSet,
-                                                         subsetDef,
-                                                         targetCohortIds = subsetTargetIds)
+          subsetDef,
+          targetCohortIds = subsetTargetIds
+        )
       }
-
     } else {
       stop("subset definitions defined in settings file but no corresponding subset definition file is associated")
     }
@@ -366,7 +366,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
 #'                              in conjunction with the cohortFileNameFormat parameter.
 #'
 #' @param subsetJsonFolder      Defines the folder to store the subset JSON
-#' 
+#'
 #' @param verbose           When TRUE, logging messages are emitted to indicate export
 #'                          progress.
 #'

@@ -75,7 +75,6 @@ createCohortTables <- function(connectionDetails = NULL,
                                cohortDatabaseSchema,
                                cohortTableNames = getCohortTableNames(),
                                incremental = FALSE) {
-
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
   }

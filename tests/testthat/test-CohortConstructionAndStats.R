@@ -454,14 +454,14 @@ test_that("Insert cohort stats with INT64 for cohort_definition_id", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames
   )
-  
+
   # Obtain a list of cohorts to test
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  
+
   # Hack the cohortDefinitionId to force to 64 bit integer
   cohortsWithStats$cohortId <- bit64::as.integer64(cohortsWithStats$cohortId)
   cohortsWithStats$cohortId <- cohortsWithStats$cohortId + .Machine$integer.max
-  
+
   # Insert the inclusion rule names
   cohortInclusionRules <- insertInclusionRuleNames(
     connectionDetails = connectionDetails,
@@ -469,7 +469,7 @@ test_that("Insert cohort stats with INT64 for cohort_definition_id", {
     cohortDatabaseSchema = "main",
     cohortInclusionTable = cohortTableNames$cohortInclusionTable
   )
-  
+
   conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   results <- DatabaseConnector::renderTranslateQuerySql(
     connection = conn,
