@@ -39,13 +39,31 @@ This guide will provide examples of using the CohortGenerator package to generat
 We can create cohorts using [ATLAS](https://github.com/OHDSI/Atlas) and download them for generation in R. To do this, we will use the `ROhdsiWebApi` package to download some cohort definitions to R:
 
 
-```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
+```{r eval=FALSE}
 # A list of cohort IDs for use in this vignette
 cohortIds <- c(1778211,1778212,1778213)
 # Get the SQL/JSON for the cohorts
 cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(baseUrl = baseUrl,
                                                                cohortIds = cohortIds)
 ```
+
+```{r echo=FALSE, results='hide', error=FALSE, warning=FALSE, message=FALSE}
+# Hidden code block to load the cohortDefinitionSet from the package vs. trying to
+# download using ROhdsiWebApi to prevent errors when running GHA
+cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                              jsonFolder = "testdata/name/cohorts",
+                                              sqlFolder = "testdata/name/sql/sql_server",
+                                              cohortFileNameFormat = "%s",
+                                              cohortFileNameValue = c("cohortName"),
+                                              packageName = "CohortGenerator",
+                                              verbose = FALSE)
+
+cohortDefinitionSet$cohortId <- cohortDefinitionSet$cohortId + 1778210 # Match the cohort Ids from Atlas
+cohortIds <- cohortDefinitionSet$cohortId
+cohortDefinitionSet$atlasId <- cohortDefinitionSet$cohortId
+cohortDefinitionSet$logicDescription <- ""
+```
+
 The code above connects to ATLAS' WebAPI, retrieves all of the `cohortDefinitions` and then filters them based on the name to produce the `cohortsForGeneration` dataframe. `cohortsForGeneration` contains the list of cohort IDs to use for calling the function `ROhdsiWebApi::exportCohortDefinitionSet` to download the set of cohort definitions into `cohortDefinitionSet`. The cohort definition set data frame has the following columns:
 
 ```{r}
@@ -66,9 +84,18 @@ The `cohortDefintionSet` contains all of the details about each cohort that we w
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 saveCohortDefinitionSet(cohortDefinitionSet = cohortDefinitionSet,
-                        settingsFileName = file.path(packageRoot, "inst/settings/CohortsToCreate.csv"),
-                        jsonFolder = file.path(packageRoot, "inst/cohorts"),
-                        sqlFolder = file.path(packageRoot, "inst/sql/sql_server"))
+                        settingsFileName = file.path(
+                          packageRoot, 
+                          "inst/settings/CohortsToCreate.csv"
+                        ),
+                        jsonFolder = file.path(
+                          packageRoot, 
+                          "inst/cohorts"
+                        ),
+                        sqlFolder = file.path(
+                          packageRoot, 
+                          "inst/sql/sql_server"
+                        ))
 ```
 
 By default, saving the cohort definition set will create the files under a folder called `inst` which is where resources for a study package will live. Under `inst` the following folders and files are created:
@@ -80,9 +107,11 @@ By default, saving the cohort definition set will create the files under a folde
 Your study package can later re-construct the cohortDefinitionSet by reading in these resources using the `getCohortDefinitionSet` function.
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = file.path(packageRoot, "inst/settings/CohortsToCreate.csv"),
-                                              jsonFolder = file.path(packageRoot, "inst/cohorts"),
-                                              sqlFolder = file.path(packageRoot, "inst/sql/sql_server"))
+cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = file.path(
+  packageRoot, "inst/settings/CohortsToCreate.csv"),
+  jsonFolder = file.path(packageRoot, "inst/cohorts"),
+  sqlFolder = file.path(packageRoot, "inst/sql/sql_server")
+)
 ```
 
 
@@ -128,11 +157,13 @@ getCohortCounts(connectionDetails = connectionDetails,
 
 Cohorts defined in ATLAS may define one or more inclusion criteria as part of the cohort's logic. As part of cohort generation, we may want to capture these cohort statistics for use in other packages. For example, [CohortDiagnostics](https://ohdsi.github.io/CohortDiagnostics) has functionality that allows for review of inclusion rule statistics to understand how these rules may materialize between data sources. Here we will review how to generate cohorts with inclusion rule statistics and how to export these results for use by downstream packages such as CohortDiagnostics. Building on our basic example, let's export the cohorts from WebAPI but this time indicate that we'd like to also include the code that `generatesStats`:
 
-```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
+```{r, eval=FALSE}
 # Get the cohorts and include the code to generate inclusion rule stats
-cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(baseUrl = baseUrl,
-                                                               cohortIds = cohortIds,
-                                                               generateStats = TRUE)
+cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(
+  baseUrl = baseUrl,
+  cohortIds = cohortIds,
+  generateStats = TRUE
+)
 ```
 
 Next we'll create the tables to store the cohort and the cohort statistics. Then we can generate the cohorts.
@@ -160,15 +191,19 @@ generateCohortSet(connectionDetails= connectionDetails,
 At this stage, your cohorts are generated and any cohort statistics are available in the cohort statistics tables. The next step is to export the results to the file system which is done using the code below:
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-insertInclusionRuleNames(connectionDetails = connectionDetails,
-                         cohortDefinitionSet = cohortDefinitionSet,
-                         cohortDatabaseSchema = "main",
-                         cohortInclusionTable = cohortTableNames$cohortInclusionTable)
+insertInclusionRuleNames(
+  connectionDetails = connectionDetails,
+  cohortDefinitionSet = cohortDefinitionSet,
+  cohortDatabaseSchema = "main",
+  cohortInclusionTable = cohortTableNames$cohortInclusionTable
+)
 
-exportCohortStatsTables(connectionDetails = connectionDetails,
-                        cohortDatabaseSchema = "main",
-                        cohortTableNames = cohortTableNames,
-                        cohortStatisticsFolder = file.path(someFolder, "InclusionStats"))
+exportCohortStatsTables(
+  connectionDetails = connectionDetails,
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames,
+  cohortStatisticsFolder = file.path(someFolder, "InclusionStats")
+)
 ```
 
 The code above performs two steps. First, we insert the inclusion rule names from the Circe expressions in the `cohortDefinitionSet`. This is important since these names are not automatically inserted into the database when generating the cohorts. Second, we export the cohort statistics to the file system which will write comma separated value (CSV) files per cohort statistic table in the `InclusionStats` folder.

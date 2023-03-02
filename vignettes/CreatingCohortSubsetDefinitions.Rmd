@@ -1,6 +1,6 @@
 ---
 title: "Creating Cohort Subset Definitions"
-author: "James P. Gilbert"
+author: "James P. Gilbert and Anthony G. Sena"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -25,6 +25,7 @@ knitr::opts_chunk$set(
 someFolder <- tempdir()
 packageRoot <- tempdir()
 baseUrl <- "https://api.ohdsi.org/WebAPI"
+library(CohortGenerator)
 ```
 # Introduction
 This guide aims to describe the process of cohort subsetting using `CohortGenerator`.
@@ -55,7 +56,7 @@ This type of operation allows you to subset a cohort to only those subjects incl
 
 ## Defining a subset definition
 First get a Cohort definition set:
-```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
+```{r eval=FALSE}
 library(CohortGenerator)
 # A list of cohort IDs for use in this vignette
 cohortIds <- c(1778211, 1778212, 1778213)
@@ -63,7 +64,22 @@ cohortIds <- c(1778211, 1778212, 1778213)
 cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(baseUrl = baseUrl,
                                                                cohortIds = cohortIds)
 ```
+```{r echo=FALSE, results='hide', error=FALSE, warning=FALSE, message=FALSE}
+# Hidden code block to load the cohortDefinitionSet from the package vs. trying to
+# download using ROhdsiWebApi to prevent errors when running GHA
+cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                              jsonFolder = "testdata/name/cohorts",
+                                              sqlFolder = "testdata/name/sql/sql_server",
+                                              cohortFileNameFormat = "%s",
+                                              cohortFileNameValue = c("cohortName"),
+                                              packageName = "CohortGenerator",
+                                              verbose = FALSE)
 
+cohortDefinitionSet$cohortId <- cohortDefinitionSet$cohortId + 1778210 # Match the cohort Ids from Atlas
+cohortIds <- cohortDefinitionSet$cohortId
+cohortDefinitionSet$atlasId <- cohortDefinitionSet$cohortId
+cohortDefinitionSet$logicDescription <- ""
+```
 A definition can include different subset operations - these are applied strictly in order:
 
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
@@ -76,16 +92,21 @@ subsetDef <- createCohortSubsetDefinition(
     # here we are saying 'first subset to only those patients in cohort 1778213'
     createCohortSubset(id = 1001,
                        name = "Subset to patients in cohort 1778213",
-                       # Note that this can be set to any id - if the cohort is empty or doesn't exist this will not error
+                       # Note that this can be set to any id - if the 
+                       # cohort is empty or doesn't exist this will not error
                        cohortIds = 1778213,
                        cohortCombinationOperator = "any",
                        negate = FALSE,
-                       startWindow = createSubsetCohortWindow(startDay = -9999,
-                                                              endDay = 0,
-                                                              targetAnchor = "cohortStart"),
-                       endWindow = createSubsetCohortWindow(startDay = 0,
-                                                            endDay = 9999,
-                                                            targetAnchor = "cohortStart")),
+                       startWindow = createSubsetCohortWindow(
+                         startDay = -9999,
+                         endDay = 0,
+                         targetAnchor = "cohortStart"
+                       ),
+                       endWindow = createSubsetCohortWindow(
+                         startDay = 0,
+                         endDay = 9999,
+                         targetAnchor = "cohortStart")
+                       ),
 
     # Next, subset to only those with 365 days of prior observation
     createLimitSubset(id = 1002,
@@ -111,7 +132,7 @@ subsetOperations2[[3]] <-
                           ageMax = 64)
 
 subsetDef2 <- createCohortSubsetDefinition(
-  name = "Patients in cohort 1778213 with 365 days prior observation, aged 18 - 64",
+  name = "Patients in cohort 1778213 with 365 days prior obs, aged 18 - 64",
   definitionId = 2,
   subsetOperators = subsetOperations2)
 ```
@@ -124,7 +145,7 @@ for saving definition sets for re-use.
 cohortDefinitionSet <- cohortDefinitionSet |>
   addCohortSubsetDefinition(subsetDef)
 
-cohortDefinitionSet
+knitr::kable(cohortDefinitionSet[,names(cohortDefinitionSet)[which(!names(cohortDefinitionSet) %in% c("json", "sql"))]])
 ```
 We can also apply a subset definition to only a limted number of target cohorts as follows
 
@@ -132,7 +153,7 @@ We can also apply a subset definition to only a limted number of target cohorts 
 cohortDefinitionSet <- cohortDefinitionSet |>
   addCohortSubsetDefinition(subsetDef2, targetCohortIds = 1778212)
 
-cohortDefinitionSet
+knitr::kable(cohortDefinitionSet[,names(cohortDefinitionSet)[which(!names(cohortDefinitionSet) %in% c("json", "sql"))]])
 ```
 
 The `cohortDefinitionSet` data.frame now has some additional columns:
@@ -181,13 +202,15 @@ createCohortTables(connectionDetails = connectionDetails,
                    cohortDatabaseSchema = "main",
                    cohortTableNames = getCohortTableNames("my_cohort"))
 # ### As subsets are a big side effect we need to be clear what was generated and have good naming conventions
-generatedCohorts <- generateCohortSet(connectionDetails = connectionDetails,
-                                      cdmDatabaseSchema = "main",
-                                      cohortDatabaseSchema = "main",
-                                      cohortTableNames = getCohortTableNames("my_cohort"),
-                                      cohortDefinitionSet = cohortDefinitionSet,
-                                      incremental = TRUE,
-                                      incrementalFolder = file.path(someFolder, "RecordKeeping"))
+generatedCohorts <- generateCohortSet(
+  connectionDetails = connectionDetails,
+  cdmDatabaseSchema = "main",
+  cohortDatabaseSchema = "main",
+  cohortTableNames = getCohortTableNames("my_cohort"),
+  cohortDefinitionSet = cohortDefinitionSet,
+  incremental = TRUE,
+  incrementalFolder = file.path(someFolder, "RecordKeeping")
+)
 ```
 Cohort subset definitions can be run incrementally.
 In fact, if the base cohort definition changes for any reason, any subsets will automatically be re-executed when calling
@@ -208,7 +231,9 @@ loading is also achieved with `getCohortDefinitionSet`
 
 ```{r eval=FALSE}
 
-cohortDefinitionSet <- getCohortDefinitionSet(subsetJsonFolder = "<path_to_my_subset_definition>")
+cohortDefinitionSet <- getCohortDefinitionSet(
+  subsetJsonFolder = "<path_to_my_subset_definition>"
+)
 ```
 Any subset definitions should automatically be loaded and applied to the cohort definition set.
 
