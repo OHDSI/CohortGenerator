@@ -168,10 +168,7 @@ For out newly defined subsets, this will be the base cohort.
 
 `subsetDefinitionId` displays the id of the subset applied to the cohort.
 
-In addition, the name of the cohort displayed in this table is automatically generated from the base cohort name, the subset name
-and the names defined for the subset operations applied in the subset definition.
-As the number of resulting subsets can become very large, it is crucial to choose human interpretable naming conventions.
-For example, see the name of our first cohort and the resulting name of a child subset:
+In addition, the name of the cohort displayed in this table is automatically generated from the base cohort name, the subset name and the names defined for the subset operations applied in the subset definition. As the number of resulting subsets can become very large, it is crucial to choose human interpretable naming conventions. For example, see the name of our first cohort and the resulting name of a child subset:
 
 ```{r error=FALSE, warning=FALSE, message=FALSE}
 writeLines(c(paste("Cohort Id:", cohortDefinitionSet$cohortId[1]),

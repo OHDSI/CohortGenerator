@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -71,7 +71,7 @@ CohortSubsetDefinition <- R6::R6Class(
     #' add Subset Operator
     #' @description add subset to class - checks if equivalent id is present
     #' Will throw an error if a matching ID is found but reference object is different
-    #' @param subsetOperator a SubsetOperator isntance
+    #' @param subsetOperator a SubsetOperator instance
     #' @param overwrite if a subset operator of the same ID is present, replace it with a new definition
     addSubsetOperator = function(subsetOperator) {
       checkmate::assertR6(subsetOperator, "SubsetOperator")
@@ -182,7 +182,7 @@ CohortSubsetDefinition <- R6::R6Class(
   ),
 
   active = list(
-    #' @field targetOutputPairs  list of pairs of intgers - (targetCohortId, outputCohortId)
+    #' @field targetOutputPairs  list of pairs of integers - (targetCohortId, outputCohortId)
     targetOutputPairs = function(targetOutputPairs) {
       if (missing(targetOutputPairs))
         return(private$.targetOutputPairs)

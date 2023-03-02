@@ -29,7 +29,6 @@ Criteria Subset
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-DemographicSubsetOperator-publicFields}{\code{DemographicSubsetOperator$publicFields()}}
 \item \href{#method-DemographicSubsetOperator-toList}{\code{DemographicSubsetOperator$toList()}}
 \item \href{#method-DemographicSubsetOperator-toJSON}{\code{DemographicSubsetOperator$toJSON()}}
 \item \href{#method-DemographicSubsetOperator-isEqualTo}{\code{DemographicSubsetOperator$isEqualTo()}}
@@ -45,19 +44,10 @@ Criteria Subset
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-classname'><code>CohortGenerator::SubsetOperator$classname()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="getQueryBuilder"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-getQueryBuilder'><code>CohortGenerator::SubsetOperator$getQueryBuilder()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="initialize"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-initialize'><code>CohortGenerator::SubsetOperator$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="publicFields"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-publicFields'><code>CohortGenerator::SubsetOperator$publicFields()</code></a></span></li>
 </ul>
 </details>
 }}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DemographicSubsetOperator-publicFields"></a>}}
-\if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-publicFields}{}}}
-\subsection{Method \code{publicFields()}}{
-Publicly settable fields of object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DemographicSubsetOperator$publicFields()}\if{html}{\out{</div>}}
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DemographicSubsetOperator-toList"></a>}}
 \if{latex}{\out{\hypertarget{method-DemographicSubsetOperator-toList}{}}}
