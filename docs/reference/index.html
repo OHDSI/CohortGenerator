@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.8.0</span>
       </span>
     </div>
 
@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/CreatingCohortSubsetDefinitions.html">Creating Cohort Subset Definitions</a>
+    </li>
+    <li>
       <a href="../articles/GeneratingCohorts.html">Generating Cohorts</a>
     </li>
   </ul></li>
@@ -116,6 +119,66 @@ tables</p></td>
           <p><code><a href="getCohortCounts.html">getCohortCounts()</a></code> </p>
         </td>
         <td><p>Count the cohort(s)</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="cohort-subset">Cohort Subset <a href="#cohort-subset" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions and R6 classes for creating cohort subset definitions and subset operators.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="addCohortSubsetDefinition.html">addCohortSubsetDefinition()</a></code> </p>
+        </td>
+        <td><p>Add cohort subset definition to a cohort definition set</p></td>
+      </tr><tr><td>
+          <p><code><a href="CohortSubsetDefinition.html">CohortSubsetDefinition</a></code> </p>
+        </td>
+        <td><p>Cohort Subset Definition</p></td>
+      </tr><tr><td>
+          <p><code><a href="CohortSubsetOperator.html">CohortSubsetOperator</a></code> </p>
+        </td>
+        <td><p>Cohort Subset Operator</p></td>
+      </tr><tr><td>
+          <p><code><a href="createCohortSubset.html">createCohortSubset()</a></code> </p>
+        </td>
+        <td><p>A definition of subset functions to be applied to a set of cohorts</p></td>
+      </tr><tr><td>
+          <p><code><a href="createCohortSubsetDefinition.html">createCohortSubsetDefinition()</a></code> </p>
+        </td>
+        <td><p>Create Subset Definition</p></td>
+      </tr><tr><td>
+          <p><code><a href="createDemographicSubset.html">createDemographicSubset()</a></code> </p>
+        </td>
+        <td><p>Create createDemographicSubset Subset</p></td>
+      </tr><tr><td>
+          <p><code><a href="createLimitSubset.html">createLimitSubset()</a></code> </p>
+        </td>
+        <td><p>Create Limit Subset</p></td>
+      </tr><tr><td>
+          <p><code><a href="createSubsetCohortWindow.html">createSubsetCohortWindow()</a></code> </p>
+        </td>
+        <td><p>A definition of subset functions to be applied to a set of cohorts</p></td>
+      </tr><tr><td>
+          <p><code><a href="DemographicSubsetOperator.html">DemographicSubsetOperator</a></code> </p>
+        </td>
+        <td><p>Criteria Subset</p></td>
+      </tr><tr><td>
+          <p><code><a href="getSubsetDefinitions.html">getSubsetDefinitions()</a></code> </p>
+        </td>
+        <td><p>Get cohort subset definitions from a cohort definition set</p></td>
+      </tr><tr><td>
+          <p><code><a href="LimitSubsetOperator.html">LimitSubsetOperator</a></code> </p>
+        </td>
+        <td><p>Limit Subset Operator</p></td>
+      </tr><tr><td>
+          <p><code><a href="saveCohortSubsetDefinition.html">saveCohortSubsetDefinition()</a></code> </p>
+        </td>
+        <td><p>Save cohort subset definitions to json</p></td>
+      </tr><tr><td>
+          <p><code><a href="SubsetCohortWindow.html">SubsetCohortWindow</a></code> </p>
+        </td>
+        <td><p>to List</p></td>
+      </tr><tr><td>
+          <p><code><a href="SubsetOperator.html">SubsetOperator</a></code> </p>
+        </td>
+        <td><p>SubsetOperator</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cohort-statistics">Cohort Statistics <a href="#cohort-statistics" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions for inserting inclusion rule names from a cohort definition, exporting the cohort statistics to the file system and a helper function for dropping those tables when they are no longer needed.</p>
@@ -206,7 +269,7 @@ when generating cohorts that include cohort statistics</p></td>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Anthony Sena, Gowtham Rao, Martijn Schuemie.</p>
+  <p></p><p>Developed by Anthony Sena, Jamie Gilbert, Gowtham Rao, Martijn Schuemie.</p>
 </div>
 
 <div class="pkgdown">
