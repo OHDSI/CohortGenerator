@@ -581,7 +581,6 @@ createDemographicSubset <- function(name = NULL, ageMin = 0, ageMax = 9999, gend
       }
       return(retValue)
     }
-
     if (is.character(x)) {
       x <- tolower(x)
       if (x == "male") {

@@ -59,8 +59,12 @@ test_that("Demographic subset naming", {
   expectedName <- "Demo: {age >= 18 and age <= 99}"
   expect_equal(expectedName, demoSubset$name)
   
-  demoSubset <- createDemographicSubset(ageMin = 18, ageMax = 99, gender = c(12232, 434), race = c(44), ethnicity = c(88))
-  expectedName <- "Demo: {age >= 18 and age <= 99 and Gender concept 12232, 434 and Race concept 44 and Ethnicity concept 88}"
+  demoSubset <- createDemographicSubset(ageMin = 18, ageMax = 99, gender = c("foo", "MAlE", "female"), race = c(44), ethnicity = c(88))
+  expectedName <- "Demo: {age >= 18 and age <= 99 and Gender concept 0, 8507, 8532 and Race concept 44 and Ethnicity concept 88}"
+  expect_equal(expectedName, demoSubset$name)
+  
+  demoSubset <- createDemographicSubset(ageMin = 18, ageMax = 99, gender = c(11, 8532), race = c(44), ethnicity = c(88))
+  expectedName <- "Demo: {age >= 18 and age <= 99 and Gender concept 11, 8532 and Race concept 44 and Ethnicity concept 88}"
   expect_equal(expectedName, demoSubset$name)
   
   demoSubset$name <- "foo"

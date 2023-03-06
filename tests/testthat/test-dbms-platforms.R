@@ -32,22 +32,17 @@ testPlatform <- function(dbmsDetails) {
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
 
   subsetOperations <- list(
-    createCohortSubset(id = 1001,
-                       name = "Cohort Subset",
-                       cohortIds = 2,
+    createCohortSubset(cohortIds = 2,
                        cohortCombinationOperator = "all",
                        negate = FALSE,
                        startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
                        endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")),
-    createLimitSubset(id = 1002,
-                      name = "Observation Criteria",
-                      priorTime = 365,
+    createLimitSubset(priorTime = 365,
                       followUpTime = 0,
                       calendarStartDate = lubridate::date("2001/1/1"),
                       calendarEndDate = lubridate::date("2019/1/31"),
                       limitTo = "earliestRemaining"),
-    createDemographicSubset(id = 1003,
-                            name = "Demographic Criteria",
+    createDemographicSubset(name = "Demographic Criteria",
                             ageMin = 18,
                             ageMax = 64)
   )
