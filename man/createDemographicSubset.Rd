@@ -20,7 +20,10 @@ createDemographicSubset(
 
 \item{ageMax}{The maximum age}
 
-\item{gender}{Gender demographics - concept ID list}
+\item{gender}{Gender demographics - concepts - 0, 8532, 8507, 0 "male", "female".
+Any string that is not (case insenstive) "male" or "female" is converted to gender concept 0
+https://www.ohdsi.org/web/wiki/doku.php?id=documentation:vocabulary:gender
+Specific concept ids not in this set can be used but are not explicitly validated}
 
 \item{race}{Race demographics - concept ID list}
 

@@ -8,7 +8,7 @@ createLimitSubset(
   name = NULL,
   priorTime,
   followUpTime,
-  limitTo,
+  limitTo = "",
   calendarStartDate = NULL,
   calendarEndDate = NULL
 )
