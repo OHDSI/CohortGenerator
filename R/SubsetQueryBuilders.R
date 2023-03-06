@@ -19,17 +19,20 @@ QueryBuilder <- R6::R6Class(
   classname = "QueryBuilder",
   private = list(
     operator = NULL,
+    id = NULL,
     innerQuery = function(targetTable) {
       stop("Error: not implemented for base class")
     }
   ),
   public = list(
-    initialize = function(operator) {
+    initialize = function(operator, id) {
       checkmate::assertR6(operator, "SubsetOperator")
+      checkmate::assertInt(id, lower = 0)
       private$operator <- operator
+      private$id <- id
     },
     getTableObjectId = function() {
-      return(paste0("#S_", private$operator$id))
+      return(paste0("#S_", private$id))
     },
     getQuery = function(targetTable) {
       sql <- SqlRender::render("DROP TABLE IF EXISTS @object_id;\n @inner_query;",

@@ -25,7 +25,6 @@ CohortSubsetDefinition <- R6::R6Class(
     .name = "",
     .definitionId = integer(0),
     .subsetOperators = list(),
-    .subsetIds = c(),
     .targetOutputPairs = list(),
     .identifierExpression = expression(targetId * 1000 + definitionId),
     ## Creates objects if they are in the namespace
@@ -57,7 +56,6 @@ CohortSubsetDefinition <- R6::R6Class(
         definitionId = jsonlite::unbox(self$definitionId),
         # Note - when there is a base definition that includes multiple calls to the same subset this should be replaced
         subsetOperators = lapply(self$subsetOperators, function(operator) { operator$toList() }),
-        subsetIds = private$.subsetIds,
         packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName()))),
         identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression))
       )
@@ -75,30 +73,8 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @param overwrite if a subset operator of the same ID is present, replace it with a new definition
     addSubsetOperator = function(subsetOperator) {
       checkmate::assertR6(subsetOperator, "SubsetOperator")
-      existingOperator <- self$getSubsetOperatorById(subsetOperator$id)
-      if (is.null(existingOperator)) {
-        private$.subsetOperators <- c(private$.subsetOperators, subsetOperator)
-        private$.subsetIds <- c(private$.subsetIds, subsetOperator$id)
-      } else if (subsetOperator$isEqualTo(existingOperator)) {
-        stop("Non-equivalent subset operator with the same id is present in definition.")
-      }
+      private$.subsetOperators <- c(private$.subsetOperators, subsetOperator)
       self
-    },
-
-    #' Get SubsetOperator By Id
-    #' @description get a subset operator by its id field
-    #' @param id    Integer subset id
-    getSubsetOperatorById = function(id) {
-      # This implementation seems weird but if you store int ids in a list then R will store every int lower than that
-      # Value as a NULL, which breaks any calls to "x %in% names(listObj)"
-      if (!id %in% private$.subsetIds) {
-        return(NULL)
-      }
-
-      for (subset in private$.subsetOperators) {
-        if (subset$id == id)
-          return(subset)
-      }
     },
 
     #' get query for a given target output pair
@@ -118,8 +94,9 @@ CohortSubsetDefinition <- R6::R6Class(
       )
 
       dropTables <- c(targetTable)
-      for (subsetOperator in self$subsetOperators) {
-        queryBuilder <- subsetOperator$getQueryBuilder()
+      for (i in 1:length(self$subsetOperators)) {
+        subsetOperator <- self$subsetOperators[[i]]
+        queryBuilder <- subsetOperator$getQueryBuilder(i)
         sql <- c(sql, queryBuilder$getQuery(targetTable))
         targetTable <- queryBuilder$getTableObjectId()
         dropTables <- c(dropTables, targetTable)
@@ -229,16 +206,6 @@ CohortSubsetDefinition <- R6::R6Class(
       private$.definitionId <- definitionId
       self
     },
-    #'@field subsetIds vector of subset operator ids
-    subsetIds = function(subsetIds) {
-      if (missing(subsetIds))
-        return(private$.subsetIds)
-
-      checkmate::assertVector(subsetIds, min.len = 1, unique = TRUE)
-      private$.subsetIds <- subsetIds
-      self
-    },
-
     #'@field identifierExpression expression that can be evaluated from
     identifierExpression = function(identifierExpression) {
       if (missing(identifierExpression))

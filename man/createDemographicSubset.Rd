@@ -5,8 +5,7 @@
 \title{Create createDemographicSubset Subset}
 \usage{
 createDemographicSubset(
-  id,
-  name,
+  name = NULL,
   ageMin = 0,
   ageMax = 9999,
   gender = NULL,
@@ -15,9 +14,7 @@ createDemographicSubset(
 )
 }
 \arguments{
-\item{id}{Id number}
-
-\item{name}{char name}
+\item{name}{Optional char name}
 
 \item{ageMin}{The minimum age}
 
