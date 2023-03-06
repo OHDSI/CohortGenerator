@@ -563,12 +563,41 @@ DemographicSubsetOperator <- R6::R6Class(
 #' Create createDemographicSubset Subset
 #' @export
 #' @param name         Optional char name
-#' @param ageMin       The minimum age 
+#' @param ageMin       The minimum age
 #' @param ageMax       The maximum age
-#' @param gender       Gender demographics - concept ID list
+#' @param gender       Gender demographics - concepts - 0, 8532, 8507, 0 "male", "female".
+#'                     Any string that is not (case insenstive) "male" or "female" is converted to gender concept 0
+#'                     https://www.ohdsi.org/web/wiki/doku.php?id=documentation:vocabulary:gender
+#'                     Specific concept ids not in this set can be used but are not explicitly validated
 #' @param race         Race demographics - concept ID list
 #' @param ethnicity    Ethnicity demographics - concept ID list
-createDemographicSubset <- function(name, ageMin = 0, ageMax = 9999, gender = NULL, race = NULL, ethnicity = NULL) {
+createDemographicSubset <- function(name = NULL, ageMin = 0, ageMax = 9999, gender = NULL, race = NULL, ethnicity = NULL) {
+
+  mapGenderCodes <- function (x) {
+    if (length(x) > 1) {
+      retValue <- c()
+      for (i in x) {
+        retValue <- c(retValue, mapGenderCodes(i))
+      }
+      return(retValue)
+    }
+
+    if (is.character(x)) {
+      x <- tolower(x)
+      if (x == "male") {
+        return(8507)
+      } else if (x == "female") {
+        return(8532)
+      }
+      return(0)
+    }
+    return(x)
+  }
+
+  if (!is.null(gender)) {
+    gender <- mapGenderCodes(gender)
+  }
+
   subset <- DemographicSubsetOperator$new()
   subset$name <- name
   subset$ageMin <- ageMin
