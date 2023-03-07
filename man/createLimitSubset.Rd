@@ -6,8 +6,8 @@
 \usage{
 createLimitSubset(
   name = NULL,
-  priorTime,
-  followUpTime,
+  priorTime = 0,
+  followUpTime = 0,
   limitTo = "",
   calendarStartDate = NULL,
   calendarEndDate = NULL
