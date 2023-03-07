@@ -637,7 +637,7 @@ LimitSubsetOperator <- R6::R6Class(
       if (self$limitTo != "") {
         nameString <- paste0(nameString, tolower(SqlRender::camelCaseToTitleCase(self$limitTo)), " occurence")
       } else {
-        nameString <- paste0(nameString, "subjects")
+        nameString <- paste0(nameString, "occurs")
       }
 
       if (self$priorTime > 0) {
@@ -767,7 +767,20 @@ LimitSubsetOperator <- R6::R6Class(
 #'                          criteria are applied (i.e. after applying prior/post time and calendar time).
 #' @param calendarEndDate       Start date to allow period (e.g. 2015/1/1)
 #' @param calendarStartDate     End date to allow periods (e.g. 2020/1/1/)
-createLimitSubset <- function(name = NULL, priorTime, followUpTime, limitTo = "", calendarStartDate = NULL, calendarEndDate = NULL) {
+createLimitSubset <- function(name = NULL,
+                              priorTime = 0,
+                              followUpTime = 0,
+                              limitTo = "",
+                              calendarStartDate = NULL,
+                              calendarEndDate = NULL) {
+  if (priorTime == 0 & followUpTime == 0 & limitTo == "" & is.null(calendarStartDate) & is.null(calendarEndDate)) {
+    stop("No limit criteria specified")
+  }
+
+  if ((is.null(limitTo) | limitTo == "") & (priorTime > 0 | followUpTime > 0)) {
+    stop("If specifying observation prior time, must specifcy follow up time")
+  }
+
   subset <- LimitSubsetOperator$new()
   subset$name <- name
   subset$priorTime <- priorTime

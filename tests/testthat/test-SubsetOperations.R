@@ -21,6 +21,14 @@ test_that("Cohort subset naming and instantitation", {
 
 
 test_that("limit subset naming and instantitation", {
+  expect_error(createLimitSubset())
+  expect_error(createLimitSubset(priorTime = 55))
+  expect_error(createLimitSubset(followUpTime = 55))
+  expect_error(createLimitSubset(calendarStartDate = "2001/01/01", followUpTime = 300))
+  expect_error(createLimitSubset(calendarEndDate = "2001/01/01", followUpTime = 300))
+  expect_error(createLimitSubset(calendarEndDate = "2001/01/01", priorTime = 300))
+  expect_error(createLimitSubset(calendarEndDate = "2001/01/01", priorTime = 300, limitTo = "pirstEmaining"))
+
   limitSubsetNamed <- createLimitSubset(priorTime = 365, followUpTime = 0, limitTo = "latestRemaining")
   expectedName <- "Limit to: {latest remaining occurence with at least 365 days prior observation}"
   expect_equal(expectedName, limitSubsetNamed$name)
@@ -39,17 +47,16 @@ test_that("limit subset naming and instantitation", {
   expectedName <- "Limit to: {earliest remaining occurence with at least 200 days follow up observation}"
   expect_equal(expectedName, limitSubsetNamed$name)
 
-  limitSubsetNamed <- createLimitSubset(priorTime = 365, followUpTime = 0, limitTo = "", calendarStartDate = "2001/01/01")
-  expectedName <- "Limit to: {subjects with at least 365 days prior observation after 2001-01-01}"
+  limitSubsetNamed <- createLimitSubset(calendarStartDate = "2001/01/01")
+  expectedName <- "Limit to: {occurs after 2001-01-01}"
   expect_equal(expectedName, limitSubsetNamed$name)
   
-  
-  limitSubsetNamed <- createLimitSubset(priorTime = 365, followUpTime = 0, limitTo = "", calendarEndDate = "2001/01/01")
-  expectedName <- "Limit to: {subjects with at least 365 days prior observation before 2001-01-01}"
+  limitSubsetNamed <- createLimitSubset(calendarEndDate = "2001/01/01")
+  expectedName <- "Limit to: {occurs before 2001-01-01}"
   expect_equal(expectedName, limitSubsetNamed$name)
   
-  limitSubsetNamed <- createLimitSubset(priorTime = 365, followUpTime = 0, limitTo = "", calendarStartDate = "2001/12/31", calendarEndDate = "2010/01/01")
-  expectedName <- "Limit to: {subjects with at least 365 days prior observation after 2001-12-31 and before 2010-01-01}"
+  limitSubsetNamed <- createLimitSubset(calendarStartDate = "2001/12/31", calendarEndDate = "2010/01/01")
+  expectedName <- "Limit to: {occurs after 2001-12-31 and before 2010-01-01}"
   expect_equal(expectedName, limitSubsetNamed$name)
 })
 
