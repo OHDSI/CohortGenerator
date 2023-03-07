@@ -5,8 +5,7 @@
 \title{A definition of subset functions to be applied to a set of cohorts}
 \usage{
 createCohortSubset(
-  id,
-  name,
+  name = NULL,
   cohortIds,
   cohortCombinationOperator,
   negate,
@@ -15,9 +14,7 @@ createCohortSubset(
 )
 }
 \arguments{
-\item{id}{unique integer identifier}
-
-\item{name}{name of operator}
+\item{name}{optional name of operator}
 
 \item{cohortIds}{integer - set of cohort ids to subset to}
 

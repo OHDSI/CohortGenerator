@@ -5,18 +5,15 @@
 \title{Create Limit Subset}
 \usage{
 createLimitSubset(
-  id,
-  name,
+  name = NULL,
   priorTime,
   followUpTime,
-  limitTo,
+  limitTo = "",
   calendarStartDate = NULL,
   calendarEndDate = NULL
 )
 }
 \arguments{
-\item{id}{id of operation}
-
 \item{name}{Name of operation}
 
 \item{priorTime}{Required prior observation window}
