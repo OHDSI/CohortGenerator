@@ -25,7 +25,11 @@ FROM (
     AND c.cohort_start_date >= op.observation_period_start_date
     AND c.cohort_start_date <= op.observation_period_end_date
 }
-WHERE c.ordinal = 1
+{@limit_to == 'firstEver' | @limit_to == 'lastEver' | @limit_to == 'earliestRemaining' | @limit_to == 'latestRemaining'}?{
+ WHERE c.ordinal = 1
+} : {
+ WHERE 1 = 1
+}
 {@limit_to == 'firstEver' | @limit_to == 'lastEver'}?{
   AND DATEDIFF(day, op.observation_period_start_date, c.cohort_start_date) >= @prior_time
   AND DATEDIFF(day, c.cohort_start_date, op.observation_period_end_date) >= @follow_up_time
