@@ -65,7 +65,7 @@ test_that("Demographic subset naming", {
 
   demoSubset <- createDemographicSubset(ageMin = 32)
   expectedName <- "aged 32+"
-  
+
   demoSubset <- createDemographicSubset(gender= "male", ageMin = 18, ageMax = 99)
   expectedName <- "males aged 18 - 99"
   expect_equal(expectedName, demoSubset$name)
