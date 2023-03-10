@@ -34,7 +34,7 @@ The purpose of Cohort subsetting operations is to allow the creation of common o
 generated cohorts in order to subset to different operations in a consistent manner.
 
 
-# Subset defintions
+# Subset definitions
 Subset definitions are named sets of operations that can be applied to a set of one or more cohorts.
 The current operations that you can apply to cohorts are:
 
@@ -156,7 +156,7 @@ cohortDefinitionSet <- cohortDefinitionSet |>
 
 knitr::kable(cohortDefinitionSet[, names(cohortDefinitionSet)[which(!names(cohortDefinitionSet) %in% c("json", "sql"))]])
 ```
-We can also apply a subset definition to only a limted number of target cohorts as follows
+We can also apply a subset definition to only a limited number of target cohorts as follows
 
 ```{r error=FALSE, warning=FALSE, message=FALSE}
 cohortDefinitionSet <- cohortDefinitionSet |>

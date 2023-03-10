@@ -71,7 +71,7 @@ CohortSubsetDefinition <- R6::R6Class(
     #' add Subset Operator
     #' @description add subset to class - checks if equivalent id is present
     #' Will throw an error if a matching ID is found but reference object is different
-    #' @param subsetOperator a SubsetOperator isntance
+    #' @param subsetOperator a SubsetOperator instance
     #' @param overwrite if a subset operator of the same ID is present, replace it with a new definition
     addSubsetOperator = function(subsetOperator) {
       checkmate::assertR6(subsetOperator, "SubsetOperator")
@@ -81,7 +81,7 @@ CohortSubsetDefinition <- R6::R6Class(
 
     #' get query for a given target output pair
     #' @description
-    #' Returns vector of join, logic, having statments returned by subset operations
+    #' Returns vector of join, logic, having statements returned by subset operations
     #' @param targetOutputPair              Target output pair
     getSubsetQuery = function(targetOutputPair) {
       checkmate::assertIntegerish(targetOutputPair, len = 2)
@@ -163,7 +163,7 @@ CohortSubsetDefinition <- R6::R6Class(
     }
   ),
   active = list(
-    #' @field targetOutputPairs  list of pairs of intgers - (targetCohortId, outputCohortId)
+    #' @field targetOutputPairs  list of pairs of integers - (targetCohortId, outputCohortId)
     targetOutputPairs = function(targetOutputPairs) {
       if (missing(targetOutputPairs)) {
         return(private$.targetOutputPairs)

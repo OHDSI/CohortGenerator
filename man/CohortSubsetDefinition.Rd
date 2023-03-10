@@ -9,7 +9,7 @@ Set of subset definitions
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{targetOutputPairs}}{list of pairs of intgers - (targetCohortId, outputCohortId)}
+\item{\code{targetOutputPairs}}{list of pairs of integers - (targetCohortId, outputCohortId)}
 
 \item{\code{subsetOperators}}{list of subset operations}
 
@@ -87,7 +87,7 @@ Will throw an error if a matching ID is found but reference object is different
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{subsetOperator}}{a SubsetOperator isntance}
+\item{\code{subsetOperator}}{a SubsetOperator instance}
 
 \item{\code{overwrite}}{if a subset operator of the same ID is present, replace it with a new definition
 get query for a given target output pair}
@@ -99,7 +99,7 @@ get query for a given target output pair}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-getSubsetQuery"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-getSubsetQuery}{}}}
 \subsection{Method \code{getSubsetQuery()}}{
-Returns vector of join, logic, having statments returned by subset operations
+Returns vector of join, logic, having statements returned by subset operations
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$getSubsetQuery(targetOutputPair)}\if{html}{\out{</div>}}
 }
