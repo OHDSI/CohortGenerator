@@ -72,7 +72,7 @@
     <div id="active-bindings">
     <h2>Active bindings</h2>
     <p></p><div class="r6-active-bindings"><dl><dt><code>targetOutputPairs</code></dt>
-<dd><p>list of pairs of intgers - (targetCohortId, outputCohortId)</p></dd>
+<dd><p>list of pairs of integers - (targetCohortId, outputCohortId)</p></dd>
 
 
 <dt><code>subsetOperators</code></dt>
@@ -85,10 +85,6 @@
 
 <dt><code>definitionId</code></dt>
 <dd><p>numeric definition id</p></dd>
-
-
-<dt><code>subsetIds</code></dt>
-<dd><p>vector of subset operator ids</p></dd>
 
 
 <dt><code>identifierExpression</code></dt>
@@ -107,7 +103,6 @@
 <li><p><a href="#method-CohortSubsetDefinition-toList"><code>CohortSubsetDefinition$toList()</code></a></p></li>
 <li><p><a href="#method-CohortSubsetDefinition-toJSON"><code>CohortSubsetDefinition$toJSON()</code></a></p></li>
 <li><p><a href="#method-CohortSubsetDefinition-addSubsetOperator"><code>CohortSubsetDefinition$addSubsetOperator()</code></a></p></li>
-<li><p><a href="#method-CohortSubsetDefinition-getSubsetOperatorById"><code>CohortSubsetDefinition$getSubsetOperatorById()</code></a></p></li>
 <li><p><a href="#method-CohortSubsetDefinition-getSubsetQuery"><code>CohortSubsetDefinition$getSubsetQuery()</code></a></p></li>
 <li><p><a href="#method-CohortSubsetDefinition-getSubsetCohortName"><code>CohortSubsetDefinition$getSubsetCohortName()</code></a></p></li>
 <li><p><a href="#method-CohortSubsetDefinition-setTargetOutputPairs"><code>CohortSubsetDefinition$setTargetOutputPairs()</code></a></p></li>
@@ -160,28 +155,11 @@ Will throw an error if a matching ID is found but reference object is different<
 <div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>subsetOperator</code></dt>
-<dd><p>a SubsetOperator isntance</p></dd>
+<dd><p>a SubsetOperator instance</p></dd>
 
 
 <dt><code>overwrite</code></dt>
 <dd><p>if a subset operator of the same ID is present, replace it with a new definition
-Get SubsetOperator By Id</p></dd>
-
-
-</dl><p></p></div>
-</div>
-
-</div><p></p><hr><a id="method-CohortSubsetDefinition-getSubsetOperatorById"></a><div class="section">
-<h3 id="method-getsubsetoperatorbyid-">Method <code>getSubsetOperatorById()</code><a class="anchor" aria-label="anchor" href="#method-getsubsetoperatorbyid-"></a></h3>
-<p>get a subset operator by its id field</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">CohortSubsetDefinition</span><span class="op">$</span><span class="fu">getSubsetOperatorById</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>id</code></dt>
-<dd><p>Integer subset id
 get query for a given target output pair</p></dd>
 
 
@@ -190,13 +168,13 @@ get query for a given target output pair</p></dd>
 
 </div><p></p><hr><a id="method-CohortSubsetDefinition-getSubsetQuery"></a><div class="section">
 <h3 id="method-getsubsetquery-">Method <code>getSubsetQuery()</code><a class="anchor" aria-label="anchor" href="#method-getsubsetquery-"></a></h3>
-<p>Returns vector of join, logic, having statments returned by subset operations</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<p>Returns vector of join, logic, having statements returned by subset operations</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">CohortSubsetDefinition</span><span class="op">$</span><span class="fu">getSubsetQuery</span><span class="op">(</span><span class="va">targetOutputPair</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>targetOutputPair</code></dt>
 <dd><p>Target output pair
 Get name of an output cohort</p></dd>
@@ -209,7 +187,7 @@ Get name of an output cohort</p></dd>
 <h3 id="method-getsubsetcohortname-">Method <code>getSubsetCohortName()</code><a class="anchor" aria-label="anchor" href="#method-getsubsetcohortname-"></a></h3>
 
 <div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">CohortSubsetDefinition</span><span class="op">$</span><span class="fu">getSubsetCohortName</span><span class="op">(</span></span>
 <span>  <span class="va">cohortDefinitionSet</span>,</span>
 <span>  <span class="va">targetOutputPair</span></span>
@@ -217,7 +195,7 @@ Get name of an output cohort</p></dd>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>cohortDefinitionSet</code></dt>
 <dd><p>Cohort definition set containing base names</p></dd>
 
@@ -234,12 +212,12 @@ Set the targetOutputPairs to be added to a cohort definition set</p></dd>
 <h3 id="method-settargetoutputpairs-">Method <code>setTargetOutputPairs()</code><a class="anchor" aria-label="anchor" href="#method-settargetoutputpairs-"></a></h3>
 
 <div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">CohortSubsetDefinition</span><span class="op">$</span><span class="fu">setTargetOutputPairs</span><span class="op">(</span><span class="va">targetIds</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>targetIds</code></dt>
 <dd><p>list of cohort ids to apply subsetting operations to
 Get json file name for subset definition in folder</p></dd>
@@ -252,14 +230,14 @@ Get json file name for subset definition in folder</p></dd>
 <h3 id="method-getjsonfilename-">Method <code>getJsonFileName()</code><a class="anchor" aria-label="anchor" href="#method-getjsonfilename-"></a></h3>
 
 <div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">CohortSubsetDefinition</span><span class="op">$</span><span class="fu">getJsonFileName</span><span class="op">(</span></span>
 <span>  subsetJsonFolder <span class="op">=</span> <span class="st">"inst/cohort_subset_definitions/"</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>subsetJsonFolder</code></dt>
 <dd><p>path to folder to place file</p></dd>
 
@@ -270,12 +248,12 @@ Get json file name for subset definition in folder</p></dd>
 </div><p></p><hr><a id="method-CohortSubsetDefinition-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">CohortSubsetDefinition</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -299,7 +277,7 @@ Get json file name for subset definition in folder</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

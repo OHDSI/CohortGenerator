@@ -70,10 +70,9 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">createDemographicSubset</span><span class="op">(</span></span>
-<span>  <span class="va">id</span>,</span>
-<span>  <span class="va">name</span>,</span>
+<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ageMin <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  ageMax <span class="op">=</span> <span class="fl">9999</span>,</span>
+<span>  ageMax <span class="op">=</span> <span class="fl">99999</span>,</span>
 <span>  gender <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  race <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ethnicity <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -82,12 +81,8 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>id</dt>
-<dd><p>Id number</p></dd>
-
-
-<dt>name</dt>
-<dd><p>char name</p></dd>
+    <dl><dt>name</dt>
+<dd><p>Optional char name</p></dd>
 
 
 <dt>ageMin</dt>
@@ -99,7 +94,10 @@
 
 
 <dt>gender</dt>
-<dd><p>Gender demographics - concept ID list</p></dd>
+<dd><p>Gender demographics - concepts - 0, 8532, 8507, 0 "male", "female".
+Any string that is not (case insensitive) "male" or "female" is converted to gender concept 0
+https://www.ohdsi.org/web/wiki/doku.php?id=documentation:vocabulary:gender
+Specific concept ids not in this set can be used but are not explicitly validated</p></dd>
 
 
 <dt>race</dt>
@@ -123,7 +121,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

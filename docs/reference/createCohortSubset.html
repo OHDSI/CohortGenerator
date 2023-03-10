@@ -70,8 +70,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">createCohortSubset</span><span class="op">(</span></span>
-<span>  <span class="va">id</span>,</span>
-<span>  <span class="va">name</span>,</span>
+<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">cohortIds</span>,</span>
 <span>  <span class="va">cohortCombinationOperator</span>,</span>
 <span>  <span class="va">negate</span>,</span>
@@ -82,12 +81,8 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>id</dt>
-<dd><p>unique integer identifier</p></dd>
-
-
-<dt>name</dt>
-<dd><p>name of operator</p></dd>
+    <dl><dt>name</dt>
+<dd><p>optional name of operator</p></dd>
 
 
 <dt>cohortIds</dt>
@@ -96,7 +91,7 @@
 
 <dt>cohortCombinationOperator</dt>
 <dd><p>"any" or "all" if using more than one cohort id allow a subject to be in any cohort
-or require that they are in all cohorts in specefied windows</p></dd>
+or require that they are in all cohorts in specified windows</p></dd>
 
 
 <dt>negate</dt>
@@ -130,7 +125,7 @@ or require that they are in all cohorts in specefied windows</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -88,7 +88,7 @@
                         <h4 data-toc-skip class="author">James P.
 Gilbert and Anthony G. Sena</h4>
             
-            <h4 data-toc-skip class="date">2023-03-02</h4>
+            <h4 data-toc-skip class="date">2023-03-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/HEAD/vignettes/CreatingCohortSubsetDefinitions.Rmd" class="external-link"><code>vignettes/CreatingCohortSubsetDefinitions.Rmd</code></a></small>
       <div class="hidden name"><code>CreatingCohortSubsetDefinitions.Rmd</code></div>
@@ -107,7 +107,7 @@ applied to generated cohorts in order to subset to different operations
 in a consistent manner.</p>
 </div>
 <div class="section level2">
-<h2 id="subset-defintions">Subset defintions<a class="anchor" aria-label="anchor" href="#subset-defintions"></a>
+<h2 id="subset-definitions">Subset definitions<a class="anchor" aria-label="anchor" href="#subset-definitions"></a>
 </h2>
 <p>Subset definitions are named sets of operations that can be applied
 to a set of one or more cohorts. The current operations that you can
@@ -147,8 +147,10 @@ subjects included in one or more other cohorts</p>
 <span><span class="co"># A list of cohort IDs for use in this vignette</span></span>
 <span><span class="va">cohortIds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1778211</span>, <span class="fl">1778212</span>, <span class="fl">1778213</span><span class="op">)</span></span>
 <span><span class="co"># Get the SQL/JSON for the cohorts</span></span>
-<span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html" class="external-link">exportCohortDefinitionSet</a></span><span class="op">(</span>baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,</span>
-<span>                                                               cohortIds <span class="op">=</span> <span class="va">cohortIds</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html" class="external-link">exportCohortDefinitionSet</a></span><span class="op">(</span></span>
+<span>  baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,</span>
+<span>  cohortIds <span class="op">=</span> <span class="va">cohortIds</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>A definition can include different subset operations - these are
 applied strictly in order:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -159,30 +161,32 @@ applied strictly in order:</p>
 <span>  definitionId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  subsetOperators <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="co"># here we are saying 'first subset to only those patients in cohort 1778213'</span></span>
-<span>    <span class="fu"><a href="../reference/createCohortSubset.html">createCohortSubset</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1001</span>,</span>
-<span>                       name <span class="op">=</span> <span class="st">"Subset to patients in cohort 1778213"</span>,</span>
-<span>                       <span class="co"># Note that this can be set to any id - if the </span></span>
-<span>                       <span class="co"># cohort is empty or doesn't exist this will not error</span></span>
-<span>                       cohortIds <span class="op">=</span> <span class="fl">1778213</span>,</span>
-<span>                       cohortCombinationOperator <span class="op">=</span> <span class="st">"any"</span>,</span>
-<span>                       negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       startWindow <span class="op">=</span> <span class="fu"><a href="../reference/createSubsetCohortWindow.html">createSubsetCohortWindow</a></span><span class="op">(</span></span>
-<span>                         startDay <span class="op">=</span> <span class="op">-</span><span class="fl">9999</span>,</span>
-<span>                         endDay <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>                         targetAnchor <span class="op">=</span> <span class="st">"cohortStart"</span></span>
-<span>                       <span class="op">)</span>,</span>
-<span>                       endWindow <span class="op">=</span> <span class="fu"><a href="../reference/createSubsetCohortWindow.html">createSubsetCohortWindow</a></span><span class="op">(</span></span>
-<span>                         startDay <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>                         endDay <span class="op">=</span> <span class="fl">9999</span>,</span>
-<span>                         targetAnchor <span class="op">=</span> <span class="st">"cohortStart"</span><span class="op">)</span></span>
-<span>                       <span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/createCohortSubset.html">createCohortSubset</a></span><span class="op">(</span></span>
+<span>      name <span class="op">=</span> <span class="st">"Subset to patients in cohort 1778213"</span>,</span>
+<span>      <span class="co"># Note that this can be set to any id - if the</span></span>
+<span>      <span class="co"># cohort is empty or doesn't exist this will not error</span></span>
+<span>      cohortIds <span class="op">=</span> <span class="fl">1778213</span>,</span>
+<span>      cohortCombinationOperator <span class="op">=</span> <span class="st">"any"</span>,</span>
+<span>      negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>      startWindow <span class="op">=</span> <span class="fu"><a href="../reference/createSubsetCohortWindow.html">createSubsetCohortWindow</a></span><span class="op">(</span></span>
+<span>        startDay <span class="op">=</span> <span class="op">-</span><span class="fl">9999</span>,</span>
+<span>        endDay <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>        targetAnchor <span class="op">=</span> <span class="st">"cohortStart"</span></span>
+<span>      <span class="op">)</span>,</span>
+<span>      endWindow <span class="op">=</span> <span class="fu"><a href="../reference/createSubsetCohortWindow.html">createSubsetCohortWindow</a></span><span class="op">(</span></span>
+<span>        startDay <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>        endDay <span class="op">=</span> <span class="fl">9999</span>,</span>
+<span>        targetAnchor <span class="op">=</span> <span class="st">"cohortStart"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
 <span></span>
 <span>    <span class="co"># Next, subset to only those with 365 days of prior observation</span></span>
-<span>    <span class="fu"><a href="../reference/createLimitSubset.html">createLimitSubset</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1002</span>,</span>
-<span>                      name <span class="op">=</span> <span class="st">"Observation of at least 365 days prior"</span>,</span>
-<span>                      priorTime <span class="op">=</span> <span class="fl">365</span>,</span>
-<span>                      followUpTime <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>                      limitTo <span class="op">=</span> <span class="st">"firstEver"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="../reference/createLimitSubset.html">createLimitSubset</a></span><span class="op">(</span></span>
+<span>      name <span class="op">=</span> <span class="st">"Observation of at least 365 days prior"</span>,</span>
+<span>      priorTime <span class="op">=</span> <span class="fl">365</span>,</span>
+<span>      followUpTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>      limitTo <span class="op">=</span> <span class="st">"firstEver"</span></span>
+<span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -198,15 +202,17 @@ definition and modifying them.</p>
 <span></span>
 <span><span class="co"># subset to those between aged 18 an 64</span></span>
 <span><span class="va">subsetOperations2</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="../reference/createDemographicSubset.html">createDemographicSubset</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1003</span>,</span>
-<span>                          name <span class="op">=</span> <span class="st">"18 - 65"</span>,</span>
-<span>                          ageMin <span class="op">=</span> <span class="fl">18</span>,</span>
-<span>                          ageMax <span class="op">=</span> <span class="fl">64</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/createDemographicSubset.html">createDemographicSubset</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="st">"18 - 65"</span>,</span>
+<span>    ageMin <span class="op">=</span> <span class="fl">18</span>,</span>
+<span>    ageMax <span class="op">=</span> <span class="fl">64</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">subsetDef2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createCohortSubsetDefinition.html">createCohortSubsetDefinition</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"Patients in cohort 1778213 with 365 days prior obs, aged 18 - 64"</span>,</span>
 <span>  definitionId <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  subsetOperators <span class="op">=</span> <span class="va">subsetOperations2</span><span class="op">)</span></span></code></pre></div>
+<span>  subsetOperators <span class="op">=</span> <span class="va">subsetOperations2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="applying-subset-definitions-to-a-cohort-definition-set">Applying subset definitions to a cohort definition set<a class="anchor" aria-label="anchor" href="#applying-subset-definitions-to-a-cohort-definition-set"></a>
@@ -219,7 +225,96 @@ re-use.</p>
 <code class="sourceCode R"><span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="va">cohortDefinitionSet</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/addCohortSubsetDefinition.html">addCohortSubsetDefinition</a></span><span class="op">(</span><span class="va">subsetDef</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"json"</span>, <span class="st">"sql"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"json"</span>, <span class="st">"sql"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="4%">
+<col width="68%">
+<col width="3%">
+<col width="7%">
+<col width="5%">
+<col width="3%">
+<col width="7%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">cohortId</th>
+<th align="left">cohortName</th>
+<th align="right">atlasId</th>
+<th align="left">logicDescription</th>
+<th align="right">subsetParent</th>
+<th align="left">isSubset</th>
+<th align="right">subsetDefinitionId</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">1778211</td>
+<td align="left">celecoxib</td>
+<td align="right">1778211</td>
+<td align="left"></td>
+<td align="right">1778211</td>
+<td align="left">FALSE</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1778212</td>
+<td align="left">celecoxibAge40</td>
+<td align="right">1778212</td>
+<td align="left"></td>
+<td align="right">1778212</td>
+<td align="left">FALSE</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1778213</td>
+<td align="left">celecoxibAge40Male</td>
+<td align="right">1778213</td>
+<td align="left"></td>
+<td align="right">1778213</td>
+<td align="left">FALSE</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1778211001</td>
+<td align="left">celecoxib - Patients in cohort cohort 1778213 with 365
+days prior observation Subset to patients in cohort 1778213, Observation
+of at least 365 days prior</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="right">1778211</td>
+<td align="left">TRUE</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">1778212001</td>
+<td align="left">celecoxibAge40 - Patients in cohort cohort 1778213 with
+365 days prior observation Subset to patients in cohort 1778213,
+Observation of at least 365 days prior</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="right">1778212</td>
+<td align="left">TRUE</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">1778213001</td>
+<td align="left">celecoxibAge40Male - Patients in cohort cohort 1778213
+with 365 days prior observation Subset to patients in cohort 1778213,
+Observation of at least 365 days prior</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="right">1778213</td>
+<td align="left">TRUE</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>We can also apply a subset definition to only a limited number of
+target cohorts as follows</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="va">cohortDefinitionSet</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/addCohortSubsetDefinition.html">addCohortSubsetDefinition</a></span><span class="op">(</span><span class="va">subsetDef2</span>, targetCohortIds <span class="op">=</span> <span class="fl">1778212</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"json"</span>, <span class="st">"sql"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="4%">
@@ -270,8 +365,8 @@ re-use.</p>
 <tr class="even">
 <td align="right">1778211001</td>
 <td align="left">celecoxib - Patients in cohort cohort 1778213 with 365
-days prior observation (Subset to patients in cohort 1778213)
-(Observation of at least 365 days prior)</td>
+days prior observation Subset to patients in cohort 1778213, Observation
+of at least 365 days prior</td>
 <td align="right">NA</td>
 <td align="left">NA</td>
 <td align="right">1778211</td>
@@ -281,8 +376,8 @@ days prior observation (Subset to patients in cohort 1778213)
 <tr class="odd">
 <td align="right">1778212001</td>
 <td align="left">celecoxibAge40 - Patients in cohort cohort 1778213 with
-365 days prior observation (Subset to patients in cohort 1778213)
-(Observation of at least 365 days prior)</td>
+365 days prior observation Subset to patients in cohort 1778213,
+Observation of at least 365 days prior</td>
 <td align="right">NA</td>
 <td align="left">NA</td>
 <td align="right">1778212</td>
@@ -292,97 +387,8 @@ days prior observation (Subset to patients in cohort 1778213)
 <tr class="even">
 <td align="right">1778213001</td>
 <td align="left">celecoxibAge40Male - Patients in cohort cohort 1778213
-with 365 days prior observation (Subset to patients in cohort 1778213)
-(Observation of at least 365 days prior)</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">1778213</td>
-<td align="left">TRUE</td>
-<td align="right">1</td>
-</tr>
-</tbody>
-</table>
-<p>We can also apply a subset definition to only a limted number of
-target cohorts as follows</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="va">cohortDefinitionSet</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/addCohortSubsetDefinition.html">addCohortSubsetDefinition</a></span><span class="op">(</span><span class="va">subsetDef2</span>, targetCohortIds <span class="op">=</span> <span class="fl">1778212</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"json"</span>, <span class="st">"sql"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="4%">
-<col width="69%">
-<col width="3%">
-<col width="6%">
-<col width="5%">
-<col width="3%">
-<col width="7%">
-</colgroup>
-<thead><tr class="header">
-<th align="right">cohortId</th>
-<th align="left">cohortName</th>
-<th align="right">atlasId</th>
-<th align="left">logicDescription</th>
-<th align="right">subsetParent</th>
-<th align="left">isSubset</th>
-<th align="right">subsetDefinitionId</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">1778211</td>
-<td align="left">celecoxib</td>
-<td align="right">1778211</td>
-<td align="left"></td>
-<td align="right">1778211</td>
-<td align="left">FALSE</td>
-<td align="right">NA</td>
-</tr>
-<tr class="even">
-<td align="right">1778212</td>
-<td align="left">celecoxibAge40</td>
-<td align="right">1778212</td>
-<td align="left"></td>
-<td align="right">1778212</td>
-<td align="left">FALSE</td>
-<td align="right">NA</td>
-</tr>
-<tr class="odd">
-<td align="right">1778213</td>
-<td align="left">celecoxibAge40Male</td>
-<td align="right">1778213</td>
-<td align="left"></td>
-<td align="right">1778213</td>
-<td align="left">FALSE</td>
-<td align="right">NA</td>
-</tr>
-<tr class="even">
-<td align="right">1778211001</td>
-<td align="left">celecoxib - Patients in cohort cohort 1778213 with 365
-days prior observation (Subset to patients in cohort 1778213)
-(Observation of at least 365 days prior)</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">1778211</td>
-<td align="left">TRUE</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="right">1778212001</td>
-<td align="left">celecoxibAge40 - Patients in cohort cohort 1778213 with
-365 days prior observation (Subset to patients in cohort 1778213)
-(Observation of at least 365 days prior)</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">1778212</td>
-<td align="left">TRUE</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="right">1778213001</td>
-<td align="left">celecoxibAge40Male - Patients in cohort cohort 1778213
-with 365 days prior observation (Subset to patients in cohort 1778213)
-(Observation of at least 365 days prior)</td>
+with 365 days prior observation Subset to patients in cohort 1778213,
+Observation of at least 365 days prior</td>
 <td align="right">NA</td>
 <td align="left">NA</td>
 <td align="right">1778213</td>
@@ -392,8 +398,8 @@ with 365 days prior observation (Subset to patients in cohort 1778213)
 <tr class="odd">
 <td align="right">1778212002</td>
 <td align="left">celecoxibAge40 - Patients in cohort 1778213 with 365
-days prior obs, aged 18 - 64 (Subset to patients in cohort 1778213)
-(Observation of at least 365 days prior) (18 - 65)</td>
+days prior obs, aged 18 - 64 Subset to patients in cohort 1778213,
+Observation of at least 365 days prior, 18 - 65</td>
 <td align="right">NA</td>
 <td align="left">NA</td>
 <td align="right">1778212</td>
@@ -418,17 +424,21 @@ is crucial to choose human interpretable naming conventions. For
 example, see the name of our first cohort and the resulting name of a
 child subset:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Cohort Id:"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortId</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Name"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortName</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Cohort Id:"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortId</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Name"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortName</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Cohort Id: 1778211</span></span>
 <span><span class="co">#&gt; Name celecoxib</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Cohort Id:"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortId</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Subset Parent Id:"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">subsetParent</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Name"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortName</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Cohort Id:"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortId</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Subset Parent Id:"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">subsetParent</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Name"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortName</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Cohort Id: 1778211001</span></span>
 <span><span class="co">#&gt; Subset Parent Id: 1778211</span></span>
-<span><span class="co">#&gt; Name celecoxib - Patients in cohort cohort 1778213 with 365 days prior observation (Subset to patients in cohort 1778213) (Observation of at least 365 days prior)</span></span></code></pre>
+<span><span class="co">#&gt; Name celecoxib - Patients in cohort cohort 1778213 with 365 days prior observation Subset to patients in cohort 1778213, Observation of at least 365 days prior</span></span></code></pre>
 <p>Note that when adding a subset definition to a cohort definition set,
 the target cohort ids e.g (1778211, 1778212) must exist in the
 <code>cohortDefinitionSet</code> and the output ids
@@ -451,9 +461,11 @@ set will fail.</p>
 when our cohorts are generated:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
-<span>                   cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
-<span>                   cohortTableNames <span class="op">=</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span><span class="st">"my_cohort"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span></span>
+<span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
+<span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>  cohortTableNames <span class="op">=</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span><span class="st">"my_cohort"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co"># ### As subsets are a big side effect we need to be clear what was generated and have good naming conventions</span></span>
 <span><span class="va">generatedCohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
@@ -479,7 +491,8 @@ automatically be re-executed when calling
 <code>saveCohortDefinitionSet</code></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/saveCohortDefinitionSet.html">saveCohortDefinitionSet</a></span><span class="op">(</span><span class="va">cohortDefinitionSet</span>,</span>
-<span>                        subsetJsonFolder <span class="op">=</span> <span class="st">"&lt;path_to_my_subset_definition&gt;"</span><span class="op">)</span></span></code></pre></div>
+<span>  subsetJsonFolder <span class="op">=</span> <span class="st">"&lt;path_to_my_subset_definition&gt;"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>loading is also achieved with <code>getCohortDefinitionSet</code></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortDefinitionSet.html">getCohortDefinitionSet</a></span><span class="op">(</span></span>
@@ -520,7 +533,7 @@ the cohort definition set.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
