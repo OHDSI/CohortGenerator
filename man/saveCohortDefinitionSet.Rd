@@ -11,6 +11,7 @@ saveCohortDefinitionSet(
   sqlFolder = "inst/sql/sql_server",
   cohortFileNameFormat = "\%s",
   cohortFileNameValue = c("cohortId"),
+  subsetJsonFolder = "inst/cohort_subset_definitions/",
   verbose = FALSE
 )
 }
@@ -38,6 +39,8 @@ standard defined in the base sprintf function.}
 
 \item{cohortFileNameValue}{Defines the columns in the cohortDefinitionSet to use
 in conjunction with the cohortFileNameFormat parameter.}
+
+\item{subsetJsonFolder}{Defines the folder to store the subset JSON}
 
 \item{verbose}{When TRUE, logging messages are emitted to indicate export
 progress.}

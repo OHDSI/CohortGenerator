@@ -4,6 +4,9 @@
     <loc>/404.html</loc>
   </url>
   <url>
+    <loc>/articles/CreatingCohortSubsetDefinitions.html</loc>
+  </url>
+  <url>
     <loc>/articles/GeneratingCohorts.html</loc>
   </url>
   <url>
@@ -19,6 +22,9 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/addCohortSubsetDefinition.html</loc>
+  </url>
+  <url>
     <loc>/reference/checkAndFixCohortDefinitionSetDataTypes.html</loc>
   </url>
   <url>
@@ -28,13 +34,28 @@
     <loc>/reference/CohortGenerator-package.html</loc>
   </url>
   <url>
+    <loc>/reference/CohortSubsetDefinition.html</loc>
+  </url>
+  <url>
+    <loc>/reference/CohortSubsetOperator.html</loc>
+  </url>
+  <url>
     <loc>/reference/computeChecksum.html</loc>
+  </url>
+  <url>
+    <loc>/reference/createCohortSubset.html</loc>
+  </url>
+  <url>
+    <loc>/reference/createCohortSubsetDefinition.html</loc>
   </url>
   <url>
     <loc>/reference/createCohortTable.html</loc>
   </url>
   <url>
     <loc>/reference/createCohortTables.html</loc>
+  </url>
+  <url>
+    <loc>/reference/createDemographicSubset.html</loc>
   </url>
   <url>
     <loc>/reference/createEmptyCohortDefinitionSet.html</loc>
@@ -44,6 +65,15 @@
   </url>
   <url>
     <loc>/reference/createEmptyNegativeControlOutcomeCohortSet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/createLimitSubset.html</loc>
+  </url>
+  <url>
+    <loc>/reference/createSubsetCohortWindow.html</loc>
+  </url>
+  <url>
+    <loc>/reference/DemographicSubsetOperator.html</loc>
   </url>
   <url>
     <loc>/reference/dot-readCsv.html</loc>
@@ -82,6 +112,9 @@
     <loc>/reference/getRequiredTasks.html</loc>
   </url>
   <url>
+    <loc>/reference/getSubsetDefinitions.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
@@ -103,6 +136,9 @@
     <loc>/reference/isTaskRequired.html</loc>
   </url>
   <url>
+    <loc>/reference/LimitSubsetOperator.html</loc>
+  </url>
+  <url>
     <loc>/reference/readCsv.html</loc>
   </url>
   <url>
@@ -112,10 +148,19 @@
     <loc>/reference/saveCohortDefinitionSet.html</loc>
   </url>
   <url>
+    <loc>/reference/saveCohortSubsetDefinition.html</loc>
+  </url>
+  <url>
     <loc>/reference/saveIncremental.html</loc>
   </url>
   <url>
     <loc>/reference/sqlContainsInclusionRuleStats.html</loc>
+  </url>
+  <url>
+    <loc>/reference/SubsetCohortWindow.html</loc>
+  </url>
+  <url>
+    <loc>/reference/SubsetOperator.html</loc>
   </url>
   <url>
     <loc>/reference/writeCsv.html</loc>

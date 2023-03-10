@@ -1,6 +1,3 @@
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-outputFolder <- tempdir()
-
 #' Create the Circe cohort expression from a JSON file for generating
 #' SQL dynamically
 #'
@@ -57,12 +54,91 @@ for (i in 1:length(cohortJsonFiles)) {
 # Helper function
 getNegativeControlOutcomeCohortsForTest <- function(setCohortIdToConceptId = TRUE) {
   negativeControlOutcomes <- readCsv(file = system.file("testdata/negativecontrols/negativeControlOutcomes.csv",
-                                                        package = "CohortGenerator",
-                                                        mustWork = TRUE))
+    package = "CohortGenerator",
+    mustWork = TRUE
+  ))
   if (setCohortIdToConceptId) {
     negativeControlOutcomes$cohortId <- negativeControlOutcomes$outcomeConceptId
   } else {
     negativeControlOutcomes$cohortId <- seq.int(nrow(negativeControlOutcomes))
   }
   invisible(negativeControlOutcomes)
+}
+
+
+getPlatformConnectionDetails <- function(dbmsPlatform) {
+  # Get drivers for test platform
+  if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
+    jdbcDriverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
+  } else {
+    jdbcDriverFolder <- "~/.jdbcDrivers"
+    dir.create(jdbcDriverFolder, showWarnings = FALSE)
+  }
+
+  options("sqlRenderTempEmulationSchema" = NULL)
+  if (dbmsPlatform == "sqlite") {
+    connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+    cdmDatabaseSchema <- "main"
+    vocabularyDatabaseSchema <- "main"
+    cohortDatabaseSchema <- "main"
+    options("sqlRenderTempEmulationSchema" = NULL)
+    cohortTable <- "cohort"
+  } else {
+    if (dbmsPlatform == "postgresql") {
+      dbUser <- Sys.getenv("CDM5_POSTGRESQL_USER")
+      dbPassword <- Sys.getenv("CDM5_POSTGRESQL_PASSWORD")
+      dbServer <- Sys.getenv("CDM5_POSTGRESQL_SERVER")
+      cdmDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA")
+      vocabularyDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA")
+      cohortDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_OHDSI_SCHEMA")
+    } else if (dbmsPlatform == "oracle") {
+      dbUser <- Sys.getenv("CDM5_ORACLE_USER")
+      dbPassword <- Sys.getenv("CDM5_ORACLE_PASSWORD")
+      dbServer <- Sys.getenv("CDM5_ORACLE_SERVER")
+      cdmDatabaseSchema <- Sys.getenv("CDM5_ORACLE_CDM_SCHEMA")
+      vocabularyDatabaseSchema <- Sys.getenv("CDM5_ORACLE_CDM_SCHEMA")
+      cohortDatabaseSchema <- Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA")
+      options(sqlRenderTempEmulationSchema = Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA"))
+    } else if (dbmsPlatform == "redshift") {
+      dbUser <- Sys.getenv("CDM5_REDSHIFT_USER")
+      dbPassword <- Sys.getenv("CDM5_REDSHIFT_PASSWORD")
+      dbServer <- Sys.getenv("CDM5_REDSHIFT_SERVER")
+      cdmDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA")
+      vocabularyDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA")
+      cohortDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA")
+    } else if (dbmsPlatform == "sql server") {
+      dbUser <- Sys.getenv("CDM5_SQL_SERVER_USER")
+      dbPassword <- Sys.getenv("CDM5_SQL_SERVER_PASSWORD")
+      dbServer <- Sys.getenv("CDM5_SQL_SERVER_SERVER")
+      cdmDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA")
+      vocabularyDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA")
+      cohortDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")
+    }
+
+    if (dbServer == "") {
+      return(NULL)
+    }
+
+    connectionDetails <- DatabaseConnector::createConnectionDetails(
+      dbms = dbmsPlatform,
+      user = dbUser,
+      password = URLdecode(dbPassword),
+      server = dbServer,
+      pathToDriver = jdbcDriverFolder
+    )
+
+    # Add drivers
+    DatabaseConnector::downloadJdbcDrivers(dbmsPlatform, pathToDriver = jdbcDriverFolder)
+    # Table created to avoid collisions
+    randCode <- paste(sample(letters, 4), collapse = "")
+    cohortTable <- paste0("cgc_", gsub("[: -]", "", Sys.Date(), perl = TRUE), "_", randCode)
+  }
+
+  return(list(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = cohortTable,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    vocabularyDatabaseSchema = vocabularyDatabaseSchema
+  ))
 }

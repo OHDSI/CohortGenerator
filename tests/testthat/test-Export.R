@@ -92,7 +92,7 @@ test_that("Export cohort stats with databaseId", {
     cohortDatabaseSchema = "main",
     incremental = FALSE
   )
-  
+
   # Insert the inclusion rules
   insertInclusionRuleNames(
     connectionDetails = connectionDetails,
