@@ -551,14 +551,14 @@ DemographicSubsetOperator <- R6::R6Class(
     }
   ),
   active = list(
-    #'@field    ageMin Int between 0 and 9999 - minimum age
+    #'@field    ageMin Int between 0 and 99999 - minimum age
     ageMin = function(ageMin) {
       if (missing(ageMin)) return(private$.ageMin)
       checkmate::assertInt(ageMin, lower = 0, upper = min(self$ageMax, 99999))
       private$.ageMin <- ageMin
       return(self)
     },
-    #'@field  ageMax  Int between 0 and 9999 - maximum age
+    #'@field  ageMax  Int between 0 and 99999 - maximum age
     ageMax = function(ageMax) {
       if (missing(ageMax)) return(private$.ageMax)
       checkmate::assertInt(ageMax, lower = max(0, self$ageMin), upper = 99999)
@@ -601,7 +601,7 @@ DemographicSubsetOperator <- R6::R6Class(
 #'                     Specific concept ids not in this set can be used but are not explicitly validated
 #' @param race         Race demographics - concept ID list
 #' @param ethnicity    Ethnicity demographics - concept ID list
-createDemographicSubset <- function(name = NULL, ageMin = 0, ageMax = 9999, gender = NULL, race = NULL, ethnicity = NULL) {
+createDemographicSubset <- function(name = NULL, ageMin = 0, ageMax = 99999, gender = NULL, race = NULL, ethnicity = NULL) {
 
   mapGenderCodes <- function (x) {
     if (length(x) > 1) {
