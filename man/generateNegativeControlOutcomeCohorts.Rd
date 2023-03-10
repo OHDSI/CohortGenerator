@@ -52,7 +52,7 @@ the following columns: \describe{
 or all times the outcomeConceptId occurs for a person. Values accepted: 'all' or 'first'.}
 
 \item{detectOnDescendants}{When set to TRUE, detectOnDescendants will use the vocabulary to find negative control
-outcomes using the outcomeConceptId and all descendants via the concept_ancestor table. 
+outcomes using the outcomeConceptId and all descendants via the concept_ancestor table.
 When FALSE, only the exact outcomeConceptId will be used to detect the outcome.}
 }
 \value{
