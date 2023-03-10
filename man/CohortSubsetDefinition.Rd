@@ -17,8 +17,6 @@ Set of subset definitions
 
 \item{\code{definitionId}}{numeric definition id}
 
-\item{\code{subsetIds}}{vector of subset operator ids}
-
 \item{\code{identifierExpression}}{expression that can be evaluated from}
 }
 \if{html}{\out{</div>}}
@@ -30,7 +28,6 @@ Set of subset definitions
 \item \href{#method-CohortSubsetDefinition-toList}{\code{CohortSubsetDefinition$toList()}}
 \item \href{#method-CohortSubsetDefinition-toJSON}{\code{CohortSubsetDefinition$toJSON()}}
 \item \href{#method-CohortSubsetDefinition-addSubsetOperator}{\code{CohortSubsetDefinition$addSubsetOperator()}}
-\item \href{#method-CohortSubsetDefinition-getSubsetOperatorById}{\code{CohortSubsetDefinition$getSubsetOperatorById()}}
 \item \href{#method-CohortSubsetDefinition-getSubsetQuery}{\code{CohortSubsetDefinition$getSubsetQuery()}}
 \item \href{#method-CohortSubsetDefinition-getSubsetCohortName}{\code{CohortSubsetDefinition$getSubsetCohortName()}}
 \item \href{#method-CohortSubsetDefinition-setTargetOutputPairs}{\code{CohortSubsetDefinition$setTargetOutputPairs()}}
@@ -93,24 +90,6 @@ Will throw an error if a matching ID is found but reference object is different
 \item{\code{subsetOperator}}{a SubsetOperator isntance}
 
 \item{\code{overwrite}}{if a subset operator of the same ID is present, replace it with a new definition
-Get SubsetOperator By Id}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-CohortSubsetDefinition-getSubsetOperatorById"></a>}}
-\if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-getSubsetOperatorById}{}}}
-\subsection{Method \code{getSubsetOperatorById()}}{
-get a subset operator by its id field
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$getSubsetOperatorById(id)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{id}}{Integer subset id
 get query for a given target output pair}
 }
 \if{html}{\out{</div>}}

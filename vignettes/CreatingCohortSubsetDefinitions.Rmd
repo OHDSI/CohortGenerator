@@ -90,8 +90,7 @@ subsetDef <- createCohortSubsetDefinition(
   definitionId = 1,
   subsetOperators = list(
     # here we are saying 'first subset to only those patients in cohort 1778213'
-    createCohortSubset(id = 1001,
-                       name = "Subset to patients in cohort 1778213",
+    createCohortSubset(name = "Subset to patients in cohort 1778213",
                        # Note that this can be set to any id - if the 
                        # cohort is empty or doesn't exist this will not error
                        cohortIds = 1778213,
@@ -109,8 +108,7 @@ subsetDef <- createCohortSubsetDefinition(
                        ),
 
     # Next, subset to only those with 365 days of prior observation
-    createLimitSubset(id = 1002,
-                      name = "Observation of at least 365 days prior",
+    createLimitSubset(name = "Observation of at least 365 days prior",
                       priorTime = 365,
                       followUpTime = 0,
                       limitTo = "firstEver")
@@ -126,15 +124,13 @@ subsetOperations2 <- subsetDef$subsetOperators
 
 # subset to those between aged 18 an 64
 subsetOperations2[[3]] <-
-  createDemographicSubset(id = 1003,
-                          name = "18 - 65",
-                          ageMin = 18,
-                          ageMax = 64)
+        createDemographicSubset(name = "18 - 65",
+                                ageMin = 18,
+                                ageMax = 64)
 
-subsetDef2 <- createCohortSubsetDefinition(
-  name = "Patients in cohort 1778213 with 365 days prior obs, aged 18 - 64",
-  definitionId = 2,
-  subsetOperators = subsetOperations2)
+subsetDef2 <- createCohortSubsetDefinition(name = "Patients in cohort 1778213 with 365 days prior obs, aged 18 - 64",
+                                           definitionId = 2,
+                                           subsetOperators = subsetOperations2)
 ```
 ## Applying subset definitions to a cohort definition set
 

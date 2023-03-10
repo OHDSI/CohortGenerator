@@ -1,42 +1,30 @@
 test_that("Subset definition", {
-  cohortDefinitionSet <- getCohortDefinitionSet(
-    settingsFileName = "testdata/name/Cohorts.csv",
-    jsonFolder = "testdata/name/cohorts",
-    sqlFolder = "testdata/name/sql/sql_server",
-    cohortFileNameFormat = "%s",
-    cohortFileNameValue = c("cohortName"),
-    packageName = "CohortGenerator",
-    verbose = FALSE
-  )
+
+  cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                                jsonFolder = "testdata/name/cohorts",
+                                                sqlFolder = "testdata/name/sql/sql_server",
+                                                cohortFileNameFormat = "%s",
+                                                cohortFileNameValue = c("cohortName"),
+                                                packageName = "CohortGenerator",
+                                                verbose = FALSE)
   subsetOperations <- list(
-    createCohortSubset(
-      id = 1001,
-      name = "Cohort Subset",
-      cohortIds = 11,
-      cohortCombinationOperator = "all",
-      negate = FALSE,
-      startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-      endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")
-    ),
-    createLimitSubset(
-      id = 1002,
-      name = "Observation Criteria",
-      priorTime = 365,
-      followUpTime = 0,
-      limitTo = "firstEver"
-    ),
-    createDemographicSubset(
-      id = 1003,
-      name = "Demographic Criteria",
-      ageMin = 18,
-      ageMax = 64
-    )
+    createCohortSubset(name = "Cohort Subset",
+                       cohortIds = 11,
+                       cohortCombinationOperator = "all",
+                       negate = FALSE,
+                       startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                       endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")),
+    createLimitSubset(name = "Observation Criteria",
+                      priorTime = 365,
+                      followUpTime = 0,
+                      limitTo = "firstEver"),
+    createDemographicSubset(name = "Demographic Criteria",
+                            ageMin = 18,
+                            ageMax = 64)
   )
-  subsetDef <- createCohortSubsetDefinition(
-    name = "test definition",
-    definitionId = 1,
-    subsetOperators = subsetOperations
-  )
+  subsetDef <- createCohortSubsetDefinition(name = "test definition",
+                                            definitionId = 1,
+                                            subsetOperators = subsetOperations)
 
   for (s in subsetDef$subsetOperators) {
     checkmate::expect_class(s, "SubsetOperator")
@@ -75,57 +63,37 @@ test_that("Subset definition", {
     }
   }
 
-  testDemoSubset <- createDemographicSubset(
-    id = 1003,
-    name = "Demographic Criteria",
-    ageMin = 18,
-    ageMax = 64
-  )
+  testDemoSubset <- createDemographicSubset(ageMin = 18,
+                                            ageMax = 64)
 
   expect_true(testDemoSubset$isEqualTo(testDemoSubset))
 
-  testDemoSubset2 <- createDemographicSubset(
-    id = 1003,
-    name = "Demographic Criteria",
-    gender = "nb",
-    ageMin = 18,
-    ageMax = 64
-  )
+  testDemoSubset2 <- createDemographicSubset(gender = "nb",
+                                             ageMin = 18,
+                                             ageMax = 64)
 
   expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
 
-  ccs <- createCohortSubset(
-    id = 1001,
-    name = "Cohort Subset",
-    cohortIds = 11,
-    cohortCombinationOperator = "all",
-    negate = FALSE,
-    startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-    end = createSubsetCohortWindow(-99999, 99999, "cohortEnd")
-  )
+  ccs <- createCohortSubset(cohortIds = 11,
+                            cohortCombinationOperator = "all",
+                            negate = FALSE,
+                            startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                            end = createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
   expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
 
   # Attempt to add an existing operator to a cohort subset definition
-  csd <- createCohortSubsetDefinition(
-    name = "Test cohort subset definition",
-    definitionId = 1,
-    subsetOperators = list(ccs)
-  )
-
-  expect_error(csd$addSubsetOperator(ccs))
-
+  csd <- createCohortSubsetDefinition(name = "Test cohort subset definition",
+                                      definitionId = 1,
+                                      subsetOperators = list(ccs))
 
   # Create a cohort subset operator that does not reference a cohort ID
   # in the cohort definition set
-  invalidCohortSubsetOperator <- createCohortSubset(
-    id = 2001,
-    name = "Invalid Cohort Subset",
-    cohortIds = 0,
-    cohortCombinationOperator = "all",
-    negate = FALSE,
-    startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-    end = createSubsetCohortWindow(-99999, 99999, "cohortEnd")
-  )
+  invalidCohortSubsetOperator <- createCohortSubset(name = "Invalid Cohort Subset",
+                                                    cohortIds = 0,
+                                                    cohortCombinationOperator = "all",
+                                                    negate = FALSE,
+                                                    startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                                                    end = createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
   invalidCohortSubsetDefintion <- createCohortSubsetDefinition(
     name = "Invalid cohort subset definition",
     definitionId = 100,
@@ -133,56 +101,40 @@ test_that("Subset definition", {
     subsetOperators = list(invalidCohortSubsetOperator)
   )
 
-  expect_error(addCohortSubsetDefinition(
-    cohortDefinitionSet = cohortDefinitionSet,
-    cohortSubsetDefintion = invalidCohortSubsetDefintion
-  ))
+  expect_error(addCohortSubsetDefinition(cohortDefinitionSet = cohortDefinitionSet,
+                                         cohortSubsetDefintion = invalidCohortSubsetDefintion))
 
-  invalidCohortSubsetOperator$id <- 2002
   invalidCohortSubsetOperator2 <- csd$addSubsetOperator(invalidCohortSubsetOperator)
   expect_equal(invalidCohortSubsetOperator2$toJSON(), csd$toJSON())
 })
 
 
 test_that("Saving and loading definitions via attributes", {
-  cohortDefinitionSet <- getCohortDefinitionSet(
-    settingsFileName = "testdata/name/Cohorts.csv",
-    jsonFolder = "testdata/name/cohorts",
-    sqlFolder = "testdata/name/sql/sql_server",
-    cohortFileNameFormat = "%s",
-    cohortFileNameValue = c("cohortName"),
-    packageName = "CohortGenerator",
-    verbose = FALSE
-  )
+
+  cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                                jsonFolder = "testdata/name/cohorts",
+                                                sqlFolder = "testdata/name/sql/sql_server",
+                                                cohortFileNameFormat = "%s",
+                                                cohortFileNameValue = c("cohortName"),
+                                                packageName = "CohortGenerator",
+                                                verbose = FALSE)
   subsetOperations <- list(
-    createCohortSubset(
-      id = 1001,
-      name = "Cohort Subset",
-      cohortIds = 11,
-      cohortCombinationOperator = "all",
-      negate = FALSE,
-      startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-      endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")
-    ),
-    createLimitSubset(
-      id = 1002,
-      name = "Observation Criteria",
-      priorTime = 365,
-      followUpTime = 0,
-      limitTo = "firstEver"
-    ),
-    createDemographicSubset(
-      id = 1003,
-      name = "Demographic Criteria",
-      ageMin = 18,
-      ageMax = 64
-    )
+    createCohortSubset(name = "Cohort Subset",
+                       cohortIds = 11,
+                       cohortCombinationOperator = "all",
+                       negate = FALSE,
+                       startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                       endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")),
+    createLimitSubset(priorTime = 365,
+                      followUpTime = 0,
+                      limitTo = "firstEver"),
+    createDemographicSubset(name = "Demographic Criteria",
+                            ageMin = 18,
+                            ageMax = 64)
   )
-  subsetDef <- createCohortSubsetDefinition(
-    name = "test definition",
-    definitionId = 1,
-    subsetOperators = subsetOperations
-  )
+  subsetDef <- createCohortSubsetDefinition(name = "test definition",
+                                            definitionId = 1,
+                                            subsetOperators = subsetOperations)
 
   cohortDefinitionSet <- cohortDefinitionSet %>%
     addCohortSubsetDefinition(subsetDef)
@@ -190,69 +142,55 @@ test_that("Saving and loading definitions via attributes", {
   expect_true(hasSubsetDefinitions(cohortDefinitionSet))
 
   checkmate::expect_list(attr(cohortDefinitionSet, "cohortSubsetDefinitions"),
-    types = "CohortSubsetDefinition",
-    len = 1
-  )
+                         types = "CohortSubsetDefinition",
+                         len = 1)
 
   savePath <- tempfile()
   unlink(savePath, recursive = T)
   on.exit(unlink(savePath, recursive = T), add = TRUE)
   saveCohortDefinitionSet(cohortDefinitionSet,
-    cohortFileNameFormat = "%s",
-    settingsFileName = file.path(savePath, "Cohorts.csv"),
-    jsonFolder = file.path(savePath, "cohorts"),
-    sqlFolder = file.path(savePath, "sql/sql_server"),
-    subsetJsonFolder = file.path(savePath, "subsetDefs")
-  )
+                          cohortFileNameFormat = "%s",
+                          settingsFileName = file.path(savePath, "Cohorts.csv"),
+                          jsonFolder = file.path(savePath, "cohorts"),
+                          sqlFolder = file.path(savePath, "sql/sql_server"),
+                          subsetJsonFolder = file.path(savePath, "subsetDefs"))
   checkmate::expect_directory_exists(file.path(savePath, "subsetDefs"))
   checkmate::expect_file_exists(file.path(savePath, "subsetDefs", paste0(subsetDef$definitionId, ".json")))
 
-  reloadedSet <- getCohortDefinitionSet(
-    settingsFileName = file.path(savePath, "Cohorts.csv"),
-    jsonFolder = file.path(savePath, "cohorts"),
-    sqlFolder = file.path(savePath, "sql/sql_server"),
-    subsetJsonFolder = file.path(savePath, "subsetDefs")
-  )
+  reloadedSet <- getCohortDefinitionSet(settingsFileName = file.path(savePath, "Cohorts.csv"),
+                                        jsonFolder = file.path(savePath, "cohorts"),
+                                        sqlFolder = file.path(savePath, "sql/sql_server"),
+                                        subsetJsonFolder = file.path(savePath, "subsetDefs"))
   expect_true(hasSubsetDefinitions(reloadedSet))
   checkmate::expect_list(attr(reloadedSet, "cohortSubsetDefinitions"), types = "CohortSubsetDefinition", min.len = 1, max.len = 1)
 })
 
 
-
 test_that("subset generation", {
-  cohortDefinitionSet <- getCohortDefinitionSet(
-    settingsFileName = "testdata/name/Cohorts.csv",
-    jsonFolder = "testdata/name/cohorts",
-    sqlFolder = "testdata/name/sql/sql_server",
-    cohortFileNameFormat = "%s",
-    cohortFileNameValue = c("cohortName"),
-    packageName = "CohortGenerator",
-    verbose = FALSE
-  )
+
+  cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                                jsonFolder = "testdata/name/cohorts",
+                                                sqlFolder = "testdata/name/sql/sql_server",
+                                                cohortFileNameFormat = "%s",
+                                                cohortFileNameValue = c("cohortName"),
+                                                packageName = "CohortGenerator",
+                                                verbose = FALSE)
   checkmate::expect_list(getSubsetDefinitions(cohortDefinitionSet), len = 0)
 
   subsetOperations <- list(
-    createCohortSubset(
-      id = 1001,
-      name = "Cohort Subset",
-      cohortIds = 11,
-      cohortCombinationOperator = "all",
-      negate = FALSE,
-      startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-      endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")
-    ),
-    createDemographicSubset(
-      id = 1003,
-      name = "Demographic Criteria",
-      ageMin = 18,
-      ageMax = 64
-    )
+    createCohortSubset(name = "Cohort Subset",
+                       cohortIds = 11,
+                       cohortCombinationOperator = "all",
+                       negate = FALSE,
+                       startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                       endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")),
+    createDemographicSubset(name = "Demographic Criteria",
+                            ageMin = 18,
+                            ageMax = 64)
   )
-  subsetDef <- createCohortSubsetDefinition(
-    name = "test definition",
-    definitionId = 1,
-    subsetOperators = subsetOperations
-  )
+  subsetDef <- createCohortSubsetDefinition(name = "test definition",
+                                            definitionId = 1,
+                                            subsetOperators = subsetOperations)
 
   cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
     addCohortSubsetDefinition(subsetDef)
@@ -327,11 +265,8 @@ test_that("Subset definition creation and retrieval with definitionId != 1", {
     name = "Male Only",
     definitionId = 2,
     subsetOperators = list(
-      CohortGenerator::createDemographicSubset(
-        id = 4,
-        name = "Male",
-        gender = 8507
-      )
+      CohortGenerator::createDemographicSubset(name = "Male",
+                                               gender = 8507)
     )
   )
 
@@ -343,28 +278,21 @@ test_that("Subset definition creation and retrieval with definitionId != 1", {
 })
 
 test_that("Test overwriteExisting", {
-  cohortDefinitionSet <- getCohortDefinitionSet(
-    settingsFileName = "testdata/name/Cohorts.csv",
-    jsonFolder = "testdata/name/cohorts",
-    sqlFolder = "testdata/name/sql/sql_server",
-    cohortFileNameFormat = "%s",
-    cohortFileNameValue = c("cohortName"),
-    packageName = "CohortGenerator",
-    verbose = FALSE
-  )
+  cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
+                                                jsonFolder = "testdata/name/cohorts",
+                                                sqlFolder = "testdata/name/sql/sql_server",
+                                                cohortFileNameFormat = "%s",
+                                                cohortFileNameValue = c("cohortName"),
+                                                packageName = "CohortGenerator",
+                                                verbose = FALSE)
   subsetOperations <- list(
-    createDemographicSubset(
-      id = 1001,
-      name = "Demographic Criteria",
-      ageMin = 18,
-      ageMax = 64
-    )
+    createDemographicSubset(name = "Demographic Criteria",
+                            ageMin = 18,
+                            ageMax = 64)
   )
-  subsetDef <- createCohortSubsetDefinition(
-    name = "test definition",
-    definitionId = 1,
-    subsetOperators = subsetOperations
-  )
+  subsetDef <- createCohortSubsetDefinition(name = "test definition",
+                                            definitionId = 1,
+                                            subsetOperators = subsetOperations)
 
   # Expect to work the 1st time
   cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
@@ -391,21 +319,17 @@ test_that("Subset operator serialization tests", {
 
   # SubsetOperator base class tests
   so1 <- SubsetOperator$new()
-  so1$id <- 1
   so1$name <- "SubsetOp1"
 
   so2 <- SubsetOperator$new()
   so2$name <- "SubsetOp2"
 
-  ds1 <- createDemographicSubset(
-    id = 1001,
-    name = "Demographic Criteria",
-    ageMin = 18,
-    ageMax = 64,
-    gender = 8532,
-    race = 8527,
-    ethnicity = 38003563
-  )
+  ds1 <- createDemographicSubset(name = "Demographic Criteria",
+                                 ageMin = 18,
+                                 ageMax = 64,
+                                 gender = 8532,
+                                 race = 8527,
+                                 ethnicity = 38003563)
 
   expect_warning(so1$isEqualTo(ds1))
   expect_false(so1$isEqualTo(so2))
@@ -418,25 +342,19 @@ test_that("Subset operator serialization tests", {
   expect_equal(ds1$getRace(), 8527)
   expect_equal(ds1$getEthnicity(), 38003563)
 
-  ls1 <- createLimitSubset(
-    id = 1002,
-    name = "Limit Subset 1",
-    priorTime = 365,
-    followUpTime = 0,
-    limitTo = "firstEver",
-    calendarStartDate = "",
-    calendarEndDate = ""
-  )
+  ls1 <- createLimitSubset(name = "Limit Subset 1",
+                           priorTime = 365,
+                           followUpTime = 0,
+                           limitTo = "firstEver",
+                           calendarStartDate = "",
+                           calendarEndDate = "")
   expect_silent(ls1$toJSON())
 
-  ls2 <- createLimitSubset(
-    id = 1003,
-    name = "Limit Subset 2",
-    priorTime = 365,
-    followUpTime = 0,
-    limitTo = "firstEver",
-    calendarStartDate = "2000-01-01",
-    calendarEndDate = "2013-12-31"
-  )
+  ls2 <- createLimitSubset(name = "Limit Subset 2",
+                           priorTime = 365,
+                           followUpTime = 0,
+                           limitTo = "firstEver",
+                           calendarStartDate = "2000-01-01",
+                           calendarEndDate = "2013-12-31")
   expect_silent(ls2$toJSON())
 })
