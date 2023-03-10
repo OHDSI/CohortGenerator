@@ -10,20 +10,22 @@ test_that("Call generateCohortSet without connection or connectionDetails", {
 })
 
 test_that("Call generateCohortSet with default parameters", {
-  expect_error(generateCohortSet(
-    cohortDefinitionSet = getCohortsForTest(cohorts),
-    connectionDetails = c()
-  ),
-  message = "(cohorts parameter)"
+  expect_error(
+    generateCohortSet(
+      cohortDefinitionSet = getCohortsForTest(cohorts),
+      connectionDetails = c()
+    ),
+    message = "(cohorts parameter)"
   )
 })
 
 test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter", {
-  expect_error(generateCohortSet(
-    connectionDetails = connectionDetails,
-    cohortDefinitionSet = data.frame()
-  ),
-  message = "(must contain the following columns)"
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = data.frame()
+    ),
+    message = "(must contain the following columns)"
   )
 })
 
@@ -35,30 +37,33 @@ test_that("Call instatiateCohortSet with cohortDefinitionSet with extra columns"
     sql = "sql",
     foo = "foo"
   ))
-  expect_error(generateCohortSet(
-    connectionDetails = connectionDetails,
-    cohortDefinitionSet = data.frame()
-  ),
-  message = "(must contain the following columns)"
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = data.frame()
+    ),
+    message = "(must contain the following columns)"
   )
 })
 
 test_that("Call instatiateCohortSet with vector as cohortDefinitionSet parameter", {
-  expect_error(generateCohortSet(
-    connectionDetails = connectionDetails,
-    cohortDefinitionSet = c()
-  ),
-  message = "(data frame)"
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = c()
+    ),
+    message = "(data frame)"
   )
 })
 
 test_that("Call instatiateCohortSet with incremental = TRUE and no folder specified", {
-  expect_error(generateCohortSet(
-    connectionDetails = connectionDetails,
-    cohortDefinitionSet = getCohortsForTest(cohorts),
-    incremental = TRUE
-  ),
-  message = "Must specify incrementalFolder"
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = getCohortsForTest(cohorts),
+      incremental = TRUE
+    ),
+    message = "Must specify incrementalFolder"
   )
 })
 

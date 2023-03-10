@@ -21,7 +21,8 @@ options(width = 80)
 knitr::opts_chunk$set(
   cache = FALSE,
   comment = "#>",
-  error = FALSE)
+  error = FALSE
+)
 someFolder <- tempdir()
 packageRoot <- tempdir()
 baseUrl <- "https://api.ohdsi.org/WebAPI"
@@ -41,22 +42,26 @@ We can create cohorts using [ATLAS](https://github.com/OHDSI/Atlas) and download
 
 ```{r eval=FALSE}
 # A list of cohort IDs for use in this vignette
-cohortIds <- c(1778211,1778212,1778213)
+cohortIds <- c(1778211, 1778212, 1778213)
 # Get the SQL/JSON for the cohorts
-cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(baseUrl = baseUrl,
-                                                               cohortIds = cohortIds)
+cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(
+  baseUrl = baseUrl,
+  cohortIds = cohortIds
+)
 ```
 
 ```{r echo=FALSE, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 # Hidden code block to load the cohortDefinitionSet from the package vs. trying to
 # download using ROhdsiWebApi to prevent errors when running GHA
-cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = "testdata/name/Cohorts.csv",
-                                              jsonFolder = "testdata/name/cohorts",
-                                              sqlFolder = "testdata/name/sql/sql_server",
-                                              cohortFileNameFormat = "%s",
-                                              cohortFileNameValue = c("cohortName"),
-                                              packageName = "CohortGenerator",
-                                              verbose = FALSE)
+cohortDefinitionSet <- getCohortDefinitionSet(
+  settingsFileName = "testdata/name/Cohorts.csv",
+  jsonFolder = "testdata/name/cohorts",
+  sqlFolder = "testdata/name/sql/sql_server",
+  cohortFileNameFormat = "%s",
+  cohortFileNameValue = c("cohortName"),
+  packageName = "CohortGenerator",
+  verbose = FALSE
+)
 
 cohortDefinitionSet$cohortId <- cohortDefinitionSet$cohortId + 1778210 # Match the cohort Ids from Atlas
 cohortIds <- cohortDefinitionSet$cohortId
@@ -83,19 +88,21 @@ Here is how these columns are used:
 The `cohortDefinitionSet` contains all of the details about each cohort that we would like to use for generation. As a best practice, we recommend that you embed these cohort details into a study package. To do this, we've created a function to save the cohort definition set to the file system:
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-saveCohortDefinitionSet(cohortDefinitionSet = cohortDefinitionSet,
-                        settingsFileName = file.path(
-                          packageRoot, 
-                          "inst/settings/CohortsToCreate.csv"
-                        ),
-                        jsonFolder = file.path(
-                          packageRoot, 
-                          "inst/cohorts"
-                        ),
-                        sqlFolder = file.path(
-                          packageRoot, 
-                          "inst/sql/sql_server"
-                        ))
+saveCohortDefinitionSet(
+  cohortDefinitionSet = cohortDefinitionSet,
+  settingsFileName = file.path(
+    packageRoot,
+    "inst/settings/CohortsToCreate.csv"
+  ),
+  jsonFolder = file.path(
+    packageRoot,
+    "inst/cohorts"
+  ),
+  sqlFolder = file.path(
+    packageRoot,
+    "inst/sql/sql_server"
+  )
+)
 ```
 
 By default, saving the cohort definition set will create the files under a folder called `inst` which is where resources for a study package will live. Under `inst` the following folders and files are created:
@@ -107,8 +114,10 @@ By default, saving the cohort definition set will create the files under a folde
 Your study package can later re-construct the cohortDefinitionSet by reading in these resources using the `getCohortDefinitionSet` function.
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-cohortDefinitionSet <- getCohortDefinitionSet(settingsFileName = file.path(
-  packageRoot, "inst/settings/CohortsToCreate.csv"),
+cohortDefinitionSet <- getCohortDefinitionSet(
+  settingsFileName = file.path(
+    packageRoot, "inst/settings/CohortsToCreate.csv"
+  ),
   jsonFolder = file.path(packageRoot, "inst/cohorts"),
   sqlFolder = file.path(packageRoot, "inst/sql/sql_server")
 )
@@ -127,26 +136,31 @@ connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 cohortTableNames <- getCohortTableNames(cohortTable = "cg_example")
 
 # Next create the tables on the database
-createCohortTables(connectionDetails = connectionDetails,
-                   cohortTableNames = cohortTableNames,
-                   cohortDatabaseSchema = "main")
+createCohortTables(
+  connectionDetails = connectionDetails,
+  cohortTableNames = cohortTableNames,
+  cohortDatabaseSchema = "main"
+)
 
 # Generate the cohort set
-cohortsGenerated <- generateCohortSet(connectionDetails= connectionDetails,
-                                      cdmDatabaseSchema = "main",
-                                      cohortDatabaseSchema = "main",
-                                      cohortTableNames = cohortTableNames,
-                                      cohortDefinitionSet = cohortDefinitionSet)
-
+cohortsGenerated <- generateCohortSet(
+  connectionDetails = connectionDetails,
+  cdmDatabaseSchema = "main",
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames,
+  cohortDefinitionSet = cohortDefinitionSet
+)
 ```
 The code above starts by obtaining the `connectionDetails` from Eunomia. This is where you'll likely want to substitute your own connection information. Next, we call `getCohortTableNames` to obtain a list of `cohortTableNames` that we'll use for the generation process. We then call `createCohortTables` to create the cohort tables on the database server in the `cohortDatabaseSchema`. Once these tables are created, we use the function `generateCohortSet` to generate the `cohortDefinitionSet`. When calling `generateCohortSet`, we must specify the schema that holds our CDM (`cdmDatabaseSchema`), the location of the `cohortDatabaseSchema` and `cohortTableNames` where the cohort(s) will be generated. We will cover the other parameters available in the [Advanced Options](#advancedOptions) section.
 
 If we'd like to see the results of the generation process, we can use the `getCohortCounts` method to query the cohort table for a summary of the persons and events for each cohort:
 
 ```{r, error=FALSE, warning=FALSE}
-getCohortCounts(connectionDetails = connectionDetails,
-                cohortDatabaseSchema = "main",
-                cohortTable = cohortTableNames$cohortTable)
+getCohortCounts(
+  connectionDetails = connectionDetails,
+  cohortDatabaseSchema = "main",
+  cohortTable = cohortTableNames$cohortTable
+)
 ```
 
 
@@ -173,19 +187,22 @@ Next we'll create the tables to store the cohort and the cohort statistics. Then
 cohortTableNames <- getCohortTableNames(cohortTable = "stats_example")
 
 # Next create the tables on the database
-createCohortTables(connectionDetails = connectionDetails,
-                   cohortTableNames = cohortTableNames,
-                   cohortDatabaseSchema = "main")
+createCohortTables(
+  connectionDetails = connectionDetails,
+  cohortTableNames = cohortTableNames,
+  cohortDatabaseSchema = "main"
+)
 
-# We can then generate the cohorts the same way as before and it will use the 
+# We can then generate the cohorts the same way as before and it will use the
 # cohort statstics tables to store the results
 # Generate the cohort set
-generateCohortSet(connectionDetails= connectionDetails,
-                  cdmDatabaseSchema = "main",
-                  cohortDatabaseSchema = "main",
-                  cohortTableNames = cohortTableNames,
-                  cohortDefinitionSet = cohortDefinitionSet)
-
+generateCohortSet(
+  connectionDetails = connectionDetails,
+  cdmDatabaseSchema = "main",
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames,
+  cohortDefinitionSet = cohortDefinitionSet
+)
 ```
 
 At this stage, your cohorts are generated and any cohort statistics are available in the cohort statistics tables. The next step is to export the results to the file system which is done using the code below:
@@ -211,10 +228,11 @@ The code above performs two steps. First, we insert the inclusion rule names fro
 Once you have exported your cohort statistics, you can optionally drop the statistics tables by using the following command:
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-dropCohortStatsTables(connectionDetails = connectionDetails,
-                      cohortDatabaseSchema = "main",
-                      cohortTableNames = cohortTableNames)
-
+dropCohortStatsTables(
+  connectionDetails = connectionDetails,
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames
+)
 ```
 
 ### Incremental Mode
@@ -224,43 +242,50 @@ CohortGenerator provides an `incremental` option for some of its functions. The 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 # Create a set of tables for this example
 cohortTableNames <- getCohortTableNames(cohortTable = "cohort")
-createCohortTables(connectionDetails = connectionDetails,
-                   cohortTableNames = cohortTableNames,
-                   cohortDatabaseSchema = "main",
-                   incremental = TRUE)
-
+createCohortTables(
+  connectionDetails = connectionDetails,
+  cohortTableNames = cohortTableNames,
+  cohortDatabaseSchema = "main",
+  incremental = TRUE
+)
 ```
 As expected, the code created the cohort tables as requested. Under the hood, since `incremental = TRUE` was set, the code did a check against the database to see if the tables already exist before creating them. To verify this, we can call the function again and check the results:
 
 ```{r}
-createCohortTables(connectionDetails = connectionDetails,
-                   cohortTableNames = cohortTableNames,
-                   cohortDatabaseSchema = "main",
-                   incremental = TRUE)
+createCohortTables(
+  connectionDetails = connectionDetails,
+  cohortTableNames = cohortTableNames,
+  cohortDatabaseSchema = "main",
+  incremental = TRUE
+)
 ```
 
 The use of `incremental = TRUE` here allows for assurance that tables and results from previous runs are preserved. Next, we can generate our `cohortDefinitionSet` in incremental mode.
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-generateCohortSet(connectionDetails= connectionDetails,
-                  cdmDatabaseSchema = "main",
-                  cohortDatabaseSchema = "main",
-                  cohortTableNames = cohortTableNames,
-                  cohortDefinitionSet = cohortDefinitionSet,
-                  incremental = TRUE,
-                  incrementalFolder = file.path(someFolder, "RecordKeeping"))
+generateCohortSet(
+  connectionDetails = connectionDetails,
+  cdmDatabaseSchema = "main",
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames,
+  cohortDefinitionSet = cohortDefinitionSet,
+  incremental = TRUE,
+  incrementalFolder = file.path(someFolder, "RecordKeeping")
+)
 ```
 
 Here we indicate that we are performing this operational incrementally by specifying `incremental = TRUE` and by specifying a folder for holding a record keeping file to track where cohorts are generated: `incrementalFolder = file.path(someFolder, "RecordKeeping")`. Once a cohort is generated in incremental mode, the cohort ID and a checksum of the cohort SQL are saved in the `incrementalFolder` in a file called `GeneratedCohorts.csv`. If we attempt to re-generate the same cohort set in incremental mode, `generateCohortSet` will inspect the SQL for each cohort in the `cohortDefinitionSet` and if the checksum of that cohort matches the checksum found in the `incrementalFolder` for the same cohort ID, the generation is skipped. To illustrate how this looks:
 
 ```{r}
-generateCohortSet(connectionDetails= connectionDetails,
-                  cdmDatabaseSchema = "main",
-                  cohortDatabaseSchema = "main",
-                  cohortTableNames = cohortTableNames,
-                  cohortDefinitionSet = cohortDefinitionSet,
-                  incremental = TRUE,
-                  incrementalFolder = file.path(someFolder, "RecordKeeping"))
+generateCohortSet(
+  connectionDetails = connectionDetails,
+  cdmDatabaseSchema = "main",
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames,
+  cohortDefinitionSet = cohortDefinitionSet,
+  incremental = TRUE,
+  incrementalFolder = file.path(someFolder, "RecordKeeping")
+)
 ```
 
 #### Potential Pitfalls of Incremental Mode

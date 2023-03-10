@@ -210,7 +210,6 @@ getCohortStats <- function(connectionDetails,
                              "cohortCensorStatsTable"
                            ),
                            cohortTableNames = getCohortTableNames()) {
-
   # Names of cohort table names must include output tables
   checkmate::assertNames(names(cohortTableNames), must.include = outputTables)
   # ouput tables strictly the set of allowed tables
