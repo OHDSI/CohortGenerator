@@ -133,7 +133,7 @@ CohortSubsetDefinition <- R6::R6Class(
         dplyr::pull()
 
       opNames <- lapply(self$subsetOperators, function(x) { x$name })
-      paste(baseName, "-", self$name, paste0("(", opNames, ")", collapse = " "))
+      paste(baseName, "-", self$name, paste0(opNames, collapse = ", "))
     },
     #' Set the targetOutputPairs to be added to a cohort definition set
     #' @param targetIds   list of cohort ids to apply subsetting operations to

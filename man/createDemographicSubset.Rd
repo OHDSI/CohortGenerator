@@ -7,7 +7,7 @@
 createDemographicSubset(
   name = NULL,
   ageMin = 0,
-  ageMax = 9999,
+  ageMax = 99999,
   gender = NULL,
   race = NULL,
   ethnicity = NULL
