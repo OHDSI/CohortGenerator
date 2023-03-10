@@ -18,9 +18,9 @@ Criteria Subset
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{ageMin}}{Int between 0 and 9999 - minimum age}
+\item{\code{ageMin}}{Int between 0 and 99999 - minimum age}
 
-\item{\code{ageMax}}{Int between 0 and 9999 - maximum age}
+\item{\code{ageMax}}{Int between 0 and 99999 - maximum age}
 
 \item{\code{gender}}{vector of gender concept IDs}
 
