@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.8.0</span>
       </span>
     </div>
 
@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/CreatingCohortSubsetDefinitions.html">Creating Cohort Subset Definitions</a>
+    </li>
+    <li>
       <a href="../articles/GeneratingCohorts.html">Generating Cohorts</a>
     </li>
   </ul></li>
@@ -70,7 +73,8 @@
 <span>  connectionDetails <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">cohortDatabaseSchema</span>,</span>
-<span>  cohortTableNames <span class="op">=</span> <span class="fu"><a href="getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  cohortTableNames <span class="op">=</span> <span class="fu"><a href="getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dropCohortTable <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -101,6 +105,10 @@ this should include both the database and schema name, for example
 <dd><p>The names of the cohort tables. See <code><a href="getCohortTableNames.html">getCohortTableNames</a></code>
 for more details.</p></dd>
 
+
+<dt>dropCohortTable</dt>
+<dd><p>Optionally drop cohort table in addition to stats tables (defaults to FALSE)</p></dd>
+
 </dl></div>
 
   </div>
@@ -111,11 +119,11 @@ for more details.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Anthony Sena, Gowtham Rao, Martijn Schuemie.</p>
+  <p></p><p>Developed by Anthony Sena, Jamie Gilbert, Gowtham Rao, Martijn Schuemie.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

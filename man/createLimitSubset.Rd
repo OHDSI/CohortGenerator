@@ -27,8 +27,8 @@ createLimitSubset(
                              "lastEver" - only last entry in patient history inside
 
                          Note, when using firstEver and lastEver with follow up and washout, patients with events
-                         outside this will be censored. The "firstEver" and "lastEver" are applied first. 
-                         The "earliestRemaining" and "latestRemaining" are applied after all other limit 
+                         outside this will be censored. The "firstEver" and "lastEver" are applied first.
+                         The "earliestRemaining" and "latestRemaining" are applied after all other limit
                          criteria are applied (i.e. after applying prior/post time and calendar time).}
 
 \item{calendarStartDate}{End date to allow periods (e.g. 2020/1/1/)}

@@ -39,6 +39,26 @@ reference:
     contents:
       - getCohortCounts
       
+  - title: "Cohort Subset"
+    desc: >
+      Functions and R6 classes for creating cohort subset definitions and subset 
+      operators.
+    contents:
+      - addCohortSubsetDefinition
+      - CohortSubsetDefinition
+      - CohortSubsetOperator
+      - createCohortSubset
+      - createCohortSubsetDefinition
+      - createDemographicSubset
+      - createLimitSubset
+      - createSubsetCohortWindow
+      - DemographicSubsetOperator
+      - getSubsetDefinitions
+      - LimitSubsetOperator
+      - saveCohortSubsetDefinition
+      - SubsetCohortWindow
+      - SubsetOperator
+      
   - title: "Cohort Statistics"
     desc: >
       Functions for inserting inclusion rule names from a cohort definition,

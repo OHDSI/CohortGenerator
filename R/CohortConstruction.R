@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -70,11 +70,11 @@ generateCohortSet <- function(connectionDetails = NULL,
                               incrementalFolder = NULL) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "sql"
-                         )
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "sql"
+    )
   )
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
@@ -121,14 +121,16 @@ generateCohortSet <- function(connectionDetails = NULL,
   if (incremental) {
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
 
-    if (isTRUE(attr(cohortDefinitionSet, 'hasSubsetDefinitions'))) {
+    if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
       cohortDefinitionSet$checksum <- ""
       for (i in 1:nrow(cohortDefinitionSet)) {
         # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
-        if(cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
+        if (cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
           j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet$subsetParent[i])
-          cohortDefinitionSet$checksum[i] <- computeChecksum(paste(cohortDefinitionSet$sql[j],
-                                                                   cohortDefinitionSet$sql[i]))
+          cohortDefinitionSet$checksum[i] <- computeChecksum(paste(
+            cohortDefinitionSet$sql[j],
+            cohortDefinitionSet$sql[i]
+          ))
         } else {
           cohortDefinitionSet$checksum[i] <- computeChecksum(cohortDefinitionSet$sql[i])
         }
@@ -147,7 +149,7 @@ generateCohortSet <- function(connectionDetails = NULL,
   cohortsToGenerate <- cohortDefinitionSet$cohortId
   subsetsToGenerate <- c()
   # Generate top level cohorts first
-  if (isTRUE(attr(cohortDefinitionSet, 'hasSubsetDefinitions'))) {
+  if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
     cohortsToGenerate <- cohortDefinitionSet %>%
       dplyr::filter(!.data$isSubset) %>%
       dplyr::select("cohortId") %>%

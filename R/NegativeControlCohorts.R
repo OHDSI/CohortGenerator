@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -53,8 +53,8 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #' @keywords internal
 .getNegativeControlOutcomeCohortSetSpecification <- function() {
   return(readCsv(system.file("negativeControlOutcomeCohortSetSpecificationDescription.csv",
-                             package = "CohortGenerator",
-                             mustWork = TRUE
+    package = "CohortGenerator",
+    mustWork = TRUE
   )))
 }
 
@@ -71,20 +71,20 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #' @template CdmDatabaseSchema
 #'
 #' @template TempEmulationSchema
-#' 
+#'
 #' @template CohortDatabaseSchema
 #'
 #' @param cohortTable                  Name of the cohort table.
-#' 
+#'
 #' @template negativeControlOutcomeCohortSet
-#' 
+#'
 #' @param occurrenceType     The occurrenceType will detect either: the first time an outcomeConceptId occurs
-#'                           or all times the outcomeConceptId occurs for a person. Values accepted: 'all' or 'first'. 
+#'                           or all times the outcomeConceptId occurs for a person. Values accepted: 'all' or 'first'.
 #'
 #' @param detectOnDescendants     When set to TRUE, detectOnDescendants will use the vocabulary to find negative control
-#'                                outcomes using the outcomeConceptId and all descendants via the concept_ancestor table. 
+#'                                outcomes using the outcomeConceptId and all descendants via the concept_ancestor table.
 #'                                When FALSE, only the exact outcomeConceptId will be used to detect the outcome.
-#'                           
+#'
 #' @return
 #' Invisibly returns an empty negative control outcome cohort set data.frame
 #'
@@ -105,46 +105,57 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   checkmate::assert_choice(x = tolower(occurrenceType), choices = c("all", "first"))
   checkmate::assert_logical(detectOnDescendants)
   checkmate::assertNames(colnames(negativeControlOutcomeCohortSet),
-                         must.include = .getNegativeControlOutcomeCohortSetSpecification()$columnName)
-  checkmate::assert_data_frame(x = negativeControlOutcomeCohortSet,
-                               min.rows = 1)
+    must.include = .getNegativeControlOutcomeCohortSetSpecification()$columnName
+  )
+  checkmate::assert_data_frame(
+    x = negativeControlOutcomeCohortSet,
+    min.rows = 1
+  )
 
   start <- Sys.time()
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  
+
   # Error if cohortTable does not exist
-  tableList <- DatabaseConnector::getTableNames(connection = connection,
-                                                databaseSchema = cohortDatabaseSchema)
+  tableList <- DatabaseConnector::getTableNames(
+    connection = connection,
+    databaseSchema = cohortDatabaseSchema
+  )
   if (!tolower(cohortTable) %in% tolower(tableList)) {
     stop(paste0("Table: ", cohortTable, " not found in schema: ", cohortDatabaseSchema, ". Please use `createCohortTable` to ensure the cohort table is created before generating cohorts."))
   }
-  
+
   ParallelLogger::logInfo("Generating negative control outcome cohorts")
-  
+
   # Send the negative control outcome cohort set to the server for use
   # in processing. This temp table will hold the mapping between
   # cohort_definition_id and the outcomeConceptId in the data.frame()
-  DatabaseConnector::insertTable(connection = connection,
-                                 data = negativeControlOutcomeCohortSet,
-                                 tableName = "#nc_set",
-                                 camelCaseToSnakeCase = TRUE,
-                                 dropTableIfExists = TRUE,
-                                 createTable = TRUE,
-                                 tempTable = TRUE)  
-  
-  sql <- createNegativeControlOutcomesQuery(connection = connection,
-                                            cdmDatabaseSchema = cdmDatabaseSchema,
-                                            tempEmulationSchema = tempEmulationSchema,
-                                            cohortDatabaseSchema = cohortDatabaseSchema,
-                                            cohortTable = cohortTable,
-                                            occurrenceType = occurrenceType,
-                                            detectOnDescendants = detectOnDescendants)
-  
-  DatabaseConnector::executeSql(connection = connection,
-                                sql = sql)
+  DatabaseConnector::insertTable(
+    connection = connection,
+    data = negativeControlOutcomeCohortSet,
+    tableName = "#nc_set",
+    camelCaseToSnakeCase = TRUE,
+    dropTableIfExists = TRUE,
+    createTable = TRUE,
+    tempTable = TRUE
+  )
+
+  sql <- createNegativeControlOutcomesQuery(
+    connection = connection,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    tempEmulationSchema = tempEmulationSchema,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = cohortTable,
+    occurrenceType = occurrenceType,
+    detectOnDescendants = detectOnDescendants
+  )
+
+  DatabaseConnector::executeSql(
+    connection = connection,
+    sql = sql
+  )
   delta <- Sys.time() - start
   writeLines(paste("Generating negative control outcomes set took", round(delta, 2), attr(delta, "units")))
 }
@@ -171,5 +182,4 @@ createNegativeControlOutcomesQuery <- function(connection,
     targetDialect = connection@dbms,
     tempEmulationSchema = tempEmulationSchema
   )
-  
 }

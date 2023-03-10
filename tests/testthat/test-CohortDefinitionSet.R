@@ -178,7 +178,7 @@ test_that("Call saveCohortDefinitionSet with missing json", {
       stringsAsFactors = FALSE
     ))
   }
-  
+
   expect_output(
     saveCohortDefinitionSet(
       cohortDefinitionSet = cohortsToCreate,
