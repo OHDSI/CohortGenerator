@@ -92,5 +92,32 @@ test_that("Call getCohortCounts with a cohortDefinitionSet and databaseId", {
   expect_true(toupper(c("databaseId")) %in% toupper(names(testCohortCounts)))
 })
 
+test_that("Call getCohortCounts with a cohortDefinitionSet returns 0 counts for cohortId not in cohort table", {
+  cohortDefinitionSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/id/Cohorts.csv",
+    jsonFolder = "testdata/id/cohorts",
+    sqlFolder = "testdata/id/sql/sql_server",
+    packageName = "CohortGenerator",
+    verbose = TRUE
+  )
+  
+  cohortDefinitionSet <- rbind(
+    cohortDefinitionSet, 
+    cohortDefinitionSet[1,] |> transform(atlasId=100, cohortId=100, cohortName="not in cohort table", logicDescription="not in cohort table")
+  )
+  
+  testCohortCounts <- getCohortCounts(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTable = "cohort",
+    cohortIds = c(1, 2, 100),
+    cohortDefinitionSet = cohortDefinitionSet
+  )
+  
+  expect_true(nrow(testCohortCounts)==3)
+  expect_true(testCohortCounts[testCohortCounts$cohortId==100, "cohortEntries"]==0)
+  expect_true(testCohortCounts[testCohortCounts$cohortId==100, "cohortSubjects"]==0)
+})
+
 # Cleanup ------
 rm(cohortCounts)
