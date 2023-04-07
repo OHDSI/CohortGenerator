@@ -39,7 +39,7 @@ Suggests:
   withr
 Remotes:
   ohdsi/CirceR,
-  ohdsi/Eunomia,
+  ohdsi/Eunomia@06f0d3e242cc134cdf813e042907f2c1b2287163,
   ohdsi/ROhdsiWebApi
 License: Apache License
 VignetteBuilder: knitr
