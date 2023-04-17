@@ -1,6 +1,6 @@
 # @file PackageMaintenance
 #
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 # 
@@ -31,6 +31,12 @@ shell("R CMD Rd2pdf ./ --output=extras/CohortGenerator.pdf")
 dir.create(path = "./inst/doc/", showWarnings = FALSE)
 rmarkdown::render("vignettes/GeneratingCohorts.Rmd",
                   output_file = "../inst/doc/GeneratingCohorts.pdf",
+                  rmarkdown::pdf_document(latex_engine = "pdflatex",
+                                          toc = TRUE,
+                                          number_sections = TRUE))
+
+rmarkdown::render("vignettes/CreatingCohortSubsetDefinitions.Rmd",
+                  output_file = "../inst/doc/CreatingCohortSubsetDefinitions.pdf",
                   rmarkdown::pdf_document(latex_engine = "pdflatex",
                                           toc = TRUE,
                                           number_sections = TRUE))

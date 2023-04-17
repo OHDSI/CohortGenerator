@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -148,12 +148,13 @@ createCohortTables <- function(connectionDetails = NULL,
 #' @template Connection
 #'
 #' @template CohortTableNames
-#'
+#' @param dropCohortTable       Optionally drop cohort table in addition to stats tables (defaults to FALSE)
 #' @export
 dropCohortStatsTables <- function(connectionDetails = NULL,
                                   connection = NULL,
                                   cohortDatabaseSchema,
-                                  cohortTableNames = getCohortTableNames()) {
+                                  cohortTableNames = getCohortTableNames(),
+                                  dropCohortTable = FALSE) {
   if (is.null(connection)) {
     # Establish the connection and ensure the cleanup is performed
     connection <- DatabaseConnector::connect(connectionDetails)
@@ -179,4 +180,8 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
   dropTable(cohortTableNames$cohortInclusionStatsTable)
   dropTable(cohortTableNames$cohortSummaryStatsTable)
   dropTable(cohortTableNames$cohortCensorStatsTable)
+
+  if (dropCohortTable) {
+    dropTable(cohortTableNames$cohortTable)
+  }
 }

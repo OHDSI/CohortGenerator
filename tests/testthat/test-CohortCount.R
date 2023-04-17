@@ -29,12 +29,13 @@ test_that("Call getCohortCounts with cohort table", {
 })
 
 test_that("Call getCohortCounts with cohort table that does not exist", {
-  expect_warning(getCohortCounts(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTable = "foobar"
-  ),
-  message = "(Cohort table was not found)"
+  expect_warning(
+    getCohortCounts(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTable = "foobar"
+    ),
+    message = "(Cohort table was not found)"
   )
 })
 

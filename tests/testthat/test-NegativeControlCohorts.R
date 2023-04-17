@@ -32,9 +32,11 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'al
   cohortTableNames <- getCohortTableNames(cohortTable = "ot_all_dod_f")
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
-  createCohortTables(connection = connection,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  createCohortTables(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
   ncSet <- getNegativeControlOutcomeCohortsForTest()
   expect_output(
     generateNegativeControlOutcomeCohorts(
@@ -53,9 +55,11 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'fi
   cohortTableNames <- getCohortTableNames(cohortTable = "ot_first_dod_f")
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
-  createCohortTables(connection = connection,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  createCohortTables(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
   ncSet <- getNegativeControlOutcomeCohortsForTest()
   expect_output(
     generateNegativeControlOutcomeCohorts(
@@ -74,9 +78,11 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'al
   cohortTableNames <- getCohortTableNames(cohortTable = "ot_all_dod_t")
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
-  createCohortTables(connection = connection,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  createCohortTables(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
   ncSet <- getNegativeControlOutcomeCohortsForTest()
   expect_output(
     generateNegativeControlOutcomeCohorts(
@@ -95,9 +101,11 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'fi
   cohortTableNames <- getCohortTableNames(cohortTable = "ot_first_dod_t")
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
-  createCohortTables(connection = connection,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  createCohortTables(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
   ncSet <- getNegativeControlOutcomeCohortsForTest()
   expect_output(
     generateNegativeControlOutcomeCohorts(
@@ -116,9 +124,11 @@ test_that("Call generateNegativeControlOutcomeCohorts with custom cohort ids", {
   cohortTableNames <- getCohortTableNames(cohortTable = "nc_custom_cohortid")
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
-  createCohortTables(connection = connection,
-                     cohortDatabaseSchema = "main",
-                     cohortTableNames = cohortTableNames)
+  createCohortTables(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
   ncSet <- getNegativeControlOutcomeCohortsForTest(setCohortIdToConceptId = FALSE)
   generateNegativeControlOutcomeCohorts(
     connection = connection,

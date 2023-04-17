@@ -1,4 +1,4 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2023 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -18,6 +18,7 @@
 "_PACKAGE"
 
 #' @import DatabaseConnector
+#' @import R6
 #' @importFrom grDevices rgb
 #' @importFrom stats aggregate setNames
 #' @importFrom utils write.csv install.packages menu packageVersion sessionInfo

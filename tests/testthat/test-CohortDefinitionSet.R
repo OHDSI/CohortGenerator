@@ -174,6 +174,7 @@ test_that("Call saveCohortDefinitionSet with missing json", {
       cohortId = i,
       cohortName = cohortName,
       sql = cohortSql,
+      json = cohortJson,
       stringsAsFactors = FALSE
     ))
   }

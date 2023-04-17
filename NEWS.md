@@ -1,3 +1,9 @@
+CohortGenerator 0.8.0
+=======================
+- New feature: cohort subsetting (Issue #67).
+- Removes the evaluation of ROhdsiWebApi code in vignettes (Issue #70)
+- Basic tests for different database platforms (#71)
+
 CohortGenerator 0.7.0
 =======================
 - Fixes data type issue for Google Big Query (Issue #51).

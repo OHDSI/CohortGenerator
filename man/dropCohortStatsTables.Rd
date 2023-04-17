@@ -8,7 +8,8 @@ dropCohortStatsTables(
   connectionDetails = NULL,
   connection = NULL,
   cohortDatabaseSchema,
-  cohortTableNames = getCohortTableNames()
+  cohortTableNames = getCohortTableNames(),
+  dropCohortTable = FALSE
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ this should include both the database and schema name, for example
 
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
+
+\item{dropCohortTable}{Optionally drop cohort table in addition to stats tables (defaults to FALSE)}
 }
 \description{
 This function drops the cohort statistics tables.
