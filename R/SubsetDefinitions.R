@@ -143,7 +143,7 @@ CohortSubsetDefinition <- R6::R6Class(
     #' Set the targetOutputPairs to be added to a cohort definition set
     #' @param targetIds   list of cohort ids to apply subsetting operations to
     setTargetOutputPairs = function(targetIds) {
-      checkmate::assertIntegerish(targetIds, min.len = 1, upper = 10e11)
+      checkmate::assertIntegerish(targetIds, min.len = 1)
       definitionId <- self$definitionId
       targetOutputPairs <- list()
 
@@ -177,7 +177,7 @@ CohortSubsetDefinition <- R6::R6Class(
         targetOutputPairs,
         function(targetOutputPair) {
           targetOutputPair <- as.numeric(targetOutputPair)
-          checkmate::assertIntegerish(targetOutputPair, len = 2, upper = 10e11)
+          checkmate::assertIntegerish(targetOutputPair, len = 2)
           checkmate::assertFALSE(targetOutputPair[[1]] == targetOutputPair[[2]])
           targetOutputPair
         }
