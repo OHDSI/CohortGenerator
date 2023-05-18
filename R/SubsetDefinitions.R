@@ -84,7 +84,7 @@ CohortSubsetDefinition <- R6::R6Class(
     #' Returns vector of join, logic, having statements returned by subset operations
     #' @param targetOutputPair              Target output pair
     getSubsetQuery = function(targetOutputPair) {
-      checkmate::assertIntegerish(targetOutputPair, len = 2)
+      #checkmate::assertIntegerish(targetOutputPair, len = 2)
       checkmate::assertFALSE(targetOutputPair[[1]] == targetOutputPair[[2]])
 
       targetTable <- "#cohort_sub_base"
@@ -125,7 +125,7 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @param cohortDefinitionSet           Cohort definition set containing base names
     #' @param targetOutputPair              Target output pair
     getSubsetCohortName = function(cohortDefinitionSet, targetOutputPair) {
-      checkmate::assertIntegerish(targetOutputPair, len = 2)
+      #checkmate::assertIntegerish(targetOutputPair, len = 2)
       checkmate::assertFALSE(targetOutputPair[[1]] == targetOutputPair[[2]])
       checkmate::assertTRUE(targetOutputPair[[1]] %in% cohortDefinitionSet$cohortId)
       checkmate::assertTRUE(isCohortDefinitionSet(cohortDefinitionSet))

@@ -334,7 +334,7 @@ CohortSubsetOperator <- R6::R6Class(
       }
 
       cohortIds <- as.integer(cohortIds)
-      checkmate::assertIntegerish(cohortIds, min.len = 1)
+      #checkmate::assertIntegerish(cohortIds, min.len = 1)
       checkmate::assertFALSE(any(is.na(cohortIds)))
       private$.cohortIds <- cohortIds
       self
