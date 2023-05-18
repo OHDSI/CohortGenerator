@@ -187,7 +187,7 @@ saveIncremental <- function(data, fileName, ...) {
     if (length(idx) > 0) {
       previousData <- previousData[-idx, ]
     }
-    data <- dplyr::bind_rows(previousData, data)
+    data <- rbind(previousData, data)
   }
   .writeCsv(x = data, file = fileName)
 }
