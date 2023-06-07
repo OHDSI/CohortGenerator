@@ -197,7 +197,7 @@ saveIncremental <- function(data, fileName, ...) {
       data <- data %>%  
         dplyr::mutate(description = as.character(.data$description))
     }
-    data <- dplyr::bind_rows(previousData, data)
+    data <- rbind(previousData, data)
   }
   .writeCsv(x = data, file = fileName)
 }

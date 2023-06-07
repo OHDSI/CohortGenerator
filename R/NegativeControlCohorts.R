@@ -135,6 +135,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   DatabaseConnector::insertTable(
     connection = connection,
     data = negativeControlOutcomeCohortSet,
+    tempEmulationSchema = tempEmulationSchema,
     tableName = "#nc_set",
     camelCaseToSnakeCase = TRUE,
     dropTableIfExists = TRUE,
