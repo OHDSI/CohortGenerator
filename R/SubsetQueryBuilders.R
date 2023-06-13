@@ -125,3 +125,21 @@ DemographicSubsetQb <- R6::R6Class(
     }
   )
 )
+
+VisitSubsetQb <- R6::R6Class(
+  classname = "VisitSubsetQb",
+  inherit = QueryBuilder,
+  private = list(
+    innerQuery = function(targetTable) {
+      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "VisitSubsetOperator.sql", package = "CohortGenerator"))
+      sql <- SqlRender::render(sql,
+                               target_table = targetTable,
+                               output_table = self$getTableObjectId(),
+                               visit_concept_ids = private$operator$visitConceptIds,
+                               warnOnMissingParameters = TRUE
+      )
+      return(sql)
+    }
+  )
+)
+
