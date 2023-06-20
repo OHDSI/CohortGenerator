@@ -9,6 +9,7 @@ test_that("Cohort subset naming and instantitation", {
   expectedName <- "in all of cohorts: (11, 22) starts within D: 0 - D: 90 of cohort start and ends D: 0 - D: 50 of cohort end"
   expect_equal(expectedName, cohortSubsetNamed$name)
 
+  # check that user-defined name is assigned
   cohortSubsetNamed$name <- "foo"
   expect_equal("foo", cohortSubsetNamed$name)
 

@@ -914,3 +914,17 @@ VisitSubsetOperator <- R6::R6Class(
   )
 )
   
+# createVisitSubset ------------------------------
+#' Create Visit Subset
+#' @description
+#' Subset cohorts using specified Visit criteria
+#' @export
+#' @param name              Name of operation
+#' @param visitConceptIds   List of visit concept Ids
+createVisitSubset <- function(name = NULL,
+                              visitConceptIds) {
+  subset <- VisitSubsetOperator$new()
+  subset$name <- name
+  subset$visitConceptIds <- visitConceptIds
+  subset
+}
