@@ -5,9 +5,9 @@ SELECT
 {@output_table != ''} ? {INTO @output_table}
 FROM (
   SELECT
-    subject_id,
-    cohort_start_date,
-    cohort_end_date
+    t.subject_id,
+    t.cohort_start_date,
+    t.cohort_end_date
   FROM @target_table t
   JOIN @cdm_database_schema.visit_occurrence vo on t.subject_id = vo.person_id
   where vo.visit_concept_id in (@visit_concept_ids)
