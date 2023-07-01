@@ -240,3 +240,38 @@ test_that("Call isCohortDefinitionSet with cohort definition set with incorrect 
 test_that("Call checkAndFixCohortDefinitionSetDataTypes with empty data.frame() and expect error", {
   expect_error(checkAndFixCohortDefinitionSetDataTypes(x = data.frame()))
 })
+
+test_that("isCohortDefinition == TRUE implies cohort generates", {
+  cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = "my_cohort_table")
+  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  filePath <- system.file("testdata", "name", "cohorts", "celecoxib.json", package = "CohortGenerator")
+  json <- readChar(filePath, file.info(filePath)$size)
+  sql <- CirceR::buildCohortQuery(CirceR::cohortExpressionFromJson(json), 
+                                  options =  CirceR::createGenerateOptions(generateStats = FALSE))
+  
+  cohortsToCreate <- data.frame(
+    cohortId = 1L,
+    # cohortId = bit64::as.integer64(1L),
+    cohortName = "gibleed",
+    json = json,
+    sql = sql
+  )
+  
+  expect_true(CohortGenerator::isCohortDefinitionSet(cohortsToCreate))
+  
+  CohortGenerator::createCohortTables(connectionDetails = connectionDetails,
+                                      cohortDatabaseSchema = "main",
+                                      cohortTableNames = cohortTableNames)
+  
+  cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = connectionDetails,
+                                                         cdmDatabaseSchema = "main",
+                                                         cohortDatabaseSchema = "main",
+                                                         cohortTableNames = cohortTableNames,
+                                                         cohortDefinitionSet = cohortsToCreate)
+  
+  expect_true(nrow(cohortsGenerated) == 1)
+})
+
+
+
+
