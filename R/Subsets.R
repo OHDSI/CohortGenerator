@@ -403,7 +403,7 @@ CohortSubsetOperator <- R6::R6Class(
 #'
 #' @param startWindow               A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
 #' @param endWindow                 A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
-#' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria (NOT YET IMPLEMENTED)
+#' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria
 #' @returns a CohortSubsetOperator instance
 createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator, negate, startWindow, endWindow) {
   subset <- CohortSubsetOperator$new()
@@ -927,4 +927,13 @@ createVisitSubset <- function(name = NULL,
   subset$name <- name
   subset$visitConceptIds <- visitConceptIds
   subset
+}
+
+
+createErVisitSubset <- function(name) {
+  createVisitSubset(name = name, visitConceptIds = 9203)
+}
+
+createOutpatientVisitSubset <- function(name) {
+  createVisitSubset(name = name, visitConceptIds = 9202)
 }
