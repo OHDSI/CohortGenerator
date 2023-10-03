@@ -20,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-latest, r: 'release'}  # Does not appear to have Java 32-bit, hence the --no-multiarch
-          - {os: macOS-latest, r: 'release'}
+          #- {os: windows-latest, r: 'release'}  # Does not appear to have Java 32-bit, hence the --no-multiarch
+          #- {os: macOS-latest, r: 'release'}
           - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           #- {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
@@ -79,6 +79,11 @@ jobs:
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
+          sudo apt-get install -y make
+          sudo apt-get install -y default-jdk
+          sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get install -y libssl-dev
+          sudo apt-get install -y libglpk-dev        
           while read -r cmd
           do
             eval sudo $cmd
