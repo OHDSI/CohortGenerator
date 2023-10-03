@@ -781,12 +781,15 @@ LimitSubsetOperator <- R6::R6Class(
       if (missing(limitTo)) {
         return(private$.limitTo)
       }
-      checkmate::assertCharacter(limitTo)
-      checkmate::assertChoice(limitTo, choices = c("", "all", "firstEver", "earliestRemaining", "latestRemaining", "lastEver"))
 
+      checkmate::assertCharacter(limitTo)
+
+      # maintain support for old versions
       if (limitTo == "") {
         limitTo <- "all"
       }
+
+      checkmate::assertChoice(limitTo, choices = c("all", "firstEver", "earliestRemaining", "latestRemaining", "lastEver"))
       private$.limitTo <- limitTo
       self
     },
