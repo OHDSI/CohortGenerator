@@ -19,7 +19,7 @@ FROM (
       AND DATEDIFF(day, t.cohort_start_date, op.observation_period_end_date) >= @follow_up_time
   }
 ) c
-{@limit_to == 'firstEver' | @limit_to == 'lastEver'}?{
+{@limit_to == 'firstEver' | @limit_to == 'lastEver' | @limit_to == 'all'}?{
   JOIN @cdm_database_schema.observation_period op
     ON c.subject_id = op.person_id
     AND c.cohort_start_date >= op.observation_period_start_date
@@ -30,7 +30,7 @@ FROM (
 } : {
  WHERE 1 = 1
 }
-{@limit_to == 'firstEver' | @limit_to == 'lastEver'}?{
+{@limit_to == 'firstEver' | @limit_to == 'lastEver' | @limit_to == 'all'}?{
   AND DATEDIFF(day, op.observation_period_start_date, c.cohort_start_date) >= @prior_time
   AND DATEDIFF(day, c.cohort_start_date, op.observation_period_end_date) >= @follow_up_time
 }
