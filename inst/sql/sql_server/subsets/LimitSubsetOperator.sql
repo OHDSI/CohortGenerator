@@ -10,7 +10,7 @@ FROM (
     cohort_end_date,
     row_number() over (partition by subject_id order by cohort_start_date {@limit_to == 'firstEver' | @limit_to == 'earliestRemaining'}?{ASC}:{DESC}) ordinal
   FROM @target_table t
-  {@limit_to == 'earliestRemaining' | @limit_to == 'latestRemaining'}?{
+  {(@limit_to == 'earliestRemaining' | @limit_to == 'latestRemaining') & @use_prior_fu_time}?{
     JOIN @cdm_database_schema.observation_period op
       ON t.subject_id = op.person_id
       AND t.cohort_start_date >= op.observation_period_start_date
@@ -19,7 +19,7 @@ FROM (
       AND DATEDIFF(day, t.cohort_start_date, op.observation_period_end_date) >= @follow_up_time
   }
 ) c
-{@limit_to == 'firstEver' | @limit_to == 'lastEver' | @limit_to == 'all'}?{
+{(@limit_to == 'firstEver' | @limit_to == 'lastEver' | @limit_to == 'all') & @use_prior_fu_time}?{
   JOIN @cdm_database_schema.observation_period op
     ON c.subject_id = op.person_id
     AND c.cohort_start_date >= op.observation_period_start_date
@@ -30,7 +30,7 @@ FROM (
 } : {
  WHERE 1 = 1
 }
-{@limit_to == 'firstEver' | @limit_to == 'lastEver' | @limit_to == 'all'}?{
+{(@limit_to == 'firstEver' | @limit_to == 'lastEver' | @limit_to == 'all') & @use_prior_fu_time}?{
   AND DATEDIFF(day, op.observation_period_start_date, c.cohort_start_date) >= @prior_time
   AND DATEDIFF(day, c.cohort_start_date, op.observation_period_end_date) >= @follow_up_time
 }
