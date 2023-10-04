@@ -81,7 +81,7 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @param overwrite if a subset operator of the same ID is present, replace it with a new definition
     addSubsetOperator = function(subsetOperator) {
       checkmate::assertR6(subsetOperator, "SubsetOperator")
-      private$.subsetOperators <- c(private$.subsetOperators, subsetOperator)
+      private$.subsetOperators <- c(private$.subsetOperators, subsetOperator$clone(deep = TRUE))
       self
     },
 
@@ -199,7 +199,8 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @field subsetOperators list of subset operations
     subsetOperators = function(subsetOperators) {
       if (missing(subsetOperators)) {
-        return(private$.subsetOperators)
+        # We don't want to return references to the operators in case users modify them after this
+        return(lapply(private$.subsetOperators, function(x) { x$clone(deep = TRUE) }))
       }
 
       checkmate::assertList(subsetOperators, types = "SubsetOperator")

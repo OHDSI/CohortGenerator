@@ -44,7 +44,11 @@ test_that("Subset definition", {
   checkmate::expect_list(listDef)
   expect_equal(length(subsetDef$subsetOperators), length(listDef$subsetOperators))
   checkmate::expect_character(subsetDef$toJSON())
-
+  # check reference isn't passed
+  operators <- subsetDef$subsetOperators
+  # Operators should not be modfiable after being added to the subset definition
+  operators[[1]]$cohortIds <- 22
+  expect_equal(subsetDef$subsetOperators[[1]]$cohortIds, 11)
 
   # Check serialized version is identical to code defined version
   subsetDef2 <- CohortSubsetDefinition$new(subsetDef$toJSON())
