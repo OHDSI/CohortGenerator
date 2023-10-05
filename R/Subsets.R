@@ -853,7 +853,7 @@ LimitSubsetOperator <- R6::R6Class(
 createLimitSubset <- function(name = NULL,
                               priorTime = 0,
                               followUpTime = 0,
-                              limitTo = "",
+                              limitTo = "all",
                               calendarStartDate = NULL,
                               calendarEndDate = NULL) {
 
