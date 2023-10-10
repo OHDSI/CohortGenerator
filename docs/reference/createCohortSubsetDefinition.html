@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.8.1</span>
       </span>
     </div>
 
@@ -73,7 +73,9 @@
 <span>  <span class="va">name</span>,</span>
 <span>  <span class="va">definitionId</span>,</span>
 <span>  <span class="va">subsetOperators</span>,</span>
-<span>  identifierExpression <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  identifierExpression <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  operatorNameConcatString <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  subsetCohortNameTemplate <span class="op">=</span> <span class="st">""</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,6 +96,17 @@
 <dt>identifierExpression</dt>
 <dd><p>Expression (or string that converts to expression) that returns an id for an output cohort
 the default is dplyr::expr(targetId * 1000 + definitionId)</p></dd>
+
+
+<dt>operatorNameConcatString</dt>
+<dd><p>(optional) SqlRender string template for formatting names of resulting subset cohorts
+Can use the variables @baseCohortName, @subsetDefinitionName and @operatorNames.
+This is applied when adding the subset definition to a cohort definition set.</p></dd>
+
+
+<dt>subsetCohortNameTemplate</dt>
+<dd><p>(optional) String to concatenate operator names together when outputting resulting cohort
+name</p></dd>
 
 </dl></div>
 

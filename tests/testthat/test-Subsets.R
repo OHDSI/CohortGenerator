@@ -176,19 +176,19 @@ test_that("Saving and loading definitions via attributes", {
   expect_true(hasSubsetDefinitions(cohortDefinitionSet))
 
   checkmate::expect_list(attr(cohortDefinitionSet, "cohortSubsetDefinitions"),
-                         types = "CohortSubsetDefinition",
-                         len = 1
+    types = "CohortSubsetDefinition",
+    len = 1
   )
 
   savePath <- tempfile()
   unlink(savePath, recursive = T)
   on.exit(unlink(savePath, recursive = T), add = TRUE)
   saveCohortDefinitionSet(cohortDefinitionSet,
-                          cohortFileNameFormat = "%s",
-                          settingsFileName = file.path(savePath, "Cohorts.csv"),
-                          jsonFolder = file.path(savePath, "cohorts"),
-                          sqlFolder = file.path(savePath, "sql/sql_server"),
-                          subsetJsonFolder = file.path(savePath, "subsetDefs")
+    cohortFileNameFormat = "%s",
+    settingsFileName = file.path(savePath, "Cohorts.csv"),
+    jsonFolder = file.path(savePath, "cohorts"),
+    sqlFolder = file.path(savePath, "sql/sql_server"),
+    subsetJsonFolder = file.path(savePath, "subsetDefs")
   )
   checkmate::expect_directory_exists(file.path(savePath, "subsetDefs"))
   checkmate::expect_file_exists(file.path(savePath, "subsetDefs", paste0(subsetDef$definitionId, ".json")))
@@ -451,7 +451,7 @@ test_that("Subset name templates function", {
 
   cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
     CohortGenerator::addCohortSubsetDefinition(subsetDef)
-  
+
   # Check name templates are applied
   expect_true(all(grepl("FOOO (.+) test definition 123 Demographic Criteria 1zzzzDemographic Criteria 2", cohortDefinitionSetWithSubset$cohortName[4:6])))
 })

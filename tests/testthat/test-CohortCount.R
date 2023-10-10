@@ -100,12 +100,12 @@ test_that("Call getCohortCounts with a cohortDefinitionSet returns 0 counts for 
     packageName = "CohortGenerator",
     verbose = TRUE
   )
-  
+
   cohortDefinitionSet <- rbind(
-    cohortDefinitionSet, 
-    cohortDefinitionSet[1,] |> transform(atlasId=100, cohortId=100, cohortName="not in cohort table", logicDescription="not in cohort table")
+    cohortDefinitionSet,
+    cohortDefinitionSet[1, ] |> transform(atlasId = 100, cohortId = 100, cohortName = "not in cohort table", logicDescription = "not in cohort table")
   )
-  
+
   testCohortCounts <- getCohortCounts(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = "main",
@@ -113,10 +113,10 @@ test_that("Call getCohortCounts with a cohortDefinitionSet returns 0 counts for 
     cohortIds = c(1, 2, 100),
     cohortDefinitionSet = cohortDefinitionSet
   )
-  
-  expect_true(nrow(testCohortCounts)==3)
-  expect_true(testCohortCounts[testCohortCounts$cohortId==100, "cohortEntries"]==0)
-  expect_true(testCohortCounts[testCohortCounts$cohortId==100, "cohortSubjects"]==0)
+
+  expect_true(nrow(testCohortCounts) == 3)
+  expect_true(testCohortCounts[testCohortCounts$cohortId == 100, "cohortEntries"] == 0)
+  expect_true(testCohortCounts[testCohortCounts$cohortId == 100, "cohortSubjects"] == 0)
 })
 
 # Cleanup ------

@@ -856,9 +856,9 @@ createLimitSubset <- function(name = NULL,
                               limitTo = "all",
                               calendarStartDate = NULL,
                               calendarEndDate = NULL) {
-
-  if (limitTo == "" || is.null(limitTo))
+  if (limitTo == "" || is.null(limitTo)) {
     limitTo <- "all"
+  }
 
   if (priorTime == 0 & followUpTime == 0 & limitTo == "all" & is.null(calendarStartDate) & is.null(calendarEndDate)) {
     stop("No limit criteria specified")

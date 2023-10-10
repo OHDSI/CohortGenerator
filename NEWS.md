@@ -1,3 +1,14 @@
+CohortGenerator 0.8.1
+=======================
+- Include cohorts with 0 people in cohort counts (Issue #91).
+- Use numeric for cohort ID (Issue #98)
+- Allow big ints for target pairs (#103)
+- Pass `tempEmulationSchema` when creating negative controlc ohorts (#104)
+- Target CDM v5.4 for unit tests (#119)
+- Fix for subset references (#115)
+- Allow for subset cohort name templating (#118)
+- Allow all entries with limit operator and do not require > 0 days follow up (#112)
+
 CohortGenerator 0.8.0
 =======================
 - New feature: cohort subsetting (Issue #67).

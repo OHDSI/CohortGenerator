@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.defaultNameTemplate = "@baseCohortName - @subsetDefinitionName @operatorNames"
+.defaultNameTemplate <- "@baseCohortName - @subsetDefinitionName @operatorNames"
 
 # CohortSubsetDefinition ------------------------------
 #' @title Cohort Subset Definition
@@ -145,10 +145,11 @@ CohortSubsetDefinition <- R6::R6Class(
       opNames <- paste0(opNameList, collapse = self$operatorNameConcatString)
 
       SqlRender::render(self$subsetCohortNameTemplate,
-                        baseCohortName = baseName,
-                        subsetDefinitionName = self$name,
-                        operatorNames = opNames,
-                        warnOnMissingParameters = FALSE)
+        baseCohortName = baseName,
+        subsetDefinitionName = self$name,
+        operatorNames = opNames,
+        warnOnMissingParameters = FALSE
+      )
     },
     #' Set the targetOutputPairs to be added to a cohort definition set
     #' @param targetIds   list of cohort ids to apply subsetting operations to
@@ -200,7 +201,9 @@ CohortSubsetDefinition <- R6::R6Class(
     subsetOperators = function(subsetOperators) {
       if (missing(subsetOperators)) {
         # We don't want to return references to the operators in case users modify them after this
-        return(lapply(private$.subsetOperators, function(x) { x$clone(deep = TRUE) }))
+        return(lapply(private$.subsetOperators, function(x) {
+          x$clone(deep = TRUE)
+        }))
       }
 
       checkmate::assertList(subsetOperators, types = "SubsetOperator")
@@ -223,8 +226,9 @@ CohortSubsetDefinition <- R6::R6Class(
         return(private$.subsetCohortNameTemplate)
       }
 
-      if (is.null(subsetCohortNameTemplate))
+      if (is.null(subsetCohortNameTemplate)) {
         subsetCohortNameTemplate <- ""
+      }
 
       checkmate::assertCharacter(subsetCohortNameTemplate)
 
@@ -243,13 +247,14 @@ CohortSubsetDefinition <- R6::R6Class(
         return(private$.operatorNameConcatString)
       }
 
-      if (is.null(operatorNameConcatString))
+      if (is.null(operatorNameConcatString)) {
         operatorNameConcatString <- ""
+      }
 
       if (operatorNameConcatString == "") {
         operatorNameConcatString <- ", "
       }
-       checkmate::assertCharacter(operatorNameConcatString)
+      checkmate::assertCharacter(operatorNameConcatString)
 
       private$.operatorNameConcatString <- operatorNameConcatString
       self
