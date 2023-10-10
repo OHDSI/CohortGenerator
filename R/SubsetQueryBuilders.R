@@ -96,7 +96,7 @@ LimitSubsetQb <- R6::R6Class(
         follow_up_time = private$operator$followUpTime,
         limit_to = private$operator$limitTo,
         prior_time = private$operator$priorTime,
-        use_prior_ft_time = private$operator$followUpTime > 0 || private$operator$priorTime > 0,
+        use_prior_fu_time = private$operator$followUpTime > 0 || private$operator$priorTime > 0,
         output_table = self$getTableObjectId(),
         target_table = targetTable,
         warnOnMissingParameters = TRUE
