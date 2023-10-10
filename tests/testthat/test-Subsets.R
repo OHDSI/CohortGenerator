@@ -176,19 +176,19 @@ test_that("Saving and loading definitions via attributes", {
   expect_true(hasSubsetDefinitions(cohortDefinitionSet))
 
   checkmate::expect_list(attr(cohortDefinitionSet, "cohortSubsetDefinitions"),
-    types = "CohortSubsetDefinition",
-    len = 1
+                         types = "CohortSubsetDefinition",
+                         len = 1
   )
 
   savePath <- tempfile()
   unlink(savePath, recursive = T)
   on.exit(unlink(savePath, recursive = T), add = TRUE)
   saveCohortDefinitionSet(cohortDefinitionSet,
-    cohortFileNameFormat = "%s",
-    settingsFileName = file.path(savePath, "Cohorts.csv"),
-    jsonFolder = file.path(savePath, "cohorts"),
-    sqlFolder = file.path(savePath, "sql/sql_server"),
-    subsetJsonFolder = file.path(savePath, "subsetDefs")
+                          cohortFileNameFormat = "%s",
+                          settingsFileName = file.path(savePath, "Cohorts.csv"),
+                          jsonFolder = file.path(savePath, "cohorts"),
+                          sqlFolder = file.path(savePath, "sql/sql_server"),
+                          subsetJsonFolder = file.path(savePath, "subsetDefs")
   )
   checkmate::expect_directory_exists(file.path(savePath, "subsetDefs"))
   checkmate::expect_file_exists(file.path(savePath, "subsetDefs", paste0(subsetDef$definitionId, ".json")))
@@ -359,6 +359,7 @@ test_that("Test overwriteExisting", {
     CohortGenerator::addCohortSubsetDefinition(subsetDef, overwriteExisting = TRUE)
 })
 
+
 test_that("Subset operator serialization tests", {
   # Confirm .loadJson fails when a non-list object is passed
   expect_error(CohortGenerator:::.loadJson(definition = 1))
@@ -416,4 +417,41 @@ test_that("Subset operator serialization tests", {
     calendarEndDate = "2013-12-31"
   )
   expect_silent(ls2$toJSON())
+})
+
+test_that("Subset name templates function", {
+  cohortDefinitionSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
+  subsetOperations <- list(
+    createDemographicSubset(
+      name = "Demographic Criteria 1",
+      ageMin = 18,
+      ageMax = 64
+    ),
+    createDemographicSubset(
+      name = "Demographic Criteria 2",
+      ageMin = 32,
+      ageMax = 48
+    )
+  )
+  subsetDef <- createCohortSubsetDefinition(
+    name = "test definition 123",
+    definitionId = 1,
+    subsetOperators = subsetOperations,
+    subsetCohortNameTemplate = "FOOO @baseCohortName @subsetDefinitionName @operatorNames",
+    operatorNameConcatString = "zzzz"
+  )
+
+  cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
+    CohortGenerator::addCohortSubsetDefinition(subsetDef)
+  
+  # Check name templates are applied
+  expect_true(all(grepl("FOOO (.+) test definition 123 Demographic Criteria 1zzzzDemographic Criteria 2", cohortDefinitionSetWithSubset$cohortName[4:6])))
 })
