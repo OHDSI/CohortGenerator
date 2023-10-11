@@ -65,7 +65,9 @@ CohortSubsetDefinition <- R6::R6Class(
           operator$toList()
         }),
         packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName()))),
-        identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression))
+        identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression)),
+        operatorNameConcatString = jsonlite::unbox(as.character(private$.operatorNameConcatString)),
+        subsetCohortNameTemplate = jsonlite::unbox(as.character(private$.subsetCohortNameTemplate))
       )
     },
     #' to JSON
@@ -302,10 +304,10 @@ CohortSubsetDefinition <- R6::R6Class(
 #' @param subsetOperators           list of subsetOperator instances to apply
 #' @param identifierExpression      Expression (or string that converts to expression) that returns an id for an output cohort
 #'                                  the default is dplyr::expr(targetId * 1000 + definitionId)
-#' @param operatorNameConcatString  (optional) SqlRender string template for formatting names of resulting subset cohorts
+#' @param subsetCohortNameTemplate  (optional) SqlRender string template for formatting names of resulting subset cohorts
 #'                                  Can use the variables @baseCohortName, @subsetDefinitionName and @operatorNames.
 #'                                  This is applied when adding the subset definition to a cohort definition set.
-#' @param subsetCohortNameTemplate  (optional) String to concatenate operator names together when outputting resulting cohort
+#' @param operatorNameConcatString  (optional) String to concatenate operator names together when outputting resulting cohort
 #'                                   name
 createCohortSubsetDefinition <- function(name,
                                          definitionId,
