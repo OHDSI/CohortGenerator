@@ -65,7 +65,9 @@ CohortSubsetDefinition <- R6::R6Class(
           operator$toList()
         }),
         packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName()))),
-        identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression))
+        identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression)),
+        operatorNameConcatString = jsonlite::unbox(as.character(private$.operatorNameConcatString)),
+        subsetCohortNameTemplate = jsonlite::unbox(as.character(private$.subsetCohortNameTemplate))
       )
     },
     #' to JSON
