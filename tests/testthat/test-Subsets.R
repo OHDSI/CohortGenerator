@@ -44,7 +44,11 @@ test_that("Subset definition", {
   checkmate::expect_list(listDef)
   expect_equal(length(subsetDef$subsetOperators), length(listDef$subsetOperators))
   checkmate::expect_character(subsetDef$toJSON())
-
+  # check reference isn't passed
+  operators <- subsetDef$subsetOperators
+  # Operators should not be modfiable after being added to the subset definition
+  operators[[1]]$cohortIds <- 22
+  expect_equal(subsetDef$subsetOperators[[1]]$cohortIds, 11)
 
   # Check serialized version is identical to code defined version
   subsetDef2 <- CohortSubsetDefinition$new(subsetDef$toJSON())
@@ -355,6 +359,7 @@ test_that("Test overwriteExisting", {
     CohortGenerator::addCohortSubsetDefinition(subsetDef, overwriteExisting = TRUE)
 })
 
+
 test_that("Subset operator serialization tests", {
   # Confirm .loadJson fails when a non-list object is passed
   expect_error(CohortGenerator:::.loadJson(definition = 1))
@@ -412,4 +417,41 @@ test_that("Subset operator serialization tests", {
     calendarEndDate = "2013-12-31"
   )
   expect_silent(ls2$toJSON())
+})
+
+test_that("Subset name templates function", {
+  cohortDefinitionSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
+  subsetOperations <- list(
+    createDemographicSubset(
+      name = "Demographic Criteria 1",
+      ageMin = 18,
+      ageMax = 64
+    ),
+    createDemographicSubset(
+      name = "Demographic Criteria 2",
+      ageMin = 32,
+      ageMax = 48
+    )
+  )
+  subsetDef <- createCohortSubsetDefinition(
+    name = "test definition 123",
+    definitionId = 1,
+    subsetOperators = subsetOperations,
+    subsetCohortNameTemplate = "FOOO @baseCohortName @subsetDefinitionName @operatorNames",
+    operatorNameConcatString = "zzzz"
+  )
+
+  cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
+    CohortGenerator::addCohortSubsetDefinition(subsetDef)
+
+  # Check name templates are applied
+  expect_true(all(grepl("FOOO (.+) test definition 123 Demographic Criteria 1zzzzDemographic Criteria 2", cohortDefinitionSetWithSubset$cohortName[4:6])))
 })

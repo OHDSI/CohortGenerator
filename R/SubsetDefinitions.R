@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+.defaultNameTemplate <- "@baseCohortName - @subsetDefinitionName @operatorNames"
+
 # CohortSubsetDefinition ------------------------------
 #' @title Cohort Subset Definition
 #' @export
@@ -23,6 +25,8 @@ CohortSubsetDefinition <- R6::R6Class(
   classname = "CohortSubsetDefinition",
   private = list(
     .name = "",
+    .operatorNameConcatString = "",
+    .subsetCohortNameTemplate = "",
     .definitionId = integer(0),
     .subsetOperators = list(),
     .targetOutputPairs = list(),
@@ -45,6 +49,8 @@ CohortSubsetDefinition <- R6::R6Class(
         self$definitionId <- definition$definitionId
         self$targetOutputPairs <- definition$targetOutputPairs
         self$subsetOperators <- lapply(definition$subsetOperators, private$createSubset)
+        self$operatorNameConcatString <- definition$operatorNameConcatString
+        self$subsetCohortNameTemplate <- definition$subsetCohortNameTemplate
       }
       self
     },
@@ -59,7 +65,9 @@ CohortSubsetDefinition <- R6::R6Class(
           operator$toList()
         }),
         packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName()))),
-        identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression))
+        identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression)),
+        operatorNameConcatString = jsonlite::unbox(as.character(private$.operatorNameConcatString)),
+        subsetCohortNameTemplate = jsonlite::unbox(as.character(private$.subsetCohortNameTemplate))
       )
     },
     #' to JSON
@@ -75,7 +83,7 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @param overwrite if a subset operator of the same ID is present, replace it with a new definition
     addSubsetOperator = function(subsetOperator) {
       checkmate::assertR6(subsetOperator, "SubsetOperator")
-      private$.subsetOperators <- c(private$.subsetOperators, subsetOperator)
+      private$.subsetOperators <- c(private$.subsetOperators, subsetOperator$clone(deep = TRUE))
       self
     },
 
@@ -135,15 +143,20 @@ CohortSubsetDefinition <- R6::R6Class(
         dplyr::select("cohortName") %>%
         dplyr::pull()
 
-      opNames <- lapply(self$subsetOperators, function(x) {
-        x$name
-      })
-      paste(baseName, "-", self$name, paste0(opNames, collapse = ", "))
+      opNameList <- lapply(self$subsetOperators, function(x) x$name)
+      opNames <- paste0(opNameList, collapse = self$operatorNameConcatString)
+
+      SqlRender::render(self$subsetCohortNameTemplate,
+        baseCohortName = baseName,
+        subsetDefinitionName = self$name,
+        operatorNames = opNames,
+        warnOnMissingParameters = FALSE
+      )
     },
     #' Set the targetOutputPairs to be added to a cohort definition set
     #' @param targetIds   list of cohort ids to apply subsetting operations to
     setTargetOutputPairs = function(targetIds) {
-      checkmate::assertIntegerish(targetIds, min.len = 1)
+      checkmate::assertIntegerish(targetIds, min.len = 1, upper = 10e11)
       definitionId <- self$definitionId
       targetOutputPairs <- list()
 
@@ -177,7 +190,7 @@ CohortSubsetDefinition <- R6::R6Class(
         targetOutputPairs,
         function(targetOutputPair) {
           targetOutputPair <- as.numeric(targetOutputPair)
-          checkmate::assertIntegerish(targetOutputPair, len = 2)
+          checkmate::assertIntegerish(targetOutputPair, len = 2, upper = 10e11)
           checkmate::assertFALSE(targetOutputPair[[1]] == targetOutputPair[[2]])
           targetOutputPair
         }
@@ -189,7 +202,10 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @field subsetOperators list of subset operations
     subsetOperators = function(subsetOperators) {
       if (missing(subsetOperators)) {
-        return(private$.subsetOperators)
+        # We don't want to return references to the operators in case users modify them after this
+        return(lapply(private$.subsetOperators, function(x) {
+          x$clone(deep = TRUE)
+        }))
       }
 
       checkmate::assertList(subsetOperators, types = "SubsetOperator")
@@ -206,6 +222,46 @@ CohortSubsetDefinition <- R6::R6Class(
       private$.name <- name
       self
     },
+    #' @field subsetCohortNameTemplate template string for formatting resulting cohort names
+    subsetCohortNameTemplate = function(subsetCohortNameTemplate) {
+      if (missing(subsetCohortNameTemplate)) {
+        return(private$.subsetCohortNameTemplate)
+      }
+
+      if (is.null(subsetCohortNameTemplate)) {
+        subsetCohortNameTemplate <- ""
+      }
+
+      checkmate::assertCharacter(subsetCohortNameTemplate)
+
+      if (subsetCohortNameTemplate == "") {
+        # Set to default subsetCohortNameTemplate
+        subsetCohortNameTemplate <- .defaultNameTemplate
+      }
+
+      private$.subsetCohortNameTemplate <- subsetCohortNameTemplate
+      self
+    },
+
+    #' @field operatorNameConcatString string used when concatenating operator names together
+    operatorNameConcatString = function(operatorNameConcatString) {
+      if (missing(operatorNameConcatString)) {
+        return(private$.operatorNameConcatString)
+      }
+
+      if (is.null(operatorNameConcatString)) {
+        operatorNameConcatString <- ""
+      }
+
+      if (operatorNameConcatString == "") {
+        operatorNameConcatString <- ", "
+      }
+      checkmate::assertCharacter(operatorNameConcatString)
+
+      private$.operatorNameConcatString <- operatorNameConcatString
+      self
+    },
+
     #' @field definitionId numeric definition id
     definitionId = function(definitionId) {
       if (missing(definitionId)) {
@@ -243,17 +299,29 @@ CohortSubsetDefinition <- R6::R6Class(
 #' @description
 #' Create subset definition from subset objects
 #' @export
-#' @param name                     Name of definition
-#' @param definitionId             Definition identifier
-#' @param subsetOperators          list of subsetOperator instances to apply
-#' @param identifierExpression     Expression (or string that converts to expression) that returns an id for an output cohort
-#'                                 the default is dplyr::expr(targetId * 1000 + definitionId)
-createCohortSubsetDefinition <- function(name, definitionId, subsetOperators, identifierExpression = NULL) {
+#' @param name                      Name of definition
+#' @param definitionId              Definition identifier
+#' @param subsetOperators           list of subsetOperator instances to apply
+#' @param identifierExpression      Expression (or string that converts to expression) that returns an id for an output cohort
+#'                                  the default is dplyr::expr(targetId * 1000 + definitionId)
+#' @param subsetCohortNameTemplate  (optional) SqlRender string template for formatting names of resulting subset cohorts
+#'                                  Can use the variables @baseCohortName, @subsetDefinitionName and @operatorNames.
+#'                                  This is applied when adding the subset definition to a cohort definition set.
+#' @param operatorNameConcatString  (optional) String to concatenate operator names together when outputting resulting cohort
+#'                                   name
+createCohortSubsetDefinition <- function(name,
+                                         definitionId,
+                                         subsetOperators,
+                                         identifierExpression = NULL,
+                                         operatorNameConcatString = "",
+                                         subsetCohortNameTemplate = "") {
   subsetDef <- CohortSubsetDefinition$new()
   subsetDef$name <- name
   subsetDef$definitionId <- definitionId
   subsetDef$subsetOperators <- subsetOperators
   subsetDef$identifierExpression <- identifierExpression
+  subsetDef$operatorNameConcatString <- operatorNameConcatString
+  subsetDef$subsetCohortNameTemplate <- subsetCohortNameTemplate
   return(subsetDef)
 }
 

@@ -119,7 +119,7 @@ subsetDef <- createCohortSubsetDefinition(
       name = "Observation of at least 365 days prior",
       priorTime = 365,
       followUpTime = 0,
-      limitTo = "firstEver"
+      limitTo = "all"
     )
   )
 )

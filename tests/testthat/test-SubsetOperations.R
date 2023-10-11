@@ -26,11 +26,6 @@ test_that("Cohort subset naming and instantitation", {
 
 test_that("limit subset naming and instantitation", {
   expect_error(createLimitSubset())
-  expect_error(createLimitSubset(priorTime = 55))
-  expect_error(createLimitSubset(followUpTime = 55))
-  expect_error(createLimitSubset(calendarStartDate = "2001/01/01", followUpTime = 300))
-  expect_error(createLimitSubset(calendarEndDate = "2001/01/01", followUpTime = 300))
-  expect_error(createLimitSubset(calendarEndDate = "2001/01/01", priorTime = 300))
   expect_error(createLimitSubset(calendarEndDate = "2001/01/01", priorTime = 300, limitTo = "pirstEmaining"))
 
   limitSubsetNamed <- createLimitSubset(priorTime = 365, followUpTime = 0, limitTo = "latestRemaining")

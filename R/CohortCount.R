@@ -69,9 +69,14 @@ getCohortCounts <- function(connectionDetails = NULL,
     if (!is.null(cohortDefinitionSet)) {
       counts <- merge(
         x = counts,
-        y = cohortDefinitionSet,
+        y = cohortDefinitionSet[cohortDefinitionSet$cohortId %in% cohortIds, ],
         by = "cohortId",
-        all.x = TRUE
+        all.y = TRUE
+      )
+      counts <- transform(
+        counts,
+        cohortEntries = ifelse(is.na(cohortEntries), 0L, cohortEntries),
+        cohortSubjects = ifelse(is.na(cohortSubjects), 0L, cohortSubjects)
       )
     }
     return(counts)

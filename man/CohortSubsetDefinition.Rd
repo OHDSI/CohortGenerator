@@ -15,6 +15,10 @@ Set of subset definitions
 
 \item{\code{name}}{name of definition}
 
+\item{\code{subsetCohortNameTemplate}}{template string for formatting resulting cohort names}
+
+\item{\code{operatorNameConcatString}}{string used when concatenating operator names together}
+
 \item{\code{definitionId}}{numeric definition id}
 
 \item{\code{identifierExpression}}{expression that can be evaluated from}
