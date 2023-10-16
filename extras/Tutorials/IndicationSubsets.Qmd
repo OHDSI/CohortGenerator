@@ -1,0 +1,280 @@
+---
+title: "Cohort Subsets"
+subtitle : "Enhancing Comparator Selection in OHDSI studies using Cohort Subset Operations"
+date: "2023-10-20"
+format:
+  revealjs:
+    theme: default
+    logo: https://www.ohdsi.org/web/wiki/lib/exe/fetch.php?w=100&tok=44f68f&media=t-ohdsi-logo-only.png
+    css: logo.css
+    footer: "Cohort Subsetting Demo"
+---
+
+
+## Introduction
+
+::: {.incremental}
+- CSE computes similarity between all RxNorm exposures
+- This provides data driven new-user comparator reccomendations
+- Nesting within indications can produce very different results
+- e.g. If a drug has multiple indications the more common indication will dominate
+- Here we demo subset definitions using `CohortGenerator`
+:::
+
+## What are subsets?
+
+::: {.incremental}
+- Cohort Subset Definitions are **reusable** extensions of existing cohorts
+- Defined by chained ordered execution of **operators**
+- Makes sub definitions *Reproducible*
+- Part of the `CohortGenerator` package
+:::
+
+
+## What's in a subset definition?
+A subset definition is made up o
+
+::: {.incremental}
+- Name
+- Definition Id (user defined)
+- `identifierExpression` (optional) this can be any expression that takes a `targetId` and `definitionId`
+- list of `subset operators` to be sequentially applied
+:::
+
+## Subset Operators
+
+Currently, the following `Subset Operators` are implemented:
+
+::: {.incremental}
+* Limit to occurrences - e.g. 'first event with 180 days observation'
+* Demographics - e.g. Age, Gender or Race/Ethnicity
+* Cohort subsets (any cohort contained in a cohort definition set)
+:::
+
+
+## Limit Subset Operations
+
+![Limit Subset Operators subset a cohort to those cohort episodes that have a requisite amount of prior or post continuous observation, as well as limiting to earliest or latest episode.](limit_operator.png)
+
+## Cohort Subset Operations
+
+![Cohort Subset Operator uses pre-existing cohorts to subset a target cohort based on temporal proximity to another cohort.  Example of finding overlapping time in subset cohort.](cohort_operator.png)
+
+## Demographic Subset Operations
+
+
+![Demographic Subset Operator allows to subset a cohort by age, gender, race and ethnicity.](demographics_operator.png)
+
+## Subset definition code
+
+:::{.smaller}
+```{r echo=TRUE, eval =TRUE}
+#| code-line-numbers: 1-18|4|5|6|8-16
+library(CohortGenerator)
+
+utiSubsetDefinition <- createCohortSubsetDefinition(
+  name = "uti cohort subset",
+  definitionId = 1,
+  identifierExpression = "targetId * 100 + definitionId",
+  subsetOperators = list(
+    createCohortSubset(
+      name = "UTI indication",
+      cohortIds = 1782155,
+      cohortCombinationOperator = "any",
+      negate = FALSE,
+      startWindow = createSubsetCohortWindow(
+        startDay = -30, endDay = 30, targetAnchor = "cohortStart"),
+      endWindow = createSubsetCohortWindow(
+        startDay = -99999, endDay = 99999, targetAnchor = "cohortEnd")
+    )
+  )
+)
+
+```
+:::
+
+## Getting the indication cohort
+
+For this demo we use the UTI SOS phenotype
+
+```{r echo=TRUE}
+utiCohortId <- 1782155
+
+cds <- ROhdsiWebApi::exportCohortDefinitionSet(
+   baseUrl = "https://api.ohdsi.org/WebAPI", 
+   cohortIds = utiCohortId
+)
+```
+
+
+## Subsetting to other cohorts
+This type of operation allows you to subset a cohort to only those subjects included in one or more other cohorts
+
+```{r eval=FALSE,echo=TRUE}
+#| code-line-numbers: 1-12|2|3|4|5|6-10
+createCohortSubset(
+  name = "UTI indication",
+  cohortIds = c(1782155), # 1 or more in cohort definition set
+  cohortCombinationOperator = "any", # Can be in all
+  negate = FALSE, # Only subjects NOT in cohort
+  # Required time window for entry
+  startWindow = createSubsetCohortWindow(
+    startDay = -30, endDay = 30, targetAnchor = "cohortStart"),
+  endWindow = createSubsetCohortWindow(
+    startDay = -99999, endDay = 99999, targetAnchor = "cohortEnd")
+)
+```
+
+## Adding to Cohort Defintion sets
+
+Adding to cohort sets creates a realized version of the subset definitions:
+
+```{r eval=T, echo=F}
+cds <- cds |> 
+  CohortGenerator::addCohortSubsetDefinition(utiSubsetDefinition)
+```
+
+```{r eval=FALSE, echo=TRUE}
+cds <- cds |> 
+  CohortGenerator::addCohortSubsetDefinition(utiSubsetDefinition)
+
+# Generate as usual with cohort generator
+generateCohortSet(..., cohortDefinitionSet = cds)
+
+```
+
+## Under the hood
+:::{.incremental}
+- The cohort definition set stores the subsetDefinition as an `attribute`
+- Also adds `isSubset` and `subsetParent` fields
+- You are **applying a subset definition** to a cohort set
+- *definitions* and *operations* can be re-used
+:::
+
+## Example Subset SQL
+
+```{r, eval = FALSE, echo = FALSE}
+writeLines(cds$sql[2])
+```
+
+```{SQL eval=FALSE, echo=TRUE}
+#| code-line-numbers: 1-35|3-4|6-25|26-32
+DELETE FROM @cohort_database_schema.@cohort_table WHERE cohort_definition_id = 178215501;
+DROP TABLE IF EXISTS #cohort_sub_base;
+SELECT * INTO #cohort_sub_base FROM @cohort_database_schema.@cohort_table
+WHERE cohort_definition_id = 1782155;
+DROP TABLE IF EXISTS #S_1;
+ SELECT
+  A.subject_id, 
+  A.cohort_start_date, 
+  A.cohort_end_date
+INTO #S_1
+FROM (
+  SELECT
+    T.subject_id, 
+    T.cohort_start_date, 
+    T.cohort_end_date
+  FROM #cohort_sub_base T
+  JOIN @cohort_database_schema.@cohort_table S ON T.subject_id = S.subject_id
+  WHERE S.cohort_definition_id in (1782155)
+    AND (S.cohort_start_date >= DATEADD(d, -30, T.cohort_start_date) AND S.cohort_start_date <= DATEADD(d, 30, T.cohort_start_date))
+    AND (S.cohort_end_date >= DATEADD(d, -99999, T.cohort_end_date) and S.cohort_end_date <= DATEADD(d, 99999, T.cohort_end_date))
+  GROUP BY T.subject_id, T.cohort_start_date, T.cohort_end_date
+  HAVING COUNT (DISTINCT S.COHORT_DEFINITION_ID) >= 1
+) A
+
+;
+INSERT INTO @cohort_database_schema.@cohort_table
+SELECT
+    178215501 as cohort_definition_id,
+    T.subject_id,
+    T.cohort_start_date,
+    T.cohort_end_date
+FROM #S_1 T;
+
+DROP TABLE IF EXISTS #cohort_sub_base;
+DROP TABLE IF EXISTS #S_1;
+```
+
+## Methods: RxNorm cohorts
+Rather than using conventional Circe cohorts, RxNorm drug exposures were based on a template:
+
+::: {.incremental}
+* Use all ingredient level drug eras from `cdm.drug_exposure` table
+* Require 365 days prior observation
+* Approach is significantly faster than creating cohorts
+* Export definition ids to Cohort Generator
+:::
+
+## Creating a configuration for CSE
+
+`ComparatorSelectionExplorer` requires a settings object:
+
+```{r eval=FALSE, echo=TRUE}
+#| code-line-numbers: 3|4-14|17
+library(ComparatorSelectionExplorer)
+
+connectionDetails <- DatabaseConnector::createConnectionDetails(server="myCdmServer", ...),
+executionSettings <- createExecutionSettings(
+  connectionDetails = connectionDetails,
+  databaseId = "My_CDM",
+  cdmDatabaseSchema = "My_CDM_schema",
+  resultsDatabaseSchema = "My_Result_Schema",
+  cohortDefinitionSet = cds, # Use the base cohort set we got from atlas
+  indicationCohortSubsetDefintions = list(
+    utiSubsetDefinition # This will be added when the cohorts are generated
+  ),
+  generateCohortDefinitionSet = TRUE
+)
+
+# Run the package
+execute(executionSettings)
+```
+
+
+## Explore the results
+
+```{r eval=F, echo=T}
+#| code-line-numbers: 1-5|6-12|14-17
+# Create a database/schema to upload them to
+shinyCd <- DatabaseConnector::createConnectionDetails(
+  server = "results.sqlite",
+  dbms = "sqlite"
+) 
+
+# Upload the results to this schema
+ComparatorSelectionExplorer::uploadResults(
+  connectionDetails = shinyCd,
+  databaseSchema = "main", 
+  zipFileName = "cse_results_My_CDM_schema.zip"
+)
+
+# Run the shiny app
+shiny::runApp(
+  appDir = system.file("shiny", package = "ComparatorSelectionExplorer")
+)
+```
+
+## Shiny app demo {background-iframe="https://data.ohdsi.org/ComparatorSelectionExplorer"}
+
+## Conclusion
+
+:::{.incremental}
+- We have introduced a new approach for Cohort Subset Definitions
+- A natural extension of cohort generation
+- Standardized `R6` implementation
+- Seralizable to JSON
+- **All subsetted cohorts are cohorts in the cohort table**
+- Already compatible with most OHDSI packages without modifications
+:::
+
+
+## Future work
+
+:::{.incremental}
+- Expanding the operation types
+- Visit Context, Random Samples, Observations, ... 
+- Cross platform implementation
+- Library of re-usable definitions and recipes
+- Easy Implementation within ATLAS
+:::
