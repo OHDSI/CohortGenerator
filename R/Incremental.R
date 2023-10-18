@@ -186,6 +186,16 @@ saveIncremental <- function(data, fileName, ...) {
     idx <- getKeyIndex(list(...), previousData)
     if (length(idx) > 0) {
       previousData <- previousData[-idx, ]
+      # force description to be character
+      if ('description' %in% colnames(previousData)) {
+        previousData <- previousData %>%
+          dplyr::mutate(description = as.character(.data$description))
+      }
+    }
+    # force description to be character
+    if ('description' %in% colnames(data)) {
+      data <- data %>%  
+        dplyr::mutate(description = as.character(.data$description))
     }
     data <- rbind(previousData, data)
   }
