@@ -14,6 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#' @template
+as.cohortDefinitionSet <- function(df) {
+  df <- dplyr::as_tibble(df)
+  class(df) <- c(class(df), "cohortDefinitionSet")
+  invisible(df)
+}
+
 #' Create an empty cohort definition set
 #'
 #' @description
@@ -35,7 +42,9 @@ createEmptyCohortDefinitionSet <- function(verbose = FALSE) {
   }
   # Build the data.frame dynamically from the cohort definition set spec
   df <- .createEmptyDataFrameFromSpecification(cohortDefinitionSetSpec)
-  invisible(df)
+
+
+  invisible(as.cohortDefinitionSet(df))
 }
 
 #' Is the data.frame a cohort definition set?
@@ -333,6 +342,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
     }
   }
 
+  cohortDefinitionSet <- as.cohortDefinitionSet(cohortDefinitionSet)
   invisible(cohortDefinitionSet)
 }
 
@@ -509,7 +519,7 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
 
 .createEmptyDataFrameFromSpecification <- function(specifications) {
   # Build the data.frame dynamically from the cohort definition set spec
-  df <- data.frame()
+  df <- dplyr::tibble()
   for (i in 1:nrow(specifications)) {
     colName <- specifications$columnName[i]
     dataType <- specifications$dataType[i]
