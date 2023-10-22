@@ -254,9 +254,6 @@ shiny::runApp(
   appDir = system.file("shiny", package = "ComparatorSelectionExplorer")
 )
 ```
-
-## Shiny app demo {background-iframe="https://data.ohdsi.org/ComparatorSelectionExplorer"}
-
 ## Conclusion
 
 :::{.incremental}
