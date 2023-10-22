@@ -180,6 +180,13 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   cohortDefinitionSetColumns <- colnames(df)
   matchingColumns <- intersect(x = colnames(x), y = cohortDefinitionSetColumns)
   columnNamesMatch <- setequal(matchingColumns, cohortDefinitionSetColumns)
+  
+  # check that cohorts ids are not duplicated
+  ids_to_keep <- duplicated(x$cohortId)
+  if (any(ids_to_keep)) {
+    stop("CohortDefinitionSet has duplicated cohort ids")
+  }
+  
 
   if (!columnNamesMatch && emitWarning) {
     columnsMissing <- setdiff(x = cohortDefinitionSetColumns, y = colnames(x))
