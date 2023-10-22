@@ -58,16 +58,17 @@
 #'    }
 #'
 #' @export
-generateCohortSet <- function(connectionDetails = NULL,
+generateCohortSet <- function(cohortDefinitionSet,
+                              connectionDetails = NULL,
                               connection = NULL,
                               cdmDatabaseSchema,
                               tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                               cohortDatabaseSchema = cdmDatabaseSchema,
                               cohortTableNames = getCohortTableNames(),
-                              cohortDefinitionSet = NULL,
                               stopOnError = TRUE,
                               incremental = FALSE,
                               incrementalFolder = NULL) {
+  cohortDefinitionSet <- as.cohortDefinitionSet(cohortDefinitionSet)
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
     must.include = c(

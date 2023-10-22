@@ -5,19 +5,27 @@
 \title{Generate a set of cohorts}
 \usage{
 generateCohortSet(
+  cohortDefinitionSet,
   connectionDetails = NULL,
   connection = NULL,
   cdmDatabaseSchema,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   cohortDatabaseSchema = cdmDatabaseSchema,
   cohortTableNames = getCohortTableNames(),
-  cohortDefinitionSet = NULL,
   stopOnError = TRUE,
   incremental = FALSE,
   incrementalFolder = NULL
 )
 }
 \arguments{
+\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
+the following columns: \describe{
+\item{cohortId}{The unique integer identifier of the cohort} 
+\item{cohortName}{The cohort's name}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}
+Optionally, this data frame may contain: \describe{
+\item{json}{The Circe JSON representation of the cohort}}}
+
 \item{connectionDetails}{An object of type \code{connectionDetails} as created using the
 \code{\link[DatabaseConnector]{createConnectionDetails}} function in the
 DatabaseConnector package. Can be left NULL if \code{connection} is
@@ -43,14 +51,6 @@ this should include both the database and schema name, for example
 
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
-
-\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
-the following columns: \describe{
-\item{cohortId}{The unique integer identifier of the cohort} 
-\item{cohortName}{The cohort's name}
-\item{sql}{The OHDSI-SQL used to generate the cohort}}
-Optionally, this data frame may contain: \describe{
-\item{json}{The Circe JSON representation of the cohort}}}
 
 \item{stopOnError}{If an error happens while generating one of the cohorts in the
 cohortDefinitionSet, should we stop processing the other
