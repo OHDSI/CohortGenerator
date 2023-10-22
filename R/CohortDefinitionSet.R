@@ -21,6 +21,22 @@ as.cohortDefinitionSet <- function(df) {
   invisible(df)
 }
 
+# Define the cohortDefinitionSet class
+setClass("cohortDefinitionSet", contains = "data.frame")
+
+# Create a constructor for cohortDefinitionSet
+cohortDefinitionSet <- function(...) {
+  obj <- new("cohortDefinitionSet", ...)
+  obj
+}
+
+# Override the rbind method for cohortDefinitionSet
+setMethod("rbind", signature(x = "cohortDefinitionSet", y = "cohortDefinitionSet"), function(x, y, ...) {
+  # Custom logic to combine two cohortDefinitionSet objects
+  combined_set <- data.frame(rbind(as.data.frame(x), as.data.frame(y)))
+  return(combined_set)
+})
+
 #' Create an empty cohort definition set
 #'
 #' @description
