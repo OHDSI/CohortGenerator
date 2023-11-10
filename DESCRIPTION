@@ -23,6 +23,7 @@ Imports:
   dplyr,
   lubridate,
   ParallelLogger (>= 3.0.0),
+  purrr,
   readr (>= 2.1.0),
   rlang,
   RJSONIO,

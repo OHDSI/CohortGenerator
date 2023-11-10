@@ -23,6 +23,7 @@
 #' and cohort statistics tables.
 #'
 #' @param cohortTable                  Name of the cohort table.
+#' @param cohortSampleTable            Name of the cohort table for sampled cohorts (defaults to the same as the cohort table).
 #'
 #' @param cohortInclusionTable         Name of the inclusion table, one of the tables for storing
 #'                                     inclusion rule statistics.
@@ -40,6 +41,7 @@
 #'
 #' @export
 getCohortTableNames <- function(cohortTable = "cohort",
+                                cohortSampleTable = "cohort",
                                 cohortInclusionTable = paste0(cohortTable, "_inclusion"),
                                 cohortInclusionResultTable = paste0(cohortTable, "_inclusion_result"),
                                 cohortInclusionStatsTable = paste0(cohortTable, "_inclusion_stats"),
@@ -47,6 +49,7 @@ getCohortTableNames <- function(cohortTable = "cohort",
                                 cohortCensorStatsTable = paste0(cohortTable, "_censor_stats")) {
   return(list(
     cohortTable = cohortTable,
+    cohortSampleTable = cohortSampleTable,
     cohortInclusionTable = cohortInclusionTable,
     cohortInclusionResultTable = cohortInclusionResultTable,
     cohortInclusionStatsTable = cohortInclusionStatsTable,
@@ -183,5 +186,32 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
 
   if (dropCohortTable) {
     dropTable(cohortTableNames$cohortTable)
+  }
+}
+
+.checkCohortTables <- function (connection,
+                                cohortDatabaseSchema,
+                                cohortTableNames) {
+  # Verify the cohort tables exist and if they do not
+  # stop the generation process
+  tableExistsFlagList <- lapply(cohortTableNames, FUN = function(x) {
+    x <- FALSE
+  })
+  tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
+  for (i in 1:length(cohortTableNames)) {
+    if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
+      tableExistsFlagList[i] <- TRUE
+    }
+  }
+
+  if (!all(unlist(tableExistsFlagList, use.names = FALSE))) {
+    errorMsg <- "The following tables have not been created: \n"
+    for (i in 1:length(cohortTableNames)) {
+      if (!tableExistsFlagList[[i]]) {
+        errorMsg <- paste0(errorMsg, "   - ", cohortTableNames[i], "\n")
+      }
+    }
+    errorMsg <- paste(errorMsg, "Please use the createCohortTables function to ensure all tables exist before generating cohorts.", sep = "\n")
+    stop(errorMsg)
   }
 }

@@ -94,29 +94,7 @@ generateCohortSet <- function(connectionDetails = NULL,
     on.exit(DatabaseConnector::disconnect(connection))
   }
 
-  # Verify the cohort tables exist and if they do not
-  # stop the generation process
-  tableExistsFlagList <- lapply(cohortTableNames, FUN = function(x) {
-    x <- FALSE
-  })
-  tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
-  for (i in 1:length(cohortTableNames)) {
-    if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
-      tableExistsFlagList[i] <- TRUE
-    }
-  }
-
-  if (!all(unlist(tableExistsFlagList, use.names = FALSE))) {
-    errorMsg <- "The following tables have not been created: \n"
-    for (i in 1:length(cohortTableNames)) {
-      if (!tableExistsFlagList[[i]]) {
-        errorMsg <- paste0(errorMsg, "   - ", cohortTableNames[i], "\n")
-      }
-    }
-    errorMsg <- paste(errorMsg, "Please use the createCohortTables function to ensure all tables exist before generating cohorts.", sep = "\n")
-    stop(errorMsg)
-  }
-
+  .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
 
   if (incremental) {
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
