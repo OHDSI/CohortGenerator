@@ -208,7 +208,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                                    targetCohortId = targetCohortId,
                                    targetTable = cohortTableNames$cohortTable)
 
-      if (nrow(sampleTable == 0)) {
+      if (nrow(sampleTable) == 0) {
         ParallelLogger::logInfo("No entires found for ", targetCohortId, " was it generated?")
         return(sampledCohortDefinition)
       }

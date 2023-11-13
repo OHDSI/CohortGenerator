@@ -18,7 +18,6 @@ FROM (
         DENSE_RANK() OVER (ORDER BY t.subject_id ) as u_id
     FROM @cohort_database_schema.@target_table t
     WHERE t.cohort_definition_id = @target_cohort_id
-    ORDER BY t.subject_id -- Not sure this clause is needed with DENSE_RANK?
 ) iq
 INNER JOIN @random_sample_table rst ON iq.u_id = rst.rand_id;
 
