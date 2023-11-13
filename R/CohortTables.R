@@ -41,7 +41,7 @@
 #'
 #' @export
 getCohortTableNames <- function(cohortTable = "cohort",
-                                cohortSampleTable = "cohort",
+                                cohortSampleTable = cohortTable,
                                 cohortInclusionTable = paste0(cohortTable, "_inclusion"),
                                 cohortInclusionResultTable = paste0(cohortTable, "_inclusion_result"),
                                 cohortInclusionStatsTable = paste0(cohortTable, "_inclusion_stats"),
