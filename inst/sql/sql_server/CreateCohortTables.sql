@@ -18,7 +18,7 @@
   );
 }:{}
 
-{@create_cohort_sample_table && @cohort_table != @cohort_sample_table}?{
+{@create_cohort_sample_table}?{
   IF OBJECT_ID('@cohort_database_schema.@cohort_sample_table', 'U') IS NOT NULL
   	DROP TABLE @cohort_database_schema.@cohort_sample_table;
 

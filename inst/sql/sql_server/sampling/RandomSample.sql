@@ -1,9 +1,9 @@
-DELETE FROM @output_database_schema.@output_table WHERE cohort_id = @output_cohort_id;
+DELETE FROM @output_database_schema.@output_table WHERE cohort_definition_id = @output_cohort_id;
 
 -- SELECT ONLY SUBJECTS JOINED TO COHORT ID
 INSERT INTO @output_database_schema.@output_table
 SELECT
-    @output_cohort_id as cohort_id,
+    @output_cohort_id as cohort_definition_id,
     iq.subject_id,
     iq.cohort_start_date,
     iq.cohort_end_date
@@ -17,7 +17,7 @@ FROM (
         t.cohort_end_date,
         DENSE_RANK() OVER (ORDER BY t.subject_id ) as u_id
     FROM @cohort_database_schema.@target_table t
-    WHERE t.cohort_id = @target_cohort_id
+    WHERE t.cohort_definition_id = @target_cohort_id
     ORDER BY t.subject_id -- Not sure this clause is needed with DENSE_RANK?
 ) iq
 INNER JOIN @random_sample_table rst ON iq.u_id = rst.rand_id;

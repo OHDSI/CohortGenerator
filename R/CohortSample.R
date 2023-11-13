@@ -28,7 +28,7 @@
                           targetCohortId,
                           targetTable) {
   countSql <- "SELECT COUNT(DISTINCT SUBJECT_ID) as cnt FROM  @cohort_database_schema.@target_table
-   WHERE cohort_id = @target_cohort_id"
+   WHERE cohort_definition_id = @target_cohort_id"
   count <- DatabaseConnector::renderTranslateQuerySql(connection,
                                                       countSql,
                                                       cohort_database_schema = cohortDatabaseSchema,
@@ -85,6 +85,20 @@
                                                target_table = targetTable)
 }
 
+
+.computeIdentifierExpression <- function(identifierExpression, cohortId, seed) {
+  allowed_vars <- c("cohortId", "seed")
+  vars_in_expression <- intersect(all.vars(parse(text = identifierExpression)), allowed_vars)
+
+  if (length(setdiff(all.vars(parse(text = identifierExpression)), vars_in_expression)) > 0) {
+    stop("Invalid variable in expression.")
+  }
+
+  expr <- parse(text = identifierExpression)
+  result <- eval(expr, list(cohortId = cohortId, seed = seed))
+  return(result)
+}
+
 #' Sample Cohort Definition Set
 #'
 #' @description
@@ -99,13 +113,15 @@
 #'
 #' Note, this function assumes cohorts have already been generated.
 #'
-#' @parsm n                 Sample size
-#' @parsm cohortIds         Optional subset of cohortIds to generate. By default this function will sample all cohorts
-#' @param seed              Vector of seeds to give to the R psuedorandom number generator
-#' @param seedArgs          optional arguments to pass to set.seed
+#' @parsm n                     Sample size
+#' @param identifierExpression  Optional string R expression used to compute output cohort id. Can only use variables
+#'                              cohortId and seed. Default is "cohortId * 1000 + seed", which is substituted and evaluated
+#' @parsm cohortIds             Optional subset of cohortIds to generate. By default this function will sample all cohorts
+#' @param seed                  Vector of seeds to give to the R psuedorandom number generator
+#' @param seedArgs              optional arguments to pass to set.seed
 #' @export
-#' @returns                 sampledCohortDefinitionSet - a data.frame like object that contains the resulting identifiers and modified names of cohorts
-#' @inheritParams           generateCohortSet
+#' @returns                     sampledCohortDefinitionSet - a data.frame like object that contains the resulting identifiers and modified names of cohorts
+#' @inheritParams               generateCohortSet
 sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                                       cohortIds = cohortDefinitionSet$cohortId,
                                       connectionDetails = NULL,
@@ -116,7 +132,8 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                                       cohortTableNames = getCohortTableNames(),
                                       n,
                                       seed = 64374,
-                                      seedArgs,
+                                      seedArgs = NULL,
+                                      identifierExpression = "cohortId * 1000 + seed",
                                       incremental = FALSE,
                                       incrementalFolder = NULL) {
 
@@ -156,10 +173,13 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
   sampledCohorts <-
     purrr::map2(seed, cohortIds, function(seed, targetCohortId) {
       sampledCohortDefinition <- cohortDefinitionSet %>%
-        dplyr::filter(targetCohortId == targetCohortId)
+        dplyr::filter(.data$cohortId == targetCohortId)
 
       sampledCohortDefinition$isSample <- TRUE
-      sampledCohortDefinition$cohortId <- sampledCohortDefinition$cohortId * 1000 * seed
+      outputCohortId <-  .computeIdentifierExpression(identifierExpression,
+                                                      sampledCohortDefinition$cohortId,
+                                                      seed)
+      sampledCohortDefinition$cohortId <- outputCohortId
       sampledCohortDefinition$cohortName <- sprintf("%s [SAMPLE seed=%s n=%s]",
                                                     sampledCohortDefinition$cohortName, seed, n)
       if (incremental && !isTaskRequired(
@@ -183,7 +203,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         ParallelLogger::logInfo("No entires found for ", targetCohortId, " was it generated?")
         return(sampledCohortDefinition)
       }
-
+      # Called only for side effects
       .sampleCohort(connection = connection,
                     targetCohortId = targetCohortId,
                     targetTable = cohortTableNames$cohortTable,
