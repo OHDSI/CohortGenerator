@@ -36,6 +36,7 @@ test_that("sampleCohortDefinitionSet", {
     incrementalFolder = recordKeepingFolder
   )
   checkmate::expect_data_frame(sampledCohorts, nrow = nrow(cds))
+  expect_true(attr(sampledCohorts, "isSampledCohortDefinition"))
   expect_true(all(grepl("[SAMPLE seed=64374 n=10]", sampledCohorts$cohortName)))
   expect_true(all(cds$cohortId * 1000 + 64374 == sampledCohorts$cohortId))
 
