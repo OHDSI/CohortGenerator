@@ -179,6 +179,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
       outputCohortId <-  .computeIdentifierExpression(identifierExpression,
                                                       sampledCohortDefinition$cohortId,
                                                       seed)
+      sampledCohortDefinition$sampleTargetCohortId <- sampledCohortDefinition$cohortId
       sampledCohortDefinition$cohortId <- outputCohortId
       sampledCohortDefinition$cohortName <- sprintf("%s [SAMPLE seed=%s n=%s]",
                                                     sampledCohortDefinition$cohortName, seed, n)
@@ -219,6 +220,16 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
     }) %>%
       dplyr::bind_rows()
 
+  attr(sampledCohorts, "isSampledCohortDefinition") <- TRUE
+
+  # deep clone any subset definitions
+  if (hasSubsetDefinitions(cohortDefinitionSet)) {
+    subsetDefintiions <- list()
+    purrr::map(attr(cohortDefinitionSet, "cohortSubsetDefinitions"), function(subsetDefinition) {
+      subsetDefintiions[[length(subsetDefintiions) + 1]] <- subsetDefinition$clone(deep = TRUE)
+    })
+    attr(sampledCohorts, "cohortSubsetDefinitions") <- subsetDefintiions
+  }
 
   delta <- Sys.time() - start
   writeLines(paste("Generating sample set took", round(delta, 2), attr(delta, "units")))
