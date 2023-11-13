@@ -27,6 +27,7 @@ someFolder <- tempdir()
 packageRoot <- tempdir()
 baseUrl <- "https://api.ohdsi.org/WebAPI"
 library(CohortGenerator)
+
 ```
 # Sampling with CohortGenerator
 
@@ -46,28 +47,55 @@ within a cohort.
 
 ## Using the sampler functions
 
-To create a single sample the appraoch below will create cohorts in the same table that
-```{r eval=F}
-cohortDefinitionSet <- loadCohortDefinitionSet
+To create a single sample the approach below will create cohorts in the same base table.
 
-connection <- NULL
-cdmDatabaseSchema
-tempEmulationSchema <- getOption("sqlRenderTempEmulationSchema")
-cohortDatabaseSchema <- cdmDatabaseSchema
-cohortTableNames <- getCohortTableNames()
-cohortDefinitionSet <- NULL
-stopOnError <- TRUE
-incremental <- FALSE
-incrementalFolder <- NULL
-
-cohortDefinitionSet <- generateCohortSet(...)
-
-
-sampledCohortDefinitionSet <- sampleCohortDefinitionSet(cohortDefinitionSet,
-                                                        seed = 64374, # OHDSI
-                                                        cohortTableNames = cohortTableNames(),
-                                                        n = 1000)
+First we need to load the initial cohort definition set
+```{r eval = F}
+cds <- getCohortDefinitionSet(...)
 ```
+
+We then need to create the cohort tables and cohorts in the usual manner.
+```{r eval=F}
+connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+on.exit(DatabaseConnector::disconnect(conn))
+
+
+cds <- getCohortDefinitionSet(...)
+cohortTableNames <- getCohortTableNames(cohortTable = "cohort")
+recordKeepingFolder <- file.path(outputFolder, "RecordKeepingSamples")
+
+createCohortTables(
+  connectionDetails = connectionDetails,
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames
+)
+
+generateCohortSet(
+  cohortDefinitionSet = cds,
+  connection = conn,
+  cdmDatabaseSchema = "main",
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames,
+  incremental = TRUE,
+  incrementalFolder = recordKeepingFolder
+)
+
+```
+We can then create a new cohort definition set from the original sample.
+```{r eval=F}
+sampledCohortDefinitionSet <- sampleCohortDefinitionSet(
+    cohortDefinitionSet = cds,
+    connection = conn,
+    n = 1000,
+    seed = 64374, # OHDSI
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    incremental = TRUE,
+    incrementalFolder = recordKeepingFolder
+  )
+```
+
 The resulting `sampledCohortDefinitionSet` is nearly identical to the base cohort set, however a few changes occur:
 
 * The name now include the postfix `[sample n=1000 seed=64374]`
@@ -80,10 +108,16 @@ To generate multiple samples, simply specify multiple seed variables as follows:
 
 ```{r eval=F}
 # Generate 800 samples of size n
-sampledCohortDefinitionSet <- sampleCohortDefinitionSet(cohortDefinitionSet,
-                                                        seed = 1:800 * 64374, # OHDSI
-                                                        cohortTableNames = cohortTableNames(),
-                                                        n = 1000)
+sampledCohortDefinitionSet <- sampleCohortDefinitionSet(
+    cohortDefinitionSet = cds,
+    connection = conn,
+    n = 1000,
+    seed = 1:800 * 64374, # OHDSI
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    incremental = TRUE,
+    incrementalFolder = recordKeepingFolder
+  )
 ```
 Note that using incremental mode for your sampled cohorts will also work.
 In this case, a cohort will only be re-generated if the checksum of the base cohort has changed (the checksum is based
@@ -94,6 +128,4 @@ As the sampledCohortDefinitionSet is, for all intents and purposes, a set of coh
 parameter to all other OHDSI packages with minimal issues.
 For example, `FeatureExtraction` will be able to use this sample unchanged.
 
-## Using sampling in a design specification
- TODO
 

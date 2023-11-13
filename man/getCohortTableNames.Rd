@@ -7,6 +7,7 @@ tables}
 \usage{
 getCohortTableNames(
   cohortTable = "cohort",
+  cohortSampleTable = "cohort",
   cohortInclusionTable = paste0(cohortTable, "_inclusion"),
   cohortInclusionResultTable = paste0(cohortTable, "_inclusion_result"),
   cohortInclusionStatsTable = paste0(cohortTable, "_inclusion_stats"),
@@ -16,6 +17,8 @@ getCohortTableNames(
 }
 \arguments{
 \item{cohortTable}{Name of the cohort table.}
+
+\item{cohortSampleTable}{Name of the cohort table for sampled cohorts (defaults to the same as the cohort table).}
 
 \item{cohortInclusionTable}{Name of the inclusion table, one of the tables for storing
 inclusion rule statistics.}

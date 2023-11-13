@@ -113,10 +113,10 @@
 #'
 #' Note, this function assumes cohorts have already been generated.
 #'
-#' @parsm n                     Sample size
+#' @param n                     Sample size
 #' @param identifierExpression  Optional string R expression used to compute output cohort id. Can only use variables
 #'                              cohortId and seed. Default is "cohortId * 1000 + seed", which is substituted and evaluated
-#' @parsm cohortIds             Optional subset of cohortIds to generate. By default this function will sample all cohorts
+#' @param cohortIds             Optional subset of cohortIds to generate. By default this function will sample all cohorts
 #' @param seed                  Vector of seeds to give to the R psuedorandom number generator
 #' @param seedArgs              optional arguments to pass to set.seed
 #' @export
