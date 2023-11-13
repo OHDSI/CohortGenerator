@@ -7,6 +7,7 @@ test_that("Call getCohortTableNames with defaults", {
     getCohortTableNames(),
     list(
       cohortTable = "cohort",
+      cohortSubsetTable = "cohort",
       cohortInclusionTable = "cohort_inclusion",
       cohortInclusionResultTable = "cohort_inclusion_result",
       cohortInclusionStatsTable = "cohort_inclusion_stats",
@@ -28,6 +29,7 @@ test_that("Call getCohortTableNames with custom table names", {
     ),
     list(
       cohortTable = "a",
+      cohortSubsetTable = "a",
       cohortInclusionTable = "b",
       cohortInclusionResultTable = "c",
       cohortInclusionStatsTable = "d",
