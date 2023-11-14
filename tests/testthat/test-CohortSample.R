@@ -185,3 +185,31 @@ test_that("Eval expression is safe", {
   foo <- 5
   expect_error(.computeIdentifierExpression("foo"), "Invalid variable in expression")
 })
+
+test_that("checkUniqueOutputIds returns error when duplicate ids are present", {
+  cohortIds <- c(1, 2, 3, 4, 5)
+  seed <- 123
+  identifierExpression <- "cohortId"
+  cohortTableNames <- list(cohortTable = "cohort", cohortSampleTable = "cohort")
+
+  expect_error(.checkUniqueOutputIds(cohortIds, seed, identifierExpression, cohortTableNames),
+               "identifier expression does not produce unique output")
+})
+
+test_that("checkUniqueOutputIds does not return error when all ids are unique", {
+  cohortIds <- c(1, 2, 3, 4, 5)
+  seed <- 123
+  identifierExpression <- "cohortId"
+  cohortTableNames <- list(cohortTable = "cohort", cohortSampleTable = "cohort_sample")
+
+  expect_silent(.checkUniqueOutputIds(cohortIds, seed, identifierExpression, cohortTableNames))
+})
+
+test_that("checkUniqueOutputIds does not return error when cohortTable and cohortSampleTable are different", {
+  cohortIds <- c(1, 2, 3, 4, 5)
+  seed <- 123
+  identifierExpression <- "cohortId + seed"
+  cohortTableNames <- list(cohortTable = "cohort", cohortSampleTable = "cohort_sample")
+
+  expect_silent(.checkUniqueOutputIds(cohortIds, seed, identifierExpression, cohortTableNames))
+})

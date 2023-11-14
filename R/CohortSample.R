@@ -99,6 +99,21 @@
   return(result)
 }
 
+
+.checkUniqueOutputIds <- function(cohortIds, seed, identifierExpression, cohortTableNames) {
+  idSet <- purrr::map2(cohortIds, seed, function(.x, .s) {
+    .computeIdentifierExpression(identifierExpression, .x, .s)
+  })
+
+  # If output is a different table to base table then target ids don't need to be distinct from output
+  if (cohortTableNames$cohortTable == cohortTableNames$cohortSampleTable) {
+    idSet <- c(idSet, cohortIds)
+  }
+  errorMessage <- "identifier expression does not produce unique output for cohort ids"
+  if(length(unique(idSet)) != length(idSet)) stop(errorMessage)
+  invisible(NULL)
+}
+
 #' Sample Cohort Definition Set
 #'
 #' @description
@@ -163,6 +178,8 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
 
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohortSamples.csv")
   }
+  # check uniqueness of output ids
+  .checkUniqueOutputIds(cohortDefinitionSet$cohortIds, seed, identifierExpression, cohortTableNames)
 
   start <- Sys.time()
   if (is.null(connection)) {
