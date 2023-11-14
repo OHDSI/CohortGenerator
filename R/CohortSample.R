@@ -119,6 +119,7 @@
 #' @param cohortIds             Optional subset of cohortIds to generate. By default this function will sample all cohorts
 #' @param seed                  Vector of seeds to give to the R psuedorandom number generator
 #' @param seedArgs              optional arguments to pass to set.seed
+#' @param outputDatabaseSchema  optional schema to output cohorts to (if different from cohortDatabaseSchema)
 #' @export
 #' @returns                     sampledCohortDefinitionSet - a data.frame like object that contains the resulting identifiers and modified names of cohorts
 #' @inheritParams               generateCohortSet

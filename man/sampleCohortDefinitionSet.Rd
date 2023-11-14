@@ -51,6 +51,8 @@ privileges where temp tables can be created.}
 this should include both the database and schema name, for example
 'scratch.dbo'.}
 
+\item{outputDatabaseSchema}{optional schema to output cohorts to (if different from cohortDatabaseSchema)}
+
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
 
