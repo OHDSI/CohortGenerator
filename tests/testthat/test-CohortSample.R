@@ -46,6 +46,33 @@ test_that("sampleCohortDefinitionSet", {
                                                     GROUP BY cohort_definition_id
                                                     ")
   expect_true(all(res$ct == 10))
+  expect_true(all(sampledCohorts$status == "generated"))
+  # Test incrmental logic works
+  sampledCohorts2 <- sampleCohortDefinitionSet(
+    cohortDefinitionSet = cds,
+    connection = conn,
+    n = 10,
+    seed = 64374,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    incremental = TRUE,
+    incrementalFolder = recordKeepingFolder
+  )
+
+  expect_true(all(sampledCohorts2$status == "skipped"))
+
+  # Test no incremental flag
+  sampledCohorts3 <- sampleCohortDefinitionSet(
+    cohortDefinitionSet = cds,
+    connection = conn,
+    n = 10,
+    seed = 64374,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    incremental = FALSE
+  )
+
+  expect_true(all(sampledCohorts3$status == "generated"))
 })
 
 # Testing the creation of randomly sampled without replacement row ids

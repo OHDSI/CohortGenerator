@@ -177,6 +177,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         dplyr::filter(.data$cohortId == targetCohortId)
 
       sampledCohortDefinition$isSample <- TRUE
+      sampledCohortDefinition$status <- "ungenerated"
       outputCohortId <-  .computeIdentifierExpression(identifierExpression,
                                                       sampledCohortDefinition$cohortId,
                                                       seed)
@@ -191,13 +192,14 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                                                                              sampledCohortDefinition$subsetParent,
                                                                              seed)
       }
-
+      
       if (incremental && !isTaskRequired(
-        cohortId = targetCohortId,
+        cohortId = outputCohortId,
         seed = seed,
-        checksum = computeChecksum(paste0(cohortToSample$sql, n, seed)),
+        checksum = computeChecksum(paste0(sampledCohortDefinition$sql, n, seed, outputCohortId)),
         recordKeepingFile = recordKeepingFile
       )) {
+        sampledCohortDefinition$status <- "skipped"
         return(sampledCohortDefinition)
       }
       # check incremental task for cohort sampling
@@ -225,9 +227,20 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                     seed = seed + targetCohortId, # Seed is unique to each target cohort
                     tempEmulationSchema = tempEmulationSchema)
 
+      sampledCohortDefinition$status <- "generated"
+      if (incremental) {
+        recordTasksDone(
+          cohortId = sampledCohortDefinition$cohortId,
+          seed = seed,
+          checksum = computeChecksum(paste0(sampledCohortDefinition$sql, n, seed, outputCohortId)),
+          recordKeepingFile = recordKeepingFile
+        )
+      }
       return(sampledCohortDefinition)
     }) %>%
       dplyr::bind_rows()
+
+
 
   attr(sampledCohorts, "isSampledCohortDefinition") <- TRUE
   sampledCohorts <- .copySubsetDefinitions(sampledCohorts, cohortDefinitionSet)
