@@ -95,6 +95,7 @@ test_that(".getSampleSet", {
 
   res <- .getSampleSet(connection,
                        n,
+                       sampleFraction = NULL,
                        seed,
                        seedArgs,
                        cohortDatabaseSchema,
@@ -105,6 +106,7 @@ test_that(".getSampleSet", {
 
   res2 <- .getSampleSet(connection,
                         n,
+                        sampleFraction = NULL,
                         seed,
                         seedArgs,
                         cohortDatabaseSchema,
@@ -115,6 +117,7 @@ test_that(".getSampleSet", {
 
   res2 <- .getSampleSet(connection,
                         n,
+                        sampleFraction = NULL,
                         seed + 1,
                         seedArgs,
                         cohortDatabaseSchema,
@@ -130,12 +133,25 @@ test_that(".getSampleSet", {
   # Where n > count should return count rows
   res3 <- .getSampleSet(connection,
                         n,
+                        sampleFraction = NULL,
                         seed,
                         seedArgs,
                         cohortDatabaseSchema,
                         targetCohortId = 2,
                         targetTable)
   checkmate::expect_data_frame(res3, types = "integer", nrows = 25)
+
+
+  res4 <- .getSampleSet(connection,
+                        n = NULL,
+                        sampleFraction = 0.5,
+                        seed,
+                        seedArgs,
+                        cohortDatabaseSchema,
+                        targetCohortId = 2,
+                        targetTable)
+
+  checkmate::expect_data_frame(res4, types = "integer", nrows = 12)
 })
 
 # Testing that selection of rows is determined only by the inserted random data.frame

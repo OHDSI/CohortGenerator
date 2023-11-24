@@ -21,7 +21,8 @@
 #'
 #' @noRd
 .getSampleSet <- function(connection,
-                          n,
+                          n = NULL,
+                          sampleFraction = NULL,
                           seed,
                           seedArgs,
                           cohortDatabaseSchema,
@@ -35,6 +36,10 @@
                                                       target_cohort_id = targetCohortId,
                                                       target_table = targetTable) %>%
     dplyr::pull()
+
+  if (!is.null(sampleFraction)) {
+    n <- round(count * sampleFraction)
+  }
 
   if (count > n) {
     if (is.null(seedArgs)) {
@@ -128,7 +133,8 @@
 #'
 #' Note, this function assumes cohorts have already been generated.
 #'
-#' @param n                     Sample size
+#' @param n                     Sample size. Ignored if sample fraction is set
+#' @param sampleFraction        Fraction of cohort to sample
 #' @param identifierExpression  Optional string R expression used to compute output cohort id. Can only use variables
 #'                              cohortId and seed. Default is "cohortId * 1000 + seed", which is substituted and evaluated
 #' @param cohortIds             Optional subset of cohortIds to generate. By default this function will sample all cohorts
@@ -146,14 +152,16 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                                       cohortDatabaseSchema,
                                       outputDatabaseSchema = cohortDatabaseSchema,
                                       cohortTableNames = getCohortTableNames(),
-                                      n,
+                                      n = NULL,
+                                      sampleFraction = NULL,
                                       seed = 64374,
                                       seedArgs = NULL,
                                       identifierExpression = "cohortId * 1000 + seed",
                                       incremental = FALSE,
                                       incrementalFolder = NULL) {
 
-  checkmate::assertIntegerish(n, min.len = 1)
+  checkmate::assertIntegerish(n, len = 1, null.ok = TRUE)
+  checkmate::assertNumeric(sampleFraction, len = 1, null.ok = TRUE, lower = 0, upper = 1.0)
   checkmate::assertIntegerish(seed, min.len = 1)
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
@@ -163,6 +171,9 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                            "sql"
                          )
   )
+
+  if (is.null(n) && is.null(sampleFraction))
+    stop("Must specificy n or fraction size")
 
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
@@ -200,8 +211,14 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                                                       seed)
       sampledCohortDefinition$sampleTargetCohortId <- sampledCohortDefinition$cohortId
       sampledCohortDefinition$cohortId <- outputCohortId
-      sampledCohortDefinition$cohortName <- sprintf("%s [SAMPLE seed=%s n=%s]",
-                                                    sampledCohortDefinition$cohortName, seed, n)
+
+      if (!is.null(sampleFraction)) {
+        sampledCohortDefinition$cohortName <- sprintf("%s [%s%% SAMPLE seed=%s]",
+                                                      sampledCohortDefinition$cohortName, seed, sampleFraction * 100)
+      } else {
+        sampledCohortDefinition$cohortName <- sprintf("%s [SAMPLE seed=%s n=%s]",
+                                                      sampledCohortDefinition$cohortName, seed, n)
+      }
 
       if (hasSubsetDefinitions(cohortDefinitionSet)) {
         # must maintain mapping for subset parent ids
@@ -222,6 +239,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
       # check incremental task for cohort sampling
       sampleTable <- .getSampleSet(connection = connection,
                                    n = n,
+                                   sampleFraction = sampleFraction,
                                    seed = seed + targetCohortId, # Seed is unique to each target cohort
                                    seedArgs = seedArgs,
                                    cohortDatabaseSchema = cohortDatabaseSchema,

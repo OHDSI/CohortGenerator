@@ -13,7 +13,8 @@ sampleCohortDefinitionSet(
   cohortDatabaseSchema,
   outputDatabaseSchema = cohortDatabaseSchema,
   cohortTableNames = getCohortTableNames(),
-  n,
+  n = NULL,
+  sampleFraction = NULL,
   seed = 64374,
   seedArgs = NULL,
   identifierExpression = "cohortId * 1000 + seed",
@@ -56,7 +57,9 @@ this should include both the database and schema name, for example
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
 
-\item{n}{Sample size}
+\item{n}{Sample size. Ignored if sample fraction is set}
+
+\item{sampleFraction}{Fraction of cohort to sample}
 
 \item{seed}{Vector of seeds to give to the R psuedorandom number generator}
 

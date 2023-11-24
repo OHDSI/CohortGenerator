@@ -87,7 +87,7 @@ We can then create a new cohort definition set from the original sample.
 sampledCohortDefinitionSet <- sampleCohortDefinitionSet(
     cohortDefinitionSet = cds,
     connection = conn,
-    n = 1000,
+    sampleFraction = 0.33,
     seed = 64374, # OHDSI
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
@@ -98,7 +98,7 @@ sampledCohortDefinitionSet <- sampleCohortDefinitionSet(
 
 The resulting `sampledCohortDefinitionSet` is nearly identical to the base cohort set, however a few changes occur:
 
-* The name now include the postfix `[sample n=1000 seed=64374]`
+* The name now include the postfix `[sample 33% seed=64374]`
 * The optional parameter `idExpression` changes the cohort name. By default this is set to `cohortId * 1000 + seed`
 however, this will throw an error if the ids are the same
 * The
