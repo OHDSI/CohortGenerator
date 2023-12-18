@@ -143,7 +143,7 @@ CohortSubsetDefinition <- R6::R6Class(
         dplyr::select("cohortName") %>%
         dplyr::pull()
 
-      opNameList <- lapply(self$subsetOperators, function(x) x$name)
+      opNameList <- lapply(self$subsetOperators, function(x) { ifelse(x$name == "", NULL, x$name) })
       opNames <- paste0(opNameList, collapse = self$operatorNameConcatString)
 
       SqlRender::render(self$subsetCohortNameTemplate,
