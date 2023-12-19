@@ -133,6 +133,8 @@
 #'
 #' Note, this function assumes cohorts have already been generated.
 #'
+#' Lifecycle Note: This functionality is considered experimental and not intented for use inside analytic packages
+#'
 #' @param n                     Sample size. Ignored if sample fraction is set
 #' @param sampleFraction        Fraction of cohort to sample
 #' @param identifierExpression  Optional string R expression used to compute output cohort id. Can only use variables
