@@ -106,9 +106,9 @@
 
 
 .checkUniqueOutputIds <- function(cohortIds, seed, identifierExpression, cohortTableNames) {
-  idSet <- purrr::map2(cohortIds, seed, function(.x, .s) {
+  idSet <- Map(function(.x, .s) {
     .computeIdentifierExpression(identifierExpression, .x, .s)
-  })
+  }, cohortIds, seed)
 
   # If output is a different table to base table then target ids don't need to be distinct from output
   if (cohortTableNames$cohortTable == cohortTableNames$cohortSampleTable) {
@@ -200,7 +200,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
   sampledCohorts <-
-    purrr::map2(seed, cohortIds, function(seed, targetCohortId) {
+    Map(function(seed, targetCohortId) {
       sampledCohortDefinition <- cohortDefinitionSet %>%
         dplyr::filter(.data$cohortId == targetCohortId)
 
@@ -272,7 +272,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         )
       }
       return(sampledCohortDefinition)
-    }) %>%
+    }, seed, cohortIds) %>%
       dplyr::bind_rows()
 
 
