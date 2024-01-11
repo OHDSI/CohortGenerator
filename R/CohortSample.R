@@ -133,7 +133,7 @@
 #'
 #' Note, this function assumes cohorts have already been generated.
 #'
-#' Lifecycle Note: This functionality is considered experimental and not intented for use inside analytic packages
+#' Lifecycle Note: This functionality is considered experimental and not intended for use inside analytic packages
 #'
 #' @param n                     Sample size. Ignored if sample fraction is set
 #' @param sampleFraction        Fraction of cohort to sample
@@ -202,7 +202,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
   sampledCohorts <-
-    Map(function(seed, targetCohortId) {
+    base::Map(function(seed, targetCohortId) {
       sampledCohortDefinition <- cohortDefinitionSet %>%
         dplyr::filter(.data$cohortId == targetCohortId)
 
