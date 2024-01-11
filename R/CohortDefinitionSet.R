@@ -526,9 +526,9 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
   # deep clone any subset definitions
   if (hasSubsetDefinitions(copyFromCds)) {
     subsetDefintiions <- list()
-    Map(attr(copyFromCds, "cohortSubsetDefinitions"), function(subsetDefinition) {
+    Map(function(subsetDefinition) {
       subsetDefintiions[[length(subsetDefintiions) + 1]] <- subsetDefinition$clone(deep = TRUE)
-    })
+    }, attr(copyFromCds, "cohortSubsetDefinitions"))
     attr(copyToCds, "cohortSubsetDefinitions") <- subsetDefintiions
     attr(copyToCds, "hasSubsetDefinitions") <- TRUE
   }
