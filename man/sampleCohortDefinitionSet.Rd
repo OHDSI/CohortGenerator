@@ -87,4 +87,6 @@ As different databases have different forms of randomness, the random selection 
 R, based on the count for each cohort. This is, therefore, db platform independent
 
 Note, this function assumes cohorts have already been generated.
+
+Lifecycle Note: This functionality is considered experimental and not intended for use inside analytic packages
 }
