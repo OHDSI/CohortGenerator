@@ -27,7 +27,7 @@ test_that("sampleCohortDefinitionSet", {
 
   sampledCohorts <- sampleCohortDefinitionSet(
     cohortDefinitionSet = cds,
-    connection = conn,
+    connectionDetails = connectionDetails,
     n = 10,
     seed = 64374,
     cohortDatabaseSchema = "main",
@@ -228,4 +228,51 @@ test_that("checkUniqueOutputIds does not return error when cohortTable and cohor
   cohortTableNames <- list(cohortTable = "cohort", cohortSampleTable = "cohort_sample")
 
   expect_silent(.checkUniqueOutputIds(cohortIds, seed, identifierExpression, cohortTableNames))
+})
+
+
+test_that("Error on bad params", {
+  # No connection details
+  expect_error({
+      sampledCohorts <- sampleCohortDefinitionSet(
+        cohortDefinitionSet = cds,
+        connection = NULL,
+        n = 10,
+        sampleFraction = NULL,
+        seed = 64374,
+        cohortDatabaseSchema = "main",
+        cohortTableNames = cohortTableNames,
+        incremental = TRUE,
+        incrementalFolder = recordKeepingFolder
+      )
+  })
+
+
+  expect_error({
+      sampledCohorts <- sampleCohortDefinitionSet(
+        cohortDefinitionSet = cds,
+        connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+        n = NULL,
+        sampleFraction = NULL,
+        seed = 64374,
+        cohortDatabaseSchema = "main",
+        cohortTableNames = cohortTableNames,
+        incremental = TRUE,
+        incrementalFolder = recordKeepingFolder
+      )
+  })
+
+  expect_error({
+      sampledCohorts <- sampleCohortDefinitionSet(
+        cohortDefinitionSet = cds,
+        connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+        n = 10,
+        sampleFraction = NULL,
+        seed = 64374,
+        cohortDatabaseSchema = "main",
+        cohortTableNames = cohortTableNames,
+        incremental = TRUE,
+        incrementalFolder = NULL
+      )
+  })
 })
