@@ -384,6 +384,13 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   checkmate::assert_true(length(cohortFileNameValue) > 0)
   assert_settings_columns(names(cohortDefinitionSet))
   checkmate::assert_true(all(cohortFileNameValue %in% names(cohortDefinitionSet)))
+
+  if (length(.getTemplateDefinitions(cohortDefinitionSet)) > 0) {
+    warning("Saving template cohort definitions is not currently supported")
+    if (all(cohortDefinitionSet$isTemplatedCohort))
+      stop("Cohort contains only template cohorts, cannot be saved")
+  }
+
   settingsFolder <- dirname(settingsFileName)
   if (!dir.exists(settingsFolder)) {
     dir.create(settingsFolder, recursive = TRUE)

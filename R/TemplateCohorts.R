@@ -1,3 +1,19 @@
+# Copyright 2024 Observational Health Data Sciences and Informatics
+#
+# This file is part of CohortGenerator
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' Class for automating the creation of bulk cohorts
 #'
 #' This class provides a framework for automating the creation of bulk cohorts
@@ -10,6 +26,8 @@
 #' or observation criteria, should this be excluded from the cohort definition. However, when applying operations in
 #' bulk it may be more efficient to include such definitions within the template sql itself.
 #' This approach is also useful for cohorts that are not based on ATLAS/CirceDefinitions
+#'
+#'
 #' @section Public Functions:
 #' \describe{
 #'   \item{\code{initialize}}{Initializes the CohortTemplate object with the specified
@@ -149,89 +167,6 @@ createCohortTemplateDefintion <- function(name,
   return(invisible(def))
 }
 
-.rxNormTemplateRefFun <- function(connection,
-                                  cohortDatabaseSchema,
-                                  vocabularyDatabaseSchema,
-                                  tempEmulationSchema,
-                                  rxNormTable,
-                                  indentifierExpression) {
-  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "rx_norm", "references.sql"),
-                                           packageName = utils::packageName(),
-                                           identifier_expression = indentifierExpression,
-                                           cohort_database_schema = cohortDatabaseSchema,
-                                           tempEmulationSchema = tempEmulationSchema,
-                                           rx_norm_table = rxNormTable,
-                                           vocabulary_database_schema = vocabularyDatabaseSchema)
-  DatabaseConnector::executeSql(connection, sql)
-
-  sql <- "SELECT cohort_definition_id as cohort_id, cohort_name FROM @cohort_database_schema.@rx_norm_table;"
-  references <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
-                                                           sql = sql,
-                                                           cohort_database_schema = cohortDatabaseSchema,
-                                                           snakeCaseToCamelCase = TRUE,
-                                                           rx_norm_table = rxNormTable)
-  return(references)
-}
-
-.createRxNormCohorts <- function(connection,
-                                 cdmDatabaseSchema,
-                                 cohortDatabaseSchema,
-                                 cohortTableNames,
-                                 vocabularyDatabaseSchema,
-                                 tempEmulationSchema,
-                                 rxNormTable,
-                                 priorObservationPeriod = 365) {
-  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "rx_norm", "definition.sql"),
-                                           dbms = DatabaseConnector::dbms(connection),
-                                           packageName = utils::packageName(),
-                                           rx_norm_table = rxNormTable,
-                                           cohort_table = cohortTableNames$cohortTable,
-                                           prior_observation_period = priorObservationPeriod,
-                                           vocabulary_database_schema = vocabularyDatabaseSchema,
-                                           cohort_database_schema = cohortDatabaseSchema,
-                                           cdm_database_schema = cdmDatabaseSchema)
-
-  DatabaseConnector::executeSql(connection, sql)
-}
-
-#' Create Rx Norm Cohort Template Definition
-#' @description
-#' Template cohort definition for all RxNorm ingredients
-#' @param cohortIdExpression  an expression for setting the cohort id for the resulting cohort. Must produce unique ids
-#'
-createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concept_id * 1000",
-                                                 cdmDatabaseSchema,
-                                                 rxNormTable = "cohort_rx_norm_ref_table",
-                                                 tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-                                                 cohortDatabaseSchema,
-                                                 priorObservationPeriod = 365,
-                                                 vocabularyDatabaseSchema = cdmDatabaseSchema) {
-
-  executeArgs <- list(
-    vocabularyDatabaseSchema = vocabularyDatabaseSchema,
-    priorObservationPeriod = priorObservationPeriod,
-    rxNormTable = rxNormTable,
-    tempEmulationSchema = tempEmulationSchema
-  )
-
-  templateRefArgs <- list(
-    cohortDatabaseSchema = cohortDatabaseSchema,
-    vocabularyDatabaseSchema = vocabularyDatabaseSchema,
-    indentifierExpression = indentifierExpression,
-    rxNormTable = rxNormTable,
-    tempEmulationSchema = tempEmulationSchema
-  )
-
-  def <- createCohortTemplateDefintion(name = "All rxNorm Ingredients",
-                                       templateRefFun = .rxNormTemplateRefFun,
-                                       executeFun = .createRxNormCohorts,
-                                       templateRefArgs = templateRefArgs,
-                                       executeArgs = executeArgs,
-                                       requireConnectionRefs = TRUE)
-
-  return(invisible(def))
-}
-
 .getTemplateDefinitions <- function(cohortDefinitionSet) {
   templates <- attr(cohortDefinitionSet, "templateCohortDefinitions")
   if (is.null(templates)) {
@@ -243,11 +178,18 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
 
 #' Add Cohort template definition to cohort set
 #' @description Adds a cohort template definition to an existing cohort definition set or creates one if none provided
+#' @inheritParams generateCohortSet
+#' @export
+#' @param connection                An optional connection. If the cohort
+#' @param cohortTemplateDefintion   An instance of CohortTemplateDefinition (or subclass)
 addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDefinitionSet(),
                                        connection = NULL,
                                        cohortTemplateDefintion) {
   checkmate::assertTRUE(isCohortDefinitionSet(cohortDefinitionSet))
-  checkmate::assertR6(cohortTemplateDefintion)
+  checkmate::assertR6(cohortTemplateDefintion, "CohortTemplateDefinition")
+
+  if (is.null(connection) & cohortTemplateDefintion$requireConnectionRefs)
+    stop("Template definition requires connection to CDM to generate references (e.g. for use of vocabulary tables)")
 
   if (is.null(attr(cohortDefinitionSet, "templateCohortDefinitions"))) {
     attr(cohortDefinitionSet, "templateCohortDefinitions") <- list()
@@ -266,7 +208,12 @@ addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDe
     stop("No references found")
   }
 
-  # TODO Assert columns are there
+  checkmate::assertNames(colnames(references),
+    must.include = c(
+      "cohortId",
+      "cohortName"
+    )
+  )
 
   if (!"json" %in% colnames(references)) {
     references$json <- paste("{}")
@@ -274,7 +221,7 @@ addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDe
 
   # Cohort ID in sql for unqiueness in checksum
   if (is.null(references$sql))
-    references$sql <- paste0("SELECT '", references$cohortId, " - ", tplId, "';")
+    references$sql <- paste0("SELECT '", references$cohortId, " - ", cohortTemplateDefintion$getName(), "';")
 
   references$isTemplatedCohort <- TRUE
 
