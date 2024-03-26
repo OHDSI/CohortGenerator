@@ -25,9 +25,11 @@ CohortTemplateDefinition <- R6::R6Class(
   "CohortTemplateDefinition",
   private = list(
     .id = NULL,
+    .checksum = NULL,
+    .name = NULL,
     generateId = function(...) {
-      args_hash <- digest::digest(list(...))
-      private$.id <- paste0("CohortTemplate_", args_hash)
+      private$.checksum <- digest::digest(list(...))
+      private$.id <- paste0("CohortTemplate_", private$.checksum)
     }
   ),
   public = list(
@@ -36,7 +38,7 @@ CohortTemplateDefinition <- R6::R6Class(
     requireConnectionRefs = NULL,
     templateRefFun = NULL,
     executeFun = NULL,
-    initialize = function(templateRefFun, executeFun, templateRefArgs = list(), executeArgs = list(), requireConnectionRefs = FALSE) {
+    initialize = function(name, templateRefFun, executeFun, templateRefArgs = list(), executeArgs = list(), requireConnectionRefs = FALSE) {
       # Check if templateRefFun and executeFun are functions
       checkmate::assertFunction(templateRefFun)
       checkmate::assertFunction(executeFun)
@@ -49,6 +51,7 @@ CohortTemplateDefinition <- R6::R6Class(
         checkmate::assertTRUE("connection" %in% names(formals(templateRefFun)))
       }
 
+      private$.name <- name
       private$generateId(templateRefFun, executeFun, templateRefArgs, executeArgs)
       self$templateRefFun <- templateRefFun
       self$executeFun <- executeFun
@@ -57,14 +60,51 @@ CohortTemplateDefinition <- R6::R6Class(
       self$requireConnectionRefs <- requireConnectionRefs
     },
 
-    executeTemplateSql = function(connection) {
-      args <- self$executeArgs
-      args$connection
-      do.call(self$executeFun, args)
+    executeTemplateSql = function(connection,
+                                  cohortDatabaseSchema,
+                                  cdmDatabaseSchema,
+                                  tempEmulationSchema,
+                                  cohortTableNames,
+                                  incremental,
+                                  incrementalFolder) {
+      generate <- TRUE
+      if (incremental) {
+        recordKeepingFile <- file.path(incrementalFolder, "GeneratedTemplateCohorts.csv")
+        generate <- isTaskRequired(
+          templateId = self$getId(),
+          checksum = self$getChecksum(),
+          recordKeepingFile = recordKeepingFile
+        )
+      }
+
+      if (generate) {
+        args <- self$executeArgs
+        args$connection <- connection
+        args$cohortDatabaseSchema <- cohortDatabaseSchema
+        args$cdmDatabaseSchema <- cdmDatabaseSchema
+        args$cohortTableNames <- cohortTableNames
+        args$tempEmulationSchema <- tempEmulationSchema
+        start <- Sys.time()
+        do.call(self$executeFun, args)
+        end <- Sys.time()
+        status <- "COMPLETE"
+        if (incremental) {
+          recordTasksDone(
+            templateId = self$getId(),
+            checksum = self$getChecksum(),
+            recordKeepingFile = recordKeepingFile
+          )
+        }
+      } else {
+        start <- NA
+        end <- NA
+        status <- "SKIPPED"
+      }
+
+      return(list(startTime = start, endTime = end, generationStatus = status))
     },
 
     getTemplateReferences = function(connection = NULL) {
-
       args <- self$templateRefArgs
       # Call templateRefFun and check if it returns a data frame
       if (self$requireConnectionRefs) {
@@ -76,21 +116,31 @@ CohortTemplateDefinition <- R6::R6Class(
       return(result)
     },
 
+    getName = function() {
+      return(private$.name)
+    },
+
     getId = function() {
       return(private$.id)
+    },
+
+    getChecksum = function() {
+      return(private$.checksum)
     }
   )
 )
 
 #' Create Cohort Template Definition
 #' @description construct a cohort template definition
-createCohortTemplateDefintion <- function(templateRefFun,
+createCohortTemplateDefintion <- function(name,
+                                          templateRefFun,
                                           executeFun,
                                           templateRefArgs,
                                           executeArgs,
                                           requireConnectionRefs) {
   # templateRefFun, executeFun, templateRefArgs = list(), executeArgs = list(), requireConnectionRefs = FALSE
-  def <- CohortTemplateDefinition$new(templateRefFun = templateRefFun,
+  def <- CohortTemplateDefinition$new(name = name,
+                                      templateRefFun = templateRefFun,
                                       executeFun = executeFun,
                                       templateRefArgs = templateRefArgs,
                                       executeArgs = executeArgs,
@@ -102,12 +152,14 @@ createCohortTemplateDefintion <- function(templateRefFun,
 .rxNormTemplateRefFun <- function(connection,
                                   cohortDatabaseSchema,
                                   vocabularyDatabaseSchema,
+                                  tempEmulationSchema,
                                   rxNormTable,
                                   indentifierExpression) {
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "rx_norm", "references.sql"),
                                            packageName = utils::packageName(),
                                            identifier_expression = indentifierExpression,
                                            cohort_database_schema = cohortDatabaseSchema,
+                                           tempEmulationSchema = tempEmulationSchema,
                                            rx_norm_table = rxNormTable,
                                            vocabulary_database_schema = vocabularyDatabaseSchema)
   DatabaseConnector::executeSql(connection, sql)
@@ -124,12 +176,18 @@ createCohortTemplateDefintion <- function(templateRefFun,
 .createRxNormCohorts <- function(connection,
                                  cdmDatabaseSchema,
                                  cohortDatabaseSchema,
+                                 cohortTableNames,
+                                 vocabularyDatabaseSchema,
+                                 tempEmulationSchema,
                                  rxNormTable,
                                  priorObservationPeriod = 365) {
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "rx_norm", "definition.sql"),
+                                           dbms = DatabaseConnector::dbms(connection),
                                            packageName = utils::packageName(),
                                            rx_norm_table = rxNormTable,
+                                           cohort_table = cohortTableNames$cohortTable,
                                            prior_observation_period = priorObservationPeriod,
+                                           vocabulary_database_schema = vocabularyDatabaseSchema,
                                            cohort_database_schema = cohortDatabaseSchema,
                                            cdm_database_schema = cdmDatabaseSchema)
 
@@ -144,27 +202,28 @@ createCohortTemplateDefintion <- function(templateRefFun,
 createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concept_id * 1000",
                                                  cdmDatabaseSchema,
                                                  rxNormTable = "cohort_rx_norm_ref_table",
+                                                 tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  cohortDatabaseSchema,
                                                  priorObservationPeriod = 365,
                                                  vocabularyDatabaseSchema = cdmDatabaseSchema) {
 
   executeArgs <- list(
-    cdmDatabaseSchema = cdmDatabaseSchema,
-    cohortDatabaseSchema = cohortDatabaseSchema,
     vocabularyDatabaseSchema = vocabularyDatabaseSchema,
     priorObservationPeriod = priorObservationPeriod,
-    rxNormTable = rxNormTable
-
+    rxNormTable = rxNormTable,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   templateRefArgs <- list(
     cohortDatabaseSchema = cohortDatabaseSchema,
     vocabularyDatabaseSchema = vocabularyDatabaseSchema,
     indentifierExpression = indentifierExpression,
-    rxNormTable = rxNormTable
+    rxNormTable = rxNormTable,
+    tempEmulationSchema = tempEmulationSchema
   )
 
-  def <- createCohortTemplateDefintion(templateRefFun = .rxNormTemplateRefFun,
+  def <- createCohortTemplateDefintion(name = "All rxNorm Ingredients",
+                                       templateRefFun = .rxNormTemplateRefFun,
                                        executeFun = .createRxNormCohorts,
                                        templateRefArgs = templateRefArgs,
                                        executeArgs = executeArgs,
@@ -172,6 +231,15 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
 
   return(invisible(def))
 }
+
+.getTemplateDefinitions <- function(cohortDefinitionSet) {
+  templates <- attr(cohortDefinitionSet, "templateCohortDefinitions")
+  if (is.null(templates)) {
+    templates <- list()
+  }
+  return(templates)
+}
+
 
 #' Add Cohort template definition to cohort set
 #' @description Adds a cohort template definition to an existing cohort definition set or creates one if none provided

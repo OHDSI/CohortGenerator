@@ -1,5 +1,8 @@
 {DEFAULT @prior_observation_period = 365}
 
+DELETE FROM @cohort_database_schema.@cohort_table
+WHERE cohort_definition_id IN (SELECT COHORT_DEFINITION_ID FROM @cohort_database_schema.@rx_norm_table);
+
 -- First, create ingredient level cohorts
 --HINT DISTRIBUTE_ON_KEY(person_id)
 create table #ingredient_eras as
@@ -28,15 +31,12 @@ from
       ) ings
       on de0.drug_concept_id = ings.concept_id
   ) de1
-INNER JOIN @reference_schema.@cohort_definition et ON (et.concept_id = de1.drug_concept_id  AND et.ATC_FLAG = 0)
-left join #computed_cohorts cc ON cc.cohort_definition_id = et.cohort_definition_id
+INNER JOIN @cohort_database_schema.@rx_norm_table et ON (et.concept_id = de1.drug_concept_id)
 inner join @cdm_database_schema.observation_period op1
   on de1.person_id = op1.person_id
   and de1.cohort_start_date >= dateadd(dd,@prior_observation_period,op1.observation_period_start_date)
   and de1.cohort_start_date <= op1.observation_period_end_date
   and de1.row_num = 1
-
-WHERE cc.cohort_definition_id IS NULL
 ;
 
 insert into @cohort_database_schema.@cohort_table
