@@ -3,6 +3,7 @@
 DELETE FROM @cohort_database_schema.@cohort_table
 WHERE cohort_definition_id IN (SELECT COHORT_DEFINITION_ID FROM @cohort_database_schema.@atc_table);
 
+DROP TABLE IF EXISTS #ingredient_eras;
 -- First, create ingredient level cohorts
 --HINT DISTRIBUTE_ON_KEY(person_id)
 create table #ingredient_eras as
@@ -54,3 +55,6 @@ select
   , cohort_end_date
 from #ingredient_eras
 ;
+
+TRUNCATE TABLE #ingredient_eras;
+DROP TABLE #ingredient_eras;
