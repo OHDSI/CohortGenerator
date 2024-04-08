@@ -117,6 +117,24 @@ generateCohortSet <- function(connectionDetails = NULL,
     stop(errorMsg)
   }
 
+  generatedTemplateCohorts <- c()
+  if ("isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
+    cohortDefinitionSet <- cohortDefinitionSet |> dplyr::filter(!.data$isTemplatedCohort)
+    generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
+                                                        cohortDefinitionSet = cohortDefinitionSet,
+                                                        cdmDatabaseSchema = cdmDatabaseSchema,
+                                                        tempEmulationSchema = tempEmulationSchema,
+                                                        cohortDatabaseSchema = cohortDatabaseSchema,
+                                                        cohortTableNames = cohortTableNames,
+                                                        stopOnError = stopOnError,
+                                                        incremental = incremental,
+                                                        incrementalFolder = incrementalFolder)
+
+    if (nrow(cohortDefinitionSet) == 0) {
+      return(invisible(generatedTemplateCohorts))
+    }
+  }
+
 
   if (incremental) {
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
@@ -201,7 +219,7 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   # Convert the list to a data frame
-  cohortsGenerated <- do.call(rbind, c(cohortsGenerated, subsetsGenerated))
+  cohortsGenerated <- do.call(rbind, c(cohortsGenerated, subsetsGenerated, generatedTemplateCohorts))
 
   delta <- Sys.time() - start
   writeLines(paste("Generating cohort set took", round(delta, 2), attr(delta, "units")))
@@ -363,4 +381,43 @@ generateCohort <- function(cohortId = NULL,
     endTime = generationInfo$endTime
   )
   return(summary)
+}
+
+
+generateTemplateCohorts <- function(connection,
+                                    cohortDefinitionSet,
+                                    cdmDatabaseSchema,
+                                    tempEmulationSchema,
+                                    cohortDatabaseSchema,
+                                    cohortTableNames,
+                                    stopOnError,
+                                    incremental,
+                                    incrementalFolder) {
+
+  templateDefs <- .getTemplateDefinitions(cohortDefinitionSet)
+  statusTbl <- data.frame()
+  for (tpl in templateDefs) {
+    status <- tryCatch({
+      ParallelLogger::logInfo("GENERATING TEMPLATE COHORT: ", tpl$getName())
+      status <- tpl$executeTemplateSql(connection = connection,
+                                       cohortDatabaseSchema = cohortDatabaseSchema,
+                                       tempEmulationSchema = tempEmulationSchema,
+                                       cdmDatabaseSchema = cdmDatabaseSchema,
+                                       cohortTableNames = cohortTableNames,
+                                       incremental = incremental,
+                                       incrementalFolder = incrementalFolder)
+    }, error = function(err) {
+      if (stopOnError)
+        stop(err)
+
+      ParallelLogger::logError(error)
+      return(list(startTime = NA, endTime = NA, generationStatus = "FAILED"))
+    })
+    refs <- tpl$getTemplateReferences(connection = connection)
+    statusTbl <- statusTbl |> dplyr::bind_rows(data.frame(cohortId = refs$cohortId,
+                                                          cohortName = refs$cohortName,
+                                                          generationStatus = status$generationStatus,
+                                                          startTime = status$startTime,
+                                                          endTime = status$endTime))
+  }
 }
