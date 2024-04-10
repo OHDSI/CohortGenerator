@@ -521,3 +521,17 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
   }
   invisible(df)
 }
+
+.copySubsetDefinitions <- function(copyToCds, copyFromCds) {
+  # deep clone any subset definitions
+  if (hasSubsetDefinitions(copyFromCds)) {
+    subsetDefintiions <- list()
+    Map(function(subsetDefinition) {
+      subsetDefintiions[[length(subsetDefintiions) + 1]] <- subsetDefinition$clone(deep = TRUE)
+    }, attr(copyFromCds, "cohortSubsetDefinitions"))
+    attr(copyToCds, "cohortSubsetDefinitions") <- subsetDefintiions
+    attr(copyToCds, "hasSubsetDefinitions") <- TRUE
+  }
+
+  copyToCds
+}

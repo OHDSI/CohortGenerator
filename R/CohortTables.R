@@ -23,6 +23,7 @@
 #' and cohort statistics tables.
 #'
 #' @param cohortTable                  Name of the cohort table.
+#' @param cohortSampleTable            Name of the cohort table for sampled cohorts (defaults to the same as the cohort table).
 #'
 #' @param cohortInclusionTable         Name of the inclusion table, one of the tables for storing
 #'                                     inclusion rule statistics.
@@ -40,6 +41,7 @@
 #'
 #' @export
 getCohortTableNames <- function(cohortTable = "cohort",
+                                cohortSampleTable = cohortTable,
                                 cohortInclusionTable = paste0(cohortTable, "_inclusion"),
                                 cohortInclusionResultTable = paste0(cohortTable, "_inclusion_result"),
                                 cohortInclusionStatsTable = paste0(cohortTable, "_inclusion_stats"),
@@ -47,6 +49,7 @@ getCohortTableNames <- function(cohortTable = "cohort",
                                 cohortCensorStatsTable = paste0(cohortTable, "_censor_stats")) {
   return(list(
     cohortTable = cohortTable,
+    cohortSampleTable = cohortSampleTable,
     cohortInclusionTable = cohortInclusionTable,
     cohortInclusionResultTable = cohortInclusionResultTable,
     cohortInclusionStatsTable = cohortInclusionStatsTable,
@@ -102,17 +105,22 @@ createCohortTables <- function(connectionDetails = NULL,
 
   if (any(unlist(createTableFlagList, use.names = FALSE))) {
     ParallelLogger::logInfo("Creating cohort tables")
+    createSampleTable <-
+      createTableFlagList$cohortSampleTable &&
+        cohortTableNames$cohortSampleTable != cohortTableNames$cohortTable
     sql <- SqlRender::readSql(system.file("sql/sql_server/CreateCohortTables.sql", package = "CohortGenerator", mustWork = TRUE))
     sql <- SqlRender::render(
       sql = sql,
       cohort_database_schema = cohortDatabaseSchema,
       create_cohort_table = createTableFlagList$cohortTable,
+      create_cohort_sample_table = createSampleTable,
       create_cohort_inclusion_table = createTableFlagList$cohortInclusionTable,
       create_cohort_inclusion_result_table = createTableFlagList$cohortInclusionResultTable,
       create_cohort_inclusion_stats_table = createTableFlagList$cohortInclusionStatsTable,
       create_cohort_summary_stats_table = createTableFlagList$cohortSummaryStatsTable,
       create_cohort_censor_stats_table = createTableFlagList$cohortCensorStatsTable,
       cohort_table = cohortTableNames$cohortTable,
+      cohort_sample_table = cohortTableNames$cohortSampleTable,
       cohort_inclusion_table = cohortTableNames$cohortInclusionTable,
       cohort_inclusion_result_table = cohortTableNames$cohortInclusionResultTable,
       cohort_inclusion_stats_table = cohortTableNames$cohortInclusionStatsTable,
@@ -183,5 +191,32 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
 
   if (dropCohortTable) {
     dropTable(cohortTableNames$cohortTable)
+  }
+}
+
+.checkCohortTables <- function (connection,
+                                cohortDatabaseSchema,
+                                cohortTableNames) {
+  # Verify the cohort tables exist and if they do not
+  # stop the generation process
+  tableExistsFlagList <- lapply(cohortTableNames, FUN = function(x) {
+    x <- FALSE
+  })
+  tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
+  for (i in 1:length(cohortTableNames)) {
+    if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
+      tableExistsFlagList[i] <- TRUE
+    }
+  }
+
+  if (!all(unlist(tableExistsFlagList, use.names = FALSE))) {
+    errorMsg <- "The following tables have not been created: \n"
+    for (i in 1:length(cohortTableNames)) {
+      if (!tableExistsFlagList[[i]]) {
+        errorMsg <- paste0(errorMsg, "   - ", cohortTableNames[i], "\n")
+      }
+    }
+    errorMsg <- paste(errorMsg, "Please use the createCohortTables function to ensure all tables exist before generating cohorts.", sep = "\n")
+    stop(errorMsg)
   }
 }
