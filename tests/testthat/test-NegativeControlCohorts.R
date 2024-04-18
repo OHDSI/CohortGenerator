@@ -146,3 +146,137 @@ test_that("Call generateNegativeControlOutcomeCohorts with custom cohort ids", {
   )
   expect_equal(cohortCounts$cohortId, ncSet$cohortId)
 })
+
+
+test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'first' and detectOnDescendants == FALSE", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "ot_first_dod_f")
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  on.exit(DatabaseConnector::disconnect(connection))
+  createCohortTables(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+  ncSet <- getNegativeControlOutcomeCohortsForTest()
+  expect_output(
+    generateNegativeControlOutcomeCohorts(
+      connection = connection,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTable = cohortTableNames$cohortTable,
+      negativeControlOutcomeCohortSet = ncSet,
+      occurrenceType = "first",
+      detectOnDescendants = FALSE
+    )
+  )
+})
+
+
+test_that("incremental mode", {
+  incrementalFolder <- tempfile()
+  on.exit(unlink(incrementalFolder, recursive = TRUE, force = TRUE))
+  cohortTableNames <- getCohortTableNames(cohortTable = "nc_custom_cohortid")
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  on.exit(DatabaseConnector::disconnect(connection), add = TRUE)
+  createCohortTables(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+  ncSet <- getNegativeControlOutcomeCohortsForTest(setCohortIdToConceptId = FALSE)
+  res <- generateNegativeControlOutcomeCohorts(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable,
+    negativeControlOutcomeCohortSet = ncSet,
+    occurrenceType = "first",
+    detectOnDescendants = TRUE,
+    incrementalFolder = incrementalFolder,
+    incremental = TRUE
+  )
+
+  expect_equal(res, "FINISHED")
+  checkmate::expect_file_exists(file.path(incrementalFolder, "GeneratedNegativeControls.csv"))
+  cohortCounts <- getCohortCounts(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable
+  )
+  expect_equal(cohortCounts$cohortId, ncSet$cohortId)
+
+  res <- generateNegativeControlOutcomeCohorts(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable,
+    negativeControlOutcomeCohortSet = ncSet,
+    occurrenceType = "first",
+    detectOnDescendants = TRUE,
+    incrementalFolder = incrementalFolder,
+    incremental = TRUE
+  )
+  
+  expect_equal(res, "SKIPPED")
+  
+  # Test changing other params regenerates
+  res <- generateNegativeControlOutcomeCohorts(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable,
+    negativeControlOutcomeCohortSet = ncSet,
+    occurrenceType = "first",
+    detectOnDescendants = FALSE,
+    incrementalFolder = incrementalFolder,
+    incremental = TRUE
+  )
+  
+  expect_equal(res, "FINISHED")
+  
+  # Test changing other params regenerates
+  res <- generateNegativeControlOutcomeCohorts(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable,
+    negativeControlOutcomeCohortSet = ncSet,
+    occurrenceType = "first",
+    detectOnDescendants = FALSE,
+    incrementalFolder = incrementalFolder,
+    incremental = TRUE
+  )
+  
+  expect_equal(res, "SKIPPED")
+  
+  
+  res <- generateNegativeControlOutcomeCohorts(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable,
+    negativeControlOutcomeCohortSet = ncSet,
+    occurrenceType = "all",
+    detectOnDescendants = FALSE,
+    incrementalFolder = incrementalFolder,
+    incremental = TRUE
+  )
+  
+  expect_equal(res, "FINISHED")
+  
+  
+  res <- generateNegativeControlOutcomeCohorts(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable,
+    negativeControlOutcomeCohortSet = ncSet,
+    occurrenceType = "all",
+    detectOnDescendants = FALSE,
+    incrementalFolder = incrementalFolder,
+    incremental = TRUE
+  )
+  
+  expect_equal(res, "SKIPPED")
+  
+})
