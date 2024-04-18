@@ -73,7 +73,7 @@
 #' @export
 createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concept_id * 1000",
                                                  cdmDatabaseSchema,
-                                                 rxNormTable = "cohort_rx_norm_ref_table",
+                                                 rxNormTable = "cohort_rx_norm_ref",
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  cohortDatabaseSchema,
                                                  priorObservationPeriod = 365,
@@ -163,7 +163,7 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
 #' @export
 createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_id * 1000 + 4",
                                               cdmDatabaseSchema,
-                                              atcTable = "cohort_atc_table",
+                                              atcTable = "cohort_atc_ref",
                                               tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                               cohortDatabaseSchema,
                                               priorObservationPeriod = 365,
@@ -192,4 +192,96 @@ createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_i
                                        requireConnectionRefs = TRUE)
 
   return(invisible(def))
+}
+
+
+.snomedTemplateRefFun <- function(connection,
+                                  cohortDatabaseSchema,
+                                  vocabularyDatabaseSchema,
+                                  tempEmulationSchema,
+                                  conditionsTable,
+                                  includeDescendants,
+                                  indentifierExpression) {
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "snomed", "references.sql"),
+                                           packageName = utils::packageName(),
+                                           identifier_expression = indentifierExpression,
+                                           cohort_database_schema = cohortDatabaseSchema,
+                                           tempEmulationSchema = tempEmulationSchema,
+                                           conditions_table = conditionsTable,
+                                           vocabulary_database_schema = vocabularyDatabaseSchema)
+  DatabaseConnector::executeSql(connection, sql)
+
+  sql <- "SELECT cohort_definition_id as cohort_id, cohort_name FROM @cohort_database_schema.@atc_table;"
+  references <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
+                                                           sql = sql,
+                                                           cohort_database_schema = cohortDatabaseSchema,
+                                                           snakeCaseToCamelCase = TRUE,
+                                                           atc_table = atcTable)
+  return(references)
+}
+
+.createSnomeCohorts <- function(connection,
+                                cdmDatabaseSchema,
+                                cohortDatabaseSchema,
+                                cohortTableNames,
+                                vocabularyDatabaseSchema,
+                                tempEmulationSchema,
+                                conditionsTable,
+                                priorObservationPeriod = 365) {
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "snomed", "definition.sql"),
+                                           dbms = DatabaseConnector::dbms(connection),
+                                           packageName = utils::packageName(),
+                                           conditions_table = conditionsTable,
+                                           cohort_table = cohortTableNames$cohortTable,
+                                           prior_observation_period = priorObservationPeriod,
+                                           vocabulary_database_schema = vocabularyDatabaseSchema,
+                                           cohort_database_schema = cohortDatabaseSchema,
+                                           cdm_database_schema = cdmDatabaseSchema)
+
+  DatabaseConnector::executeSql(connection, sql)
+}
+
+#' Create SNOMED cohort Template Definition
+#' @description
+#' Template cohort definition for all OHDSI standard conditions
+#' This cohort will use the vocaublary tables to automaticall generate a set of cohorts that have the
+#' cohortId = conceptId * 1000 + 4, note that this can be customised with the "identifierExpression" if you are using this
+#' with other cohorts you may wish to change this to allow uniqueness
+#' @param indentifierExpression   an expression for setting the cohort id for the resulting cohort. Must produce unique ids
+#' @param conditionsTable reference table to store condition cohorts
+#' @param priorObservationPeriod (optional) required prior observation period for individuals
+#' @inheritParams generateCohortSet
+#' @returns a CohortTemplateDefinition instance
+#' @export
+createSnomedCohortTemplateDefinition <- function(indentifierExpression = "concept_id * 1000",
+                                                 cdmDatabaseSchema,
+                                                 conditionsTable = "cohort_conditions_ref",
+                                                 tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+                                                 cohortDatabaseSchema,
+                                                 priorObservationPeriod = 365,
+                                                 vocabularyDatabaseSchema = cdmDatabaseSchema) {
+
+  executeArgs <- list(
+    vocabularyDatabaseSchema = vocabularyDatabaseSchema,
+    priorObservationPeriod = priorObservationPeriod,
+    conditionsTable = conditionsTable,
+    tempEmulationSchema = tempEmulationSchema,
+    includeDescendants = includeDescendants
+  )
+
+  templateRefArgs <- list(
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    vocabularyDatabaseSchema = vocabularyDatabaseSchema,
+    indentifierExpression = indentifierExpression,
+    conditionsTable = conditionsTable,
+    tempEmulationSchema = tempEmulationSchema,
+    includeDescendants = includeDescendants
+  )
+
+  def <- createCohortTemplateDefintion(name = "All SNOMED Conditions",
+                                       templateRefFun = .snomedTemplateRefFun,
+                                       executeFun = .createSnomeCohorts,
+                                       templateRefArgs = templateRefArgs,
+                                       executeArgs = executeArgs,
+                                       requireConnectionRefs = TRUE)
 }
