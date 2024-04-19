@@ -96,6 +96,10 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
           
+      - name: Reconfigure Java
+        if: runner.os == 'macOS'
+        run: R CMD javareconf
+          
       - name: Install libssh
         if: runner.os == 'Linux'
         run: |    
