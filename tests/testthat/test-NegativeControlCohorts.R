@@ -12,6 +12,30 @@ test_that("Call generateNegativeControlOutcomeCohorts without connection or conn
   expect_error(generateNegativeControlOutcomeCohorts())
 })
 
+test_that("Call generateNegativeControlOutcomeCohorts with negativeControlOutcomeCohortSet containing duplicate IDs", {
+  negativeControlOutcomeCohortSet <- data.frame(
+    cohortId = 1,
+    cohortName = "duplicate #1",
+    outcomeConceptId = 1
+  )
+  negativeControlOutcomeCohortSet <- rbind(
+    negativeControlOutcomeCohortSet,
+    data.frame(
+      cohortId = 1,
+      cohortName = "duplicate #2",
+      outcomeConceptId = 1
+    )
+  )
+  expect_error(
+    generateNegativeControlOutcomeCohorts(
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = "main",
+      negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet
+    ),
+    message = "(Cannot generate! Duplicate cohort IDs found in your negativeControlOutcomeCohortSet)"
+  )
+})
+
 test_that("Call generateNegativeControlOutcomeCohorts before creating cohort table fails", {
   cohortTableNames <- getCohortTableNames(cohortTable = "missing_cohort_table")
   ncSet <- getNegativeControlOutcomeCohortsForTest()

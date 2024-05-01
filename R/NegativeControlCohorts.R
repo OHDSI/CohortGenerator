@@ -118,6 +118,13 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     min.rows = 1
   )
 
+  # Verify that cohort IDs are not repeated in the negative control
+  # cohort definition set before generating
+  if (length(unique(negativeControlOutcomeCohortSet$cohortId)) != length(negativeControlOutcomeCohortSet$cohortId)) {
+    duplicatedCohortIds <- negativeControlOutcomeCohortSet$cohortId[duplicated(negativeControlOutcomeCohortSet$cohortId)]
+    stop("Cannot generate! Duplicate cohort IDs found in your negativeControlOutcomeCohortSet: ", paste(duplicatedCohortIds, sep=","), ". Please fix your negativeControlOutcomeCohortSet and try again.")
+  } 
+  
   if (incremental) {
     if (is.null(incrementalFolder)) {
       stop("Must specify incrementalFolder when incremental = TRUE")

@@ -76,6 +76,12 @@ generateCohortSet <- function(connectionDetails = NULL,
       "sql"
     )
   )
+  # Verify that cohort IDs are not repeated in the cohort definition
+  # set before generating
+  if (length(unique(cohortDefinitionSet$cohortId)) != length(cohortDefinitionSet$cohortId)) {
+    duplicatedCohortIds <- cohortDefinitionSet$cohortId[duplicated(cohortDefinitionSet$cohortId)]
+    stop("Cannot generate! Duplicate cohort IDs found in your cohortDefinitionSet: ", paste(duplicatedCohortIds, sep=","), ". Please fix your cohortDefinitionSet and try again.")
+  } 
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
   }
