@@ -238,7 +238,8 @@ getCohortStats <- function(connectionDetails,
       cohortDatabaseSchema = cohortDatabaseSchema,
       table = cohortTableNames[[table]],
       snakeCaseToCamelCase = snakeCaseToCamelCase,
-      includeDatabaseId = includeDatabaseId
+      includeDatabaseId = includeDatabaseId,
+      databaseId = databaseId
     )
   }
   return(results)
