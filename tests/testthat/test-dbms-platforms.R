@@ -61,7 +61,6 @@ testPlatform <- function(dbmsDetails) {
     snakeCaseToCamelCase = FALSE,
     fileNamesInSnakeCase = TRUE,
     incremental = TRUE,
-    incrementalFolder = file.path(outputFolder, "RecordKeeping", dbmsDetails$connectionDetails$dbms),
     databaseId = dbmsDetails$dbmsPlatform
   )
   
