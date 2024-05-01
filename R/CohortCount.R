@@ -27,7 +27,10 @@
 #' @template CohortTable
 #'
 #' @param cohortIds            The cohort Id(s) used to reference the cohort in the cohort
-#'                             table. If left empty, all cohorts in the table will be included.
+#'                             table. If left empty and no `cohortDefinitionSet` argument is
+#'                             specified, all cohorts in the table will be included. If
+#'                             you specify the `cohortIds` AND `cohortDefinitionSet`, the counts will
+#'                             reflect the `cohortIds` from the `cohortDefinitionSet`.
 #'
 #' @template CohortDefinitionSet
 #'
@@ -67,6 +70,12 @@ getCohortCounts <- function(connectionDetails = NULL,
     delta <- Sys.time() - start
     ParallelLogger::logInfo(paste("Counting cohorts took", signif(delta, 3), attr(delta, "units")))
     if (!is.null(cohortDefinitionSet)) {
+      # If the user has NOT specified a list of cohortIds
+      # to use to filter the cohortDefinitionSet, then
+      # extract the unique cohortIds
+      if (length(cohortIds) == 0) {
+        cohortIds <- cohortDefinitionSet$cohortId
+      }
       counts <- merge(
         x = counts,
         y = cohortDefinitionSet[cohortDefinitionSet$cohortId %in% cohortIds, ],
