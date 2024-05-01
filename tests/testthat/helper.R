@@ -134,6 +134,7 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
   }
 
   return(list(
+    dbmsPlatform = dbmsPlatform,
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = cohortTable,

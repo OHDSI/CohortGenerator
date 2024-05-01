@@ -153,7 +153,7 @@ getStatsTable <- function(connectionDetails,
   }
 
   ParallelLogger::logInfo("- Fetching data from ", table)
-  sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} * FROM @cohort_database_schema.@table"
+  sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} t.* FROM @cohort_database_schema.@table t"
   data <- DatabaseConnector::renderTranslateQuerySql(
     sql = sql,
     connection = connection,
