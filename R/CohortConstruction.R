@@ -243,7 +243,7 @@ generateCohort <- function(cohortId = NULL,
       connection <- DatabaseConnector::connect(connectionDetails)
       on.exit(DatabaseConnector::disconnect(connection))
     }
-    ParallelLogger::logInfo(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName)
+    ParallelLogger::logInfo(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName, " (id = ", cohortId, ")")
     sql <- cohortDefinitionSet$sql[i]
 
     if (!isSubset) {
