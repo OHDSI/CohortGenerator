@@ -111,12 +111,14 @@ test_that("Call getCohortCounts with a cohortDefinitionSet returns 0 counts for 
     cohortDatabaseSchema = "main",
     cohortTable = "cohort",
     cohortIds = c(1, 2, 100),
-    cohortDefinitionSet = cohortDefinitionSet
+    cohortDefinitionSet = cohortDefinitionSet,
+    databaseId = 999
   )
 
   expect_true(nrow(testCohortCounts) == 3)
   expect_true(testCohortCounts[testCohortCounts$cohortId == 100, "cohortEntries"] == 0)
   expect_true(testCohortCounts[testCohortCounts$cohortId == 100, "cohortSubjects"] == 0)
+  expect_true(all(testCohortCounts$databaseId == 999))
 })
 
 test_that("Call getCohortCounts with no cohortId specified and cohortDefinitionSet returns 0 counts for cohortId not in cohort table", {

@@ -60,8 +60,7 @@ getCohortCounts <- function(connectionDetails = NULL,
     sql = sql,
     cohort_database_schema = cohortDatabaseSchema,
     cohort_table = cohortTable,
-    cohort_ids = cohortIds,
-    database_id = ifelse(test = is.null(databaseId), yes = "", no = databaseId)
+    cohort_ids = cohortIds
   )
   sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms)
   tablesInServer <- tolower(DatabaseConnector::getTableNames(conn = connection, databaseSchema = cohortDatabaseSchema))
@@ -87,6 +86,9 @@ getCohortCounts <- function(connectionDetails = NULL,
         cohortEntries = ifelse(is.na(cohortEntries), 0L, cohortEntries),
         cohortSubjects = ifelse(is.na(cohortSubjects), 0L, cohortSubjects)
       )
+    }
+    if (!is.null(databaseId)) {
+      counts$databaseId <- databaseId
     }
     return(counts)
   } else {
