@@ -33,7 +33,10 @@ this should include both the database and schema name, for example
 \item{cohortTable}{The name of the cohort table.}
 
 \item{cohortIds}{The cohort Id(s) used to reference the cohort in the cohort
-table. If left empty, all cohorts in the table will be included.}
+table. If left empty and no `cohortDefinitionSet` argument is
+specified, all cohorts in the table will be included. If
+you specify the `cohortIds` AND `cohortDefinitionSet`, the counts will
+reflect the `cohortIds` from the `cohortDefinitionSet`.}
 
 \item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
 the following columns: \describe{

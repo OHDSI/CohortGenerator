@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -153,7 +153,7 @@ getStatsTable <- function(connectionDetails,
   }
 
   ParallelLogger::logInfo("- Fetching data from ", table)
-  sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} * FROM @cohort_database_schema.@table"
+  sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} t.* FROM @cohort_database_schema.@table t"
   data <- DatabaseConnector::renderTranslateQuerySql(
     sql = sql,
     connection = connection,
@@ -238,7 +238,8 @@ getCohortStats <- function(connectionDetails,
       cohortDatabaseSchema = cohortDatabaseSchema,
       table = cohortTableNames[[table]],
       snakeCaseToCamelCase = snakeCaseToCamelCase,
-      includeDatabaseId = includeDatabaseId
+      includeDatabaseId = includeDatabaseId,
+      databaseId = databaseId
     )
   }
   return(results)

@@ -454,4 +454,10 @@ test_that("Subset name templates function", {
 
   # Check name templates are applied
   expect_true(all(grepl("FOOO (.+) test definition 123 Demographic Criteria 1zzzzDemographic Criteria 2", cohortDefinitionSetWithSubset$cohortName[4:6])))
+
+  # Internal copy call
+  cds2 <- .copySubsetDefinitions(cohortDefinitionSet, cohortDefinitionSetWithSubset)
+
+  checkmate::expect_list(attr(cds2, "cohortSubsetDefinitions"))
+  expect_true(attr(cds2, "hasSubsetDefinitions"))
 })

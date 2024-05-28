@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -84,6 +84,10 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #' @param detectOnDescendants     When set to TRUE, detectOnDescendants will use the vocabulary to find negative control
 #'                                outcomes using the outcomeConceptId and all descendants via the concept_ancestor table.
 #'                                When FALSE, only the exact outcomeConceptId will be used to detect the outcome.
+#' @param incremental             Create only cohorts that haven't been created before?
+#'
+#' @param incrementalFolder       If \code{incremental = TRUE}, specify a folder where records are
+#'                                kept of which definition has been executed.
 #'
 #' @return
 #' Invisibly returns an empty negative control outcome cohort set data.frame
@@ -97,6 +101,8 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
                                                   cohortTable = getCohortTableNames()$cohortTable,
                                                   negativeControlOutcomeCohortSet,
                                                   occurrenceType = "all",
+                                                  incremental = FALSE,
+                                                  incrementalFolder = NULL,
                                                   detectOnDescendants = FALSE) {
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
@@ -111,6 +117,36 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     x = negativeControlOutcomeCohortSet,
     min.rows = 1
   )
+
+  # Verify that cohort IDs are not repeated in the negative control
+  # cohort definition set before generating
+  if (length(unique(negativeControlOutcomeCohortSet$cohortId)) != length(negativeControlOutcomeCohortSet$cohortId)) {
+    duplicatedCohortIds <- negativeControlOutcomeCohortSet$cohortId[duplicated(negativeControlOutcomeCohortSet$cohortId)]
+    stop("Cannot generate! Duplicate cohort IDs found in your negativeControlOutcomeCohortSet: ", paste(duplicatedCohortIds, sep = ","), ". Please fix your negativeControlOutcomeCohortSet and try again.")
+  }
+
+  if (incremental) {
+    if (is.null(incrementalFolder)) {
+      stop("Must specify incrementalFolder when incremental = TRUE")
+    }
+    if (!file.exists(incrementalFolder)) {
+      dir.create(incrementalFolder, recursive = TRUE)
+    }
+
+    recordKeepingFile <- file.path(incrementalFolder, "GeneratedNegativeControls.csv")
+    checksum <- computeChecksum(jsonlite::toJSON(
+      list(
+        negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet,
+        occurrenceType = occurrenceType,
+        detectOnDescendants = detectOnDescendants
+      )
+    ))[[1]]
+
+    if (!isTaskRequired(paramHash = checksum, checksum = checksum, recordKeepingFile = recordKeepingFile)) {
+      writeLines("Negative control set skipped")
+      return(invisible("SKIPPED"))
+    }
+  }
 
   start <- Sys.time()
   if (is.null(connection)) {
@@ -159,6 +195,16 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   )
   delta <- Sys.time() - start
   writeLines(paste("Generating negative control outcomes set took", round(delta, 2), attr(delta, "units")))
+
+  if (incremental) {
+    recordTasksDone(
+      paramHash = checksum,
+      checksum = checksum,
+      recordKeepingFile = recordKeepingFile
+    )
+  }
+
+  invisible("FINISHED")
 }
 
 createNegativeControlOutcomesQuery <- function(connection,

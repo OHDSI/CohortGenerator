@@ -130,11 +130,11 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
     # Add drivers
     DatabaseConnector::downloadJdbcDrivers(dbmsPlatform, pathToDriver = jdbcDriverFolder)
     # Table created to avoid collisions
-    randCode <- paste(sample(letters, 4), collapse = "")
-    cohortTable <- paste0("cgc_", gsub("[: -]", "", Sys.Date(), perl = TRUE), "_", randCode)
+    cohortTable <- paste0("ct_", Sys.getpid(), format(Sys.time(), "%s"), sample(1:100, 1))
   }
 
   return(list(
+    dbmsPlatform = dbmsPlatform,
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = cohortTable,

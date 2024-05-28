@@ -19,6 +19,32 @@ test_that("Call generateCohortSet with default parameters", {
   )
 })
 
+test_that("Call generateCohortSet with cohortDefinitionSet containing duplicate IDs", {
+  cohortDefinitionSet <- data.frame(
+    cohortId = 1,
+    cohortName = "duplicate #1",
+    sql = "",
+    json = ""
+  )
+  cohortDefinitionSet <- rbind(
+    cohortDefinitionSet,
+    data.frame(
+      cohortId = 1,
+      cohortName = "duplicate #2",
+      sql = "",
+      json = ""
+    )
+  )
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortDefinitionSet
+    ),
+    message = "(Cannot generate! Duplicate cohort IDs found in your cohortDefinitionSet)"
+  )
+})
+
+
 test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter", {
   expect_error(
     generateCohortSet(

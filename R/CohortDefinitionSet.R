@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -520,4 +520,18 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
     }
   }
   invisible(df)
+}
+
+.copySubsetDefinitions <- function(copyToCds, copyFromCds) {
+  # deep clone any subset definitions
+  if (hasSubsetDefinitions(copyFromCds)) {
+    subsetDefintiions <- list()
+    Map(function(subsetDefinition) {
+      subsetDefintiions[[length(subsetDefintiions) + 1]] <- subsetDefinition$clone(deep = TRUE)
+    }, attr(copyFromCds, "cohortSubsetDefinitions"))
+    attr(copyToCds, "cohortSubsetDefinitions") <- subsetDefintiions
+    attr(copyToCds, "hasSubsetDefinitions") <- TRUE
+  }
+
+  copyToCds
 }
