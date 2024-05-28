@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -196,9 +196,9 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
   }
 }
 
-.checkCohortTables <- function (connection,
-                                cohortDatabaseSchema,
-                                cohortTableNames) {
+.checkCohortTables <- function(connection,
+                               cohortDatabaseSchema,
+                               cohortTableNames) {
   # Verify the cohort tables exist and if they do not
   # stop the generation process
   tableExistsFlagList <- lapply(cohortTableNames, FUN = function(x) {

@@ -13,6 +13,9 @@
     <loc>/articles/index.html</loc>
   </url>
   <url>
+    <loc>/articles/SamplingCohorts.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -143,6 +146,9 @@
   </url>
   <url>
     <loc>/reference/recordTasksDone.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sampleCohortDefinitionSet.html</loc>
   </url>
   <url>
     <loc>/reference/saveCohortDefinitionSet.html</loc>

@@ -34,7 +34,7 @@ testPlatform <- function(dbmsDetails) {
     incrementalFolder = file.path(outputFolder, "RecordKeeping", dbmsDetails$connectionDetails$dbms)
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
-  
+
   # Get the cohort counts
   cohortCounts <- getCohortCounts(
     connectionDetails = dbmsDetails$connectionDetails,
@@ -42,9 +42,9 @@ testPlatform <- function(dbmsDetails) {
     cohortTable = cohortTableNames$cohortTable,
     databaseId = dbmsDetails$dbmsPlatform,
     cohortDefinitionSet = cohortsWithStats
-  )  
+  )
   expect_equal(nrow(cohortsGenerated), nrow(cohortCounts))
-  
+
   # Insert the inclusion rule names before exporting the stats tables
   insertInclusionRuleNames(
     connectionDetails = dbmsDetails$connectionDetails,
@@ -52,7 +52,7 @@ testPlatform <- function(dbmsDetails) {
     cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
     cohortInclusionTable = cohortTableNames$cohortInclusionTable
   )
-  
+
   exportCohortStatsTables(
     connectionDetails = dbmsDetails$connectionDetails,
     cohortTableNames = cohortTableNames,
@@ -63,7 +63,7 @@ testPlatform <- function(dbmsDetails) {
     incremental = TRUE,
     databaseId = dbmsDetails$dbmsPlatform
   )
-  
+
   subsetOperations <- list(
     createCohortSubset(
       cohortIds = 2,

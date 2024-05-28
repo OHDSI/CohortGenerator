@@ -240,9 +240,9 @@ test_that("incremental mode", {
     incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
-  
+
   expect_equal(res, "SKIPPED")
-  
+
   # Test changing other params regenerates
   res <- generateNegativeControlOutcomeCohorts(
     connection = connection,
@@ -255,9 +255,9 @@ test_that("incremental mode", {
     incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
-  
+
   expect_equal(res, "FINISHED")
-  
+
   # Test changing other params regenerates
   res <- generateNegativeControlOutcomeCohorts(
     connection = connection,
@@ -270,10 +270,10 @@ test_that("incremental mode", {
     incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
-  
+
   expect_equal(res, "SKIPPED")
-  
-  
+
+
   res <- generateNegativeControlOutcomeCohorts(
     connection = connection,
     cdmDatabaseSchema = "main",
@@ -285,10 +285,10 @@ test_that("incremental mode", {
     incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
-  
+
   expect_equal(res, "FINISHED")
-  
-  
+
+
   res <- generateNegativeControlOutcomeCohorts(
     connection = connection,
     cdmDatabaseSchema = "main",
@@ -300,7 +300,6 @@ test_that("incremental mode", {
     incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
-  
+
   expect_equal(res, "SKIPPED")
-  
 })
