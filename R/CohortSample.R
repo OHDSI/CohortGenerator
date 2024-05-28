@@ -128,7 +128,7 @@
 #' Create 1 or more sample of size n of a cohort definition set
 #'
 #' Subsetted cohorts can be sampled, as with any other subset form.
-#' However, subsetting a sampled cohort is not reccomended and not currently supported at this time.
+#' However, subsetting a sampled cohort is not recommended and not currently supported at this time.
 #' In the case where n > cohort count the entire cohort is copied unmodified
 #'
 #' As different databases have different forms of randomness, the random selection is computed in
@@ -143,7 +143,7 @@
 #' @param identifierExpression  Optional string R expression used to compute output cohort id. Can only use variables
 #'                              cohortId and seed. Default is "cohortId * 1000 + seed", which is substituted and evaluated
 #' @param cohortIds             Optional subset of cohortIds to generate. By default this function will sample all cohorts
-#' @param seed                  Vector of seeds to give to the R psuedorandom number generator
+#' @param seed                  Vector of seeds to give to the R pseudorandom number generator
 #' @param seedArgs              optional arguments to pass to set.seed
 #' @param outputDatabaseSchema  optional schema to output cohorts to (if different from cohortDatabaseSchema)
 #' @export

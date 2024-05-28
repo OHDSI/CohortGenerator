@@ -61,7 +61,7 @@ for more details.}
 
 \item{sampleFraction}{Fraction of cohort to sample}
 
-\item{seed}{Vector of seeds to give to the R psuedorandom number generator}
+\item{seed}{Vector of seeds to give to the R pseudorandom number generator}
 
 \item{seedArgs}{optional arguments to pass to set.seed}
 
@@ -80,7 +80,7 @@ sampledCohortDefinitionSet - a data.frame like object that contains the resultin
 Create 1 or more sample of size n of a cohort definition set
 
 Subsetted cohorts can be sampled, as with any other subset form.
-However, subsetting a sampled cohort is not reccomended and not currently supported at this time.
+However, subsetting a sampled cohort is not recommended and not currently supported at this time.
 In the case where n > cohort count the entire cohort is copied unmodified
 
 As different databases have different forms of randomness, the random selection is computed in

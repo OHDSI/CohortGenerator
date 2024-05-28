@@ -30,9 +30,9 @@ library(CohortGenerator)
 ```
 # Sampling with CohortGenerator
 
-Large populations of individuals (e.g. all subjects recieving a COVID-19 vaccination) can often be too large to work with when
+Large populations of individuals (e.g. all subjects receiving a COVID-19 vaccination) can often be too large to work with when
 pulling down a large collection of covariates for further analysis.
-This is prohibitive when designing studies or atteming to generate phenotypes.
+This is prohibitive when designing studies or attempting to generate phenotypes.
 This guide aims to demonstrate how one can use the `sampleCohortDefinitionSet` functionality to produce sufficiently
 large sample cohorts from a base `cohortDefinitionSet`.
 
