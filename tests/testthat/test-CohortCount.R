@@ -129,19 +129,19 @@ test_that("Call getCohortCounts with no cohortId specified and cohortDefinitionS
     packageName = "CohortGenerator",
     verbose = TRUE
   )
-  
+
   cohortDefinitionSet <- rbind(
     cohortDefinitionSet,
     cohortDefinitionSet[1, ] |> transform(atlasId = 100, cohortId = 100, cohortName = "not in cohort table", logicDescription = "not in cohort table")
   )
-  
+
   testCohortCounts <- getCohortCounts(
     connectionDetails = connectionDetails,
     cohortDatabaseSchema = "main",
     cohortTable = "cohort",
     cohortDefinitionSet = cohortDefinitionSet
   )
-  
+
   expect_true(nrow(testCohortCounts) == 4)
   expect_true(testCohortCounts[testCohortCounts$cohortId == 100, "cohortEntries"] == 0)
   expect_true(testCohortCounts[testCohortCounts$cohortId == 100, "cohortSubjects"] == 0)

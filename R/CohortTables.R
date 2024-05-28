@@ -196,9 +196,9 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
   }
 }
 
-.checkCohortTables <- function (connection,
-                                cohortDatabaseSchema,
-                                cohortTableNames) {
+.checkCohortTables <- function(connection,
+                               cohortDatabaseSchema,
+                               cohortTableNames) {
   # Verify the cohort tables exist and if they do not
   # stop the generation process
   tableExistsFlagList <- lapply(cohortTableNames, FUN = function(x) {

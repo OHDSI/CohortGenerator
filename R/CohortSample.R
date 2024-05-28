@@ -31,10 +31,11 @@
   countSql <- "SELECT COUNT(DISTINCT SUBJECT_ID) as cnt FROM  @cohort_database_schema.@target_table
    WHERE cohort_definition_id = @target_cohort_id"
   count <- DatabaseConnector::renderTranslateQuerySql(connection,
-                                                      countSql,
-                                                      cohort_database_schema = cohortDatabaseSchema,
-                                                      target_cohort_id = targetCohortId,
-                                                      target_table = targetTable) %>%
+    countSql,
+    cohort_database_schema = cohortDatabaseSchema,
+    target_cohort_id = targetCohortId,
+    target_table = targetTable
+  ) %>%
     dplyr::pull()
 
   if (!is.null(sampleFraction)) {
@@ -68,26 +69,28 @@
                           sampleTable,
                           seed,
                           tempEmulationSchema) {
-
   randSampleTableName <- paste0("#SAMPLE_TABLE_", seed)
-  DatabaseConnector::insertTable(connection = connection,
-                                 data = sampleTable,
-                                 dropTableIfExists = TRUE,
-                                 tempTable = TRUE,
-                                 tempEmulationSchema = tempEmulationSchema,
-                                 tableName = randSampleTableName)
+  DatabaseConnector::insertTable(
+    connection = connection,
+    data = sampleTable,
+    dropTableIfExists = TRUE,
+    tempTable = TRUE,
+    tempEmulationSchema = tempEmulationSchema,
+    tableName = randSampleTableName
+  )
 
   execSql <- SqlRender::readSql(system.file("sql", "sql_server", "sampling", "RandomSample.sql", package = "CohortGenerator"))
   DatabaseConnector::renderTranslateExecuteSql(connection,
-                                               execSql,
-                                               tempEmulationSchema = tempEmulationSchema,
-                                               random_sample_table = randSampleTableName,
-                                               target_cohort_id = targetCohortId,
-                                               output_cohort_id = outputCohortId,
-                                               cohort_database_schema = cohortDatabaseSchema,
-                                               output_database_schema = outputDatabaseSchema,
-                                               output_table = outputTable,
-                                               target_table = targetTable)
+    execSql,
+    tempEmulationSchema = tempEmulationSchema,
+    random_sample_table = randSampleTableName,
+    target_cohort_id = targetCohortId,
+    output_cohort_id = outputCohortId,
+    cohort_database_schema = cohortDatabaseSchema,
+    output_database_schema = outputDatabaseSchema,
+    output_table = outputTable,
+    target_table = targetTable
+  )
 }
 
 
@@ -115,7 +118,7 @@
     idSet <- c(idSet, cohortIds)
   }
   errorMessage <- "identifier expression does not produce unique output for cohort ids"
-  if(length(unique(idSet)) != length(idSet)) stop(errorMessage)
+  if (length(unique(idSet)) != length(idSet)) stop(errorMessage)
   invisible(NULL)
 }
 
@@ -161,21 +164,21 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
                                       identifierExpression = "cohortId * 1000 + seed",
                                       incremental = FALSE,
                                       incrementalFolder = NULL) {
-
   checkmate::assertIntegerish(n, len = 1, null.ok = TRUE)
   checkmate::assertNumeric(sampleFraction, len = 1, null.ok = TRUE, lower = 0, upper = 1.0)
   checkmate::assertIntegerish(seed, min.len = 1)
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "sql"
-                         )
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "sql"
+    )
   )
 
-  if (is.null(n) && is.null(sampleFraction))
+  if (is.null(n) && is.null(sampleFraction)) {
     stop("Must specificy n or fraction size")
+  }
 
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
@@ -208,27 +211,35 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
 
       sampledCohortDefinition$isSample <- TRUE
       sampledCohortDefinition$status <- "ungenerated"
-      outputCohortId <-  .computeIdentifierExpression(identifierExpression,
-                                                      sampledCohortDefinition$cohortId,
-                                                      seed)
+      outputCohortId <- .computeIdentifierExpression(
+        identifierExpression,
+        sampledCohortDefinition$cohortId,
+        seed
+      )
       sampledCohortDefinition$sampleTargetCohortId <- sampledCohortDefinition$cohortId
       sampledCohortDefinition$cohortId <- outputCohortId
 
       if (!is.null(sampleFraction)) {
-        sampledCohortDefinition$cohortName <- sprintf("%s [%s%% SAMPLE seed=%s]",
-                                                      sampledCohortDefinition$cohortName, seed, sampleFraction * 100)
+        sampledCohortDefinition$cohortName <- sprintf(
+          "%s [%s%% SAMPLE seed=%s]",
+          sampledCohortDefinition$cohortName, seed, sampleFraction * 100
+        )
       } else {
-        sampledCohortDefinition$cohortName <- sprintf("%s [SAMPLE seed=%s n=%s]",
-                                                      sampledCohortDefinition$cohortName, seed, n)
+        sampledCohortDefinition$cohortName <- sprintf(
+          "%s [SAMPLE seed=%s n=%s]",
+          sampledCohortDefinition$cohortName, seed, n
+        )
       }
 
       if (hasSubsetDefinitions(cohortDefinitionSet)) {
         # must maintain mapping for subset parent ids
-        sampledCohortDefinition$subsetParent <- .computeIdentifierExpression(identifierExpression,
-                                                                             sampledCohortDefinition$subsetParent,
-                                                                             seed)
+        sampledCohortDefinition$subsetParent <- .computeIdentifierExpression(
+          identifierExpression,
+          sampledCohortDefinition$subsetParent,
+          seed
+        )
       }
-      
+
       if (incremental && !isTaskRequired(
         cohortId = outputCohortId,
         seed = seed,
@@ -239,30 +250,34 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         return(sampledCohortDefinition)
       }
       # check incremental task for cohort sampling
-      sampleTable <- .getSampleSet(connection = connection,
-                                   n = n,
-                                   sampleFraction = sampleFraction,
-                                   seed = seed + targetCohortId, # Seed is unique to each target cohort
-                                   seedArgs = seedArgs,
-                                   cohortDatabaseSchema = cohortDatabaseSchema,
-                                   targetCohortId = targetCohortId,
-                                   targetTable = cohortTableNames$cohortTable)
+      sampleTable <- .getSampleSet(
+        connection = connection,
+        n = n,
+        sampleFraction = sampleFraction,
+        seed = seed + targetCohortId, # Seed is unique to each target cohort
+        seedArgs = seedArgs,
+        cohortDatabaseSchema = cohortDatabaseSchema,
+        targetCohortId = targetCohortId,
+        targetTable = cohortTableNames$cohortTable
+      )
 
       if (nrow(sampleTable) == 0) {
         ParallelLogger::logInfo("No entires found for ", targetCohortId, " was it generated?")
         return(sampledCohortDefinition)
       }
       # Called only for side effects
-      .sampleCohort(connection = connection,
-                    targetCohortId = targetCohortId,
-                    targetTable = cohortTableNames$cohortTable,
-                    outputCohortId = outputCohortId,
-                    outputTable = cohortTableNames$cohortSampleTable,
-                    cohortDatabaseSchema = cohortDatabaseSchema,
-                    outputDatabaseSchema = outputDatabaseSchema,
-                    sampleTable = sampleTable,
-                    seed = seed + targetCohortId, # Seed is unique to each target cohort
-                    tempEmulationSchema = tempEmulationSchema)
+      .sampleCohort(
+        connection = connection,
+        targetCohortId = targetCohortId,
+        targetTable = cohortTableNames$cohortTable,
+        outputCohortId = outputCohortId,
+        outputTable = cohortTableNames$cohortSampleTable,
+        cohortDatabaseSchema = cohortDatabaseSchema,
+        outputDatabaseSchema = outputDatabaseSchema,
+        sampleTable = sampleTable,
+        seed = seed + targetCohortId, # Seed is unique to each target cohort
+        tempEmulationSchema = tempEmulationSchema
+      )
 
       sampledCohortDefinition$status <- "generated"
       if (incremental) {
@@ -275,7 +290,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
       }
       return(sampledCohortDefinition)
     }, seed, cohortIds) %>%
-      dplyr::bind_rows()
+    dplyr::bind_rows()
 
 
 

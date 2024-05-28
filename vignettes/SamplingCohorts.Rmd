@@ -27,7 +27,6 @@ someFolder <- tempdir()
 packageRoot <- tempdir()
 baseUrl <- "https://api.ohdsi.org/WebAPI"
 library(CohortGenerator)
-
 ```
 # Sampling with CohortGenerator
 
@@ -80,20 +79,19 @@ generateCohortSet(
   incremental = TRUE,
   incrementalFolder = recordKeepingFolder
 )
-
 ```
 We can then create a new cohort definition set from the original sample.
 ```{r eval=F}
 sampledCohortDefinitionSet <- sampleCohortDefinitionSet(
-    cohortDefinitionSet = cds,
-    connection = conn,
-    sampleFraction = 0.33,
-    seed = 64374, # OHDSI
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
-  )
+  cohortDefinitionSet = cds,
+  connection = conn,
+  sampleFraction = 0.33,
+  seed = 64374, # OHDSI
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames,
+  incremental = TRUE,
+  incrementalFolder = recordKeepingFolder
+)
 ```
 
 The resulting `sampledCohortDefinitionSet` is nearly identical to the base cohort set, however a few changes occur:
@@ -109,15 +107,15 @@ To generate multiple samples, simply specify multiple seed variables as follows:
 ```{r eval=F}
 # Generate 800 samples of size n
 sampledCohortDefinitionSet <- sampleCohortDefinitionSet(
-    cohortDefinitionSet = cds,
-    connection = conn,
-    n = 1000,
-    seed = 1:800 * 64374, # OHDSI
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
-  )
+  cohortDefinitionSet = cds,
+  connection = conn,
+  n = 1000,
+  seed = 1:800 * 64374, # OHDSI
+  cohortDatabaseSchema = "main",
+  cohortTableNames = cohortTableNames,
+  incremental = TRUE,
+  incrementalFolder = recordKeepingFolder
+)
 ```
 Note that using incremental mode for your sampled cohorts will also work.
 In this case, a cohort will only be re-generated if the checksum of the base cohort has changed (the checksum is based

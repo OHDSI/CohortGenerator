@@ -53,8 +53,8 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #' @keywords internal
 .getNegativeControlOutcomeCohortSetSpecification <- function() {
   return(readCsv(system.file("negativeControlOutcomeCohortSetSpecificationDescription.csv",
-                             package = "CohortGenerator",
-                             mustWork = TRUE
+    package = "CohortGenerator",
+    mustWork = TRUE
   )))
 }
 
@@ -111,7 +111,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   checkmate::assert_choice(x = tolower(occurrenceType), choices = c("all", "first"))
   checkmate::assert_logical(detectOnDescendants)
   checkmate::assertNames(colnames(negativeControlOutcomeCohortSet),
-                         must.include = .getNegativeControlOutcomeCohortSetSpecification()$columnName
+    must.include = .getNegativeControlOutcomeCohortSetSpecification()$columnName
   )
   checkmate::assert_data_frame(
     x = negativeControlOutcomeCohortSet,
@@ -122,9 +122,9 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   # cohort definition set before generating
   if (length(unique(negativeControlOutcomeCohortSet$cohortId)) != length(negativeControlOutcomeCohortSet$cohortId)) {
     duplicatedCohortIds <- negativeControlOutcomeCohortSet$cohortId[duplicated(negativeControlOutcomeCohortSet$cohortId)]
-    stop("Cannot generate! Duplicate cohort IDs found in your negativeControlOutcomeCohortSet: ", paste(duplicatedCohortIds, sep=","), ". Please fix your negativeControlOutcomeCohortSet and try again.")
-  } 
-  
+    stop("Cannot generate! Duplicate cohort IDs found in your negativeControlOutcomeCohortSet: ", paste(duplicatedCohortIds, sep = ","), ". Please fix your negativeControlOutcomeCohortSet and try again.")
+  }
+
   if (incremental) {
     if (is.null(incrementalFolder)) {
       stop("Must specify incrementalFolder when incremental = TRUE")
