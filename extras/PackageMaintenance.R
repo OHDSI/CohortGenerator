@@ -41,6 +41,12 @@ rmarkdown::render("vignettes/CreatingCohortSubsetDefinitions.Rmd",
                                           toc = TRUE,
                                           number_sections = TRUE))
 
+rmarkdown::render("vignettes/SamplingCohorts.Rmd",
+                  output_file = "../inst/doc/SamplingCohorts.pdf",
+                  rmarkdown::pdf_document(latex_engine = "pdflatex",
+                                          toc = TRUE,
+                                          number_sections = TRUE))
+
 unloadNamespace("CohortGenerator")
 pkgdown::build_site()
 OhdsiRTools::fixHadesLogo()
