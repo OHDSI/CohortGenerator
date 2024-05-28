@@ -1,3 +1,16 @@
+CohortGenerator 0.9.0
+=======================
+- Random sample functionality (for development only) (Issue #129)
+- Incremental mode for negative control cohort generation (Issue #137)
+- Fixes getCohortCounts() if cohortIds is not specified, but cohortDefinitionSet is. (Issue #136)
+- Add cohort ID to generation output messages (Issue #132)
+- Add databaseId to output of getStatsTable() (Issue #116)
+- Prevent duplicate cohort IDs in cohortDefinitionSet (Issue #130)
+- Fix cohort stats query for Oracle (Issue #143)
+- Ensure databaseId applied to all returned cohort counts (Issue #144)
+- Preserve backwards compatibility if cohort sample table is not in the list of cohort table names (Issue #147) 
+
+
 CohortGenerator 0.8.1
 =======================
 - Include cohorts with 0 people in cohort counts (Issue #91).
