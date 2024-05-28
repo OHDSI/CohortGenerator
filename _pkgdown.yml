@@ -102,6 +102,13 @@ reference:
       - isTaskRequired
       - saveIncremental
       - computeChecksum
+      
+  - title: "Cohort Sampling"
+    desc: >
+      Functions that support sampling a cohort. Please note this is only for
+      software development purposes and NOT for running studies.
+    contents:
+      - sampleCohortDefinitionSet
 
 navbar:
   structure:
