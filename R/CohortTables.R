@@ -105,9 +105,11 @@ createCohortTables <- function(connectionDetails = NULL,
 
   if (any(unlist(createTableFlagList, use.names = FALSE))) {
     ParallelLogger::logInfo("Creating cohort tables")
-    createSampleTable <-
-      createTableFlagList$cohortSampleTable &&
-        cohortTableNames$cohortSampleTable != cohortTableNames$cohortTable
+    createSampleTable <- ifelse(
+      test = is.null(createTableFlagList$cohortSampleTable),
+      yes = FALSE,
+      no = (createTableFlagList$cohortSampleTable && cohortTableNames$cohortSampleTable != cohortTableNames$cohortTable)
+    )
     sql <- SqlRender::readSql(system.file("sql/sql_server/CreateCohortTables.sql", package = "CohortGenerator", mustWork = TRUE))
     sql <- SqlRender::render(
       sql = sql,
