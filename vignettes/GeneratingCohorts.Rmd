@@ -27,7 +27,6 @@ someFolder <- tempdir()
 packageRoot <- tempdir()
 baseUrl <- "https://api.ohdsi.org/WebAPI"
 library(CohortGenerator)
-library(Eunomia)
 ```
 
 # Guide for generating cohorts using CohortGenerator
