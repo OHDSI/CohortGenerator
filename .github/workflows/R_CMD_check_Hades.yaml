@@ -108,8 +108,9 @@ jobs:
       #- name: Reconfigure Java
       #  if: runner.os == 'macOS'
       #  run: R CMD javareconf
+      
       - name: Setup Java
-        - uses: actions/setup-java@v4
+        uses: actions/setup-java@v4
           with:
             distribution: 'corretto'
             java-version: '8'
