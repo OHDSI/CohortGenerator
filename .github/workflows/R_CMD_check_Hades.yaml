@@ -111,9 +111,9 @@ jobs:
       
       - name: Setup Java
         uses: actions/setup-java@v4
-          with:
-            distribution: 'corretto'
-            java-version: '8'
+        with:
+          distribution: 'corretto'
+          java-version: '8'
             
       - name: Install libssh
         if: runner.os == 'Linux'
