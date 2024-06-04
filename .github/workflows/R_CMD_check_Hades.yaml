@@ -30,7 +30,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GH_TOKEN }}
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
-      JDK_JAVA_OPTIONS: "--add-opens java.base/java.nio=ALL-UNNAMED"
+      JDK_JAVA_OPTIONS: "-Djdk.module.illegalAccess=permit --add-opens=java.base/java.nio=ALL-UNNAMED"
       CDM5_ORACLE_CDM_SCHEMA: ${{ secrets.CDM5_ORACLE_CDM54_SCHEMA }}
       CDM5_ORACLE_OHDSI_SCHEMA: ${{ secrets.CDM5_ORACLE_OHDSI_SCHEMA }}
       CDM5_ORACLE_PASSWORD: ${{ secrets.CDM5_ORACLE_PASSWORD }}
