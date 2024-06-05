@@ -19,7 +19,14 @@
 #' @description
 #' This function retrieves the data from the cohort statistics tables and
 #' writes them to the inclusion statistics folder specified in the function
-#' call.
+#' call. NOTE: inclusion rule names are handled in one of two ways:
+#' 
+#' 1. You can specify the cohortDefinitionSet parameter and the inclusion rule 
+#' names will be extracted from the data.frame. 
+#' 2. You can insert the inclusion rule names into the database using the
+#' insertInclusionRuleNames function of this package. 
+#' 
+#' The first approach is preferred as to avoid the warning emitted.
 #'
 #' @template Connection
 #'
@@ -38,6 +45,8 @@
 #'
 #' @param databaseId                  Optional - when specified, the databaseId will be added
 #'                                    to the exported results
+#'                                    
+#' @template CohortDefinitionSet
 #'
 #' @export
 exportCohortStatsTables <- function(connectionDetails,
@@ -48,7 +57,8 @@ exportCohortStatsTables <- function(connectionDetails,
                                     snakeCaseToCamelCase = TRUE,
                                     fileNamesInSnakeCase = FALSE,
                                     incremental = FALSE,
-                                    databaseId = NULL) {
+                                    databaseId = NULL,
+                                    cohortDefinitionSet = NULL) {
   if (is.null(connection)) {
     # Establish the connection and ensure the cleanup is performed
     connection <- DatabaseConnector::connect(connectionDetails)
@@ -58,20 +68,10 @@ exportCohortStatsTables <- function(connectionDetails,
   if (!dir.exists(cohortStatisticsFolder)) {
     dir.create(cohortStatisticsFolder, recursive = TRUE)
   }
-
-  # Export the stats
-  exportStats <- function(table,
-                          fileName,
-                          includeDatabaseId) {
-    data <- getStatsTable(
-      connection = connection,
-      table = table,
-      snakeCaseToCamelCase = snakeCaseToCamelCase,
-      databaseId = databaseId,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      includeDatabaseId = includeDatabaseId
-    )
-
+  
+  # Internal function to export the stats
+  exportStats <- function(data,
+                          fileName) {
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
     ParallelLogger::logInfo("- Saving data to - ", fullFileName)
     if (incremental) {
@@ -86,41 +86,44 @@ exportCohortStatsTables <- function(connectionDetails,
       .writeCsv(x = data, file = fullFileName)
     }
   }
-
+  
   tablesToExport <- data.frame(
-    tableName = cohortTableNames$cohortInclusionTable,
-    fileName = "cohort_inclusion.csv",
-    includeDatabaseId = FALSE
+    tableName = c("cohortInclusionResultTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable", "cohortCensorStatsTable"),
+    fileName = c("cohort_inc_result.csv", "cohort_inc_stats.csv", "cohort_summary_stats.csv", "cohort_censor_stats.csv")
   )
-  tablesToExport <- rbind(tablesToExport, data.frame(
-    tableName = cohortTableNames$cohortInclusionResultTable,
-    fileName = "cohort_inc_result.csv",
-    includeDatabaseId = TRUE
-  ))
-  tablesToExport <- rbind(tablesToExport, data.frame(
-    tableName = cohortTableNames$cohortInclusionStatsTable,
-    fileName = "cohort_inc_stats.csv",
-    includeDatabaseId = TRUE
-  ))
-  tablesToExport <- rbind(tablesToExport, data.frame(
-    tableName = cohortTableNames$cohortSummaryStatsTable,
-    fileName = "cohort_summary_stats.csv",
-    includeDatabaseId = TRUE
-  ))
-  tablesToExport <- rbind(tablesToExport, data.frame(
-    tableName = cohortTableNames$cohortCensorStatsTable,
-    fileName = "cohort_censor_stats.csv",
-    includeDatabaseId = TRUE
-  ))
+
+  if (is.null(cohortDefinitionSet)) {
+    warning("No cohortDefinitionSet specified; please make sure you've inserted the inclusion rule names using the insertInclusionRuleNames function.")
+    tablesToExport <- rbind(tablesToExport, data.frame(
+      tableName = "cohortInclusionTable",
+      fileName = "cohort_inclusion.csv"
+    ))
+  } else {
+    inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
+    exportStats(
+      data = inclusionRules,
+      fileName = "cohort_inclusion.csv"
+    )
+  }
+
+  # Get the cohort statistics
+  cohortStats <- getCohortStats(
+    connectionDetails = connectionDetails,
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    databaseId = databaseId,
+    snakeCaseToCamelCase = snakeCaseToCamelCase,
+    cohortTableName = cohortTableNames
+  )
+  
   for (i in 1:nrow(tablesToExport)) {
     fileName <- ifelse(test = fileNamesInSnakeCase,
       yes = tablesToExport$fileName[i],
       no = SqlRender::snakeCaseToCamelCase(tablesToExport$fileName[i])
     )
     exportStats(
-      table = tablesToExport$tableName[i],
-      fileName = fileName,
-      includeDatabaseId = tablesToExport$includeDatabaseId[i]
+      data = cohortStats[[tablesToExport$tableName[i]]],
+      fileName = fileName
     )
   }
 }
