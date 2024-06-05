@@ -38,8 +38,6 @@ Suggests:
   testthat,
   withr
 Remotes:
-  ohdsi/CirceR,
-  ohdsi/Eunomia,
   ohdsi/ROhdsiWebApi
 License: Apache License
 VignetteBuilder: knitr
