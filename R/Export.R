@@ -19,7 +19,14 @@
 #' @description
 #' This function retrieves the data from the cohort statistics tables and
 #' writes them to the inclusion statistics folder specified in the function
-#' call.
+#' call. NOTE: inclusion rule names are handled in one of two ways:
+#' 
+#' 1. You can specify the cohortDefinitionSet parameter and the inclusion rule 
+#' names will be extracted from the data.frame. 
+#' 2. You can insert the inclusion rule names into the database using the
+#' insertInclusionRuleNames function of this package. 
+#' 
+#' The first approach is preferred as to avoid the warning emitted.
 #'
 #' @template Connection
 #'
