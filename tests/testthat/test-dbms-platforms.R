@@ -110,8 +110,9 @@ test_that("platform specific create cohorts with stats, Incremental, get results
   for (dbmsPlatform in dbmsPlatforms) {
     dbmsDetails <- getPlatformConnectionDetails(dbmsPlatform)
     if (is.null(dbmsDetails)) {
-      print(paste("No pltatform details available for", dbmsPlatform))
+      print(paste("No platform details available for", dbmsPlatform))
     } else {
+      print(paste("Testing", dbmsPlatform))
       testPlatform(dbmsDetails)
     }
   }
