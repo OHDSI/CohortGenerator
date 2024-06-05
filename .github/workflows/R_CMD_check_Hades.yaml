@@ -20,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          #- {os: windows-latest, r: '4.2.3', rtools: '42', rspm: "https://cloud.r-project.org"}
-          - {os: macOS-latest, r: '4.2.3', rtools: '42', rspm: "https://cloud.r-project.org"}
+          - {os: windows-latest, r: '4.2.3', rtools: '42', rspm: "https://cloud.r-project.org"}
+          #- {os: macOS-latest, r: '4.2.3', rtools: '42', rspm: "https://cloud.r-project.org"}
           #- {os: ubuntu-20.04, r: '4.2.3', rtools: '42', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           #- {os: windows-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
           #- {os: macOS-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
