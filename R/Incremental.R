@@ -70,7 +70,7 @@ isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
       if (verbose) {
         key <- list(...)
         key <- paste(sprintf("%s = '%s'", names(key), key), collapse = ", ")
-        ParallelLogger::logInfo("Skipping ", key, " because it is unchanged from earlier run")
+        rlang::inform(paste0("Skipping ", key, " because it is unchanged from earlier run"))
       }
       return(FALSE)
     } else {
@@ -115,7 +115,7 @@ getRequiredTasks <- function(..., checksum, recordKeepingFile) {
     tasks$checksum <- NULL
     if (length(idx) > 0) {
       text <- paste(sprintf("%s = %s", names(tasks), tasks[idx, ]), collapse = ", ")
-      ParallelLogger::logInfo("Skipping ", text, " because it is unchanged from earlier run")
+      rlang::inform(paste0("Skipping ", text, " because it is unchanged from earlier run"))
       tasks <- tasks[-idx, ]
     }
   }

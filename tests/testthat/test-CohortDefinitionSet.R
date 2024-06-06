@@ -179,7 +179,7 @@ test_that("Call saveCohortDefinitionSet with missing json", {
     ))
   }
 
-  expect_output(
+  expect_message(
     saveCohortDefinitionSet(
       cohortDefinitionSet = cohortsToCreate,
       settingsFileName = file.path(tempdir(), "settings"),

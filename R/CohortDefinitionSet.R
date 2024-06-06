@@ -244,7 +244,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
       path <- system.file(fileName, package = packageName)
     }
     if (verbose) {
-      ParallelLogger::logInfo(paste0(" -- Loading ", basename(fileName), " from ", path))
+      rlang::inform(paste0(" -- Loading ", basename(fileName), " from ", path))
     }
     if (!file.exists(path)) {
       if (grepl(".json$", tolower(basename(fileName))) && warnOnMissingJson) {
@@ -259,7 +259,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   }
 
   # Read the settings file which holds the cohortDefinitionSet
-  ParallelLogger::logInfo("Loading cohortDefinitionSet")
+  rlang::inform("Loading cohortDefinitionSet")
   settings <- readCsv(file = getPath(fileName = settingsFileName), warnOnCaseMismatch = FALSE)
 
   assert_settings_columns(names(settings), getPath(fileName = settingsFileName))
@@ -313,12 +313,12 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   # Loading cohort subset definitions with their associated targets
   if (loadSubsets & nrow(subsetsToLoad) > 0) {
     if (dir.exists(subsetJsonFolder)) {
-      ParallelLogger::logInfo("Loading Cohort Subset Definitions")
+      rlang::inform("Loading Cohort Subset Definitions")
 
       ## Loading subsets that apply to the saved definition sets
       for (i in unique(subsetsToLoad$subsetDefinitionId)) {
         subsetFile <- file.path(subsetJsonFolder, paste0(i, ".json"))
-        ParallelLogger::logInfo("Loading Cohort Subset Defintion ", subsetFile)
+        rlang::inform(paste0("Loading Cohort Subset Defintion ", subsetFile))
         subsetDef <- CohortSubsetDefinition$new(ParallelLogger::loadSettingsFromJson(subsetFile))
         # Find target cohorts for this subset definition
         subsetTargetIds <- unique(subsetsToLoad[subsetsToLoad$subsetDefinitionId == i, ]$subsetParent)
@@ -397,7 +397,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
 
   # Export the cohortDefinitionSet to the settings folder
   if (verbose) {
-    ParallelLogger::logInfo("Exporting cohortDefinitionSet to ", settingsFileName)
+    rlang::inform(paste0("Exporting cohortDefinitionSet to ", settingsFileName))
   }
   # Write the settings file and ensure that the "sql" and "json" columns are
   # not included
@@ -425,7 +425,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
     }
 
     if (verbose) {
-      ParallelLogger::logInfo("Exporting (", i, "/", nrow(cohortDefinitionSet), "): ", cohortName)
+      rlang::inform(paste0("Exporting (", i, "/", nrow(cohortDefinitionSet), "): ", cohortName))
     }
 
     if (!is.na(json) && nchar(json) > 0) {
@@ -441,7 +441,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
     }
   }
 
-  ParallelLogger::logInfo("Cohort definition saved")
+  rlang::inform("Cohort definition saved")
 }
 
 .getSettingsFileRequiredColumns <- function() {

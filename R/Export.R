@@ -73,7 +73,7 @@ exportCohortStatsTables <- function(connectionDetails,
   exportStats <- function(data,
                           fileName) {
     fullFileName <- file.path(cohortStatisticsFolder, fileName)
-    ParallelLogger::logInfo("- Saving data to - ", fullFileName)
+    rlang::inform(paste0("- Saving data to - ", fullFileName))
     if (incremental) {
       if (snakeCaseToCamelCase) {
         cohortDefinitionIds <- unique(data$cohortDefinitionId)
