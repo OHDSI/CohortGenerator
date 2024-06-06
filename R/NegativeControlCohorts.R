@@ -163,7 +163,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     stop(paste0("Table: ", cohortTable, " not found in schema: ", cohortDatabaseSchema, ". Please use `createCohortTable` to ensure the cohort table is created before generating cohorts."))
   }
 
-  ParallelLogger::logInfo("Generating negative control outcome cohorts")
+  rlang::inform("Generating negative control outcome cohorts")
 
   # Send the negative control outcome cohort set to the server for use
   # in processing. This temp table will hold the mapping between

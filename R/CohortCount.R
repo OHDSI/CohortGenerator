@@ -67,7 +67,7 @@ getCohortCounts <- function(connectionDetails = NULL,
   if (tolower(cohortTable) %in% tablesInServer) {
     counts <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
     delta <- Sys.time() - start
-    ParallelLogger::logInfo(paste("Counting cohorts took", signif(delta, 3), attr(delta, "units")))
+    rlang::inform(paste("Counting cohorts took", signif(delta, 3), attr(delta, "units")))
     if (!is.null(cohortDefinitionSet)) {
       # If the user has NOT specified a list of cohortIds
       # to use to filter the cohortDefinitionSet, then

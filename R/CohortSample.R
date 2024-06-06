@@ -262,7 +262,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
       )
 
       if (nrow(sampleTable) == 0) {
-        ParallelLogger::logInfo("No entires found for ", targetCohortId, " was it generated?")
+        rlang::inform(paste0("No entires found for ", targetCohortId, " was it generated?"))
         return(sampledCohortDefinition)
       }
       # Called only for side effects
