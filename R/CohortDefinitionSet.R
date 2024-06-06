@@ -513,11 +513,7 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
   for (i in 1:nrow(specifications)) {
     colName <- specifications$columnName[i]
     dataType <- specifications$dataType[i]
-    if (dataType == "integer64") {
-      df <- df %>% dplyr::mutate(!!colName := do.call(what = bit64::as.integer64, args = list()))
-    } else {
-      df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
-    }
+    df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
   }
   invisible(df)
 }
