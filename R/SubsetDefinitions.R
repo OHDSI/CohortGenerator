@@ -112,7 +112,7 @@ CohortSubsetDefinition <- R6::R6Class(
         dropTables <- c(dropTables, targetTable)
       }
 
-      sql <- c(sql, SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetDefinition.sql", package = "CohortGenerator")))
+      sql <- c(sql, SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetDefinition.sql", utils::packageName())))
       # Cleanup after exectuion
       for (table in dropTables) {
         sql <- c(sql, SqlRender::render("DROP TABLE IF EXISTS @table;", table = table))

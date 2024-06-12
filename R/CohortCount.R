@@ -55,7 +55,7 @@ getCohortCounts <- function(connectionDetails = NULL,
     on.exit(DatabaseConnector::disconnect(connection))
   }
 
-  sql <- SqlRender::readSql(system.file("sql/sql_server/CohortCounts.sql", package = "CohortGenerator", mustWork = TRUE))
+  sql <- SqlRender::readSql(system.file("sql/sql_server/CohortCounts.sql", package = utils::packageName(), mustWork = TRUE))
   sql <- SqlRender::render(
     sql = sql,
     cohort_database_schema = cohortDatabaseSchema,

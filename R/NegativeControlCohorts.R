@@ -52,8 +52,8 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #' @noRd
 #' @keywords internal
 .getNegativeControlOutcomeCohortSetSpecification <- function() {
-  return(readCsv(system.file("negativeControlOutcomeCohortSetSpecificationDescription.csv",
-    package = "CohortGenerator",
+  return(readCsv(system.file("csv", "negativeControlOutcomeCohortSetSpecificationDescription.csv",
+    package = utils::packageName(),
     mustWork = TRUE
   )))
 }
@@ -214,7 +214,7 @@ createNegativeControlOutcomesQuery <- function(connection,
                                                cohortTable,
                                                occurrenceType,
                                                detectOnDescendants) {
-  sql <- sql <- SqlRender::readSql(system.file("sql/sql_server/NegativeControlOutcomes.sql", package = "CohortGenerator", mustWork = TRUE))
+  sql <- sql <- SqlRender::readSql(system.file("sql/sql_server/NegativeControlOutcomes.sql", utils::packageName(), mustWork = TRUE))
   sql <- SqlRender::render(
     sql = sql,
     cdm_database_schema = cdmDatabaseSchema,

@@ -1,0 +1,46 @@
+table_name,column_name,data_type,is_required,primary_key,min_cell_count,description
+cohort_definition,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cohort_definition,cohort_name,varchar,Yes,No,No,The name of the cohort definition
+cohort_definition,description,varchar,No,No,No,A description of the cohort definition
+cohort_definition,json,text,No,No,No,The circe-be compiliant JSON expression
+cohort_definition,sql_command,text,No,No,No,The OHDSI-SQL command used to construct the cohort
+cohort_definition,subset_parent,bigint,No,No,No,The parent cohort id if this cohort is a subset
+cohort_definition,is_subset,int,No,No,No,This value is 1 when the cohort is a subset
+cohort_definition,subset_definition_id,bigint,No,No,No,The cohort subset definition
+cohort_generation,cohort_id,bigint,Yes,Yes,No,The uniqe identifier for the cohort definition
+cohort_generation,cohort_name,varchar,Yes,No,No,The name of the cohort generated
+cohort_generation,generation_status,varchar,No,No,No,The cohort generation status
+cohort_generation,start_time,Timestamp,No,No,No,The start time of the generation process
+cohort_generation,end_time,Timestamp,No,No,No,The end time of the generation process
+cohort_generation,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cohort_inclusion,cohort_definition_id,bigint,bigint,Yes,No,The unique identifier for the cohort definition
+cohort_inclusion,rule_sequence,int,Yes,Yes,No,The rule sequence for the inclusion rule
+cohort_inclusion,name,varchar,Yes,Yes,No,The name of the inclusion rule
+cohort_inclusion,description,varchar,No,No,No,The description of the inclusion rule
+cohort_inc_result,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cohort_inc_result,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cohort_inc_result,inclusion_rule_mask,int,Yes,Yes,No,A bit-mask for the inclusion rule
+cohort_inc_result,person_count,bigint,Yes,Yes,Yes,The number of persons satisifying the inclusion rule
+cohort_inc_result,mode_id,int,Yes,Yes,No,The mode of the inclusion rule.
+cohort_inc_stats,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cohort_inc_stats,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cohort_inc_stats,rule_sequence,int,Yes,Yes,No,The rule sequence
+cohort_inc_stats,person_count,bigint,Yes,Yes,Yes,The person count
+cohort_inc_stats,gain_count,bigint,Yes,Yes,No,The gain count
+cohort_inc_stats,person_total,bigint,Yes,Yes,Yes,The person total
+cohort_inc_stats,mode_id,int,Yes,Yes,No,The mode id
+cohort_summary_stats,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cohort_summary_stats,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cohort_summary_stats,base_count,bigint,Yes,Yes,Yes,The base count
+cohort_summary_stats,final_count,bigint,Yes,Yes,Yes,The final count
+cohort_summary_stats,mode_id,int,Yes,Yes,No,The mode id
+cohort_censor_stats,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cohort_censor_stats,lost_count,bigint,Yes,Yes,Yes,The number lost due to censoring
+cohort_count,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cohort_count,cohort_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cohort_count,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort entries
+cohort_count,cohort_subjects,bigint,Yes,Yes,Yes,The number of unique subjects
+cohort_count_neg_ctrl,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cohort_count_neg_ctrl,cohort_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cohort_count_neg_ctrl,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort entries
+cohort_count_neg_ctrl,cohort_subjects,bigint,Yes,Yes,Yes,The number of unique subjects

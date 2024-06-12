@@ -27,6 +27,7 @@ Imports:
   rlang,
   RJSONIO,
   jsonlite,
+  ResultModelManager,
   SqlRender (>= 1.11.1),
   stringi (>= 1.7.6)
 Suggests:
@@ -38,7 +39,8 @@ Suggests:
   testthat,
   withr
 Remotes:
-  ohdsi/ROhdsiWebApi
+  ohdsi/ResultModelManager,
+  ohdsi/ROhdsiWebApi,
 License: Apache License
 VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
