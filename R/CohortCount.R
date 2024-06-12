@@ -81,11 +81,13 @@ getCohortCounts <- function(connectionDetails = NULL,
         by = "cohortId",
         all.y = TRUE
       )
-      counts <- transform(
-        counts,
-        cohortEntries = ifelse(is.na(cohortEntries), 0L, cohortEntries),
-        cohortSubjects = ifelse(is.na(cohortSubjects), 0L, cohortSubjects)
-      )
+      with(counts, {
+        transform(
+          counts,
+          cohortEntries = ifelse(is.na(cohortEntries), 0L, cohortEntries),
+          cohortSubjects = ifelse(is.na(cohortSubjects), 0L, cohortSubjects)
+        )
+      })
     }
     if (!is.null(databaseId)) {
       counts$databaseId <- databaseId

@@ -113,7 +113,7 @@ exportCohortStatsTables <- function(connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     databaseId = databaseId,
     snakeCaseToCamelCase = snakeCaseToCamelCase,
-    cohortTableName = cohortTableNames
+    cohortTableNames = cohortTableNames
   )
   
   for (i in 1:nrow(tablesToExport)) {
