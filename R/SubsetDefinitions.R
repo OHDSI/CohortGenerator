@@ -471,7 +471,7 @@ hasSubsetDefinitions <- function(x) {
 #' @description
 #' This is generally used as part of saveCohortDefinitionSet
 #'
-#' @param subsetDefinition The subset definition object {@seealso CohortSubsetDefinition}
+#' @param subsetDefinition The subset definition object @seealso[CohortSubsetDefinition]
 #'
 #' @export
 #' @inheritParams saveCohortDefinitionSet

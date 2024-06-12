@@ -50,7 +50,7 @@ createResultsDataModel <- function(connectionDetails = NULL,
   # Create first version of results model:
   sql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = "CreateResultsDataModel.sql",
-    packageName = utils::packageName(),
+    packageName = "CohortGenerator",
     dbms = connection@dbms,
     database_schema = databaseSchema,
     table_prefix = tablePrefix
