@@ -81,7 +81,7 @@ getCohortCounts <- function(connectionDetails = NULL,
         by = "cohortId",
         all.y = TRUE
       )
-      with(counts, {
+      counts <- with(counts, {
         transform(
           counts,
           cohortEntries = ifelse(is.na(cohortEntries), 0L, cohortEntries),
