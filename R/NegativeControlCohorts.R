@@ -214,7 +214,7 @@ createNegativeControlOutcomesQuery <- function(connection,
                                                cohortTable,
                                                occurrenceType,
                                                detectOnDescendants) {
-  sql <- sql <- SqlRender::readSql(system.file("sql/sql_server/NegativeControlOutcomes.sql", utils::packageName(), mustWork = TRUE))
+  sql <- sql <- SqlRender::readSql(system.file("sql/sql_server/NegativeControlOutcomes.sql", package = utils::packageName(), mustWork = TRUE))
   sql <- SqlRender::render(
     sql = sql,
     cdm_database_schema = cdmDatabaseSchema,
