@@ -141,7 +141,7 @@ migrateDataModel <- function(connectionDetails, databaseSchema, tablePrefix = ""
 #'
 #' @param connectionDetails             DatabaseConnector connection details object
 #' @param databaseSchema                String schema where database schema lives
-#' @param  tablePrefix                  (Optional) Use if a table prefix is used before table names (e.g. "cd_")
+#' @param  tablePrefix                  (Optional) Use if a table prefix is used before table names (e.g. "cg_")
 #' @returns Instance of ResultModelManager::DataMigrationManager that has interface for converting existing data models
 #' @export
 getDataMigrator <- function(connectionDetails, databaseSchema, tablePrefix = "") {

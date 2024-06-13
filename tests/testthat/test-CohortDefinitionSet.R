@@ -64,7 +64,7 @@ test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator pack
     packageName = "CohortGenerator",
     verbose = TRUE
   )
-  expect_equal(nrow(cohortDefinitionSet), 3)
+  expect_equal(nrow(cohortDefinitionSet), 4)
 })
 
 test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator package where json/sql use the cohort id", {
@@ -74,7 +74,7 @@ test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator pack
     sqlFolder = "testdata/id/sql/sql_server",
     packageName = "CohortGenerator"
   )
-  expect_equal(nrow(cohortDefinitionSet), 3)
+  expect_equal(nrow(cohortDefinitionSet), 4)
 })
 
 
@@ -163,7 +163,7 @@ test_that("Call saveCohortDefinitionSet with missing json", {
 
   # Fill the cohort set using  cohorts included in this
   # package as an example
-  cohortJsonFiles <- list.files(path = system.file("testdata/name/cohorts", package = utils::packageName()), full.names = TRUE)
+  cohortJsonFiles <- list.files(path = system.file("testdata/name/cohorts", package = "CohortGenerator"), full.names = TRUE)
   for (i in 1:length(cohortJsonFiles)) {
     cohortJsonFileName <- cohortJsonFiles[i]
     cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
