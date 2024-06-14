@@ -64,7 +64,7 @@ CohortSubsetDefinition <- R6::R6Class(
         subsetOperators = lapply(self$subsetOperators, function(operator) {
           operator$toList()
         }),
-        packageVersion = jsonlite::unbox(as.character(utils::packageVersion(utils::packageName()))),
+        packageVersion = jsonlite::unbox(as.character(utils::packageVersion("CohortGenerator"))),
         identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression)),
         operatorNameConcatString = jsonlite::unbox(as.character(private$.operatorNameConcatString)),
         subsetCohortNameTemplate = jsonlite::unbox(as.character(private$.subsetCohortNameTemplate))
@@ -112,7 +112,7 @@ CohortSubsetDefinition <- R6::R6Class(
         dropTables <- c(dropTables, targetTable)
       }
 
-      sql <- c(sql, SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetDefinition.sql", package = utils::packageName())))
+      sql <- c(sql, SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetDefinition.sql", package = "CohortGenerator")))
       # Cleanup after exectuion
       for (table in dropTables) {
         sql <- c(sql, SqlRender::render("DROP TABLE IF EXISTS @table;", table = table))

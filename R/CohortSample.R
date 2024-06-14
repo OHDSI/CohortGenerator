@@ -79,7 +79,7 @@
     tableName = randSampleTableName
   )
 
-  execSql <- SqlRender::readSql(system.file("sql", "sql_server", "sampling", "RandomSample.sql", package = utils::packageName()))
+  execSql <- SqlRender::readSql(system.file("sql", "sql_server", "sampling", "RandomSample.sql", package = "CohortGenerator"))
   DatabaseConnector::renderTranslateExecuteSql(connection,
     execSql,
     tempEmulationSchema = tempEmulationSchema,

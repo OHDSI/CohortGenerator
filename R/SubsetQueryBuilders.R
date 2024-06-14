@@ -49,7 +49,7 @@ CohortSubsetQb <- R6::R6Class(
   inherit = QueryBuilder,
   private = list(
     innerQuery = function(targetTable) {
-      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetOperator.sql", package = utils::packageName()))
+      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
         target_table = targetTable,
         output_table = self$getTableObjectId(),
@@ -83,7 +83,7 @@ LimitSubsetQb <- R6::R6Class(
   inherit = QueryBuilder,
   private = list(
     innerQuery = function(targetTable) {
-      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "LimitSubsetOperator.sql", package = utils::packageName()))
+      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "LimitSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
         calendar_end_date = ifelse(is.null(private$operator$calendarEndDate), yes = "0", no = "1"),
         calendar_end_date_day = ifelse(is.null(private$operator$calendarEndDate), yes = "", no = lubridate::day(private$operator$calendarEndDate)),
@@ -111,7 +111,7 @@ DemographicSubsetQb <- R6::R6Class(
   inherit = QueryBuilder,
   private = list(
     innerQuery = function(targetTable) {
-      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "DemographicSubsetOperator.sql", package = utils::packageName()))
+      sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "DemographicSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
         target_table = targetTable,
         output_table = self$getTableObjectId(),

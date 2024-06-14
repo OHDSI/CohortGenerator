@@ -23,7 +23,7 @@
 #' @export
 getResultsDataModelSpecifications <- function() {
   resultsDataModelSpecifications <- readCsv(
-    file = system.file("csv", "resultsDataModelSpecification.csv", package = utils::packageName())
+    file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
   )
   return(resultsDataModelSpecifications)
 }
@@ -48,7 +48,7 @@ createResultsDataModel <- function(connectionDetails = NULL,
   on.exit(DatabaseConnector::disconnect(connection))
   
   # Create first version of results model:
-  sql <- SqlRender::readSql(system.file("sql/sql_server/CreateResultsDataModel.sql", package = utils::packageName(), mustWork = TRUE))
+  sql <- SqlRender::readSql(system.file("sql/sql_server/CreateResultsDataModel.sql", package = "CohortGenerator", mustWork = TRUE))
   sql <- SqlRender::render(
     sql = sql,
     database_schema = databaseSchema,
@@ -140,6 +140,6 @@ getDataMigrator <- function(connectionDetails, databaseSchema, tablePrefix = "")
     tablePrefix = tablePrefix,
     packageTablePrefix = "cg_",
     migrationPath = "migrations",
-    packageName = utils::packageName()
+    packageName = "CohortGenerator"
   )
 }

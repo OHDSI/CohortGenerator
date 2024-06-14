@@ -110,7 +110,7 @@ createCohortTables <- function(connectionDetails = NULL,
       yes = FALSE,
       no = (createTableFlagList$cohortSampleTable && cohortTableNames$cohortSampleTable != cohortTableNames$cohortTable)
     )
-    sql <- SqlRender::readSql(system.file("sql/sql_server/CreateCohortTables.sql", package = utils::packageName(), mustWork = TRUE))
+    sql <- SqlRender::readSql(system.file("sql/sql_server/CreateCohortTables.sql", package = "CohortGenerator", mustWork = TRUE))
     sql <- SqlRender::render(
       sql = sql,
       cohort_database_schema = cohortDatabaseSchema,
