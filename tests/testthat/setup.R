@@ -1,4 +1,4 @@
-dbmsPlatforms <- c() # c("bigquery", "oracle", "postgresql", "redshift", "snowflake", "spark", "sql server")
+dbmsPlatforms <- c("bigquery", "oracle", "postgresql", "redshift", "snowflake", "spark", "sql server")
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 outputFolder <- tempfile()
 dir.create(outputFolder)

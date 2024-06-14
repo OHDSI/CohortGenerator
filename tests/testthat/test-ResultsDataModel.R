@@ -130,10 +130,10 @@ test_that("Results upload", {
     ),
     exdir = unzipFolder
   )
-  #testUploadResults(connectionDetails = postgresConnectionDetails,
-  #                  resultsDatabaseSchema = postgresResultsDatabaseSchema,
-  #                  resultsFolder = unzipFolder)
-  # testUploadResults(connectionDetails = sqliteConnectionDetails,
-  #                   resultsDatabaseSchema = sqliteResultsDatabaseSchema,
-  #                   resultsFolder = unzipFolder)
+  testUploadResults(connectionDetails = postgresConnectionDetails,
+                   resultsDatabaseSchema = postgresResultsDatabaseSchema,
+                   resultsFolder = unzipFolder)
+  testUploadResults(connectionDetails = sqliteConnectionDetails,
+                    resultsDatabaseSchema = sqliteResultsDatabaseSchema,
+                    resultsFolder = unzipFolder)
 })
