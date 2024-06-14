@@ -4,14 +4,14 @@
 \alias{getDataMigrator}
 \title{Get database migrations instance}
 \usage{
-getDataMigrator(connectionDetails, databaseSchema, tablePrefix = "")
+getDataMigrator(connectionDetails, databaseSchema, tablePrefix = "cg_")
 }
 \arguments{
 \item{connectionDetails}{DatabaseConnector connection details object}
 
 \item{databaseSchema}{String schema where database schema lives}
 
-\item{tablePrefix}{(Optional) Use if a table prefix is used before table names (e.g. "cd_")}
+\item{tablePrefix}{(Optional) Use if a table prefix is used before table names (e.g. "cg_")}
 }
 \value{
 Instance of ResultModelManager::DataMigrationManager that has interface for converting existing data models

@@ -4,14 +4,14 @@
 \alias{migrateDataModel}
 \title{Migrate Data model}
 \usage{
-migrateDataModel(connectionDetails, databaseSchema, tablePrefix = "")
+migrateDataModel(connectionDetails, databaseSchema, tablePrefix = "cg_")
 }
 \arguments{
 \item{connectionDetails}{DatabaseConnector connection details object}
 
 \item{databaseSchema}{String schema where database schema lives}
 
-\item{tablePrefix}{(Optional) Use if a table prefix is used before table names (e.g. "cd_")}
+\item{tablePrefix}{(Optional) Use if a table prefix is used before table names (e.g. "cg_")}
 }
 \description{
 Migrate data from current state to next state

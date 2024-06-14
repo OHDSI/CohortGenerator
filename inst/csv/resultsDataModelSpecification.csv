@@ -36,6 +36,7 @@ cohort_summary_stats,final_count,bigint,Yes,Yes,Yes,The final count
 cohort_summary_stats,mode_id,int,Yes,Yes,No,The mode id
 cohort_censor_stats,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
 cohort_censor_stats,lost_count,bigint,Yes,Yes,Yes,The number lost due to censoring
+cohort_censor_stats,database_id,varchar,Yes,Yes,No,The database idenifier for this information
 cohort_count,database_id,varchar,Yes,Yes,No,The database idenifier for this information
 cohort_count,cohort_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
 cohort_count,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort entries
@@ -44,3 +45,5 @@ cohort_count_neg_ctrl,database_id,varchar,Yes,Yes,No,The database idenifier for 
 cohort_count_neg_ctrl,cohort_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
 cohort_count_neg_ctrl,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort entries
 cohort_count_neg_ctrl,cohort_subjects,bigint,Yes,Yes,Yes,The number of unique subjects
+cohort_subset_definition,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
+cohort_subset_definition,json,text,Yes,No,No,The JSON representation of the subset definition
