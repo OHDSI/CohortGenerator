@@ -163,20 +163,12 @@ CohortGenerator::exportCohortStatsTables(
 )
 
 # Set the table names in resultsDataModelSpecification.csv
-resultsDataModel <- CohortGenerator::readCsv(
-  file = system.file(
-    "csv/resultsDataModelSpecification.csv",
-    package = "CohortGenerator",
-    mustWork = T
-  ),
-  warnOnCaseMismatch = FALSE
-)
-newTableNames <- paste0(tablePrefix, resultsDataModel$tableName)
+resultsDataModel <- CohortGenerator::getResultsDataModelSpecifications()
+oldTableNames <- gsub("cg_", "", resultsDataModel$tableName)
 file.rename(
-  file.path(resultsFolder, paste0(unique(resultsDataModel$tableName), ".csv")),
-  file.path(resultsFolder, paste0(unique(newTableNames), ".csv"))
+  file.path(resultsFolder, paste0(unique(oldTableNames), ".csv")),
+  file.path(resultsFolder, paste0(unique(resultsDataModel$tableName), ".csv"))
 )
-resultsDataModel$tableName <- newTableNames
 CohortGenerator::writeCsv(
   x = resultsDataModel,
   file = file.path(resultsFolder, "resultsDataModelSpecification.csv"),
@@ -190,16 +182,16 @@ CohortGenerator::writeCsv(
 CohortGenerator::createResultsDataModel(
   connectionDetails = connectionDetails,
   databaseSchema = "main",
-  tablePrefix = tablePrefix
 )
 
 CohortGenerator::uploadResults(
   connectionDetails = connectionDetails,
   schema = "main",
   resultsFolder = resultsFolder,
-  tablePrefix = tablePrefix,
   purgeSiteDataBeforeUploading = F
 )
+
+#conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
 
 zip::zip(
   zipfile = file.path("inst", "testdata", "Results_Eunomia.zip"),

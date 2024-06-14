@@ -100,6 +100,7 @@ exportCohortStatsTables <- function(connectionDetails,
     ))
   } else {
     inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
+    names(inclusionRules) <- SqlRender::camelCaseToSnakeCase(names(inclusionRules))
     exportStats(
       data = inclusionRules,
       fileName = "cohort_inclusion.csv"

@@ -48,13 +48,13 @@ createResultsDataModel <- function(connectionDetails = NULL,
   on.exit(DatabaseConnector::disconnect(connection))
   
   # Create first version of results model:
-  sql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = "CreateResultsDataModel.sql",
-    packageName = "CohortGenerator",
-    dbms = connection@dbms,
+  sql <- SqlRender::readSql(system.file("sql/sql_server/CreateResultsDataModel.sql", package = utils::packageName(), mustWork = TRUE))
+  sql <- SqlRender::render(
+    sql = sql,
     database_schema = databaseSchema,
     table_prefix = tablePrefix
   )
+  sql <- SqlRender::translate(sql = sql, targetDialect = connection@dbms)
   DatabaseConnector::executeSql(connection, sql)
   # Migrate to current version:
   migrateDataModel(
@@ -88,7 +88,7 @@ uploadResults <- function(connectionDetails,
                           resultsFolder,
                           forceOverWriteOfSpecifications = FALSE,
                           purgeSiteDataBeforeUploading = TRUE,
-                          tablePrefix = "cg_",
+                          tablePrefix = "",
                           ...) {
   ResultModelManager::uploadResults(
     connectionDetails = connectionDetails,
@@ -113,7 +113,7 @@ uploadResults <- function(connectionDetails,
 #'
 #' @inheritParams getDataMigrator
 #' @export
-migrateDataModel <- function(connectionDetails, databaseSchema, tablePrefix = "cg_") {
+migrateDataModel <- function(connectionDetails, databaseSchema, tablePrefix = "") {
   ParallelLogger::logInfo("Migrating data set")
   migrator <- getDataMigrator(connectionDetails = connectionDetails,
                               databaseSchema = databaseSchema,
@@ -133,7 +133,7 @@ migrateDataModel <- function(connectionDetails, databaseSchema, tablePrefix = "c
 #' @param  tablePrefix                  (Optional) Use if a table prefix is used before table names (e.g. "cg_")
 #' @returns Instance of ResultModelManager::DataMigrationManager that has interface for converting existing data models
 #' @export
-getDataMigrator <- function(connectionDetails, databaseSchema, tablePrefix = "cg_") {
+getDataMigrator <- function(connectionDetails, databaseSchema, tablePrefix = "") {
   ResultModelManager::DataMigrationManager$new(
     connectionDetails = connectionDetails,
     databaseSchema = databaseSchema,
