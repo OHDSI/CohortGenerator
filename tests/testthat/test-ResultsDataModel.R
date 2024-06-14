@@ -64,7 +64,6 @@ testCreateSchema <- function(connectionDetails, resultsDatabaseSchema) {
       databaseSchema = resultsDatabaseSchema,
     )
   )
-  print('got here')
   specifications <- getResultsDataModelSpecifications()
   for (tableName in unique(specifications$tableName)) {
     expect_true(DatabaseConnector::existsTable(connection = connection,
@@ -79,62 +78,62 @@ testCreateSchema <- function(connectionDetails, resultsDatabaseSchema) {
 }
 
 test_that("Create schema", {
-  # testCreateSchema(connectionDetails = postgresConnectionDetails,
-  #                 resultsDatabaseSchema = postgresResultsDatabaseSchema)
+  testCreateSchema(connectionDetails = postgresConnectionDetails,
+                  resultsDatabaseSchema = postgresResultsDatabaseSchema)
   testCreateSchema(connectionDetails = sqliteConnectionDetails,
                    resultsDatabaseSchema = sqliteResultsDatabaseSchema)
 })
 
-# testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsFolder) {
-#   uploadResults(
-#     connectionDetails = connectionDetails,
-#     schema = resultsDatabaseSchema,
-#     resultsFolder = resultsFolder,
-#     purgeSiteDataBeforeUploading = FALSE
-#   )
-# 
-#   # Check if there's data:
-#   connection <- DatabaseConnector::connect(connectionDetails)
-#   on.exit(DatabaseConnector::disconnect(connection))
-# 
-#   specifications <- getResultsDataModelSpecifications()
-#   for (tableName in unique(specifications$tableName)) {
-#     primaryKey <- specifications %>%
-#       dplyr::filter(tableName == !!tableName &
-#                       primaryKey == "Yes") %>%
-#       dplyr::select(columnName) %>%
-#       dplyr::pull()
-# 
-#     if ("database_id" %in% primaryKey) {
-#       sql <- "SELECT COUNT(*) FROM @database_schema.@table_name WHERE database_id = '@database_id';"
-#       databaseIdCount <- DatabaseConnector::renderTranslateQuerySql(
-#         connection = connection,
-#         sql = sql,
-#         database_schema = resultsDatabaseSchema,
-#         table_name = tableName,
-#         database_id = "Eunomia"
-#       )[, 1]
-#       expect_true(databaseIdCount >= 0)
-#     }
-#   }
-# }
-# 
-# test_that("Results upload", {
-#   unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
-#   dir.create(path = unzipFolder, recursive = TRUE)
-#   on.exit(unlink(unzipFolder, recursive = TRUE), add = TRUE)
-# 
-#   zip::unzip(
-#     zipfile = system.file(
-#       "testdata/Results_Eunomia.zip",
-#       package = "CohortGenerator"
-#     ),
-#     exdir = unzipFolder
-#   )
-#   #testUploadResults(connectionDetails = postgresConnectionDetails,
-#   #                  resultsDatabaseSchema = postgresResultsDatabaseSchema,
-#   #                  resultsFolder = unzipFolder)
-#   # testUploadResults(connectionDetails = sqliteConnectionDetails,
-#   #                   resultsDatabaseSchema = sqliteResultsDatabaseSchema,
-#   #                   resultsFolder = unzipFolder)
-# })
+testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsFolder) {
+  uploadResults(
+    connectionDetails = connectionDetails,
+    schema = resultsDatabaseSchema,
+    resultsFolder = resultsFolder,
+    purgeSiteDataBeforeUploading = FALSE
+  )
+
+  # Check if there's data:
+  connection <- DatabaseConnector::connect(connectionDetails)
+  on.exit(DatabaseConnector::disconnect(connection))
+
+  specifications <- getResultsDataModelSpecifications()
+  for (tableName in unique(specifications$tableName)) {
+    primaryKey <- specifications %>%
+      dplyr::filter(tableName == !!tableName &
+                      primaryKey == "Yes") %>%
+      dplyr::select(columnName) %>%
+      dplyr::pull()
+
+    if ("database_id" %in% primaryKey) {
+      sql <- "SELECT COUNT(*) FROM @database_schema.@table_name WHERE database_id = '@database_id';"
+      databaseIdCount <- DatabaseConnector::renderTranslateQuerySql(
+        connection = connection,
+        sql = sql,
+        database_schema = resultsDatabaseSchema,
+        table_name = tableName,
+        database_id = "Eunomia"
+      )[, 1]
+      expect_true(databaseIdCount >= 0)
+    }
+  }
+}
+
+test_that("Results upload", {
+  unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
+  dir.create(path = unzipFolder, recursive = TRUE)
+  on.exit(unlink(unzipFolder, recursive = TRUE), add = TRUE)
+
+  zip::unzip(
+    zipfile = system.file(
+      "testdata/Results_Eunomia.zip",
+      package = "CohortGenerator"
+    ),
+    exdir = unzipFolder
+  )
+  #testUploadResults(connectionDetails = postgresConnectionDetails,
+  #                  resultsDatabaseSchema = postgresResultsDatabaseSchema,
+  #                  resultsFolder = unzipFolder)
+  # testUploadResults(connectionDetails = sqliteConnectionDetails,
+  #                   resultsDatabaseSchema = sqliteResultsDatabaseSchema,
+  #                   resultsFolder = unzipFolder)
+})
