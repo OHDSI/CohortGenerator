@@ -4,7 +4,7 @@
 \alias{getDataMigrator}
 \title{Get database migrations instance}
 \usage{
-getDataMigrator(connectionDetails, databaseSchema, tablePrefix = "cg_")
+getDataMigrator(connectionDetails, databaseSchema, tablePrefix = "")
 }
 \arguments{
 \item{connectionDetails}{DatabaseConnector connection details object}

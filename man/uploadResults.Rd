@@ -10,7 +10,7 @@ uploadResults(
   resultsFolder,
   forceOverWriteOfSpecifications = FALSE,
   purgeSiteDataBeforeUploading = TRUE,
-  tablePrefix = "cg_",
+  tablePrefix = "",
   ...
 )
 }

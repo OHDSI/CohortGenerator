@@ -4,7 +4,7 @@
 \alias{migrateDataModel}
 \title{Migrate Data model}
 \usage{
-migrateDataModel(connectionDetails, databaseSchema, tablePrefix = "cg_")
+migrateDataModel(connectionDetails, databaseSchema, tablePrefix = "")
 }
 \arguments{
 \item{connectionDetails}{DatabaseConnector connection details object}
