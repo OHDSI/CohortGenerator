@@ -322,7 +322,7 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "FAILED", ]), 1)
-  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 3)
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 4)
 
   # Now update the cohort that was failing to use a SQL statement that will work
   sqlThatWillWork <- "
@@ -344,7 +344,7 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 1)
-  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "SKIPPED", ]), 3)
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "SKIPPED", ]), 4)
   unlink(recordKeepingFolder, recursive = TRUE)
   if (file.exists("errorReportSql.txt")) {
     unlink("errorReportSql.txt")

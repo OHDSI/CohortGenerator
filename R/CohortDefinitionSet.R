@@ -183,7 +183,7 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
 #' @noRd
 #' @keywords internal
 .getCohortDefinitionSetSpecification <- function() {
-  return(readCsv(system.file("cohortDefinitionSetSpecificationDescription.csv",
+  return(readCsv(system.file("csv", "cohortDefinitionSetSpecificationDescription.csv",
     package = "CohortGenerator",
     mustWork = TRUE
   )))

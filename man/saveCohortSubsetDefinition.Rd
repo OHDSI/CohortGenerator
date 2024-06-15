@@ -10,7 +10,7 @@ saveCohortSubsetDefinition(
 )
 }
 \arguments{
-\item{subsetDefinition}{The subset definition object {@seealso CohortSubsetDefinition}}
+\item{subsetDefinition}{The subset definition object @seealso[CohortSubsetDefinition]}
 
 \item{subsetJsonFolder}{Defines the folder to store the subset JSON}
 }

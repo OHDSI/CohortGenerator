@@ -242,13 +242,13 @@ test_that("subset generation", {
 
   checkmate::expect_list(getSubsetDefinitions(cohortDefinitionSetWithSubset), min.len = 1, types = "CohortSubsetDefinition")
 
-  expect_true(nrow(cohortDefinitionSetWithSubset) == 6)
+  expect_true(nrow(cohortDefinitionSetWithSubset) == 8)
 
   # Test only applying to a subset
   cohortDefinitionSetWithSubset2 <- cohortDefinitionSet %>%
     addCohortSubsetDefinition(subsetDef, targetCohortIds = c(1, 2))
 
-  expect_true(nrow(cohortDefinitionSetWithSubset2) == 5)
+  expect_true(nrow(cohortDefinitionSetWithSubset2) == 6)
 
   expect_true(attr(cohortDefinitionSetWithSubset, "hasSubsetDefinitions"))
   expect_true("isSubset" %in% colnames(cohortDefinitionSetWithSubset))
@@ -453,7 +453,7 @@ test_that("Subset name templates function", {
     CohortGenerator::addCohortSubsetDefinition(subsetDef)
 
   # Check name templates are applied
-  expect_true(all(grepl("FOOO (.+) test definition 123 Demographic Criteria 1zzzzDemographic Criteria 2", cohortDefinitionSetWithSubset$cohortName[4:6])))
+  expect_true(all(grepl("FOOO (.+) test definition 123 Demographic Criteria 1zzzzDemographic Criteria 2", cohortDefinitionSetWithSubset$cohortName[5:8])))
 
   # Internal copy call
   cds2 <- .copySubsetDefinitions(cohortDefinitionSet, cohortDefinitionSetWithSubset)

@@ -52,7 +52,7 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #' @noRd
 #' @keywords internal
 .getNegativeControlOutcomeCohortSetSpecification <- function() {
-  return(readCsv(system.file("negativeControlOutcomeCohortSetSpecificationDescription.csv",
+  return(readCsv(system.file("csv", "negativeControlOutcomeCohortSetSpecificationDescription.csv",
     package = "CohortGenerator",
     mustWork = TRUE
   )))

@@ -107,7 +107,7 @@ getStatsTable <- function(connectionDetails,
     databaseId <- NULL
   }
 
-  rlang::inform("- Fetching data from ", table)
+  rlang::inform(paste0("- Fetching data from ", table))
   sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} t.* FROM @cohort_database_schema.@table t"
   data <- DatabaseConnector::renderTranslateQuerySql(
     sql = sql,
