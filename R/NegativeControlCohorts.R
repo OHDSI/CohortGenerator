@@ -92,7 +92,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   checkmate::assert_choice(x = tolower(occurrenceType), choices = c("all", "first"))
   checkmate::assert_logical(detectOnDescendants)
   checkmate::assertNames(colnames(negativeControlOutcomeCohortSet),
-    must.include = .getNegativeControlOutcomeCohortSetSpecification()$columnName
+    must.include = names(createEmptyNegativeControlOutcomeCohortSet())
   )
   checkmate::assert_data_frame(
     x = negativeControlOutcomeCohortSet,
