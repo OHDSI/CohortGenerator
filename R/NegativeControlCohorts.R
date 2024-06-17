@@ -29,35 +29,16 @@
 #' @export
 createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
   checkmate::assert_logical(verbose)
-  negativeControlOutcomeCohortSetSpecification <- .getNegativeControlOutcomeCohortSetSpecification()
+  df <- data.frame(
+    cohortId = numeric(),
+    cohortName = character(),
+    outcomeConceptId = numeric()
+  )
   if (verbose) {
-    print(negativeControlOutcomeCohortSetSpecification)
+    print(df)
   }
-  # Build the data.frame dynamically
-  df <- .createEmptyDataFrameFromSpecification(negativeControlOutcomeCohortSetSpecification)
   invisible(df)
 }
-
-#' Helper function to return the specification description of a
-#' negativeControlOutcomeCohortSet
-#'
-#' @description
-#' This function reads from the negativeControlOutcomeCohortSetSpecificationDescription.csv
-#' to return a data.frame that describes the required columns in a
-#' negativeControlOutcomeCohortSet
-#'
-#' @return
-#' Returns a data.frame that defines a negativeControlOutcomeCohortSet
-#'
-#' @noRd
-#' @keywords internal
-.getNegativeControlOutcomeCohortSetSpecification <- function() {
-  return(readCsv(system.file("csv", "negativeControlOutcomeCohortSetSpecificationDescription.csv",
-    package = "CohortGenerator",
-    mustWork = TRUE
-  )))
-}
-
 
 #' Generate a set of negative control outcome cohorts
 #'

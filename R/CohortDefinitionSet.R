@@ -29,13 +29,39 @@
 #' @export
 createEmptyCohortDefinitionSet <- function(verbose = FALSE) {
   checkmate::assert_logical(verbose)
-  cohortDefinitionSetSpec <- .getCohortDefinitionSetSpecification()
+  df <- data.frame(
+    cohortId = numeric(),
+    cohortName = character(),
+    sql = character(),
+    json = character()
+  )
   if (verbose) {
-    print(cohortDefinitionSetSpec)
+    print(df)
   }
-  # Build the data.frame dynamically from the cohort definition set spec
-  df <- .createEmptyDataFrameFromSpecification(cohortDefinitionSetSpec)
   invisible(df)
+}
+
+.cohortDefinitionSetHasRequiredColumns <- function(x, emitWarning = FALSE) {
+  checkmate::assert_data_frame(x)
+  df <- createEmptyCohortDefinitionSet(verbose = FALSE)
+
+  # Compare the column names from the input x to an empty cohort
+  # definition set to ensure the required columns are present
+  cohortDefinitionSetColumns <- colnames(df)
+  matchingColumns <- intersect(x = colnames(x), y = cohortDefinitionSetColumns)
+  columnNamesMatch <- setequal(matchingColumns, cohortDefinitionSetColumns)
+  
+  if (!columnNamesMatch && emitWarning) {
+    columnsMissing <- setdiff(x = cohortDefinitionSetColumns, y = colnames(x))
+    warningMessage <- paste0(
+      "The following columns were missing in your cohortDefinitionSet: ",
+      paste(columnsMissing, collapse = ","),
+      ". A cohortDefinitionSet requires the following columns: ",
+      paste(cohortDefinitionSetColumns, collapse = ",")
+    )
+    warning(warningMessage)
+  }
+  invisible(columnNamesMatch)
 }
 
 #' Is the data.frame a cohort definition set?
@@ -99,7 +125,6 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   checkmate::assert_data_frame(x)
   df <- createEmptyCohortDefinitionSet(verbose = FALSE)
   cohortDefinitionSetColumns <- colnames(df)
-  cohortDefinitionSetSpec <- .getCohortDefinitionSetSpecification()
 
   columnNamesMatch <- .cohortDefinitionSetHasRequiredColumns(x = x, emitWarning = emitWarning)
   if (!columnNamesMatch) {
@@ -107,7 +132,8 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   }
 
   # Compare the data types from the input x to an empty cohort
-  # definition set to ensure the same data types are present
+  # definition set to ensure the same data types (or close enough)
+  # are present
   dataTypesMatch <- FALSE
   # Subset x to the required columns
   xSubset <- x[, cohortDefinitionSetColumns]
@@ -116,7 +142,14 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   # Get the reference data types
   cohortDefinitionSetDataTypes <- sapply(df, typeof)
   # Check if the data types match
-  dataTypesMatch <- identical(x = xDataTypes, y = cohortDefinitionSetDataTypes)
+  # NOTE: createEmptyCohortDefinitionSet() is the reference for the data
+  # types. cohortId is declared as a numeric but an integer is also fine
+  dataTypesMatch <- (xDataTypes[1] %in% c('integer', 'double') && all(xDataTypes[2:4] == "character"))
+  # Create the cohortDefinitionSetSpec from the names/data types for reference
+  cohortDefinitionSetSpec <- data.frame(
+    columnName = names(xDataTypes),
+    dataType = xDataTypes
+  )
   if (!dataTypesMatch && emitWarning) {
     dataTypesMismatch <- setdiff(x = cohortDefinitionSetDataTypes, y = xDataTypes)
     # Create a column for the warning message
@@ -143,50 +176,6 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
     dataTypesMatch = dataTypesMatch,
     x = x
   ))
-}
-
-.cohortDefinitionSetHasRequiredColumns <- function(x, emitWarning = FALSE) {
-  checkmate::assert_data_frame(x)
-  df <- createEmptyCohortDefinitionSet(verbose = FALSE)
-  cohortDefinitionSetSpec <- .getCohortDefinitionSetSpecification()
-
-  # Compare the column names from the input x to an empty cohort
-  # definition set to ensure the required columns are present
-  cohortDefinitionSetColumns <- colnames(df)
-  matchingColumns <- intersect(x = colnames(x), y = cohortDefinitionSetColumns)
-  columnNamesMatch <- setequal(matchingColumns, cohortDefinitionSetColumns)
-
-  if (!columnNamesMatch && emitWarning) {
-    columnsMissing <- setdiff(x = cohortDefinitionSetColumns, y = colnames(x))
-    warningMessage <- paste0(
-      "The following columns were missing in your cohortDefinitionSet: ",
-      paste(columnsMissing, collapse = ","),
-      ". A cohortDefinitionSet requires the following columns: ",
-      paste(cohortDefinitionSetColumns, collapse = ",")
-    )
-    warning(warningMessage)
-  }
-  invisible(columnNamesMatch)
-}
-
-#' Helper function to return the specification description of a
-#' cohortDefinitionSet
-#'
-#' @description
-#' This function reads from the cohortDefinitionSetSpecificationDescription.csv
-#' to return a data.frame that describes the required columns in a
-#' cohortDefinitionSet
-#'
-#' @return
-#' Returns a data.frame that defines a cohortDefinitionSet
-#'
-#' @noRd
-#' @keywords internal
-.getCohortDefinitionSetSpecification <- function() {
-  return(readCsv(system.file("csv", "cohortDefinitionSetSpecificationDescription.csv",
-    package = "CohortGenerator",
-    mustWork = TRUE
-  )))
 }
 
 #' Get a cohort definition set
@@ -505,17 +494,6 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
   } else {
     return(TRUE)
   }
-}
-
-.createEmptyDataFrameFromSpecification <- function(specifications) {
-  # Build the data.frame dynamically from the cohort definition set spec
-  df <- data.frame()
-  for (i in 1:nrow(specifications)) {
-    colName <- specifications$columnName[i]
-    dataType <- specifications$dataType[i]
-    df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
-  }
-  invisible(df)
 }
 
 .copySubsetDefinitions <- function(copyToCds, copyFromCds) {
