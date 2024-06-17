@@ -230,6 +230,12 @@ test_that("Call isCohortDefinitionSet with incorrect cohort definition set and e
   expect_warning(expect_false(isCohortDefinitionSet(cohortDefinitionSetError)))
 })
 
+test_that("Call isCohortDefinitionSet with cohort definition set with integer data type for cohort ID and expect TRUE", {
+  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
+  cohortDefinitionSet$cohortId <- as.integer(cohortDefinitionSet$cohortId)
+  expect_true(isCohortDefinitionSet(cohortDefinitionSet))
+})
+
 test_that("Call isCohortDefinitionSet with cohort definition set with incorrect data type and expect FALSE", {
   cohortDefinitionSet <- createEmptyCohortDefinitionSet()
   cohortDefinitionSet$cohortName <- as.integer(cohortDefinitionSet$cohortName)

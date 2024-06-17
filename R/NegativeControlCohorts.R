@@ -29,35 +29,16 @@
 #' @export
 createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
   checkmate::assert_logical(verbose)
-  negativeControlOutcomeCohortSetSpecification <- .getNegativeControlOutcomeCohortSetSpecification()
+  df <- data.frame(
+    cohortId = numeric(),
+    cohortName = character(),
+    outcomeConceptId = numeric()
+  )
   if (verbose) {
-    print(negativeControlOutcomeCohortSetSpecification)
+    print(df)
   }
-  # Build the data.frame dynamically
-  df <- .createEmptyDataFrameFromSpecification(negativeControlOutcomeCohortSetSpecification)
   invisible(df)
 }
-
-#' Helper function to return the specification description of a
-#' negativeControlOutcomeCohortSet
-#'
-#' @description
-#' This function reads from the negativeControlOutcomeCohortSetSpecificationDescription.csv
-#' to return a data.frame that describes the required columns in a
-#' negativeControlOutcomeCohortSet
-#'
-#' @return
-#' Returns a data.frame that defines a negativeControlOutcomeCohortSet
-#'
-#' @noRd
-#' @keywords internal
-.getNegativeControlOutcomeCohortSetSpecification <- function() {
-  return(readCsv(system.file("csv", "negativeControlOutcomeCohortSetSpecificationDescription.csv",
-    package = "CohortGenerator",
-    mustWork = TRUE
-  )))
-}
-
 
 #' Generate a set of negative control outcome cohorts
 #'
@@ -111,13 +92,15 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   checkmate::assert_choice(x = tolower(occurrenceType), choices = c("all", "first"))
   checkmate::assert_logical(detectOnDescendants)
   checkmate::assertNames(colnames(negativeControlOutcomeCohortSet),
-    must.include = .getNegativeControlOutcomeCohortSetSpecification()$columnName
+    must.include = names(createEmptyNegativeControlOutcomeCohortSet())
   )
   checkmate::assert_data_frame(
     x = negativeControlOutcomeCohortSet,
     min.rows = 1
   )
-
+  assertLargeInteger(negativeControlOutcomeCohortSet$cohortId)
+  assertLargeInteger(negativeControlOutcomeCohortSet$outcomeConceptId, columnName = "outcomeConceptId")
+  
   # Verify that cohort IDs are not repeated in the negative control
   # cohort definition set before generating
   if (length(unique(negativeControlOutcomeCohortSet$cohortId)) != length(negativeControlOutcomeCohortSet$cohortId)) {

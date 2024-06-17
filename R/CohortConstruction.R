@@ -76,6 +76,7 @@ generateCohortSet <- function(connectionDetails = NULL,
       "sql"
     )
   )
+  assertLargeInteger(cohortDefinitionSet$cohortId)
   # Verify that cohort IDs are not repeated in the cohort definition
   # set before generating
   if (length(unique(cohortDefinitionSet$cohortId)) != length(cohortDefinitionSet$cohortId)) {
