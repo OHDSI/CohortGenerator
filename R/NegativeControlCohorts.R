@@ -98,7 +98,9 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     x = negativeControlOutcomeCohortSet,
     min.rows = 1
   )
-
+  assertLargeInteger(negativeControlOutcomeCohortSet$cohortId)
+  assertLargeInteger(negativeControlOutcomeCohortSet$outcomeConceptId, columnName = "outcomeConceptId")
+  
   # Verify that cohort IDs are not repeated in the negative control
   # cohort definition set before generating
   if (length(unique(negativeControlOutcomeCohortSet$cohortId)) != length(negativeControlOutcomeCohortSet$cohortId)) {

@@ -251,7 +251,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   rlang::inform("Loading cohortDefinitionSet")
   settings <- readCsv(file = getPath(fileName = settingsFileName), warnOnCaseMismatch = FALSE)
 
-  assert_settings_columns(names(settings), getPath(fileName = settingsFileName))
+  assertSettingsColumns(names(settings), getPath(fileName = settingsFileName))
   checkmate::assert_true(all(cohortFileNameValue %in% names(settings)))
   checkmate::assert_true((!all(.getFileDataColumns() %in% names(settings))))
 
@@ -371,7 +371,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assert_vector(cohortFileNameValue)
   checkmate::assert_true(length(cohortFileNameValue) > 0)
-  assert_settings_columns(names(cohortDefinitionSet))
+  assertSettingsColumns(names(cohortDefinitionSet))
   checkmate::assert_true(all(cohortFileNameValue %in% names(cohortDefinitionSet)))
   settingsFolder <- dirname(settingsFileName)
   if (!dir.exists(settingsFolder)) {
@@ -490,6 +490,39 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
       sourceDescription <- "settings file"
     }
     errorMessage <- paste0("CohortGenerator requires the following columns in the ", sourceDescription, ": ", paste(shQuote(settingsColumns), collapse = ", "), ". The following columns were found: ", paste(shQuote(columnNames), collapse = ", "))
+    return(errorMessage)
+  } else {
+    return(TRUE)
+  }
+}
+
+#' Custom checkmate assertion for ensuring a vector contains only integer numbers,
+#' including large ones
+#'
+#' @description
+#' This function is used to provide a more informative message to inform
+#' a user that their number must be an integer. Since the
+#' cohort definition set allows for storing `numeric` data types, we need
+#' to make sure that there are no digits in the mantissa of the cohort ID.
+#' NOTE: This function is necessary since checkmate::assert_integerish
+#' will still throw an error even in the case where you have a large
+#' integer which was not desirable.
+#'
+#' @param x The vector containing integer/numeric values
+#'
+#' @param columnName The name of the column where this vector came from. This
+#'                   is used when displaying the error message.
+#' @return
+#' Returns TRUE if all the values in x are integers
+#' @noRd
+#' @keywords internal
+checkLargeInteger <- function(x, columnName = "cohortId") {
+  # NOTE: suppressWarnings used to mask
+  # warning from R which may happen for
+  # large values in X.
+  res <- all(suppressWarnings(x%%1) == 0)
+  if (!isTRUE(res)) {
+    errorMessage <- paste0("The column ", columnName, " included non-integer values. Please update and re-try")
     return(errorMessage)
   } else {
     return(TRUE)

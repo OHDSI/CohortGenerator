@@ -27,4 +27,5 @@
 NULL
 
 # Add custom assertions
-assert_settings_columns <- checkmate::makeAssertionFunction(checkSettingsColumns)
+assertSettingsColumns <- checkmate::makeAssertionFunction(checkSettingsColumns)
+assertLargeInteger <- checkmate::makeAssertionFunction(checkLargeInteger)

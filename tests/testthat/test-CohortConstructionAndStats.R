@@ -55,6 +55,23 @@ test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter
   )
 })
 
+test_that("Call instatiateCohortSet with cohortDefinitionSet with non-integer data type", {
+  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
+  cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(
+    cohortId = 1.2,
+    cohortName = "Test",
+    sql = "sql",
+    foo = "foo"
+  ))
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortDefinitionSet
+    ),
+    message = "(included non-integer)"
+  )
+})
+
 test_that("Call instatiateCohortSet with cohortDefinitionSet with extra columns", {
   cohortDefinitionSet <- createEmptyCohortDefinitionSet()
   cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(
@@ -66,7 +83,7 @@ test_that("Call instatiateCohortSet with cohortDefinitionSet with extra columns"
   expect_error(
     generateCohortSet(
       connectionDetails = connectionDetails,
-      cohortDefinitionSet = data.frame()
+      cohortDefinitionSet = cohortDefinitionSet
     ),
     message = "(must contain the following columns)"
   )
