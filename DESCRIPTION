@@ -29,7 +29,8 @@ Imports:
   jsonlite,
   ResultModelManager,
   SqlRender (>= 1.11.1),
-  stringi (>= 1.7.6)
+  stringi (>= 1.7.6),
+  R.utils
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
