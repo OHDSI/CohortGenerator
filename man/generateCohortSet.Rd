@@ -13,6 +13,7 @@ generateCohortSet(
   cohortTableNames = getCohortTableNames(),
   cohortDefinitionSet = NULL,
   stopOnError = TRUE,
+  timeout = 0,
   incremental = FALSE,
   incrementalFolder = NULL
 )
@@ -56,6 +57,13 @@ Optionally, this data frame may contain: \describe{
 cohortDefinitionSet, should we stop processing the other
 cohorts? The default is TRUE; when set to FALSE, failures will
 be identified in the return value from this function.}
+
+\item{timeout}{A numeric, greater than 0, specifying the maximum number of seconds the cohort generation task 
+is allowed to run before being interrupted by the timeout. This timeout is used
+by @seealso [R.utils::withTimeout] to interrupt the cohort generation query.
+In the case that a timeout occurs, the return value for that generation will
+be "TIMEOUT" and the end time of the generation will reflect the timeout.
+A timeout is not considered an error.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 

@@ -33,6 +33,13 @@
 #'                                    cohortDefinitionSet, should we stop processing the other
 #'                                    cohorts? The default is TRUE; when set to FALSE, failures will
 #'                                    be identified in the return value from this function.
+#'                                    
+#' @param timeout                     A numeric, greater than 0, specifying the maximum number of seconds the cohort generation task 
+#'                                    is allowed to run before being interrupted by the timeout. This timeout is used
+#'                                    by @seealso [R.utils::withTimeout] to interrupt the cohort generation query.
+#'                                    In the case that a timeout occurs, the return value for that generation will
+#'                                    be "TIMEOUT" and the end time of the generation will reflect the timeout.
+#'                                    A timeout is not considered an error.
 #'
 #' @param incremental                 Create only cohorts that haven't been created before?
 #'
@@ -66,6 +73,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                               cohortTableNames = getCohortTableNames(),
                               cohortDefinitionSet = NULL,
                               stopOnError = TRUE,
+                              timeout = 0,
                               incremental = FALSE,
                               incrementalFolder = NULL) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
@@ -76,6 +84,7 @@ generateCohortSet <- function(connectionDetails = NULL,
       "sql"
     )
   )
+  checkmate::assertNumeric(timeout, lower = 0)
   assertLargeInteger(cohortDefinitionSet$cohortId)
   # Verify that cohort IDs are not repeated in the cohort definition
   # set before generating
@@ -159,6 +168,7 @@ generateCohortSet <- function(connectionDetails = NULL,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTableNames = cohortTableNames,
     stopIfError = stopOnError,
+    timeout = timeout,
     incremental = incremental,
     recordKeepingFile = recordKeepingFile,
     stopOnError = stopOnError,
@@ -178,6 +188,7 @@ generateCohortSet <- function(connectionDetails = NULL,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTableNames = cohortTableNames,
       stopIfError = stopOnError,
+      timeout = timeout,
       incremental = incremental,
       recordKeepingFile = recordKeepingFile,
       stopOnError = stopOnError,
@@ -230,6 +241,7 @@ generateCohort <- function(cohortId = NULL,
                            cohortDatabaseSchema,
                            cohortTableNames,
                            stopIfError = TRUE,
+                           timeout = 0,
                            incremental,
                            recordKeepingFile) {
   # Get the index of the cohort record for the current cohortId
@@ -310,28 +322,62 @@ generateCohort <- function(cohortId = NULL,
     # outermost assignment will assign generationInfo based on the return
     # value in the error() block. If the expr() function evaluates without
     # error, the inner most assignment of generationInfo will take place.
-    generationInfo <- tryCatch(expr = {
-      startTime <- lubridate::now()
-      generationInfo <- runCohortSql(
-        sql = sql,
-        startTime = startTime,
-        incremental = incremental,
-        cohortId = cohortDefinitionSet$cohortId[i],
-        checksum = cohortDefinitionSet$checksum[i],
-        recordKeepingFile = recordKeepingFile
-      )
-    }, error = function(e) {
-      endTime <- lubridate::now()
-      ParallelLogger::logError("An error occurred while generating cohortName = ", cohortName, ". Error: ", e)
-      if (stopIfError) {
-        stop()
+    generationInfo <- tryCatch(
+      expr = {
+        startTime <- lubridate::now()
+        # ANOTHER NOTE: Adding the ability to time-out a function
+        # after an elapsed time defined by the timeout parameter. 
+        # When this value is a positive numeric, we'll use the
+        # R.utils::withTimeout to call runCohortSql.
+        if (timeout > 0) {
+          generationInfo <- R.utils::withTimeout({
+            generationInfo <- runCohortSql(
+              sql = sql,
+              startTime = startTime,
+              incremental = incremental,
+              cohortId = cohortDefinitionSet$cohortId[i],
+              checksum = cohortDefinitionSet$checksum[i],
+              recordKeepingFile = recordKeepingFile
+            )
+          }, timeout = timeout)
+        } else {
+          generationInfo <- runCohortSql(
+            sql = sql,
+            startTime = startTime,
+            incremental = incremental,
+            cohortId = cohortDefinitionSet$cohortId[i],
+            checksum = cohortDefinitionSet$checksum[i],
+            recordKeepingFile = recordKeepingFile
+          )
+        }
+      },
+      TimeoutException = function(ex) {
+        # This block is only active when R.utils::withTimeout is activated
+        # by timeout > 0
+        endTime <- lubridate::now()
+        warning("Timeout. Skipping cohort generation.")
+        return(list(
+          generationStatus = "TIMEOUT",
+          startTime = startTime,
+          endTime = endTime
+        ))
+      },
+      error = function(e) {
+        endTime <- lubridate::now()
+        ParallelLogger::logError("An error occurred while generating cohortName = ",
+                                 cohortName,
+                                 ". Error: ",
+                                 e)
+        if (stopIfError) {
+          stop()
+        }
+        return(list(
+          generationStatus = "FAILED",
+          startTime = startTime,
+          endTime = endTime
+        ))
       }
-      return(list(
-        generationStatus = "FAILED",
-        startTime = startTime,
-        endTime = endTime
-      ))
-    })
+    )
   } else {
     generationInfo <- list(
       generationStatus = "SKIPPED",
