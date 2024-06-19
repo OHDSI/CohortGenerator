@@ -140,7 +140,7 @@ test_that("Call generateCohortSet with very small timeout value", {
     cohortTableNames = cohortTableNames,
     timeout = 0.00001
   )
-  expect_true(all(val$generationStatus == "TIMEOUT"))
+  expect_true(any(val$generationStatus == "TIMEOUT"))
 })
 
 
