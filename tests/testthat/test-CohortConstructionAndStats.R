@@ -122,13 +122,7 @@ test_that("Call generateCohortSet with incremental = TRUE and no folder specifie
 })
 
 test_that("Call generateCohortSet with very small timeout value", {
-  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
-  cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(
-    cohortId = 1,
-    cohortName = "Test",
-    sql = "sql",
-    foo = "foo"
-  ))
+  cohortDefinitionSet = getCohortsForTest(cohorts)
   
   cohortTableNames <- CohortGenerator::getCohortTableNames()
   
