@@ -45,7 +45,7 @@ test_that("Call generateCohortSet with cohortDefinitionSet containing duplicate 
 })
 
 
-test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter", {
+test_that("Call generateCohortSet with malformed cohortDefinitionSet parameter", {
   expect_error(
     generateCohortSet(
       connectionDetails = connectionDetails,
@@ -55,7 +55,7 @@ test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter
   )
 })
 
-test_that("Call instatiateCohortSet with cohortDefinitionSet with non-integer data type", {
+test_that("Call generateCohortSet with cohortDefinitionSet with non-integer data type", {
   cohortDefinitionSet <- createEmptyCohortDefinitionSet()
   cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(
     cohortId = 1.2,
@@ -72,7 +72,7 @@ test_that("Call instatiateCohortSet with cohortDefinitionSet with non-integer da
   )
 })
 
-test_that("Call instatiateCohortSet with cohortDefinitionSet with extra columns", {
+test_that("Call generateCohortSet with cohortDefinitionSet with extra columns", {
   cohortDefinitionSet <- createEmptyCohortDefinitionSet()
   cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(
     cohortId = 1,
@@ -89,7 +89,7 @@ test_that("Call instatiateCohortSet with cohortDefinitionSet with extra columns"
   )
 })
 
-test_that("Call instatiateCohortSet with vector as cohortDefinitionSet parameter", {
+test_that("Call generateCohortSet with vector as cohortDefinitionSet parameter", {
   expect_error(
     generateCohortSet(
       connectionDetails = connectionDetails,
@@ -99,7 +99,7 @@ test_that("Call instatiateCohortSet with vector as cohortDefinitionSet parameter
   )
 })
 
-test_that("Call instatiateCohortSet with incremental = TRUE and no folder specified", {
+test_that("Call generateCohortSet with incremental = TRUE and no folder specified", {
   expect_error(
     generateCohortSet(
       connectionDetails = connectionDetails,
@@ -109,6 +109,49 @@ test_that("Call instatiateCohortSet with incremental = TRUE and no folder specif
     message = "Must specify incrementalFolder"
   )
 })
+
+test_that("Call generateCohortSet with incremental = TRUE and no folder specified", {
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = getCohortsForTest(cohorts),
+      incremental = TRUE
+    ),
+    message = "Must specify incrementalFolder"
+  )
+})
+
+test_that("Call generateCohortSet with very small timeout value", {
+  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
+  cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(
+    cohortId = 1,
+    cohortName = "Test",
+    sql = "sql",
+    foo = "foo"
+  ))
+  
+  cohortTableNames <- CohortGenerator::getCohortTableNames()
+  
+  CohortGenerator::createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = "main"
+  )
+  
+  expect_warning(
+    val <- generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortDefinitionSet,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      timeout = 0.001
+    ),
+    message = "(Timeout)"
+  )
+  expect_true(all(val$generationStatus == "TIMEOUT"))
+})
+
 
 # getInclusionStatistics ------
 test_that("Call getInclusionStatistics without connection or connectionDetails", {
