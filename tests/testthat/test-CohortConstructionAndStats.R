@@ -139,7 +139,7 @@ test_that("Call generateCohortSet with very small timeout value", {
       cdmDatabaseSchema = "main",
       cohortDatabaseSchema = "main",
       cohortTableNames = cohortTableNames,
-      timeout = 0.001
+      timeout = 0.00001
     ),
     message = "(Timeout)"
   )
