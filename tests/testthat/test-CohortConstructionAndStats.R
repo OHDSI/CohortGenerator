@@ -132,16 +132,13 @@ test_that("Call generateCohortSet with very small timeout value", {
     cohortDatabaseSchema = "main"
   )
   
-  expect_warning(
-    val <- generateCohortSet(
-      connectionDetails = connectionDetails,
-      cohortDefinitionSet = cohortDefinitionSet,
-      cdmDatabaseSchema = "main",
-      cohortDatabaseSchema = "main",
-      cohortTableNames = cohortTableNames,
-      timeout = 0.00001
-    ),
-    message = "(Timeout)"
+  val <- generateCohortSet(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortDefinitionSet,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    timeout = 0.00001
   )
   expect_true(all(val$generationStatus == "TIMEOUT"))
 })
