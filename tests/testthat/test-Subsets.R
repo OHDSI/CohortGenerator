@@ -464,8 +464,6 @@ test_that("Subset name templates function", {
 
 test_that("Subset logic checks", {
   databaseFile <- tempfile(fileext = ".sqlite")
-  mydb <- dbConnect(RSQLite::SQLite(), databaseFile)
-  dbDisconnect(mydb)
   sqliteConnectionDetails <- DatabaseConnector::createConnectionDetails(
     dbms = "sqlite",
     server = databaseFile
@@ -484,7 +482,7 @@ test_that("Subset logic checks", {
     connection = connection,
     databaseSchema = sqliteResultsDatabaseSchema,
     tableName = "observation_period",
-    data = tibble::tibble(
+    data = data.frame(
       observation_period_id = 1,
       person_id = 1,
       observation_period_start_date = lubridate::date("2000-01-01"),
@@ -496,7 +494,7 @@ test_that("Subset logic checks", {
     connection = connection,
     databaseSchema = sqliteResultsDatabaseSchema,
     tableName = "person",
-    data = tibble::tibble(
+    data = data.frame(
       person_id = 1,
       gender_concept_id = 8532,
       year_of_birth = 2000,
