@@ -47,6 +47,9 @@
 #'                                    to the exported results
 #'                                    
 #' @template CohortDefinitionSet
+#' 
+#' @param tablePrefix Optional - allows to append a prefix to the exported
+#'                    file names.
 #'
 #' @export
 exportCohortStatsTables <- function(connectionDetails,
@@ -58,7 +61,8 @@ exportCohortStatsTables <- function(connectionDetails,
                                     fileNamesInSnakeCase = FALSE,
                                     incremental = FALSE,
                                     databaseId = NULL,
-                                    cohortDefinitionSet = NULL) {
+                                    cohortDefinitionSet = NULL,
+                                    tablePrefix = "") {
   if (is.null(connection)) {
     # Establish the connection and ensure the cleanup is performed
     connection <- DatabaseConnector::connect(connectionDetails)
@@ -71,8 +75,9 @@ exportCohortStatsTables <- function(connectionDetails,
   
   # Internal function to export the stats
   exportStats <- function(data,
-                          fileName) {
-    fullFileName <- file.path(cohortStatisticsFolder, fileName)
+                          fileName,
+                          tablePrefix) {
+    fullFileName <- file.path(cohortStatisticsFolder, paste0(tablePrefix, fileName))
     rlang::inform(paste0("- Saving data to - ", fullFileName))
     if (incremental) {
       if (snakeCaseToCamelCase) {
@@ -96,14 +101,15 @@ exportCohortStatsTables <- function(connectionDetails,
     warning("No cohortDefinitionSet specified; please make sure you've inserted the inclusion rule names using the insertInclusionRuleNames function.")
     tablesToExport <- rbind(tablesToExport, data.frame(
       tableName = "cohortInclusionTable",
-      fileName = "cohort_inclusion.csv"
+      fileName = paste0(tablePrefix, "cohort_inclusion.csv")
     ))
   } else {
     inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
     names(inclusionRules) <- SqlRender::camelCaseToSnakeCase(names(inclusionRules))
     exportStats(
       data = inclusionRules,
-      fileName = "cohort_inclusion.csv"
+      fileName = "cohort_inclusion.csv",
+      tablePrefix = tablePrefix
     )
   }
 
@@ -124,7 +130,53 @@ exportCohortStatsTables <- function(connectionDetails,
     )
     exportStats(
       data = cohortStats[[tablesToExport$tableName[i]]],
-      fileName = fileName
+      fileName = fileName,
+      tablePrefix = tablePrefix
     )
   }
+}
+
+exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) {
+  cohortDefinitions <- createEmptyResult("cg_cohort_definition")
+  cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
+  if (!is.null(cohortDefinitionSet)) {
+    # Massage and save the cohort definition set
+    colsToRename <- c("cohortId", "cohortName", "sql", "json")
+    colInd <- which(names(cohortDefinitionSet) %in% colsToRename)
+    cohortDefinitions <- cohortDefinitionSet
+    names(cohortDefinitions)[colInd] <- c("cohortDefinitionId", "cohortName", "sqlCommand", "json")
+    cohortDefinitions$description <- ""
+    cdsCohortSubsets <- getSubsetDefinitions(cohortDefinitionSet)
+    if (length(cdsCohortSubsets) > 0) {
+      for (i in seq_along(cdsCohortSubsets)) {
+        cohortSubsets <- rbind(cohortSubsets, 
+                               data.frame(
+                                 subsetDefinitionId = cdsCohortSubsets[[i]]$definitionId,
+                                 json = as.character(cdsCohortSubsets[[i]]$toJSON())
+                               ))
+      }
+    }
+  }
+  writeCsv(
+    x = cohortDefinitions,
+    file = file.path(outputFolder, "cg_cohort_definition.csv")
+  )
+  writeCsv(
+    x = cohortSubsets,
+    file = file.path(outputFolder, "cg_cohort_subset_definition.csv")
+  )
+}
+
+createEmptyResult <- function(tableName) {
+  columns <- readCsv(
+    file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
+  ) %>%
+    dplyr::filter(.data$tableName == !!tableName) %>%
+    dplyr::pull(.data$columnName) %>%
+    SqlRender::snakeCaseToCamelCase()
+  result <- vector(length = length(columns))
+  names(result) <- columns
+  result <- tibble::as_tibble(t(result), name_repair = "check_unique")
+  result <- result[FALSE, ]
+  return(result)
 }
