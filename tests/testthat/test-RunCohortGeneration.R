@@ -47,11 +47,19 @@ test_that("Call runCohortGeneration happy path", {
     file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
   )
   expectedFileList <- paste0(unique(spec$tableName), ".csv")
-  diffs <- setdiff(basename(list.files(testOutputFolder)), expectedFileList)
+  diffs <- setdiff(expectedFileList, basename(list.files(testOutputFolder)))
+  expect_true(length(diffs) == 0)
   
-  # NOTE: The only difference between the specification and the
-  # output folder is expected to be the resultsDataModelSpecification.csv
-  expect_true(all(diffs == "resultsDataModelSpecification.csv"))
+  # Make sure that each output file contains the same columns as defined
+  # in the specification
+  for (i in seq_along(expectedFileList)) {
+    data <- readCsv(
+      file = file.path(testOutputFolder, expectedFileList[i])
+    )
+    tbl <- tools::file_path_sans_ext(expectedFileList[i])
+    emptyResult <- CohortGenerator:::createEmptyResult(tbl)
+    expect_equal(!!sort(names(data)), !!sort(names(emptyResult)))
+  }
   
   # Make sure that the output that specifies a database ID has the correct
   # value included

@@ -240,8 +240,8 @@ generateAndExportCohorts <- function(connection,
   )
   
   # Export the cohort definition set
-  #rlang::inform("Saving cohort definition set")
-  #exportCohortDefinitionSet(outputFolder, cohortDefinitionSet)  
+  rlang::inform("Saving cohort definition set")
+  exportCohortDefinitionSet(outputFolder, cohortDefinitionSet)
 }
 
 generateAndExportNegativeControls <- function(connection,

@@ -140,12 +140,6 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   cohortDefinitions <- createEmptyResult("cg_cohort_definition")
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
   if (!is.null(cohortDefinitionSet)) {
-    # Massage and save the cohort definition set
-    colsToRename <- c("cohortId", "cohortName", "sql", "json")
-    colInd <- which(names(cohortDefinitionSet) %in% colsToRename)
-    cohortDefinitions <- cohortDefinitionSet
-    names(cohortDefinitions)[colInd] <- c("cohortDefinitionId", "cohortName", "sqlCommand", "json")
-    cohortDefinitions$description <- ""
     cdsCohortSubsets <- getSubsetDefinitions(cohortDefinitionSet)
     if (length(cdsCohortSubsets) > 0) {
       for (i in seq_along(cdsCohortSubsets)) {
@@ -155,7 +149,33 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
                                  json = as.character(cdsCohortSubsets[[i]]$toJSON())
                                ))
       }
+    } else {
+      # NOTE: In this case the cohortDefinitionSet has no subsets defined
+      # and so we need to add the additional columns that are defined
+      # in the function: addCohortSubsetDefinition. To do this, 
+      # we'll construct a copy of the cohortDefinitionSet with a single
+      # subset to get the proper structure and filter it to the
+      # cohorts of interest.
+      cdsCopy <- cohortDefinitionSet %>% 
+        addCohortSubsetDefinition(
+          cohortSubsetDefintion = createCohortSubsetDefinition(
+            definitionId = 1, 
+            name="empty", 
+            subsetOperators = list(
+              createDemographicSubset()
+            )
+          )
+        ) %>% dplyr::filter(cohortId == cohortDefinitionSet$cohortId)
+      cohortDefinitionSet <- cdsCopy
     }
+    # Massage and save the cohort definition set
+    colsToRename <- c("cohortId", "cohortName", "sql", "json")
+    colInd <- which(names(cohortDefinitionSet) %in% colsToRename)
+    names(cohortDefinitionSet)[colInd] <- c("cohortDefinitionId", "cohortName", "sqlCommand", "json")
+    if (! "description" %in% names(cohortDefinitionSet)) {
+      cohortDefinitionSet$description <- ""
+    }
+    cohortDefinitions <- cohortDefinitionSet[,intersect(names(cohortDefinitions), names(cohortDefinitionSet))]
   }
   writeCsv(
     x = cohortDefinitions,

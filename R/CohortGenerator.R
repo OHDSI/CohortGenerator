@@ -21,10 +21,10 @@
 #' @import R6
 #' @import dplyr
 #' @importFrom grDevices rgb
+#' @importFrom methods is
 #' @importFrom stats aggregate setNames
 #' @importFrom utils write.csv install.packages menu packageVersion sessionInfo
 #' @importFrom rlang .data ':='
-#' @importFrom methods is
 NULL
 
 # Add custom assertions
