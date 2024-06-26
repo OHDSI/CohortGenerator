@@ -19,11 +19,12 @@
 
 #' @import DatabaseConnector
 #' @import R6
+#' @import dplyr
 #' @importFrom grDevices rgb
 #' @importFrom stats aggregate setNames
 #' @importFrom utils write.csv install.packages menu packageVersion sessionInfo
-#' @importFrom dplyr "%>%"
 #' @importFrom rlang .data ':='
+#' @importFrom methods is
 NULL
 
 # Add custom assertions
