@@ -68,7 +68,7 @@ testPlatform <- function(dbmsDetails) {
   cohortsGenerated <- readCsv(
     file = file.path(platformOutputFolder, "cg_cohort_generation.csv")
   )
-  expect_equal(nrow(cohortsGenerated), (nrow(cohortDefintionSet) + nrow(cohortsWithSubsets)))
+  expect_equal(nrow(cohortsGenerated), (nrow(cohortsWithStats) + nrow(cohortsWithSubsets)))
   
   cohortCounts <- readCsv(
     file = file.path(platformOutputFolder, "cg_cohort_count.csv")
