@@ -57,8 +57,9 @@ test_that("Call runCohortGeneration happy path", {
       file = file.path(testOutputFolder, expectedFileList[i])
     )
     tbl <- tools::file_path_sans_ext(expectedFileList[i])
+    
     emptyResult <- CohortGenerator:::createEmptyResult(tbl)
-    expect_equal(!!sort(names(data)), !!sort(names(emptyResult)))
+    expect_equal(!!c(tbl, sort(names(data))), !!c(tbl, sort(names(emptyResult))))
   }
   
   # Make sure that the output that specifies a database ID has the correct

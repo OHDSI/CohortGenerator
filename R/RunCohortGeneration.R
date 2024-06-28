@@ -288,7 +288,7 @@ generateAndExportNegativeControls <- function(connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = cohortTableNames$cohortTable,
       databaseId = databaseId,
-      cohortIds = negativeControlOutcomeCohortSet$cohortId
+      cohortDefinitionSet = negativeControlOutcomeCohortSet[,c("cohortId")]
     )
   }
   
