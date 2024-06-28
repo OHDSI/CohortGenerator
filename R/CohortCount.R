@@ -77,7 +77,7 @@ getCohortCounts <- function(connectionDetails = NULL,
       }
       counts <- merge(
         x = counts,
-        y = cohortDefinitionSet[cohortDefinitionSet$cohortId %in% cohortIds, ],
+        y = cohortDefinitionSet[cohortDefinitionSet$cohortId %in% cohortIds, , drop = FALSE],
         by = "cohortId",
         all.y = TRUE
       )
