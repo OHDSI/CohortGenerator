@@ -148,20 +148,6 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
 
   rlang::inform("Generating negative control outcome cohorts")
 
-  # Send the negative control outcome cohort set to the server for use
-  # in processing. This temp table will hold the mapping between
-  # cohort_definition_id and the outcomeConceptId in the data.frame()
-  DatabaseConnector::insertTable(
-    connection = connection,
-    data = negativeControlOutcomeCohortSet,
-    tempEmulationSchema = tempEmulationSchema,
-    tableName = "#nc_set",
-    camelCaseToSnakeCase = TRUE,
-    dropTableIfExists = TRUE,
-    createTable = TRUE,
-    tempTable = TRUE
-  )
-
   sql <- createNegativeControlOutcomesQuery(
     connection = connection,
     cdmDatabaseSchema = cdmDatabaseSchema,
@@ -169,7 +155,8 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = cohortTable,
     occurrenceType = occurrenceType,
-    detectOnDescendants = detectOnDescendants
+    detectOnDescendants = detectOnDescendants,
+    negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet
   )
 
   DatabaseConnector::executeSql(
@@ -196,7 +183,30 @@ createNegativeControlOutcomesQuery <- function(connection,
                                                cohortDatabaseSchema,
                                                cohortTable,
                                                occurrenceType,
-                                               detectOnDescendants) {
+                                               detectOnDescendants,
+                                               negativeControlOutcomeCohortSet) {
+  selectClause <- ""
+  for (i in 1:nrow(negativeControlOutcomeCohortSet)){
+    selectClause <- paste0(selectClause, 
+                           "SELECT CAST(", negativeControlOutcomeCohortSet$cohortId[i], " AS BIGINT), ", 
+                           "CAST(", negativeControlOutcomeCohortSet$outcomeConceptId[i], " AS BIGINT)"
+                           )
+    if (i < nrow(negativeControlOutcomeCohortSet)) {
+      selectClause <- paste0(selectClause, "\nUNION\n")
+    }
+  }
+  selectClause
+  ncSetQuery <- paste0(
+    "CREATE TABLE #nc_set (",
+    "  cohort_id bigint NOT NULL,",
+    "  outcome_concept_id bigint NOT NULL",
+    ")",
+    ";",
+    "INSERT INTO #nc_set (cohort_id, outcome_concept_id)\n",
+    selectClause,
+    "\n;"
+  )
+
   sql <- sql <- SqlRender::readSql(system.file("sql/sql_server/NegativeControlOutcomes.sql", package = "CohortGenerator", mustWork = TRUE))
   sql <- SqlRender::render(
     sql = sql,
@@ -205,6 +215,7 @@ createNegativeControlOutcomesQuery <- function(connection,
     cohort_table = cohortTable,
     detect_on_descendants = detectOnDescendants,
     occurrence_type = occurrenceType,
+    nc_set_query = ncSetQuery,
     warnOnMissingParameters = TRUE
   )
   sql <- SqlRender::translate(

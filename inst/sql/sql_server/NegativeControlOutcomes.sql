@@ -1,4 +1,5 @@
--- NOTE: #nc_set is created by R before calling this SQL code
+@nc_set_query
+
 CREATE TABLE #Codesets (
   cohort_definition_id bigint NOT NULL,
   ancestor_concept_id int NOT NULL,

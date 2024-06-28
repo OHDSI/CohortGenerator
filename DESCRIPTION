@@ -22,6 +22,7 @@ Imports:
   digest,
   dplyr,
   lubridate,
+  methods,
   ParallelLogger (>= 3.0.0),
   readr (>= 2.1.0),
   rlang,
@@ -29,7 +30,8 @@ Imports:
   jsonlite,
   ResultModelManager,
   SqlRender (>= 1.11.1),
-  stringi (>= 1.7.6)
+  stringi (>= 1.7.6),
+  tibble
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,

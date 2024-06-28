@@ -14,7 +14,8 @@ exportCohortStatsTables(
   fileNamesInSnakeCase = FALSE,
   incremental = FALSE,
   databaseId = NULL,
-  cohortDefinitionSet = NULL
+  cohortDefinitionSet = NULL,
+  tablePrefix = ""
 )
 }
 \arguments{
@@ -57,6 +58,9 @@ the following columns: \describe{
 \item{sql}{The OHDSI-SQL used to generate the cohort}}
 Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
+
+\item{tablePrefix}{Optional - allows to append a prefix to the exported
+file names.}
 }
 \description{
 This function retrieves the data from the cohort statistics tables and
