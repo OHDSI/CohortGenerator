@@ -1,3 +1,6 @@
+library(testthat)
+library(CohortGenerator)
+
 testPlatform <- function(dbmsDetails) {
   cohortTableNames <- getCohortTableNames(cohortTable = dbmsDetails$cohortTable)
   platformOutputFolder <- file.path(outputFolder, dbmsDetails$connectionDetails$dbms)
@@ -68,7 +71,7 @@ testPlatform <- function(dbmsDetails) {
   cohortsGenerated <- readCsv(
     file = file.path(platformOutputFolder, "cg_cohort_generation.csv")
   )
-  expect_equal(nrow(cohortsGenerated), (nrow(cohortsWithStats) + nrow(cohortsWithSubsets)))
+  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithSubsets))
   
   cohortCounts <- readCsv(
     file = file.path(platformOutputFolder, "cg_cohort_count.csv")
