@@ -22,7 +22,7 @@ in the .csv are not in snake_case format}
    `guess_max` or supply the correct types yourself.
 
    Column specifications created by [list()] or [cols()] must contain
-   one column specification for each column. 
+   one column specification for each column.
 
    Alternatively, you can use a compact string representation where each
    character represents one column:
