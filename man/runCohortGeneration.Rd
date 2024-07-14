@@ -55,24 +55,24 @@ the following columns: \describe{
 \item{cohortName}{The cohort's name}
 \item{outcomeConceptId}{The concept_id in the condition domain to use for the negative control outcome.}}}
 
-\item{occurrenceType}{For negative controls outcomes, the occurrenceType 
-will detect either: the first time an 
-outcomeConceptId occurs or all times the 
-outcomeConceptId occurs for a person. Values 
+\item{occurrenceType}{For negative controls outcomes, the occurrenceType
+will detect either: the first time an
+outcomeConceptId occurs or all times the
+outcomeConceptId occurs for a person. Values
 accepted: 'all' or 'first'.}
 
-\item{detectOnDescendants}{For negative controls outcomes, when set to TRUE, 
-detectOnDescendants will use the vocabulary to 
-find negative control outcomes using the 
-outcomeConceptId and all descendants via the 
-concept_ancestor table. When FALSE, only the exact 
-outcomeConceptId will be used to detect the 
+\item{detectOnDescendants}{For negative controls outcomes, when set to TRUE,
+detectOnDescendants will use the vocabulary to
+find negative control outcomes using the
+outcomeConceptId and all descendants via the
+concept_ancestor table. When FALSE, only the exact
+outcomeConceptId will be used to detect the
 outcome.}
 
-\item{stopOnError}{If an error happens while generating one of the 
-cohorts in the cohortDefinitionSet, should we 
-stop processing the other cohorts? The default is 
-TRUE; when set to FALSE, failures will be 
+\item{stopOnError}{If an error happens while generating one of the
+cohorts in the cohortDefinitionSet, should we
+stop processing the other cohorts? The default is
+TRUE; when set to FALSE, failures will be
 identified in the return value from this function.}
 
 \item{outputFolder}{Name of the folder where all the outputs will written to.}
@@ -82,8 +82,8 @@ most tables.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 
-\item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where 
-records are kept of which definition has been 
+\item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where
+records are kept of which definition has been
 executed.}
 }
 \description{

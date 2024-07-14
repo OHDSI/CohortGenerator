@@ -100,7 +100,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   )
   assertLargeInteger(negativeControlOutcomeCohortSet$cohortId)
   assertLargeInteger(negativeControlOutcomeCohortSet$outcomeConceptId, columnName = "outcomeConceptId")
-  
+
   # Verify that cohort IDs are not repeated in the negative control
   # cohort definition set before generating
   if (length(unique(negativeControlOutcomeCohortSet$cohortId)) != length(negativeControlOutcomeCohortSet$cohortId)) {
@@ -186,11 +186,12 @@ createNegativeControlOutcomesQuery <- function(connection,
                                                detectOnDescendants,
                                                negativeControlOutcomeCohortSet) {
   selectClause <- ""
-  for (i in 1:nrow(negativeControlOutcomeCohortSet)){
-    selectClause <- paste0(selectClause, 
-                           "SELECT CAST(", negativeControlOutcomeCohortSet$cohortId[i], " AS BIGINT), ", 
-                           "CAST(", negativeControlOutcomeCohortSet$outcomeConceptId[i], " AS BIGINT)"
-                           )
+  for (i in 1:nrow(negativeControlOutcomeCohortSet)) {
+    selectClause <- paste0(
+      selectClause,
+      "SELECT CAST(", negativeControlOutcomeCohortSet$cohortId[i], " AS BIGINT), ",
+      "CAST(", negativeControlOutcomeCohortSet$outcomeConceptId[i], " AS BIGINT)"
+    )
     if (i < nrow(negativeControlOutcomeCohortSet)) {
       selectClause <- paste0(selectClause, "\nUNION\n")
     }

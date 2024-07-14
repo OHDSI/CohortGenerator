@@ -73,6 +73,9 @@
     <loc>/reference/createLimitSubset.html</loc>
   </url>
   <url>
+    <loc>/reference/createResultsDataModel.html</loc>
+  </url>
+  <url>
     <loc>/reference/createSubsetCohortWindow.html</loc>
   </url>
   <url>
@@ -106,13 +109,22 @@
     <loc>/reference/getCohortDefinitionSet.html</loc>
   </url>
   <url>
+    <loc>/reference/getCohortInclusionRules.html</loc>
+  </url>
+  <url>
     <loc>/reference/getCohortStats.html</loc>
   </url>
   <url>
     <loc>/reference/getCohortTableNames.html</loc>
   </url>
   <url>
+    <loc>/reference/getDataMigrator.html</loc>
+  </url>
+  <url>
     <loc>/reference/getRequiredTasks.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getResultsDataModelSpecifications.html</loc>
   </url>
   <url>
     <loc>/reference/getSubsetDefinitions.html</loc>
@@ -142,10 +154,16 @@
     <loc>/reference/LimitSubsetOperator.html</loc>
   </url>
   <url>
+    <loc>/reference/migrateDataModel.html</loc>
+  </url>
+  <url>
     <loc>/reference/readCsv.html</loc>
   </url>
   <url>
     <loc>/reference/recordTasksDone.html</loc>
+  </url>
+  <url>
+    <loc>/reference/runCohortGeneration.html</loc>
   </url>
   <url>
     <loc>/reference/sampleCohortDefinitionSet.html</loc>
@@ -167,6 +185,9 @@
   </url>
   <url>
     <loc>/reference/SubsetOperator.html</loc>
+  </url>
+  <url>
+    <loc>/reference/uploadResults.html</loc>
   </url>
   <url>
     <loc>/reference/writeCsv.html</loc>

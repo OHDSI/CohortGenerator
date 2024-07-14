@@ -43,10 +43,10 @@ createResultsDataModel <- function(connectionDetails = NULL,
   if (connectionDetails$dbms == "sqlite" & databaseSchema != "main") {
     stop("Invalid schema for sqlite, use databaseSchema = 'main'")
   }
-  
+
   connection <- DatabaseConnector::connect(connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
-  
+
   # Create first version of results model:
   sql <- SqlRender::readSql(system.file("sql/sql_server/CreateResultsDataModel.sql", package = "CohortGenerator", mustWork = TRUE))
   sql <- SqlRender::render(
@@ -115,9 +115,11 @@ uploadResults <- function(connectionDetails,
 #' @export
 migrateDataModel <- function(connectionDetails, databaseSchema, tablePrefix = "") {
   ParallelLogger::logInfo("Migrating data set")
-  migrator <- getDataMigrator(connectionDetails = connectionDetails,
-                              databaseSchema = databaseSchema,
-                              tablePrefix = tablePrefix)
+  migrator <- getDataMigrator(
+    connectionDetails = connectionDetails,
+    databaseSchema = databaseSchema,
+    tablePrefix = tablePrefix
+  )
   migrator$executeMigrations()
   migrator$finalize()
 }

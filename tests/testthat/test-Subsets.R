@@ -470,11 +470,12 @@ test_that("Subset logic checks", {
   )
   sqliteResultsDatabaseSchema <- "main"
   connection <- DatabaseConnector::connect(sqliteConnectionDetails)
-  withr::defer({
-    DatabaseConnector::disconnect(connection)
-    unlink(databaseFile, force = TRUE)
-  },
-  testthat::teardown_env()
+  withr::defer(
+    {
+      DatabaseConnector::disconnect(connection)
+      unlink(databaseFile, force = TRUE)
+    },
+    testthat::teardown_env()
   )
 
   # Create dummy OMOP data for testing ------------------
@@ -489,7 +490,7 @@ test_that("Subset logic checks", {
       observation_period_end_date = lubridate::date("2008-12-31")
     )
   )
-  
+
   DatabaseConnector::insertTable(
     connection = connection,
     databaseSchema = sqliteResultsDatabaseSchema,
@@ -502,8 +503,8 @@ test_that("Subset logic checks", {
       ethnicity_concept_id = 0
     )
   )
-  
-  
+
+
   # Define limit subsets for tests -------------
   lsd1 <- createCohortSubsetDefinition(
     name = "first ever",
@@ -515,7 +516,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   lsd2 <- createCohortSubsetDefinition(
     name = "earliestRemaining",
     definitionId = 102,
@@ -527,7 +528,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   lsd3 <- createCohortSubsetDefinition(
     name = "latestRemaining",
     definitionId = 103,
@@ -539,7 +540,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   lsd4 <- createCohortSubsetDefinition(
     name = "lastEver",
     definitionId = 104,
@@ -550,7 +551,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   lsd5 <- createCohortSubsetDefinition(
     name = "calendar",
     definitionId = 105,
@@ -562,7 +563,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   lsd6 <- createCohortSubsetDefinition(
     name = "firstEver + calendar",
     definitionId = 106,
@@ -575,7 +576,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   lsd7 <- createCohortSubsetDefinition(
     name = "earliestRemaining + calendar",
     definitionId = 107,
@@ -589,7 +590,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   # Define demographics subsets for tests -------------
   ds1 <- createCohortSubsetDefinition(
     name = "Age subset",
@@ -602,7 +603,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   ds2 <- createCohortSubsetDefinition(
     name = "Gender subset",
     definition = 202,
@@ -613,7 +614,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   ds3 <- createCohortSubsetDefinition(
     name = "Race subset",
     definition = 203,
@@ -624,7 +625,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   ds4 <- createCohortSubsetDefinition(
     name = "Race subset",
     definition = 204,
@@ -635,7 +636,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   # Define cohort subsets for tests -------------
   cs1 <- createCohortSubsetDefinition(
     name = "Subset overlaps cohort start",
@@ -651,7 +652,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs2 <- createCohortSubsetDefinition(
     name = "Subset overlaps entire target cohort period",
     definition = 302,
@@ -666,7 +667,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs3 <- createCohortSubsetDefinition(
     name = "Subset subsumed by entire target cohort period",
     definition = 303,
@@ -681,7 +682,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs4 <- createCohortSubsetDefinition(
     name = "Subset overlaps cohort end",
     definition = 304,
@@ -696,7 +697,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs5 <- createCohortSubsetDefinition(
     name = "Subset does NOT overlap cohort end - negate",
     definition = 305,
@@ -711,14 +712,14 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs6 <- createCohortSubsetDefinition(
     name = "Subset overlaps target start - tests combo == all",
     definition = 306,
     subsetOperators = list(
       createCohortSubset(
         name = "subsetOverlapTargetStartComboAll",
-        cohortIds = c(2,3),
+        cohortIds = c(2, 3),
         negate = F,
         cohortCombinationOperator = "all",
         startWindow = createSubsetCohortWindow(-99999, 0, "cohortStart"),
@@ -726,7 +727,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   # Create cohort def. set and apply subset definitions ---------
   cohortDefinitionSet <- data.frame(
     cohortId = 1,
@@ -768,8 +769,9 @@ test_that("Subset logic checks", {
     SELECT @target_cohort_id, 1, DATEFROMPARTS(2004, 01, 01), DATEFROMPARTS(2004, 12, 31)
   ;",
       json = ""
-    ))
-  
+    )
+  )
+
   cohortDefinitionSet <- rbind(
     cohortDefinitionSet,
     data.frame(
@@ -787,11 +789,12 @@ test_that("Subset logic checks", {
     SELECT @target_cohort_id, 1, DATEFROMPARTS(2002, 01, 01), DATEFROMPARTS(2005, 12, 31)
     UNION
     -- NOTE: DOES NOT FULLY SUBSUME COHORT ID = 1 FOR TESTING
-    SELECT @target_cohort_id, 1, DATEFROMPARTS(2004, 01, 01), DATEFROMPARTS(2005, 12, 31) 
+    SELECT @target_cohort_id, 1, DATEFROMPARTS(2004, 01, 01), DATEFROMPARTS(2005, 12, 31)
   ;",
       json = ""
-    ))
-  
+    )
+  )
+
   cohortDefinitionSet <- rbind(
     cohortDefinitionSet,
     data.frame(
@@ -809,11 +812,12 @@ test_that("Subset logic checks", {
     SELECT @target_cohort_id, 1, DATEFROMPARTS(2003, 02, 01), DATEFROMPARTS(2003, 12, 31)
     UNION
     -- NOTE: IS NOT FULLY SUBSUMED BY COHORT ID = 1 FOR TESTING
-    SELECT @target_cohort_id, 1, DATEFROMPARTS(2004, 01, 01), DATEFROMPARTS(2005, 12, 31) 
+    SELECT @target_cohort_id, 1, DATEFROMPARTS(2004, 01, 01), DATEFROMPARTS(2005, 12, 31)
   ;",
       json = ""
-    ))
-  
+    )
+  )
+
   cohortDefinitionSet <- rbind(
     cohortDefinitionSet,
     data.frame(
@@ -831,11 +835,12 @@ test_that("Subset logic checks", {
     SELECT @target_cohort_id, 1, DATEFROMPARTS(2003, 02, 01), DATEFROMPARTS(2004, 02, 01)
     UNION
     -- NOTE: DOES NOT OVERLAP ANY END DATE ENTRIES IN COHORT ID = 1 FOR TESTING
-    SELECT @target_cohort_id, 1, DATEFROMPARTS(2003, 02, 01), DATEFROMPARTS(2003, 03, 01) 
+    SELECT @target_cohort_id, 1, DATEFROMPARTS(2003, 02, 01), DATEFROMPARTS(2003, 03, 01)
   ;",
       json = ""
-    ))
-  
+    )
+  )
+
   cohortDefinitionSet <- cohortDefinitionSet |>
     addCohortSubsetDefinition(lsd1, targetCohortIds = c(1)) |>
     addCohortSubsetDefinition(lsd2, targetCohortIds = c(1)) |>
@@ -854,16 +859,16 @@ test_that("Subset logic checks", {
     addCohortSubsetDefinition(cs4, targetCohortIds = c(1)) |>
     addCohortSubsetDefinition(cs5, targetCohortIds = c(1)) |>
     addCohortSubsetDefinition(cs6, targetCohortIds = c(1))
-  
+
   # Generate cohorts ------------
   cohortTableNames <- getCohortTableNames()
-  
+
   createCohortTables(
     connection = connection,
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames
   )
-  
+
   generateCohortSet(
     connection = connection,
     cdmDatabaseSchema = "main",
@@ -871,37 +876,37 @@ test_that("Subset logic checks", {
     cohortTableNames = getCohortTableNames(),
     cohortDefinitionSet = cohortDefinitionSet
   )
-  
-  
+
+
   cohorts <- DatabaseConnector::querySql(
     connection = connection,
     sql = "SELECT * FROM main.cohort ORDER BY COHORT_DEFINITION_ID, SUBJECT_ID, COHORT_START_DATE;"
   )
-  
+
   # Check the cohort counts to verify the logic worked as expected ---------
   # cohorts # <------ USE TO SEE THE COHORTS TO VERIFY THE INFO BELOW
-  
+
   # Limit subsets cohort definition 1100 range ------
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1101,]$COHORT_START_DATE[[1]], lubridate::date("2001-01-01")) # 1101 - First Ever
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1102,]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1102 - Earliest Remaining
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1103,]$COHORT_START_DATE[[1]], lubridate::date("2005-01-01")) # 1103 - Latest Remaining
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1104,]$COHORT_START_DATE[[1]], lubridate::date("2007-01-01")) # 1104 - Last Ever
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1105,]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1105 - Calendar #1
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1105,]$COHORT_START_DATE[[2]], lubridate::date("2005-01-01")) # 1105 - Calendar #2
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1106,]), 0) # 1106 - First ever + calendar time that restricts to no one
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1107,]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1107 - Earliest remaining+calendar restriction
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1101, ]$COHORT_START_DATE[[1]], lubridate::date("2001-01-01")) # 1101 - First Ever
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1102, ]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1102 - Earliest Remaining
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1103, ]$COHORT_START_DATE[[1]], lubridate::date("2005-01-01")) # 1103 - Latest Remaining
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1104, ]$COHORT_START_DATE[[1]], lubridate::date("2007-01-01")) # 1104 - Last Ever
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1105, ]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1105 - Calendar #1
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1105, ]$COHORT_START_DATE[[2]], lubridate::date("2005-01-01")) # 1105 - Calendar #2
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1106, ]), 0) # 1106 - First ever + calendar time that restricts to no one
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1107, ]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1107 - Earliest remaining+calendar restriction
 
   # Demographic subsets cohort definition 1200 range ------
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1201,]), 2) # 1201 - Age 2-5
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1202,]), 4) # 1202 - Gender
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1203,]), 4) # 1203 - Race
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1204,]), 4) # 1204 - Ethnicity
-  
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1201, ]), 2) # 1201 - Age 2-5
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1202, ]), 4) # 1202 - Gender
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1203, ]), 4) # 1203 - Race
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1204, ]), 4) # 1204 - Ethnicity
+
   # Cohort subsets cohort definition 1300 range ------
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1301,]), 2) # 1301 - Subset overlaps cohort start
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1302,]), 2) # 1302 - Subset overlaps entire target cohort period
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1303,]), 2) # 1303 - Subset subsumed by entire target cohort period
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1304,]), 2) # 1304 - Subset overlaps cohort end
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1305,]), 2) # 1305 - Subset does NOT overlap cohort end - negate
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1306,]), 2) # 1306 - Subset overlaps target start - tests combo == all
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1301, ]), 2) # 1301 - Subset overlaps cohort start
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1302, ]), 2) # 1302 - Subset overlaps entire target cohort period
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1303, ]), 2) # 1303 - Subset subsumed by entire target cohort period
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1304, ]), 2) # 1304 - Subset overlaps cohort end
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1305, ]), 2) # 1305 - Subset does NOT overlap cohort end - negate
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1306, ]), 2) # 1306 - Subset overlaps target start - tests combo == all
 })

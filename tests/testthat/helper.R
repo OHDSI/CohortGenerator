@@ -87,21 +87,23 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
     if (dbmsPlatform == "bigquery") {
       # To avoid rate limit on BigQuery, only test on 1 OS:
       if (.Platform$OS.type == "windows") {
-          bqKeyFile <- tempfile(fileext = ".json")
-          writeLines(Sys.getenv("CDM_BIG_QUERY_KEY_FILE"), bqKeyFile)
-          if (testthat::is_testing()) {
-            withr::defer(unlink(bqKeyFile, force = TRUE), testthat::teardown_env())
-          }
-          bqConnectionString <- gsub("<keyfile path>",
-                                     normalizePath(bqKeyFile, winslash = "/"),
-                                     Sys.getenv("CDM_BIG_QUERY_CONNECTION_STRING"))
-          connectionDetails = DatabaseConnector::createConnectionDetails(
-              dbms = dbmsPlatform,
-              user = "",
-              password = "",
-              connectionString = !!bqConnectionString,
-              pathToDriver = jdbcDriverFolder
-            )
+        bqKeyFile <- tempfile(fileext = ".json")
+        writeLines(Sys.getenv("CDM_BIG_QUERY_KEY_FILE"), bqKeyFile)
+        if (testthat::is_testing()) {
+          withr::defer(unlink(bqKeyFile, force = TRUE), testthat::teardown_env())
+        }
+        bqConnectionString <- gsub(
+          "<keyfile path>",
+          normalizePath(bqKeyFile, winslash = "/"),
+          Sys.getenv("CDM_BIG_QUERY_CONNECTION_STRING")
+        )
+        connectionDetails <- DatabaseConnector::createConnectionDetails(
+          dbms = dbmsPlatform,
+          user = "",
+          password = "",
+          connectionString = !!bqConnectionString,
+          pathToDriver = jdbcDriverFolder
+        )
         cdmDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_CDM_SCHEMA")
         vocabularyDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_CDM_SCHEMA")
         cohortDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_OHDSI_SCHEMA")
@@ -116,7 +118,7 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
         password = URLdecode(Sys.getenv("CDM5_ORACLE_PASSWORD")),
         server = Sys.getenv("CDM5_ORACLE_SERVER"),
         pathToDriver = jdbcDriverFolder
-      )      
+      )
       cdmDatabaseSchema <- Sys.getenv("CDM5_ORACLE_CDM_SCHEMA")
       vocabularyDatabaseSchema <- Sys.getenv("CDM5_ORACLE_CDM_SCHEMA")
       cohortDatabaseSchema <- Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA")
@@ -139,12 +141,12 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
         password = URLdecode(Sys.getenv("CDM5_REDSHIFT_PASSWORD")),
         server = Sys.getenv("CDM5_REDSHIFT_SERVER"),
         pathToDriver = jdbcDriverFolder
-      )      
+      )
       cdmDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA")
       vocabularyDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA")
       cohortDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA")
     } else if (dbmsPlatform == "snowflake") {
-      connectionDetails = DatabaseConnector::createConnectionDetails(
+      connectionDetails <- DatabaseConnector::createConnectionDetails(
         dbms = dbmsPlatform,
         user = Sys.getenv("CDM_SNOWFLAKE_USER"),
         password = URLdecode(Sys.getenv("CDM_SNOWFLAKE_PASSWORD")),
@@ -156,7 +158,7 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
       cohortDatabaseSchema <- Sys.getenv("CDM_SNOWFLAKE_OHDSI_SCHEMA")
       options(sqlRenderTempEmulationSchema = Sys.getenv("CDM_SNOWFLAKE_OHDSI_SCHEMA"))
     } else if (dbmsPlatform == "spark") {
-      connectionDetails = DatabaseConnector::createConnectionDetails(
+      connectionDetails <- DatabaseConnector::createConnectionDetails(
         dbms = dbmsPlatform,
         user = Sys.getenv("CDM5_SPARK_USER"),
         password = URLdecode(Sys.getenv("CDM5_SPARK_PASSWORD")),
@@ -174,7 +176,7 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
         password = URLdecode(Sys.getenv("CDM5_SQL_SERVER_PASSWORD")),
         server = Sys.getenv("CDM5_SQL_SERVER_SERVER"),
         pathToDriver = jdbcDriverFolder
-      )      
+      )
       cdmDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA")
       vocabularyDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA")
       cohortDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")

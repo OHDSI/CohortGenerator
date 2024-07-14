@@ -67,7 +67,7 @@ test_that("Export cohort stats with permanent tables", {
       cohortStatisticsFolder = cohortStatsFolder,
       incremental = FALSE
     )
-  )  
+  )
 
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
@@ -339,7 +339,7 @@ test_that("Export cohort stats using cohortDefinitionSet for inclusion rule name
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames
   )
-  
+
   # Generate with stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   generateCohortSet(
@@ -350,7 +350,7 @@ test_that("Export cohort stats using cohortDefinitionSet for inclusion rule name
     cohortDatabaseSchema = "main",
     incremental = FALSE
   )
-  
+
   # Export the results
   exportCohortStatsTables(
     connectionDetails = connectionDetails,
@@ -361,7 +361,7 @@ test_that("Export cohort stats using cohortDefinitionSet for inclusion rule name
     databaseId = "Eunomia",
     cohortDefinitionSet = cohortsWithStats
   )
-  
+
   # Verify the files are written to the file system and that
   # the cohort inclusion information has been written
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)

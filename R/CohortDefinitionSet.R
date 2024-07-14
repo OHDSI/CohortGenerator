@@ -50,7 +50,7 @@ createEmptyCohortDefinitionSet <- function(verbose = FALSE) {
   cohortDefinitionSetColumns <- colnames(df)
   matchingColumns <- intersect(x = colnames(x), y = cohortDefinitionSetColumns)
   columnNamesMatch <- setequal(matchingColumns, cohortDefinitionSetColumns)
-  
+
   if (!columnNamesMatch && emitWarning) {
     columnsMissing <- setdiff(x = cohortDefinitionSetColumns, y = colnames(x))
     warningMessage <- paste0(
@@ -144,7 +144,7 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   # Check if the data types match
   # NOTE: createEmptyCohortDefinitionSet() is the reference for the data
   # types. cohortId is declared as a numeric but an integer is also fine
-  dataTypesMatch <- (xDataTypes[1] %in% c('integer', 'double') && all(xDataTypes[2:4] == "character"))
+  dataTypesMatch <- (xDataTypes[1] %in% c("integer", "double") && all(xDataTypes[2:4] == "character"))
   # Create the cohortDefinitionSetSpec from the names/data types for reference
   cohortDefinitionSetSpec <- data.frame(
     columnName = names(xDataTypes),
@@ -520,7 +520,7 @@ checkLargeInteger <- function(x, columnName = "cohortId") {
   # NOTE: suppressWarnings used to mask
   # warning from R which may happen for
   # large values in X.
-  res <- all(suppressWarnings(x%%1) == 0)
+  res <- all(suppressWarnings(x %% 1) == 0)
   if (!isTRUE(res)) {
     errorMessage <- paste0("The column ", columnName, " included non-integer values. Please update and re-try")
     return(errorMessage)
