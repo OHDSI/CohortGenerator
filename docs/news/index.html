@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
       </span>
     </div>
 
@@ -66,6 +66,11 @@
       <small>Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.10.0" id="cohortgenerator-0100">CohortGenerator 0.10.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-0100"></a></h2>
+<p>New Features - Add <code>runCohortGeneration</code> function (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/165" class="external-link">#165</a>) - Adopt ResultModelManager for handling results data models &amp; uploading. Extend results data model to include information on cohort subsets(<a href="https://github.com/OHDSI/CohortGenerator/issues/154" class="external-link">#154</a>, <a href="https://github.com/OHDSI/CohortGenerator/issues/162" class="external-link">#162</a>) - Remove REMOTES entries for CirceR and Eunomia which are now in CRAN (<a href="https://github.com/OHDSI/CohortGenerator/issues/145" class="external-link">#145</a>) - Unit tests now running on all OHDSI DB Platforms (<a href="https://github.com/OHDSI/CohortGenerator/issues/151" class="external-link">#151</a>)</p>
+<p>Bug Fixes - Negation of cohort subset operator must join on <code>subject_id</code> AND <code>start_date</code> (<a href="https://github.com/OHDSI/CohortGenerator/issues/167" class="external-link">#167</a>) - Allow integer as cohort ID (<a href="https://github.com/OHDSI/CohortGenerator/issues/146" class="external-link">#146</a>) - Use native messaging functions for output vs. ParallelLogger (<a href="https://github.com/OHDSI/CohortGenerator/issues/97" class="external-link">#97</a>) - Prevent upload of inclusion rule information (<a href="https://github.com/OHDSI/CohortGenerator/issues/78" class="external-link">#78</a>) - Expose <code>colTypes</code> when working with .csv files (<a href="https://github.com/OHDSI/CohortGenerator/issues/59" class="external-link">#59</a>) - Remove <code>bit64</code> from package (mostly) (<a href="https://github.com/OHDSI/CohortGenerator/issues/152" class="external-link">#152</a>) - Updated documentation for cohort subset negate feature (<a href="https://github.com/OHDSI/CohortGenerator/issues/111" class="external-link">#111</a>)</p>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.9.0" id="cohortgenerator-090">CohortGenerator 0.9.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-090"></a></h2>
 <ul><li>Random sample functionality (for development only) (Issue <a href="https://github.com/OHDSI/CohortGenerator/issues/129" class="external-link">#129</a>)</li>

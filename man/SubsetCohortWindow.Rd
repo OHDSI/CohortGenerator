@@ -2,12 +2,9 @@
 % Please edit documentation in R/Subsets.R
 \name{SubsetCohortWindow}
 \alias{SubsetCohortWindow}
-\title{to List}
+\title{Time Window For Cohort Subset Operator}
 \description{
 Representation of a time window to use when subsetting a target cohort with a subset cohort
-}
-\details{
-SubsetCohortWindow settings
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}

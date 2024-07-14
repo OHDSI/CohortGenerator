@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
       </span>
     </div>
 
@@ -66,6 +66,18 @@
     </div>
 
     <table class="ref-index"><colgroup><col class="alias"><col class="title"></colgroup><tbody><tr><th colspan="2">
+          <h2 id="cohort-generation">Cohort Generation <a href="#cohort-generation" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions that support generating cohorts.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="runCohortGeneration.html">runCohortGeneration()</a></code> </p>
+        </td>
+        <td><p>Run a cohort generation and export results</p></td>
+      </tr><tr><td>
+          <p><code><a href="generateCohortSet.html">generateCohortSet()</a></code> </p>
+        </td>
+        <td><p>Generate a set of cohorts</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cohort-tables">Cohort Tables <a href="#cohort-tables" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions that support creating the necessary cohort tables.</p>
         </th>
@@ -102,18 +114,6 @@
         </td>
         <td><p>Is the data.frame a cohort definition set?</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="cohort-generation">Cohort Generation <a href="#cohort-generation" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Functions that support generating cohorts.</p>
-        </th>
-      </tr></tbody><tbody><tr><td>
-          <p><code><a href="generateCohortSet.html">generateCohortSet()</a></code> </p>
-        </td>
-        <td><p>Generate a set of cohorts</p></td>
-      </tr><tr><td>
-          <p><code><a href="createEmptyCohortDefinitionSet.html">createEmptyCohortDefinitionSet()</a></code> </p>
-        </td>
-        <td><p>Create an empty cohort definition set</p></td>
-      </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cohort-counts">Cohort Counts <a href="#cohort-counts" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Function for obtaining the counts of subjects and events for one or more cohorts</p>
         </th>
@@ -122,21 +122,13 @@
         </td>
         <td><p>Count the cohort(s)</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="cohort-subset">Cohort Subset <a href="#cohort-subset" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Functions and R6 classes for creating cohort subset definitions and subset operators.</p>
+          <h2 id="cohort-subset-functions">Cohort Subset Functions <a href="#cohort-subset-functions" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for creating cohort subset definitions and subset operators.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="addCohortSubsetDefinition.html">addCohortSubsetDefinition()</a></code> </p>
         </td>
         <td><p>Add cohort subset definition to a cohort definition set</p></td>
-      </tr><tr><td>
-          <p><code><a href="CohortSubsetDefinition.html">CohortSubsetDefinition</a></code> </p>
-        </td>
-        <td><p>Cohort Subset Definition</p></td>
-      </tr><tr><td>
-          <p><code><a href="CohortSubsetOperator.html">CohortSubsetOperator</a></code> </p>
-        </td>
-        <td><p>Cohort Subset Operator</p></td>
       </tr><tr><td>
           <p><code><a href="createCohortSubset.html">createCohortSubset()</a></code> </p>
         </td>
@@ -158,37 +150,53 @@
         </td>
         <td><p>A definition of subset functions to be applied to a set of cohorts</p></td>
       </tr><tr><td>
-          <p><code><a href="DemographicSubsetOperator.html">DemographicSubsetOperator</a></code> </p>
-        </td>
-        <td><p>Criteria Subset</p></td>
-      </tr><tr><td>
           <p><code><a href="getSubsetDefinitions.html">getSubsetDefinitions()</a></code> </p>
         </td>
         <td><p>Get cohort subset definitions from a cohort definition set</p></td>
+      </tr><tr><td>
+          <p><code><a href="saveCohortSubsetDefinition.html">saveCohortSubsetDefinition()</a></code> </p>
+        </td>
+        <td><p>Save cohort subset definitions to json</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="cohort-subset-classes">Cohort Subset Classes <a href="#cohort-subset-classes" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>R6 classes for cohort subset definitions and subset operators.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="CohortSubsetDefinition.html">CohortSubsetDefinition</a></code> </p>
+        </td>
+        <td><p>Cohort Subset Definition</p></td>
+      </tr><tr><td>
+          <p><code><a href="CohortSubsetOperator.html">CohortSubsetOperator</a></code> </p>
+        </td>
+        <td><p>Cohort Subset Operator</p></td>
+      </tr><tr><td>
+          <p><code><a href="DemographicSubsetOperator.html">DemographicSubsetOperator</a></code> </p>
+        </td>
+        <td><p>Demographic Subset Operator</p></td>
       </tr><tr><td>
           <p><code><a href="LimitSubsetOperator.html">LimitSubsetOperator</a></code> </p>
         </td>
         <td><p>Limit Subset Operator</p></td>
       </tr><tr><td>
-          <p><code><a href="saveCohortSubsetDefinition.html">saveCohortSubsetDefinition()</a></code> </p>
-        </td>
-        <td><p>Save cohort subset definitions to json</p></td>
-      </tr><tr><td>
           <p><code><a href="SubsetCohortWindow.html">SubsetCohortWindow</a></code> </p>
         </td>
-        <td><p>to List</p></td>
+        <td><p>Time Window For Cohort Subset Operator</p></td>
       </tr><tr><td>
           <p><code><a href="SubsetOperator.html">SubsetOperator</a></code> </p>
         </td>
-        <td><p>SubsetOperator</p></td>
+        <td><p>Abstract base class for subsets.</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cohort-statistics">Cohort Statistics <a href="#cohort-statistics" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Functions for inserting inclusion rule names from a cohort definition, exporting the cohort statistics to the file system and a helper function for dropping those tables when they are no longer needed.</p>
+          <p class="section-desc"></p><p>Functions for inserting inclusion rule names from a cohort definition, exporting the cohort statistics to the file system and a helper function for dropping those tables when they are no longer needed. These functions assume you are using <a href="https://github.com/OHDSI/circe-be" class="external-link">Circe</a> for inclusion rules and cohort statistics.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="getCohortStats.html">getCohortStats()</a></code> </p>
         </td>
         <td><p>Get Cohort Inclusion Stats Table Data</p></td>
+      </tr><tr><td>
+          <p><code><a href="getCohortInclusionRules.html">getCohortInclusionRules()</a></code> </p>
+        </td>
+        <td><p>Get Cohort Inclusion Rules from a cohort definition set</p></td>
       </tr><tr><td>
           <p><code><a href="insertInclusionRuleNames.html">insertInclusionRuleNames()</a></code> </p>
         </td>
@@ -213,6 +221,30 @@
           <p><code><a href="generateNegativeControlOutcomeCohorts.html">generateNegativeControlOutcomeCohorts()</a></code> </p>
         </td>
         <td><p>Generate a set of negative control outcome cohorts</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="result-model-management">Result Model Management <a href="#result-model-management" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for managing the results of running Cohort Generator via <code>runCohortGeneration</code></p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="createResultsDataModel.html">createResultsDataModel()</a></code> </p>
+        </td>
+        <td><p>Create the results data model tables on a database server.</p></td>
+      </tr><tr><td>
+          <p><code><a href="getDataMigrator.html">getDataMigrator()</a></code> </p>
+        </td>
+        <td><p>Get database migrations instance</p></td>
+      </tr><tr><td>
+          <p><code><a href="getResultsDataModelSpecifications.html">getResultsDataModelSpecifications()</a></code> </p>
+        </td>
+        <td><p>Get specifications for CohortGenerator results data model</p></td>
+      </tr><tr><td>
+          <p><code><a href="migrateDataModel.html">migrateDataModel()</a></code> </p>
+        </td>
+        <td><p>Migrate Data model</p></td>
+      </tr><tr><td>
+          <p><code><a href="uploadResults.html">uploadResults()</a></code> </p>
+        </td>
+        <td><p>Upload results to the database server.</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="csv-file-helpers">CSV File Helpers <a href="#csv-file-helpers" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions for reading and writing CSV files to ensure adherance to the HADES standard when interfacing between R and SQL/File System: <a href="https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL" class="external-link uri">https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL</a></p>

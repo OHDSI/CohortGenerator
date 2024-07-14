@@ -35,7 +35,7 @@
 
 
 # SubsetCohortWindow -------------
-#' SubsetCohortWindow settings
+#' @title Time Window For Cohort Subset Operator
 #' @export
 #' @description
 #' Representation of a time window to use when subsetting a target cohort with a subset cohort
@@ -128,7 +128,7 @@ createSubsetCohortWindow <- function(startDay, endDay, targetAnchor) {
 }
 
 # SubsetOperator ------------------------------
-#' @title SubsetOperator
+#' @title Abstract base class for subsets.
 #' @export
 #' @description
 #' Abstract Base Class for subsets. Subsets should inherit from this and implement their own requirements.
@@ -418,7 +418,10 @@ createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator
 }
 
 # DemographicSubsetOperator ------------------------------
-#' Criteria Subset
+#' @title Demographic Subset Operator
+#' @description
+#' Operators for subsetting a cohort by demographic criteria
+#' 
 #' @export
 DemographicSubsetOperator <- R6::R6Class(
   classname = "DemographicSubsetOperator",

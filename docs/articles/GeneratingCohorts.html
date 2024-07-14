@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@
                         <h4 data-toc-skip class="author">Anthony G. Sena
 and Martijn J. Schuemie</h4>
             
-            <h4 data-toc-skip class="date">2024-05-28</h4>
+            <h4 data-toc-skip class="date">2024-07-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/HEAD/vignettes/GeneratingCohorts.Rmd" class="external-link"><code>vignettes/GeneratingCohorts.Rmd</code></a></small>
       <div class="hidden name"><code>GeneratingCohorts.Rmd</code></div>
@@ -262,12 +262,13 @@ summary of the persons and events for each cohort:</p>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Counting cohorts took 0.126 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span>
+<span><span class="co">#&gt; Counting cohorts took 0.131 secs</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;   cohortId cohortEntries cohortSubjects</span></span>
 <span><span class="co">#&gt; 1  1778211          1800           1800</span></span>
 <span><span class="co">#&gt; 2  1778212           569            569</span></span>
-<span><span class="co">#&gt; 3  1778213           266            266</span></span></code></pre>
+<span><span class="co">#&gt; 3  1778213           266            266</span></span>
+<span><span class="co">#&gt; 4  1778214          1750           1750</span></span></code></pre>
 </div>
 </div>
 <div class="section level3">
@@ -287,7 +288,7 @@ how to export these results for use by downstream packages such as
 CohortDiagnostics. Building on our basic example, let’s export the
 cohorts from WebAPI but this time indicate that we’d like to also
 include the code that <code>generatesStats</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get the cohorts and include the code to generate inclusion rule stats</span></span>
 <span><span class="va">cohortDefinitionSet</span> <span class="op">&lt;-</span> <span class="fu">ROhdsiWebApi</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html" class="external-link">exportCohortDefinitionSet</a></span><span class="op">(</span></span>
 <span>  baseUrl <span class="op">=</span> <span class="va">baseUrl</span>,</span>
@@ -296,7 +297,7 @@ include the code that <code>generatesStats</code>:</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Next we’ll create the tables to store the cohort and the cohort
 statistics. Then we can generate the cohorts.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First get the cohort table names to use for this generation task</span></span>
 <span><span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"stats_example"</span><span class="op">)</span></span>
 <span></span>
@@ -321,7 +322,7 @@ statistics. Then we can generate the cohorts.</p>
 are available in the cohort statistics tables. The next step is to
 export the results to the file system which is done using the code
 below:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/insertInclusionRuleNames.html">insertInclusionRuleNames</a></span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
 <span>  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,</span>
@@ -344,7 +345,7 @@ which will write comma separated value (CSV) files per cohort statistic
 table in the <code>InclusionStats</code> folder.</p>
 <p>Once you have exported your cohort statistics, you can optionally
 drop the statistics tables by using the following command:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/dropCohortStatsTables.html">dropCohortStatsTables</a></span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
@@ -362,7 +363,7 @@ we may want to keep track of cohorts that we have already generated
 against a source and skip it if we know the cohort definition has not
 changed. To illustrate incremental mode and explain how it works, we’ll
 continue along with our example from earlier.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a set of tables for this example</span></span>
 <span><span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"cohort"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span></span>
@@ -376,15 +377,15 @@ the hood, since <code>incremental = TRUE</code> was set, the code did a
 check against the database to see if the tables already exist before
 creating them. To verify this, we can call the function again and check
 the results:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
 <span>  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  incremental <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Table "cohort" already exists and in incremental mode, so not recreating it.</span></span>
+<pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span>
+<span><span class="co">#&gt; Table "cohort" already exists and in incremental mode, so not recreating it.</span></span>
 <span><span class="co">#&gt; Table "cohort" already exists and in incremental mode, so not recreating it.</span></span>
 <span><span class="co">#&gt; Table "cohort_inclusion" already exists and in incremental mode, so not recreating it.</span></span>
 <span><span class="co">#&gt; Table "cohort_inclusion_result" already exists and in incremental mode, so not recreating it.</span></span>
@@ -394,7 +395,7 @@ the results:</p>
 <p>The use of <code>incremental = TRUE</code> here allows for assurance
 that tables and results from previous runs are preserved. Next, we can
 generate our <code>cohortDefinitionSet</code> in incremental mode.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
 <span>  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
@@ -418,7 +419,7 @@ inspect the SQL for each cohort in the <code>cohortDefinitionSet</code>
 and if the checksum of that cohort matches the checksum found in the
 <code>incrementalFolder</code> for the same cohort ID, the generation is
 skipped. To illustrate how this looks:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
 <span>  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
@@ -429,11 +430,12 @@ skipped. To illustrate how this looks:</p>
 <span>  incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Initiating cluster consisting only of main thread</span></span>
-<span><span class="co">#&gt; Skipping cohortId = '1778211' because it is unchanged from earlier run</span></span>
+<pre><code><span><span class="co">#&gt; Initiating cluster consisting only of main thread</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Skipping cohortId = '1778211' because it is unchanged from earlier run</span></span>
 <span><span class="co">#&gt; Skipping cohortId = '1778212' because it is unchanged from earlier run</span></span>
 <span><span class="co">#&gt; Skipping cohortId = '1778213' because it is unchanged from earlier run</span></span>
-<span><span class="co">#&gt; Generating cohort set took 0.11 secs</span></span></code></pre>
+<span><span class="co">#&gt; Skipping cohortId = '1778214' because it is unchanged from earlier run</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Generating cohort set took 0.13 secs</span></span></code></pre>
 <div class="section level5">
 <h5 id="potential-pitfalls-of-incremental-mode">Potential Pitfalls of Incremental Mode<a class="anchor" aria-label="anchor" href="#potential-pitfalls-of-incremental-mode"></a>
 </h5>
