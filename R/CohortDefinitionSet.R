@@ -29,13 +29,39 @@
 #' @export
 createEmptyCohortDefinitionSet <- function(verbose = FALSE) {
   checkmate::assert_logical(verbose)
-  cohortDefinitionSetSpec <- .getCohortDefinitionSetSpecification()
+  df <- data.frame(
+    cohortId = numeric(),
+    cohortName = character(),
+    sql = character(),
+    json = character()
+  )
   if (verbose) {
-    print(cohortDefinitionSetSpec)
+    print(df)
   }
-  # Build the data.frame dynamically from the cohort definition set spec
-  df <- .createEmptyDataFrameFromSpecification(cohortDefinitionSetSpec)
   invisible(df)
+}
+
+.cohortDefinitionSetHasRequiredColumns <- function(x, emitWarning = FALSE) {
+  checkmate::assert_data_frame(x)
+  df <- createEmptyCohortDefinitionSet(verbose = FALSE)
+
+  # Compare the column names from the input x to an empty cohort
+  # definition set to ensure the required columns are present
+  cohortDefinitionSetColumns <- colnames(df)
+  matchingColumns <- intersect(x = colnames(x), y = cohortDefinitionSetColumns)
+  columnNamesMatch <- setequal(matchingColumns, cohortDefinitionSetColumns)
+
+  if (!columnNamesMatch && emitWarning) {
+    columnsMissing <- setdiff(x = cohortDefinitionSetColumns, y = colnames(x))
+    warningMessage <- paste0(
+      "The following columns were missing in your cohortDefinitionSet: ",
+      paste(columnsMissing, collapse = ","),
+      ". A cohortDefinitionSet requires the following columns: ",
+      paste(cohortDefinitionSetColumns, collapse = ",")
+    )
+    warning(warningMessage)
+  }
+  invisible(columnNamesMatch)
 }
 
 #' Is the data.frame a cohort definition set?
@@ -99,7 +125,6 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   checkmate::assert_data_frame(x)
   df <- createEmptyCohortDefinitionSet(verbose = FALSE)
   cohortDefinitionSetColumns <- colnames(df)
-  cohortDefinitionSetSpec <- .getCohortDefinitionSetSpecification()
 
   columnNamesMatch <- .cohortDefinitionSetHasRequiredColumns(x = x, emitWarning = emitWarning)
   if (!columnNamesMatch) {
@@ -107,7 +132,8 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   }
 
   # Compare the data types from the input x to an empty cohort
-  # definition set to ensure the same data types are present
+  # definition set to ensure the same data types (or close enough)
+  # are present
   dataTypesMatch <- FALSE
   # Subset x to the required columns
   xSubset <- x[, cohortDefinitionSetColumns]
@@ -116,7 +142,14 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   # Get the reference data types
   cohortDefinitionSetDataTypes <- sapply(df, typeof)
   # Check if the data types match
-  dataTypesMatch <- identical(x = xDataTypes, y = cohortDefinitionSetDataTypes)
+  # NOTE: createEmptyCohortDefinitionSet() is the reference for the data
+  # types. cohortId is declared as a numeric but an integer is also fine
+  dataTypesMatch <- (xDataTypes[1] %in% c("integer", "double") && all(xDataTypes[2:4] == "character"))
+  # Create the cohortDefinitionSetSpec from the names/data types for reference
+  cohortDefinitionSetSpec <- data.frame(
+    columnName = names(xDataTypes),
+    dataType = xDataTypes
+  )
   if (!dataTypesMatch && emitWarning) {
     dataTypesMismatch <- setdiff(x = cohortDefinitionSetDataTypes, y = xDataTypes)
     # Create a column for the warning message
@@ -143,50 +176,6 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
     dataTypesMatch = dataTypesMatch,
     x = x
   ))
-}
-
-.cohortDefinitionSetHasRequiredColumns <- function(x, emitWarning = FALSE) {
-  checkmate::assert_data_frame(x)
-  df <- createEmptyCohortDefinitionSet(verbose = FALSE)
-  cohortDefinitionSetSpec <- .getCohortDefinitionSetSpecification()
-
-  # Compare the column names from the input x to an empty cohort
-  # definition set to ensure the required columns are present
-  cohortDefinitionSetColumns <- colnames(df)
-  matchingColumns <- intersect(x = colnames(x), y = cohortDefinitionSetColumns)
-  columnNamesMatch <- setequal(matchingColumns, cohortDefinitionSetColumns)
-
-  if (!columnNamesMatch && emitWarning) {
-    columnsMissing <- setdiff(x = cohortDefinitionSetColumns, y = colnames(x))
-    warningMessage <- paste0(
-      "The following columns were missing in your cohortDefinitionSet: ",
-      paste(columnsMissing, collapse = ","),
-      ". A cohortDefinitionSet requires the following columns: ",
-      paste(cohortDefinitionSetColumns, collapse = ",")
-    )
-    warning(warningMessage)
-  }
-  invisible(columnNamesMatch)
-}
-
-#' Helper function to return the specification description of a
-#' cohortDefinitionSet
-#'
-#' @description
-#' This function reads from the cohortDefinitionSetSpecificationDescription.csv
-#' to return a data.frame that describes the required columns in a
-#' cohortDefinitionSet
-#'
-#' @return
-#' Returns a data.frame that defines a cohortDefinitionSet
-#'
-#' @noRd
-#' @keywords internal
-.getCohortDefinitionSetSpecification <- function() {
-  return(readCsv(system.file("cohortDefinitionSetSpecificationDescription.csv",
-    package = "CohortGenerator",
-    mustWork = TRUE
-  )))
 }
 
 #' Get a cohort definition set
@@ -244,7 +233,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
       path <- system.file(fileName, package = packageName)
     }
     if (verbose) {
-      ParallelLogger::logInfo(paste0(" -- Loading ", basename(fileName), " from ", path))
+      rlang::inform(paste0(" -- Loading ", basename(fileName), " from ", path))
     }
     if (!file.exists(path)) {
       if (grepl(".json$", tolower(basename(fileName))) && warnOnMissingJson) {
@@ -259,10 +248,10 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   }
 
   # Read the settings file which holds the cohortDefinitionSet
-  ParallelLogger::logInfo("Loading cohortDefinitionSet")
+  rlang::inform("Loading cohortDefinitionSet")
   settings <- readCsv(file = getPath(fileName = settingsFileName), warnOnCaseMismatch = FALSE)
 
-  assert_settings_columns(names(settings), getPath(fileName = settingsFileName))
+  assertSettingsColumns(names(settings), getPath(fileName = settingsFileName))
   checkmate::assert_true(all(cohortFileNameValue %in% names(settings)))
   checkmate::assert_true((!all(.getFileDataColumns() %in% names(settings))))
 
@@ -313,12 +302,12 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   # Loading cohort subset definitions with their associated targets
   if (loadSubsets & nrow(subsetsToLoad) > 0) {
     if (dir.exists(subsetJsonFolder)) {
-      ParallelLogger::logInfo("Loading Cohort Subset Definitions")
+      rlang::inform("Loading Cohort Subset Definitions")
 
       ## Loading subsets that apply to the saved definition sets
       for (i in unique(subsetsToLoad$subsetDefinitionId)) {
         subsetFile <- file.path(subsetJsonFolder, paste0(i, ".json"))
-        ParallelLogger::logInfo("Loading Cohort Subset Defintion ", subsetFile)
+        rlang::inform(paste0("Loading Cohort Subset Defintion ", subsetFile))
         subsetDef <- CohortSubsetDefinition$new(ParallelLogger::loadSettingsFromJson(subsetFile))
         # Find target cohorts for this subset definition
         subsetTargetIds <- unique(subsetsToLoad[subsetsToLoad$subsetDefinitionId == i, ]$subsetParent)
@@ -382,7 +371,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assert_vector(cohortFileNameValue)
   checkmate::assert_true(length(cohortFileNameValue) > 0)
-  assert_settings_columns(names(cohortDefinitionSet))
+  assertSettingsColumns(names(cohortDefinitionSet))
   checkmate::assert_true(all(cohortFileNameValue %in% names(cohortDefinitionSet)))
   settingsFolder <- dirname(settingsFileName)
   if (!dir.exists(settingsFolder)) {
@@ -397,7 +386,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
 
   # Export the cohortDefinitionSet to the settings folder
   if (verbose) {
-    ParallelLogger::logInfo("Exporting cohortDefinitionSet to ", settingsFileName)
+    rlang::inform(paste0("Exporting cohortDefinitionSet to ", settingsFileName))
   }
   # Write the settings file and ensure that the "sql" and "json" columns are
   # not included
@@ -425,7 +414,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
     }
 
     if (verbose) {
-      ParallelLogger::logInfo("Exporting (", i, "/", nrow(cohortDefinitionSet), "): ", cohortName)
+      rlang::inform(paste0("Exporting (", i, "/", nrow(cohortDefinitionSet), "): ", cohortName))
     }
 
     if (!is.na(json) && nchar(json) > 0) {
@@ -441,7 +430,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
     }
   }
 
-  ParallelLogger::logInfo("Cohort definition saved")
+  rlang::inform("Cohort definition saved")
 }
 
 .getSettingsFileRequiredColumns <- function() {
@@ -507,19 +496,37 @@ checkSettingsColumns <- function(columnNames, settingsFileName = NULL) {
   }
 }
 
-.createEmptyDataFrameFromSpecification <- function(specifications) {
-  # Build the data.frame dynamically from the cohort definition set spec
-  df <- data.frame()
-  for (i in 1:nrow(specifications)) {
-    colName <- specifications$columnName[i]
-    dataType <- specifications$dataType[i]
-    if (dataType == "integer64") {
-      df <- df %>% dplyr::mutate(!!colName := do.call(what = bit64::as.integer64, args = list()))
-    } else {
-      df <- df %>% dplyr::mutate(!!colName := do.call(what = dataType, args = list()))
-    }
+#' Custom checkmate assertion for ensuring a vector contains only integer numbers,
+#' including large ones
+#'
+#' @description
+#' This function is used to provide a more informative message to inform
+#' a user that their number must be an integer. Since the
+#' cohort definition set allows for storing `numeric` data types, we need
+#' to make sure that there are no digits in the mantissa of the cohort ID.
+#' NOTE: This function is necessary since checkmate::assert_integerish
+#' will still throw an error even in the case where you have a large
+#' integer which was not desirable.
+#'
+#' @param x The vector containing integer/numeric values
+#'
+#' @param columnName The name of the column where this vector came from. This
+#'                   is used when displaying the error message.
+#' @return
+#' Returns TRUE if all the values in x are integers
+#' @noRd
+#' @keywords internal
+checkLargeInteger <- function(x, columnName = "cohortId") {
+  # NOTE: suppressWarnings used to mask
+  # warning from R which may happen for
+  # large values in X.
+  res <- all(suppressWarnings(x %% 1) == 0)
+  if (!isTRUE(res)) {
+    errorMessage <- paste0("The column ", columnName, " included non-integer values. Please update and re-try")
+    return(errorMessage)
+  } else {
+    return(TRUE)
   }
-  invisible(df)
 }
 
 .copySubsetDefinitions <- function(copyToCds, copyFromCds) {

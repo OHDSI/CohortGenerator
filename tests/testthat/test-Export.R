@@ -57,13 +57,16 @@ test_that("Export cohort stats with permanent tables", {
   )
 
   checkmate::expect_names(names(cohortStats), subset.of = c("cohortInclusionStatsTable"))
-  # Export the results
-  exportCohortStatsTables(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortStatisticsFolder = cohortStatsFolder,
-    incremental = FALSE
+
+  expect_warning(
+    # Export the results
+    exportCohortStatsTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortStatisticsFolder = cohortStatsFolder,
+      incremental = FALSE
+    )
   )
 
   # Verify the files are written to the file system
@@ -102,13 +105,15 @@ test_that("Export cohort stats with databaseId", {
   )
 
   # Export the results
-  exportCohortStatsTables(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortStatisticsFolder = cohortStatsFolder,
-    incremental = FALSE,
-    databaseId = "Eunomia"
+  expect_warning(
+    exportCohortStatsTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortStatisticsFolder = cohortStatsFolder,
+      incremental = FALSE,
+      databaseId = "Eunomia"
+    )
   )
 
   # Verify the files are written to the file system and have the database_id
@@ -146,15 +151,17 @@ test_that("Export cohort stats with fileNamesInSnakeCase = TRUE", {
     incremental = FALSE
   )
 
-  # Export the results
-  exportCohortStatsTables(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortStatisticsFolder = cohortStatsFolder,
-    fileNamesInSnakeCase = TRUE,
-    incremental = FALSE,
-    databaseId = "Eunomia"
+  expect_warning(
+    # Export the results
+    exportCohortStatsTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortStatisticsFolder = cohortStatsFolder,
+      fileNamesInSnakeCase = TRUE,
+      incremental = FALSE,
+      databaseId = "Eunomia"
+    )
   )
 
   # Verify the files are written to the file system and are in snake_case
@@ -176,13 +183,15 @@ test_that("Export cohort stats in incremental mode", {
     cohortTableNames = cohortTableNames
   )
 
-  # Export the results
-  exportCohortStatsTables(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortStatisticsFolder = cohortStatsFolder,
-    incremental = TRUE
+  expect_warning(
+    # Export the results
+    exportCohortStatsTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortStatisticsFolder = cohortStatsFolder,
+      incremental = TRUE
+    )
   )
 
   # Verify the files are written to the file system
@@ -212,15 +221,17 @@ test_that("Export cohort stats with camelCase for column names", {
     cohortDefinitionSet = cohortsWithStats
   )
 
-  # Export the results
-  exportCohortStatsTables(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortStatisticsFolder = cohortStatsFolder,
-    snakeCaseToCamelCase = TRUE,
-    fileNamesInSnakeCase = TRUE,
-    incremental = TRUE
+  expect_warning(
+    # Export the results
+    exportCohortStatsTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortStatisticsFolder = cohortStatsFolder,
+      snakeCaseToCamelCase = TRUE,
+      fileNamesInSnakeCase = TRUE,
+      incremental = TRUE
+    )
   )
 
   # Verify the files are written to the file system and the columns are in
@@ -231,16 +242,18 @@ test_that("Export cohort stats with camelCase for column names", {
     expect_true(all(isCamelCase(names(data))))
   }
 
-  # Export the results again in incremental mode and verify
-  # the results are preserved
-  exportCohortStatsTables(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortStatisticsFolder = cohortStatsFolder,
-    snakeCaseToCamelCase = TRUE,
-    fileNamesInSnakeCase = TRUE,
-    incremental = TRUE
+  expect_warning(
+    # Export the results again in incremental mode and verify
+    # the results are preserved
+    exportCohortStatsTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortStatisticsFolder = cohortStatsFolder,
+      snakeCaseToCamelCase = TRUE,
+      fileNamesInSnakeCase = TRUE,
+      incremental = TRUE
+    )
   )
 
   # Verify the cohort_inc_stats.csv contains cohortDefinitionIds c(2,3)
@@ -273,15 +286,17 @@ test_that("Export cohort stats with snake_case for column names", {
     cohortDefinitionSet = cohortsWithStats
   )
 
-  # Export the results
-  exportCohortStatsTables(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortStatisticsFolder = cohortStatsFolder,
-    snakeCaseToCamelCase = FALSE,
-    fileNamesInSnakeCase = TRUE,
-    incremental = TRUE
+  expect_warning(
+    # Export the results
+    exportCohortStatsTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortStatisticsFolder = cohortStatsFolder,
+      snakeCaseToCamelCase = FALSE,
+      fileNamesInSnakeCase = TRUE,
+      incremental = TRUE
+    )
   )
 
   # Verify the files are written to the file system and the columns are in
@@ -292,16 +307,18 @@ test_that("Export cohort stats with snake_case for column names", {
     expect_true(all(isSnakeCase(names(data))))
   }
 
-  # Export the results again in incremental mode and verify
-  # the results are preserved
-  exportCohortStatsTables(
-    connectionDetails = connectionDetails,
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortStatisticsFolder = cohortStatsFolder,
-    snakeCaseToCamelCase = FALSE,
-    fileNamesInSnakeCase = TRUE,
-    incremental = TRUE
+  expect_warning(
+    # Export the results again in incremental mode and verify
+    # the results are preserved
+    exportCohortStatsTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortStatisticsFolder = cohortStatsFolder,
+      snakeCaseToCamelCase = FALSE,
+      fileNamesInSnakeCase = TRUE,
+      incremental = TRUE
+    )
   )
 
   # Verify the cohort_inc_stats.csv contains cohort_definition_id == c(2,3)
@@ -310,5 +327,50 @@ test_that("Export cohort stats with snake_case for column names", {
   expect_equal(length(exportedFiles), 1)
   data <- CohortGenerator:::.readCsv(exportedFiles[1])
   expect_equal(unique(data$cohort_definition_id), c(2, 3))
+  unlink(cohortStatsFolder)
+})
+
+test_that("Export cohort stats using cohortDefinitionSet for inclusion rule names", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsInclRule")
+  cohortStatsFolder <- file.path(outputFolder, "stats")
+  # First create the cohort tables
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
+  # Generate with stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  generateCohortSet(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortsWithStats,
+    cdmDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = "main",
+    incremental = FALSE
+  )
+
+  # Export the results
+  exportCohortStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortStatisticsFolder = cohortStatsFolder,
+    incremental = FALSE,
+    databaseId = "Eunomia",
+    cohortDefinitionSet = cohortsWithStats
+  )
+
+  # Verify the files are written to the file system and that
+  # the cohort inclusion information has been written
+  exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
+  expect_true("cohortInclusion.csv" %in% basename(exportedFiles))
+  for (i in 1:length(exportedFiles)) {
+    if (basename(exportedFiles[i]) == "cohortInclusion.csv") {
+      data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
+      expect_true(nrow(data) > 0)
+    }
+  }
   unlink(cohortStatsFolder)
 })

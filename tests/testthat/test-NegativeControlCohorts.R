@@ -12,6 +12,38 @@ test_that("Call generateNegativeControlOutcomeCohorts without connection or conn
   expect_error(generateNegativeControlOutcomeCohorts())
 })
 
+test_that("Call generateNegativeControlOutcomeCohorts with negativeControlOutcomeCohortSet containing non-integer cohort ID", {
+  negativeControlOutcomeCohortSet <- data.frame(
+    cohortId = 1.2,
+    cohortName = "invalid cohort id",
+    outcomeConceptId = 1
+  )
+  expect_error(
+    generateNegativeControlOutcomeCohorts(
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = "main",
+      negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet
+    ),
+    message = "(non-integer values)"
+  )
+})
+
+test_that("Call generateNegativeControlOutcomeCohorts with negativeControlOutcomeCohortSet containing non-integer outcome concept ID", {
+  negativeControlOutcomeCohortSet <- data.frame(
+    cohortId = 1,
+    cohortName = "invalid outcome concept id",
+    outcomeConceptId = 1.2
+  )
+  expect_error(
+    generateNegativeControlOutcomeCohorts(
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = "main",
+      negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet
+    ),
+    message = "(non-integer values)"
+  )
+})
+
 test_that("Call generateNegativeControlOutcomeCohorts with negativeControlOutcomeCohortSet containing duplicate IDs", {
   negativeControlOutcomeCohortSet <- data.frame(
     cohortId = 1,

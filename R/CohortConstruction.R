@@ -76,6 +76,7 @@ generateCohortSet <- function(connectionDetails = NULL,
       "sql"
     )
   )
+  assertLargeInteger(cohortDefinitionSet$cohortId)
   # Verify that cohort IDs are not repeated in the cohort definition
   # set before generating
   if (length(unique(cohortDefinitionSet$cohortId)) != length(cohortDefinitionSet$cohortId)) {
@@ -249,7 +250,7 @@ generateCohort <- function(cohortId = NULL,
       connection <- DatabaseConnector::connect(connectionDetails)
       on.exit(DatabaseConnector::disconnect(connection))
     }
-    ParallelLogger::logInfo(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName, " (id = ", cohortId, ")")
+    rlang::inform(paste0(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName, " (id = ", cohortId, ")"))
     sql <- cohortDefinitionSet$sql[i]
 
     if (!isSubset) {

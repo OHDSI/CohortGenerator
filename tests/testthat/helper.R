@@ -84,48 +84,103 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
     options("sqlRenderTempEmulationSchema" = NULL)
     cohortTable <- "cohort"
   } else {
-    if (dbmsPlatform == "postgresql") {
-      dbUser <- Sys.getenv("CDM5_POSTGRESQL_USER")
-      dbPassword <- Sys.getenv("CDM5_POSTGRESQL_PASSWORD")
-      dbServer <- Sys.getenv("CDM5_POSTGRESQL_SERVER")
-      cdmDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA")
-      vocabularyDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA")
-      cohortDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_OHDSI_SCHEMA")
+    if (dbmsPlatform == "bigquery") {
+      # To avoid rate limit on BigQuery, only test on 1 OS:
+      if (.Platform$OS.type == "windows") {
+        bqKeyFile <- tempfile(fileext = ".json")
+        writeLines(Sys.getenv("CDM_BIG_QUERY_KEY_FILE"), bqKeyFile)
+        if (testthat::is_testing()) {
+          withr::defer(unlink(bqKeyFile, force = TRUE), testthat::teardown_env())
+        }
+        bqConnectionString <- gsub(
+          "<keyfile path>",
+          normalizePath(bqKeyFile, winslash = "/"),
+          Sys.getenv("CDM_BIG_QUERY_CONNECTION_STRING")
+        )
+        connectionDetails <- DatabaseConnector::createConnectionDetails(
+          dbms = dbmsPlatform,
+          user = "",
+          password = "",
+          connectionString = !!bqConnectionString,
+          pathToDriver = jdbcDriverFolder
+        )
+        cdmDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_CDM_SCHEMA")
+        vocabularyDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_CDM_SCHEMA")
+        cohortDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_OHDSI_SCHEMA")
+        options(sqlRenderTempEmulationSchema = Sys.getenv("CDM_BIG_QUERY_OHDSI_SCHEMA"))
+      } else {
+        return(NULL)
+      }
     } else if (dbmsPlatform == "oracle") {
-      dbUser <- Sys.getenv("CDM5_ORACLE_USER")
-      dbPassword <- Sys.getenv("CDM5_ORACLE_PASSWORD")
-      dbServer <- Sys.getenv("CDM5_ORACLE_SERVER")
+      connectionDetails <- DatabaseConnector::createConnectionDetails(
+        dbms = dbmsPlatform,
+        user = Sys.getenv("CDM5_ORACLE_USER"),
+        password = URLdecode(Sys.getenv("CDM5_ORACLE_PASSWORD")),
+        server = Sys.getenv("CDM5_ORACLE_SERVER"),
+        pathToDriver = jdbcDriverFolder
+      )
       cdmDatabaseSchema <- Sys.getenv("CDM5_ORACLE_CDM_SCHEMA")
       vocabularyDatabaseSchema <- Sys.getenv("CDM5_ORACLE_CDM_SCHEMA")
       cohortDatabaseSchema <- Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA")
       options(sqlRenderTempEmulationSchema = Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA"))
+    } else if (dbmsPlatform == "postgresql") {
+      connectionDetails <- DatabaseConnector::createConnectionDetails(
+        dbms = dbmsPlatform,
+        user = Sys.getenv("CDM5_POSTGRESQL_USER"),
+        password = URLdecode(Sys.getenv("CDM5_POSTGRESQL_PASSWORD")),
+        server = Sys.getenv("CDM5_POSTGRESQL_SERVER"),
+        pathToDriver = jdbcDriverFolder
+      )
+      cdmDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA")
+      vocabularyDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA")
+      cohortDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_OHDSI_SCHEMA")
     } else if (dbmsPlatform == "redshift") {
-      dbUser <- Sys.getenv("CDM5_REDSHIFT_USER")
-      dbPassword <- Sys.getenv("CDM5_REDSHIFT_PASSWORD")
-      dbServer <- Sys.getenv("CDM5_REDSHIFT_SERVER")
+      connectionDetails <- DatabaseConnector::createConnectionDetails(
+        dbms = dbmsPlatform,
+        user = Sys.getenv("CDM5_REDSHIFT_USER"),
+        password = URLdecode(Sys.getenv("CDM5_REDSHIFT_PASSWORD")),
+        server = Sys.getenv("CDM5_REDSHIFT_SERVER"),
+        pathToDriver = jdbcDriverFolder
+      )
       cdmDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA")
       vocabularyDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA")
       cohortDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA")
+    } else if (dbmsPlatform == "snowflake") {
+      connectionDetails <- DatabaseConnector::createConnectionDetails(
+        dbms = dbmsPlatform,
+        user = Sys.getenv("CDM_SNOWFLAKE_USER"),
+        password = URLdecode(Sys.getenv("CDM_SNOWFLAKE_PASSWORD")),
+        connectionString = Sys.getenv("CDM_SNOWFLAKE_CONNECTION_STRING"),
+        pathToDriver = jdbcDriverFolder
+      )
+      cdmDatabaseSchema <- Sys.getenv("CDM_SNOWFLAKE_CDM53_SCHEMA")
+      vocabularyDatabaseSchema <- Sys.getenv("CDM_SNOWFLAKE_CDM53_SCHEMA")
+      cohortDatabaseSchema <- Sys.getenv("CDM_SNOWFLAKE_OHDSI_SCHEMA")
+      options(sqlRenderTempEmulationSchema = Sys.getenv("CDM_SNOWFLAKE_OHDSI_SCHEMA"))
+    } else if (dbmsPlatform == "spark") {
+      connectionDetails <- DatabaseConnector::createConnectionDetails(
+        dbms = dbmsPlatform,
+        user = Sys.getenv("CDM5_SPARK_USER"),
+        password = URLdecode(Sys.getenv("CDM5_SPARK_PASSWORD")),
+        connectionString = Sys.getenv("CDM5_SPARK_CONNECTION_STRING"),
+        pathToDriver = jdbcDriverFolder
+      )
+      cdmDatabaseSchema <- Sys.getenv("CDM5_SPARK_CDM_SCHEMA")
+      vocabularyDatabaseSchema <- Sys.getenv("CDM5_SPARK_CDM_SCHEMA")
+      cohortDatabaseSchema <- Sys.getenv("CDM5_SPARK_OHDSI_SCHEMA")
+      options(sqlRenderTempEmulationSchema = Sys.getenv("CDM5_SPARK_OHDSI_SCHEMA"))
     } else if (dbmsPlatform == "sql server") {
-      dbUser <- Sys.getenv("CDM5_SQL_SERVER_USER")
-      dbPassword <- Sys.getenv("CDM5_SQL_SERVER_PASSWORD")
-      dbServer <- Sys.getenv("CDM5_SQL_SERVER_SERVER")
+      connectionDetails <- createConnectionDetails(
+        dbms = dbmsPlatform,
+        user = Sys.getenv("CDM5_SQL_SERVER_USER"),
+        password = URLdecode(Sys.getenv("CDM5_SQL_SERVER_PASSWORD")),
+        server = Sys.getenv("CDM5_SQL_SERVER_SERVER"),
+        pathToDriver = jdbcDriverFolder
+      )
       cdmDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA")
       vocabularyDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA")
       cohortDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")
     }
-
-    if (dbServer == "") {
-      return(NULL)
-    }
-
-    connectionDetails <- DatabaseConnector::createConnectionDetails(
-      dbms = dbmsPlatform,
-      user = dbUser,
-      password = URLdecode(dbPassword),
-      server = dbServer,
-      pathToDriver = jdbcDriverFolder
-    )
 
     # Add drivers
     DatabaseConnector::downloadJdbcDrivers(dbmsPlatform, pathToDriver = jdbcDriverFolder)

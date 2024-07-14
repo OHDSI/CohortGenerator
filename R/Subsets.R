@@ -35,7 +35,7 @@
 
 
 # SubsetCohortWindow -------------
-#' SubsetCohortWindow settings
+#' @title Time Window For Cohort Subset Operator
 #' @export
 #' @description
 #' Representation of a time window to use when subsetting a target cohort with a subset cohort
@@ -47,7 +47,6 @@ SubsetCohortWindow <- R6::R6Class(
     .targetAnchor = "cohortStart"
   ),
   public = list(
-    #' @title to List
     #' @description List representation of object
     toList = function() {
       objRepr <- list()
@@ -128,7 +127,7 @@ createSubsetCohortWindow <- function(startDay, endDay, targetAnchor) {
 }
 
 # SubsetOperator ------------------------------
-#' @title SubsetOperator
+#' @title Abstract base class for subsets.
 #' @export
 #' @description
 #' Abstract Base Class for subsets. Subsets should inherit from this and implement their own requirements.
@@ -403,7 +402,7 @@ CohortSubsetOperator <- R6::R6Class(
 #'
 #' @param startWindow               A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
 #' @param endWindow                 A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
-#' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria (NOT YET IMPLEMENTED)
+#' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria
 #' @returns a CohortSubsetOperator instance
 createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator, negate, startWindow, endWindow) {
   subset <- CohortSubsetOperator$new()
@@ -418,7 +417,10 @@ createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator
 }
 
 # DemographicSubsetOperator ------------------------------
-#' Criteria Subset
+#' @title Demographic Subset Operator
+#' @description
+#' Operators for subsetting a cohort by demographic criteria
+#' 
 #' @export
 DemographicSubsetOperator <- R6::R6Class(
   classname = "DemographicSubsetOperator",

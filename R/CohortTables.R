@@ -98,13 +98,13 @@ createCohortTables <- function(connectionDetails = NULL,
     for (i in 1:length(cohortTableNames)) {
       if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
         createTableFlagList[i] <- FALSE
-        ParallelLogger::logInfo("Table \"", cohortTableNames[i], "\" already exists and in incremental mode, so not recreating it.")
+        rlang::inform(paste0("Table \"", cohortTableNames[i], "\" already exists and in incremental mode, so not recreating it."))
       }
     }
   }
 
   if (any(unlist(createTableFlagList, use.names = FALSE))) {
-    ParallelLogger::logInfo("Creating cohort tables")
+    rlang::inform("Creating cohort tables")
     createSampleTable <- ifelse(
       test = is.null(createTableFlagList$cohortSampleTable),
       yes = FALSE,
@@ -137,7 +137,7 @@ createCohortTables <- function(connectionDetails = NULL,
     DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
 
     logCreateTableMessage <- function(schema, tableName) {
-      ParallelLogger::logInfo("- Created table ", schema, ".", tableName)
+      rlang::inform(paste0("- Created table ", schema, ".", tableName))
     }
     for (i in 1:length(createTableFlagList)) {
       if (createTableFlagList[[i]]) {
@@ -146,7 +146,7 @@ createCohortTables <- function(connectionDetails = NULL,
     }
 
     delta <- Sys.time() - start
-    ParallelLogger::logInfo("Creating cohort tables took ", round(delta, 2), attr(delta, "units"))
+    rlang::inform(paste0("Creating cohort tables took ", round(delta, 2), attr(delta, "units")))
   }
 }
 
@@ -173,7 +173,7 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
 
   # Export the stats
   dropTable <- function(table) {
-    ParallelLogger::logInfo("- Dropping ", table)
+    rlang::inform(paste0("- Dropping ", table))
     sql <- "TRUNCATE TABLE @cohort_database_schema.@table;
             DROP TABLE @cohort_database_schema.@table;"
     DatabaseConnector::renderTranslateExecuteSql(

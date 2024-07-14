@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CohortGenerator</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@
                         <h4 data-toc-skip class="author">James P.
 Gilbert and Anthony G. Sena</h4>
             
-            <h4 data-toc-skip class="date">2024-05-28</h4>
+            <h4 data-toc-skip class="date">2024-07-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/HEAD/vignettes/CreatingCohortSubsetDefinitions.Rmd" class="external-link"><code>vignettes/CreatingCohortSubsetDefinitions.Rmd</code></a></small>
       <div class="hidden name"><code>CreatingCohortSubsetDefinitions.Rmd</code></div>
@@ -277,6 +277,15 @@ re-use.</p>
 <td align="right">NA</td>
 </tr>
 <tr class="even">
+<td align="right">1778214</td>
+<td align="left">celecoxibCensored</td>
+<td align="right">1778214</td>
+<td align="left"></td>
+<td align="right">1778214</td>
+<td align="left">FALSE</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
 <td align="right">1778211001</td>
 <td align="left">celecoxib - Patients in cohort cohort 1778213 with 365
 days prior observation Subset to patients in cohort 1778213, Observation
@@ -287,7 +296,7 @@ of at least 365 days prior</td>
 <td align="left">TRUE</td>
 <td align="right">1</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="right">1778212001</td>
 <td align="left">celecoxibAge40 - Patients in cohort cohort 1778213 with
 365 days prior observation Subset to patients in cohort 1778213,
@@ -298,7 +307,7 @@ Observation of at least 365 days prior</td>
 <td align="left">TRUE</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="right">1778213001</td>
 <td align="left">celecoxibAge40Male - Patients in cohort cohort 1778213
 with 365 days prior observation Subset to patients in cohort 1778213,
@@ -306,6 +315,17 @@ Observation of at least 365 days prior</td>
 <td align="right">NA</td>
 <td align="left">NA</td>
 <td align="right">1778213</td>
+<td align="left">TRUE</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">1778214001</td>
+<td align="left">celecoxibCensored - Patients in cohort cohort 1778213
+with 365 days prior observation Subset to patients in cohort 1778213,
+Observation of at least 365 days prior</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="right">1778214</td>
 <td align="left">TRUE</td>
 <td align="right">1</td>
 </tr>
@@ -366,6 +386,15 @@ target cohorts as follows</p>
 <td align="right">NA</td>
 </tr>
 <tr class="even">
+<td align="right">1778214</td>
+<td align="left">celecoxibCensored</td>
+<td align="right">1778214</td>
+<td align="left"></td>
+<td align="right">1778214</td>
+<td align="left">FALSE</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
 <td align="right">1778211001</td>
 <td align="left">celecoxib - Patients in cohort cohort 1778213 with 365
 days prior observation Subset to patients in cohort 1778213, Observation
@@ -376,7 +405,7 @@ of at least 365 days prior</td>
 <td align="left">TRUE</td>
 <td align="right">1</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="right">1778212001</td>
 <td align="left">celecoxibAge40 - Patients in cohort cohort 1778213 with
 365 days prior observation Subset to patients in cohort 1778213,
@@ -387,7 +416,7 @@ Observation of at least 365 days prior</td>
 <td align="left">TRUE</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="right">1778213001</td>
 <td align="left">celecoxibAge40Male - Patients in cohort cohort 1778213
 with 365 days prior observation Subset to patients in cohort 1778213,
@@ -395,6 +424,17 @@ Observation of at least 365 days prior</td>
 <td align="right">NA</td>
 <td align="left">NA</td>
 <td align="right">1778213</td>
+<td align="left">TRUE</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">1778214001</td>
+<td align="left">celecoxibCensored - Patients in cohort cohort 1778213
+with 365 days prior observation Subset to patients in cohort 1778213,
+Observation of at least 365 days prior</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="right">1778214</td>
 <td align="left">TRUE</td>
 <td align="right">1</td>
 </tr>
@@ -439,9 +479,9 @@ child subset:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Subset Parent Id:"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">subsetParent</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Name"</span>, <span class="va">cohortDefinitionSet</span><span class="op">$</span><span class="va">cohortName</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Cohort Id: 1778211001</span></span>
-<span><span class="co">#&gt; Subset Parent Id: 1778211</span></span>
-<span><span class="co">#&gt; Name celecoxib - Patients in cohort cohort 1778213 with 365 days prior observation Subset to patients in cohort 1778213, Observation of at least 365 days prior</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Cohort Id: 1778214</span></span>
+<span><span class="co">#&gt; Subset Parent Id: 1778214</span></span>
+<span><span class="co">#&gt; Name celecoxibCensored</span></span></code></pre>
 <p>Note that when adding a subset definition to a cohort definition set,
 the target cohort ids e.g (1778211, 1778212) must exist in the
 <code>cohortDefinitionSet</code> and the output ids

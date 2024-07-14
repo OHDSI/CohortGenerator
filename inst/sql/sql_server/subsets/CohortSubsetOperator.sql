@@ -20,6 +20,7 @@ FROM (
   HAVING COUNT (DISTINCT S.COHORT_DEFINITION_ID) >= @subset_length
 ) A
 {@negate == '1'}?{
-RIGHT JOIN @target_table B ON B.subject_id = A.subject_id
+RIGHT JOIN @target_table B ON B.subject_id = A.subject_id 
+  AND b.cohort_start_date = a.cohort_start_date
 WHERE A.subject_id IS NULL
 }

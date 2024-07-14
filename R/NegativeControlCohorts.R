@@ -29,35 +29,16 @@
 #' @export
 createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
   checkmate::assert_logical(verbose)
-  negativeControlOutcomeCohortSetSpecification <- .getNegativeControlOutcomeCohortSetSpecification()
+  df <- data.frame(
+    cohortId = numeric(),
+    cohortName = character(),
+    outcomeConceptId = numeric()
+  )
   if (verbose) {
-    print(negativeControlOutcomeCohortSetSpecification)
+    print(df)
   }
-  # Build the data.frame dynamically
-  df <- .createEmptyDataFrameFromSpecification(negativeControlOutcomeCohortSetSpecification)
   invisible(df)
 }
-
-#' Helper function to return the specification description of a
-#' negativeControlOutcomeCohortSet
-#'
-#' @description
-#' This function reads from the negativeControlOutcomeCohortSetSpecificationDescription.csv
-#' to return a data.frame that describes the required columns in a
-#' negativeControlOutcomeCohortSet
-#'
-#' @return
-#' Returns a data.frame that defines a negativeControlOutcomeCohortSet
-#'
-#' @noRd
-#' @keywords internal
-.getNegativeControlOutcomeCohortSetSpecification <- function() {
-  return(readCsv(system.file("negativeControlOutcomeCohortSetSpecificationDescription.csv",
-    package = "CohortGenerator",
-    mustWork = TRUE
-  )))
-}
-
 
 #' Generate a set of negative control outcome cohorts
 #'
@@ -111,12 +92,14 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   checkmate::assert_choice(x = tolower(occurrenceType), choices = c("all", "first"))
   checkmate::assert_logical(detectOnDescendants)
   checkmate::assertNames(colnames(negativeControlOutcomeCohortSet),
-    must.include = .getNegativeControlOutcomeCohortSetSpecification()$columnName
+    must.include = names(createEmptyNegativeControlOutcomeCohortSet())
   )
   checkmate::assert_data_frame(
     x = negativeControlOutcomeCohortSet,
     min.rows = 1
   )
+  assertLargeInteger(negativeControlOutcomeCohortSet$cohortId)
+  assertLargeInteger(negativeControlOutcomeCohortSet$outcomeConceptId, columnName = "outcomeConceptId")
 
   # Verify that cohort IDs are not repeated in the negative control
   # cohort definition set before generating
@@ -163,21 +146,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     stop(paste0("Table: ", cohortTable, " not found in schema: ", cohortDatabaseSchema, ". Please use `createCohortTable` to ensure the cohort table is created before generating cohorts."))
   }
 
-  ParallelLogger::logInfo("Generating negative control outcome cohorts")
-
-  # Send the negative control outcome cohort set to the server for use
-  # in processing. This temp table will hold the mapping between
-  # cohort_definition_id and the outcomeConceptId in the data.frame()
-  DatabaseConnector::insertTable(
-    connection = connection,
-    data = negativeControlOutcomeCohortSet,
-    tempEmulationSchema = tempEmulationSchema,
-    tableName = "#nc_set",
-    camelCaseToSnakeCase = TRUE,
-    dropTableIfExists = TRUE,
-    createTable = TRUE,
-    tempTable = TRUE
-  )
+  rlang::inform("Generating negative control outcome cohorts")
 
   sql <- createNegativeControlOutcomesQuery(
     connection = connection,
@@ -186,7 +155,8 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     cohortDatabaseSchema = cohortDatabaseSchema,
     cohortTable = cohortTable,
     occurrenceType = occurrenceType,
-    detectOnDescendants = detectOnDescendants
+    detectOnDescendants = detectOnDescendants,
+    negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet
   )
 
   DatabaseConnector::executeSql(
@@ -213,7 +183,31 @@ createNegativeControlOutcomesQuery <- function(connection,
                                                cohortDatabaseSchema,
                                                cohortTable,
                                                occurrenceType,
-                                               detectOnDescendants) {
+                                               detectOnDescendants,
+                                               negativeControlOutcomeCohortSet) {
+  selectClause <- ""
+  for (i in 1:nrow(negativeControlOutcomeCohortSet)) {
+    selectClause <- paste0(
+      selectClause,
+      "SELECT CAST(", negativeControlOutcomeCohortSet$cohortId[i], " AS BIGINT), ",
+      "CAST(", negativeControlOutcomeCohortSet$outcomeConceptId[i], " AS BIGINT)"
+    )
+    if (i < nrow(negativeControlOutcomeCohortSet)) {
+      selectClause <- paste0(selectClause, "\nUNION\n")
+    }
+  }
+  selectClause
+  ncSetQuery <- paste0(
+    "CREATE TABLE #nc_set (",
+    "  cohort_id bigint NOT NULL,",
+    "  outcome_concept_id bigint NOT NULL",
+    ")",
+    ";",
+    "INSERT INTO #nc_set (cohort_id, outcome_concept_id)\n",
+    selectClause,
+    "\n;"
+  )
+
   sql <- sql <- SqlRender::readSql(system.file("sql/sql_server/NegativeControlOutcomes.sql", package = "CohortGenerator", mustWork = TRUE))
   sql <- SqlRender::render(
     sql = sql,
@@ -222,6 +216,7 @@ createNegativeControlOutcomesQuery <- function(connection,
     cohort_table = cohortTable,
     detect_on_descendants = detectOnDescendants,
     occurrence_type = occurrenceType,
+    nc_set_query = ncSetQuery,
     warnOnMissingParameters = TRUE
   )
   sql <- SqlRender::translate(

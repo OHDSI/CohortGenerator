@@ -4,3 +4,9 @@
 ^\.Rproj\.user$
 ^\.idea$
 ^\.github$
+_pkgdown\.yml
+compare_versions
+deploy.sh
+docs
+extras
+man-roxygen

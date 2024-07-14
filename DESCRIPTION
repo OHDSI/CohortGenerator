@@ -1,8 +1,8 @@
 Package: CohortGenerator
 Type: Package
 Title: An R Package for Cohort Generation Against the OMOP CDM
-Version: 0.9.0
-Date: 2024-05-28
+Version: 0.10.0
+Date: 2024-07-14
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Jamie", "Gilbert", role = c("aut")),
@@ -22,13 +22,16 @@ Imports:
   digest,
   dplyr,
   lubridate,
+  methods,
   ParallelLogger (>= 3.0.0),
   readr (>= 2.1.0),
   rlang,
   RJSONIO,
   jsonlite,
+  ResultModelManager,
   SqlRender (>= 1.11.1),
-  stringi (>= 1.7.6)
+  stringi (>= 1.7.6),
+  tibble
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
@@ -36,11 +39,11 @@ Suggests:
   rmarkdown,
   ROhdsiWebApi,
   testthat,
-  withr
+  withr,
+  zip
 Remotes:
-  ohdsi/CirceR,
-  ohdsi/Eunomia,
-  ohdsi/ROhdsiWebApi
+  ohdsi/ResultModelManager,
+  ohdsi/ROhdsiWebApi,
 License: Apache License
 VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator

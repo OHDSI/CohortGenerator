@@ -67,7 +67,7 @@ getCohortCounts <- function(connectionDetails = NULL,
   if (tolower(cohortTable) %in% tablesInServer) {
     counts <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
     delta <- Sys.time() - start
-    ParallelLogger::logInfo(paste("Counting cohorts took", signif(delta, 3), attr(delta, "units")))
+    rlang::inform(paste("Counting cohorts took", signif(delta, 3), attr(delta, "units")))
     if (!is.null(cohortDefinitionSet)) {
       # If the user has NOT specified a list of cohortIds
       # to use to filter the cohortDefinitionSet, then
@@ -77,15 +77,17 @@ getCohortCounts <- function(connectionDetails = NULL,
       }
       counts <- merge(
         x = counts,
-        y = cohortDefinitionSet[cohortDefinitionSet$cohortId %in% cohortIds, ],
+        y = cohortDefinitionSet[cohortDefinitionSet$cohortId %in% cohortIds, , drop = FALSE],
         by = "cohortId",
         all.y = TRUE
       )
-      counts <- transform(
-        counts,
-        cohortEntries = ifelse(is.na(cohortEntries), 0L, cohortEntries),
-        cohortSubjects = ifelse(is.na(cohortSubjects), 0L, cohortSubjects)
-      )
+      counts <- with(counts, {
+        transform(
+          counts,
+          cohortEntries = ifelse(is.na(cohortEntries), 0L, cohortEntries),
+          cohortSubjects = ifelse(is.na(cohortSubjects), 0L, cohortSubjects)
+        )
+      })
     }
     if (!is.null(databaseId)) {
       counts$databaseId <- databaseId

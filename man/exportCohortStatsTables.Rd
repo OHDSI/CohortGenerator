@@ -13,7 +13,9 @@ exportCohortStatsTables(
   snakeCaseToCamelCase = TRUE,
   fileNamesInSnakeCase = FALSE,
   incremental = FALSE,
-  databaseId = NULL
+  databaseId = NULL,
+  cohortDefinitionSet = NULL,
+  tablePrefix = ""
 )
 }
 \arguments{
@@ -48,9 +50,27 @@ overwriting an existing results}
 
 \item{databaseId}{Optional - when specified, the databaseId will be added
 to the exported results}
+
+\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
+the following columns: \describe{
+\item{cohortId}{The unique integer identifier of the cohort} 
+\item{cohortName}{The cohort's name}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}
+Optionally, this data frame may contain: \describe{
+\item{json}{The Circe JSON representation of the cohort}}}
+
+\item{tablePrefix}{Optional - allows to append a prefix to the exported
+file names.}
 }
 \description{
 This function retrieves the data from the cohort statistics tables and
 writes them to the inclusion statistics folder specified in the function
-call.
+call. NOTE: inclusion rule names are handled in one of two ways:
+
+1. You can specify the cohortDefinitionSet parameter and the inclusion rule
+names will be extracted from the data.frame.
+2. You can insert the inclusion rule names into the database using the
+insertInclusionRuleNames function of this package.
+
+The first approach is preferred as to avoid the warning emitted.
 }
