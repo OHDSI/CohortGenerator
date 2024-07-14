@@ -19,11 +19,11 @@
 #' @details
 #' Run a cohort generation for a set of cohorts and negative control outcomes.
 #' This function will also export the results of the run to the `outputFolder`.
-#' 
+#'
 #' @param connectionDetails   An object of type \code{connectionDetails} as created using the
 #'                            \code{\link[DatabaseConnector]{createConnectionDetails}} function in the
-#'                            DatabaseConnector package. 
-#'                            
+#'                            DatabaseConnector package.
+#'
 #' @template CdmDatabaseSchema
 #'
 #' @template TempEmulationSchema
@@ -34,37 +34,37 @@
 #'
 #' @template NegativeControlOutcomeCohortSet
 #'
-#' @param occurrenceType     For negative controls outcomes, the occurrenceType 
-#'                           will detect either: the first time an 
-#'                           outcomeConceptId occurs or all times the 
-#'                           outcomeConceptId occurs for a person. Values 
+#' @param occurrenceType     For negative controls outcomes, the occurrenceType
+#'                           will detect either: the first time an
+#'                           outcomeConceptId occurs or all times the
+#'                           outcomeConceptId occurs for a person. Values
 #'                           accepted: 'all' or 'first'.
 #'
-#' @param detectOnDescendants For negative controls outcomes, when set to TRUE, 
-#'                            detectOnDescendants will use the vocabulary to 
-#'                            find negative control outcomes using the 
-#'                            outcomeConceptId and all descendants via the 
-#'                            concept_ancestor table. When FALSE, only the exact 
-#'                            outcomeConceptId will be used to detect the 
+#' @param detectOnDescendants For negative controls outcomes, when set to TRUE,
+#'                            detectOnDescendants will use the vocabulary to
+#'                            find negative control outcomes using the
+#'                            outcomeConceptId and all descendants via the
+#'                            concept_ancestor table. When FALSE, only the exact
+#'                            outcomeConceptId will be used to detect the
 #'                            outcome.
-#'                            
-#' @param stopOnError         If an error happens while generating one of the 
-#'                            cohorts in the cohortDefinitionSet, should we 
-#'                            stop processing the other cohorts? The default is 
-#'                            TRUE; when set to FALSE, failures will be 
+#'
+#' @param stopOnError         If an error happens while generating one of the
+#'                            cohorts in the cohortDefinitionSet, should we
+#'                            stop processing the other cohorts? The default is
+#'                            TRUE; when set to FALSE, failures will be
 #'                            identified in the return value from this function.
-#'                            
+#'
 #' @param outputFolder Name of the folder where all the outputs will written to.
 #'
 #' @param databaseId    A unique ID for the database. This will be appended to
 #'                      most tables.
-#'                      
+#'
 #' @param incremental   Create only cohorts that haven't been created before?
 #'
-#' @param incrementalFolder If \code{incremental = TRUE}, specify a folder where 
-#'                          records are kept of which definition has been 
+#' @param incrementalFolder If \code{incremental = TRUE}, specify a folder where
+#'                          records are kept of which definition has been
 #'                          executed.
-#'                          
+#'
 #' @export
 runCohortGeneration <- function(connectionDetails,
                                 cdmDatabaseSchema,
@@ -81,7 +81,7 @@ runCohortGeneration <- function(connectionDetails,
                                 incremental = FALSE,
                                 incrementalFolder = NULL) {
   if (is.null(cohortDefinitionSet) && is.null(negativeControlOutcomeCohortSet)) {
-    stop("You must supply at least 1 cohortDefinitionSet OR 1 negativeControlOutcomeCohortSet")  
+    stop("You must supply at least 1 cohortDefinitionSet OR 1 negativeControlOutcomeCohortSet")
   }
   errorMessages <- checkmate::makeAssertCollection()
   if (is(connectionDetails, "connectionDetails")) {
@@ -99,16 +99,16 @@ runCohortGeneration <- function(connectionDetails,
   checkmate::assert_logical(detectOnDescendants, add = errorMessages)
   checkmate::assert_logical(stopOnError, add = errorMessages)
   checkmate::reportAssertions(collection = errorMessages)
-  
+
   # Establish the connection and ensure the cleanup is performed
   connection <- DatabaseConnector::connect(connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
-  
+
   # Create the export folder
   if (!dir.exists(outputFolder)) {
     dir.create(outputFolder, recursive = T)
   }
-  
+
   # Create the cohort tables
   createCohortTables(
     connection = connection,
@@ -116,7 +116,7 @@ runCohortGeneration <- function(connectionDetails,
     cohortTableNames = cohortTableNames,
     incremental = incremental
   )
-  
+
   generateAndExportCohorts(
     connection = connection,
     cdmDatabaseSchema = cdmDatabaseSchema,
@@ -128,9 +128,9 @@ runCohortGeneration <- function(connectionDetails,
     outputFolder = outputFolder,
     databaseId = databaseId,
     incremental = incremental,
-    incrementalFolder = incrementalFolder 
+    incrementalFolder = incrementalFolder
   )
-  
+
   generateAndExportNegativeControls(
     connection = connection,
     cdmDatabaseSchema = cdmDatabaseSchema,
@@ -151,7 +151,7 @@ runCohortGeneration <- function(connectionDetails,
     from = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator"),
     to = outputFolder
   )
-  
+
   rlang::inform("Cohort generation complete.")
 }
 
@@ -184,7 +184,7 @@ generateAndExportCohorts <- function(connection,
       incremental = incremental,
       incrementalFolder = incrementalFolder
     )
-    
+
     cohortCountsFromDb <- getCohortCounts(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
@@ -192,11 +192,11 @@ generateAndExportCohorts <- function(connection,
       cohortDefinitionSet = cohortDefinitionSet,
       databaseId = databaseId
     )
-    
+
     # Filter to columns in the results data model
     cohortCounts <- cohortCountsFromDb[names(cohortCounts)]
   }
-  
+
   # Save the generation information
   rlang::inform("Saving cohort generation information")
   if (!is.null(cohortsGenerated) && nrow(cohortsGenerated) > 0) {
@@ -218,13 +218,13 @@ generateAndExportCohorts <- function(connection,
       )
     }
   }
-  
+
   rlang::inform("Saving cohort counts")
   writeCsv(
     x = cohortCounts,
     file = cohortCountsFileName
   )
-  
+
   rlang::inform("Saving cohort statistics")
   exportCohortStatsTables(
     connection = connection,
@@ -238,7 +238,7 @@ generateAndExportCohorts <- function(connection,
     cohortDefinitionSet = cohortDefinitionSet,
     tablePrefix = "cg_"
   )
-  
+
   # Export the cohort definition set
   rlang::inform("Saving cohort definition set")
   exportCohortDefinitionSet(outputFolder, cohortDefinitionSet)
@@ -274,30 +274,30 @@ generateAndExportNegativeControls <- function(connection,
       incremental = incremental,
       incrementalFolder = incrementalFolder
     )
-  
+
     # Assemble the negativeControlOutcomes for export
     negativeControlOutcomes <- cbind(
       negativeControlOutcomeCohortSet,
       occurrenceType = rep(occurrenceType, nrow(negativeControlOutcomeCohortSet)),
       detectOnDescendants = rep(detectOnDescendants, nrow(negativeControlOutcomeCohortSet))
     )
-    
+
     # Count the negative controls
     cohortCountsNegativeControlOutcomes <- getCohortCounts(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
       cohortTable = cohortTableNames$cohortTable,
       databaseId = databaseId,
-      cohortDefinitionSet = negativeControlOutcomeCohortSet[,c("cohortId"), drop = FALSE]
+      cohortDefinitionSet = negativeControlOutcomeCohortSet[, c("cohortId"), drop = FALSE]
     )
   }
-  
+
   rlang::inform("Saving negative control outcome cohort definition")
   writeCsv(
     x = negativeControlOutcomes,
     file = negativeControlOutcomesFileName
   )
-  
+
   rlang::inform("Saving negative control outcome cohort counts")
   writeCsv(
     x = cohortCountsNegativeControlOutcomes,

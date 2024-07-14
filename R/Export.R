@@ -20,12 +20,12 @@
 #' This function retrieves the data from the cohort statistics tables and
 #' writes them to the inclusion statistics folder specified in the function
 #' call. NOTE: inclusion rule names are handled in one of two ways:
-#' 
-#' 1. You can specify the cohortDefinitionSet parameter and the inclusion rule 
-#' names will be extracted from the data.frame. 
+#'
+#' 1. You can specify the cohortDefinitionSet parameter and the inclusion rule
+#' names will be extracted from the data.frame.
 #' 2. You can insert the inclusion rule names into the database using the
-#' insertInclusionRuleNames function of this package. 
-#' 
+#' insertInclusionRuleNames function of this package.
+#'
 #' The first approach is preferred as to avoid the warning emitted.
 #'
 #' @template Connection
@@ -45,9 +45,9 @@
 #'
 #' @param databaseId                  Optional - when specified, the databaseId will be added
 #'                                    to the exported results
-#'                                    
+#'
 #' @template CohortDefinitionSet
-#' 
+#'
 #' @param tablePrefix Optional - allows to append a prefix to the exported
 #'                    file names.
 #'
@@ -72,7 +72,7 @@ exportCohortStatsTables <- function(connectionDetails,
   if (!dir.exists(cohortStatisticsFolder)) {
     dir.create(cohortStatisticsFolder, recursive = TRUE)
   }
-  
+
   # Internal function to export the stats
   exportStats <- function(data,
                           fileName,
@@ -91,7 +91,7 @@ exportCohortStatsTables <- function(connectionDetails,
       .writeCsv(x = data, file = fullFileName)
     }
   }
-  
+
   tablesToExport <- data.frame(
     tableName = c("cohortInclusionResultTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable", "cohortCensorStatsTable"),
     fileName = c("cohort_inc_result.csv", "cohort_inc_stats.csv", "cohort_summary_stats.csv", "cohort_censor_stats.csv")
@@ -122,7 +122,7 @@ exportCohortStatsTables <- function(connectionDetails,
     snakeCaseToCamelCase = snakeCaseToCamelCase,
     cohortTableNames = cohortTableNames
   )
-  
+
   for (i in 1:nrow(tablesToExport)) {
     fileName <- ifelse(test = fileNamesInSnakeCase,
       yes = tablesToExport$fileName[i],
@@ -143,39 +143,42 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
     cdsCohortSubsets <- getSubsetDefinitions(cohortDefinitionSet)
     if (length(cdsCohortSubsets) > 0) {
       for (i in seq_along(cdsCohortSubsets)) {
-        cohortSubsets <- rbind(cohortSubsets, 
-                               data.frame(
-                                 subsetDefinitionId = cdsCohortSubsets[[i]]$definitionId,
-                                 json = as.character(cdsCohortSubsets[[i]]$toJSON())
-                               ))
+        cohortSubsets <- rbind(
+          cohortSubsets,
+          data.frame(
+            subsetDefinitionId = cdsCohortSubsets[[i]]$definitionId,
+            json = as.character(cdsCohortSubsets[[i]]$toJSON())
+          )
+        )
       }
     } else {
       # NOTE: In this case the cohortDefinitionSet has no subsets defined
       # and so we need to add the additional columns that are defined
-      # in the function: addCohortSubsetDefinition. To do this, 
+      # in the function: addCohortSubsetDefinition. To do this,
       # we'll construct a copy of the cohortDefinitionSet with a single
       # subset to get the proper structure and filter it to the
       # cohorts of interest.
-      cdsCopy <- cohortDefinitionSet %>% 
+      cdsCopy <- cohortDefinitionSet %>%
         addCohortSubsetDefinition(
           cohortSubsetDefintion = createCohortSubsetDefinition(
-            definitionId = 1, 
-            name="empty", 
+            definitionId = 1,
+            name = "empty",
             subsetOperators = list(
               createDemographicSubset()
             )
           )
-        ) %>% dplyr::filter(cohortId == cohortDefinitionSet$cohortId)
+        ) %>%
+        dplyr::filter(cohortId == cohortDefinitionSet$cohortId)
       cohortDefinitionSet <- cdsCopy
     }
     # Massage and save the cohort definition set
     colsToRename <- c("cohortId", "cohortName", "sql", "json")
     colInd <- which(names(cohortDefinitionSet) %in% colsToRename)
     names(cohortDefinitionSet)[colInd] <- c("cohortDefinitionId", "cohortName", "sqlCommand", "json")
-    if (! "description" %in% names(cohortDefinitionSet)) {
+    if (!"description" %in% names(cohortDefinitionSet)) {
       cohortDefinitionSet$description <- ""
     }
-    cohortDefinitions <- cohortDefinitionSet[,intersect(names(cohortDefinitions), names(cohortDefinitionSet))]
+    cohortDefinitions <- cohortDefinitionSet[, intersect(names(cohortDefinitions), names(cohortDefinitionSet))]
   }
   writeCsv(
     x = cohortDefinitions,

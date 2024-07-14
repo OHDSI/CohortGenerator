@@ -7,7 +7,7 @@ New Features
 - Unit tests now running on all OHDSI DB Platforms (#151)
 
 Bug Fixes
-- Negation of cohort subset operator must join on subjetct_id AND start_date (#167)
+- Negation of cohort subset operator must join on `subject_id` AND `start_date` (#167)
 - Allow integer as cohort ID (#146)
 - Use native messaging functions for output vs. ParallelLogger (#97)
 - Prevent upload of inclusion rule information (#78)

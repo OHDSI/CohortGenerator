@@ -32,19 +32,20 @@ sqliteConnectionDetails <- DatabaseConnector::createConnectionDetails(
 )
 sqliteResultsDatabaseSchema <- "main"
 
-withr::defer({
-  connection <- DatabaseConnector::connect(connectionDetails = postgresConnectionDetails)
-  sql <- "DROP SCHEMA IF EXISTS @resultsDatabaseSchema CASCADE;"
-  DatabaseConnector::renderTranslateExecuteSql(
-    sql = sql,
-    resultsDatabaseSchema = postgresResultsDatabaseSchema,
-    connection = connection
-  )
+withr::defer(
+  {
+    connection <- DatabaseConnector::connect(connectionDetails = postgresConnectionDetails)
+    sql <- "DROP SCHEMA IF EXISTS @resultsDatabaseSchema CASCADE;"
+    DatabaseConnector::renderTranslateExecuteSql(
+      sql = sql,
+      resultsDatabaseSchema = postgresResultsDatabaseSchema,
+      connection = connection
+    )
 
-  DatabaseConnector::disconnect(connection)
-  unlink(databaseFile, force = TRUE)
-},
-testthat::teardown_env()
+    DatabaseConnector::disconnect(connection)
+    unlink(databaseFile, force = TRUE)
+  },
+  testthat::teardown_env()
 )
 
 testCreateSchema <- function(connectionDetails, resultsDatabaseSchema) {
@@ -66,9 +67,11 @@ testCreateSchema <- function(connectionDetails, resultsDatabaseSchema) {
   )
   specifications <- getResultsDataModelSpecifications()
   for (tableName in unique(specifications$tableName)) {
-    expect_true(DatabaseConnector::existsTable(connection = connection,
-                                               databaseSchema = resultsDatabaseSchema,
-                                               tableName = tableName))
+    expect_true(DatabaseConnector::existsTable(
+      connection = connection,
+      databaseSchema = resultsDatabaseSchema,
+      tableName = tableName
+    ))
   }
   # Bad schema name
   expect_error(createResultsDataModel(
@@ -78,10 +81,14 @@ testCreateSchema <- function(connectionDetails, resultsDatabaseSchema) {
 }
 
 test_that("Create schema", {
-  testCreateSchema(connectionDetails = postgresConnectionDetails,
-                  resultsDatabaseSchema = postgresResultsDatabaseSchema)
-  testCreateSchema(connectionDetails = sqliteConnectionDetails,
-                   resultsDatabaseSchema = sqliteResultsDatabaseSchema)
+  testCreateSchema(
+    connectionDetails = postgresConnectionDetails,
+    resultsDatabaseSchema = postgresResultsDatabaseSchema
+  )
+  testCreateSchema(
+    connectionDetails = sqliteConnectionDetails,
+    resultsDatabaseSchema = sqliteResultsDatabaseSchema
+  )
 })
 
 testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsFolder) {
@@ -100,7 +107,7 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
   for (tableName in unique(specifications$tableName)) {
     primaryKey <- specifications %>%
       dplyr::filter(tableName == !!tableName &
-                      primaryKey == "Yes") %>%
+        primaryKey == "Yes") %>%
       dplyr::select(columnName) %>%
       dplyr::pull()
 
@@ -130,10 +137,14 @@ test_that("Results upload", {
     ),
     exdir = unzipFolder
   )
-  testUploadResults(connectionDetails = postgresConnectionDetails,
-                   resultsDatabaseSchema = postgresResultsDatabaseSchema,
-                   resultsFolder = unzipFolder)
-  testUploadResults(connectionDetails = sqliteConnectionDetails,
-                    resultsDatabaseSchema = sqliteResultsDatabaseSchema,
-                    resultsFolder = unzipFolder)
+  testUploadResults(
+    connectionDetails = postgresConnectionDetails,
+    resultsDatabaseSchema = postgresResultsDatabaseSchema,
+    resultsFolder = unzipFolder
+  )
+  testUploadResults(
+    connectionDetails = sqliteConnectionDetails,
+    resultsDatabaseSchema = sqliteResultsDatabaseSchema,
+    resultsFolder = unzipFolder
+  )
 })

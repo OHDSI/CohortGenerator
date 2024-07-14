@@ -13,7 +13,7 @@ testPlatform <- function(dbmsDetails) {
     )
     unlink(platformOutputFolder, recursive = TRUE)
   })
-  
+
   cohortsWithStats <- getCohortDefinitionSet(
     settingsFileName = "testdata/name/Cohorts.csv",
     jsonFolder = "testdata/name/cohorts",
@@ -50,9 +50,9 @@ testPlatform <- function(dbmsDetails) {
     subsetOperators = subsetOperations
   )
   cohortsWithSubsets <- addCohortSubsetDefinition(cohortsWithStats, subsetDef)
-  
+
   ncSet <- getNegativeControlOutcomeCohortsForTest()
-  
+
   runCohortGeneration(
     connectionDetails = dbmsDetails$connectionDetails,
     cdmDatabaseSchema = dbmsDetails$cdmDatabaseSchema,
@@ -66,18 +66,18 @@ testPlatform <- function(dbmsDetails) {
     databaseId = dbmsDetails$connectionDetails$dbms,
     incremental = F
   )
-  
+
   # Check the output to verify the generation worked properly
   cohortsGenerated <- readCsv(
     file = file.path(platformOutputFolder, "cg_cohort_generation.csv")
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithSubsets))
-  
+
   cohortCounts <- readCsv(
     file = file.path(platformOutputFolder, "cg_cohort_count.csv")
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortCounts))
-  
+
   ncCohortCounts <- readCsv(
     file = file.path(platformOutputFolder, "cg_cohort_count_neg_ctrl.csv")
   )

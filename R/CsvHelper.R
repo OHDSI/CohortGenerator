@@ -27,7 +27,7 @@
 #' @param file  The .csv file to read.
 #' @param warnOnCaseMismatch  When TRUE, raise a warning if column headings
 #' in the .csv are not in snake_case format
-#' 
+#'
 #' @param colTypes Corresponds to the `col_types` in the `readr::read_csv` function.
 #'   One of `NULL`, a [readr::cols()] specification, or
 #'   a string. See `vignette("readr")` for more details.
@@ -38,7 +38,7 @@
 #'    `guess_max` or supply the correct types yourself.
 #'
 #'    Column specifications created by [list()] or [cols()] must contain
-#'    one column specification for each column. 
+#'    one column specification for each column.
 #'
 #'    Alternatively, you can use a compact string representation where each
 #'    character represents one column:
@@ -57,7 +57,7 @@
 #'    By default, reading a file without a column specification will print a
 #'    message showing what `readr` guessed they were. To remove this message,
 #'    set `show_col_types = FALSE` or set `options(readr.show_col_types = FALSE)`.
-#'  
+#'
 #' @return
 #' A tibble with the .csv contents
 #'

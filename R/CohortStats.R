@@ -58,7 +58,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
   }
 
   inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
-  
+
   # Remove any existing data to prevent duplication
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
@@ -129,7 +129,7 @@ getStatsTable <- function(connectionDetails,
 }
 
 #' Get Cohort Inclusion Stats Table Data
-#' 
+#'
 #' @description
 #' This function returns a data frame of the data in the Cohort Inclusion Tables.
 #' Results are organized in to a list with 5 different data frames:
@@ -203,23 +203,23 @@ getCohortStats <- function(connectionDetails,
 
 
 #' Get Cohort Inclusion Rules from a cohort definition set
-#' 
+#'
 #' @description
 #' This function returns a data frame of the inclusion rules defined
 #' in a cohort definition set.
-#' 
+#'
 #' @md
 #' @template CohortDefinitionSet
-#' 
+#'
 #' @export
 getCohortInclusionRules <- function(cohortDefinitionSet) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "json"
-                         )
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "json"
+    )
   )
 
   # Assemble the cohort inclusion rules
@@ -231,7 +231,7 @@ getCohortInclusionRules <- function(cohortDefinitionSet) {
     name = character(),
     description = character()
   )
-  
+
   # Remove any cohort definitions that do not include the JSON property
   cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) | is.na(cohortDefinitionSet$json)), ]
   for (i in 1:nrow(cohortDefinitionSet)) {
@@ -261,6 +261,6 @@ getCohortInclusionRules <- function(cohortDefinitionSet) {
       }
     }
   }
-  
+
   invisible(inclusionRules)
 }
