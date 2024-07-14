@@ -47,7 +47,6 @@ SubsetCohortWindow <- R6::R6Class(
     .targetAnchor = "cohortStart"
   ),
   public = list(
-    #' @title to List
     #' @description List representation of object
     toList = function() {
       objRepr <- list()
