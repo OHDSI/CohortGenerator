@@ -1,3 +1,8 @@
+CohortGenerator 0.11.0
+=======================
+Bug Fixes
+- Negative control outcome generation bug (#177)
+
 CohortGenerator 0.10.0
 =======================
 New Features
