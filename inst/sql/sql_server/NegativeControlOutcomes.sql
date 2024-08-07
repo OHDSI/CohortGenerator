@@ -29,7 +29,7 @@ CREATE TABLE #Codesets (
 
 DELETE FROM @cohort_database_schema.@cohort_table
 WHERE cohort_definition_id IN (
-  SELECT DISTINCT ancestor_concept_id
+  SELECT DISTINCT cohort_definition_id
   FROM #Codesets
 )
 ;
