@@ -226,7 +226,7 @@ getCohortInclusionRules <- function(cohortDefinitionSet) {
   # NOTE: This data frame must match the @cohort_inclusion_table
   # structure as defined in inst/sql/sql_server/CreateCohortTables.sql
   inclusionRules <- data.frame(
-    cohortDefinitionId = bit64::integer64(),
+    cohortDefinitionId = numeric(),
     ruleSequence = integer(),
     name = character(),
     description = character()
@@ -251,7 +251,7 @@ getCohortInclusionRules <- function(cohortDefinitionSet) {
           inclusionRules <- rbind(
             inclusionRules,
             data.frame(
-              cohortDefinitionId = bit64::as.integer64(cohortDefinitionSet$cohortId[i]),
+              cohortDefinitionId = as.numeric(cohortDefinitionSet$cohortId[i]),
               ruleSequence = as.integer(j - 1),
               name = ruleName,
               description = ruleDescription

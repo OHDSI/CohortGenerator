@@ -76,17 +76,26 @@ exportCohortStatsTables <- function(connectionDetails,
   # Internal function to export the stats
   exportStats <- function(data,
                           fileName,
+                          resultsDataModelTableName,
                           tablePrefix) {
     fullFileName <- file.path(cohortStatisticsFolder, paste0(tablePrefix, fileName))
+    primaryKeyColumns <- getPrimaryKey(resultsDataModelTableName)
     rlang::inform(paste0("- Saving data to - ", fullFileName))
     if (incremental) {
-      if (snakeCaseToCamelCase) {
-        cohortDefinitionIds <- unique(data$cohortDefinitionId)
-        saveIncremental(data, fullFileName, cohortDefinitionId = cohortDefinitionIds)
-      } else {
-        cohortDefinitionIds <- unique(data$cohort_definition_id)
-        saveIncremental(data, fullFileName, cohort_definition_id = cohortDefinitionIds)
+      # Dynamically build the arguments to the saveIncremental
+      # to specify the primary key(s) for the file
+      args <- list(
+        data = data,
+        file = fullFileName
+      )      
+      for (i in seq_along(primaryKeyColumns)) {
+        colName <- ifelse(isTRUE(snakeCaseToCamelCase), yes = primaryKeyColumns[i], no = SqlRender::camelCaseToSnakeCase(primaryKeyColumns[i]))
+        args[[colName]] <- data[[colName]]
       }
+      do.call(
+        what = CohortGenerator::saveIncremental,
+        args = args
+      )
     } else {
       .writeCsv(x = data, file = fullFileName)
     }
@@ -94,14 +103,16 @@ exportCohortStatsTables <- function(connectionDetails,
 
   tablesToExport <- data.frame(
     tableName = c("cohortInclusionResultTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable", "cohortCensorStatsTable"),
-    fileName = c("cohort_inc_result.csv", "cohort_inc_stats.csv", "cohort_summary_stats.csv", "cohort_censor_stats.csv")
+    fileName = c("cohort_inc_result.csv", "cohort_inc_stats.csv", "cohort_summary_stats.csv", "cohort_censor_stats.csv"),
+    resultsDataModelTableName = c("cg_cohort_inc_result", "cg_cohort_inc_stats", "cg_cohort_summary_stats", "cg_cohort_censor_stats")
   )
 
   if (is.null(cohortDefinitionSet)) {
     warning("No cohortDefinitionSet specified; please make sure you've inserted the inclusion rule names using the insertInclusionRuleNames function.")
     tablesToExport <- rbind(tablesToExport, data.frame(
       tableName = "cohortInclusionTable",
-      fileName = paste0(tablePrefix, "cohort_inclusion.csv")
+      fileName = "cohort_inclusion.csv",
+      resultsDataModelTableName = "cg_cohort_inclusion"
     ))
   } else {
     inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
@@ -109,6 +120,7 @@ exportCohortStatsTables <- function(connectionDetails,
     exportStats(
       data = inclusionRules,
       fileName = "cohort_inclusion.csv",
+      resultsDataModelTableName = "cg_cohort_inclusion",
       tablePrefix = tablePrefix
     )
   }
@@ -131,6 +143,7 @@ exportCohortStatsTables <- function(connectionDetails,
     exportStats(
       data = cohortStats[[tablesToExport$tableName[i]]],
       fileName = fileName,
+      resultsDataModelTableName = tablesToExport$resultsDataModelTableName[[i]],
       tablePrefix = tablePrefix
     )
   }
@@ -202,4 +215,14 @@ createEmptyResult <- function(tableName) {
   result <- tibble::as_tibble(t(result), name_repair = "check_unique")
   result <- result[FALSE, ]
   return(result)
+}
+
+getPrimaryKey <- function(tableName) {
+  columns <- readCsv(
+    file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
+  ) %>%
+    dplyr::filter(.data$tableName == !!tableName & tolower(.data$primaryKey) == "yes") %>%
+    dplyr::pull(.data$columnName) %>%
+    SqlRender::snakeCaseToCamelCase()
+  return(columns)
 }
