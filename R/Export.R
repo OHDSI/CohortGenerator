@@ -45,6 +45,7 @@
 #'
 #' @param databaseId                  Optional - when specified, the databaseId will be added
 #'                                    to the exported results
+#' @template minCellCount
 #'
 #' @template CohortDefinitionSet
 #'
@@ -61,6 +62,7 @@ exportCohortStatsTables <- function(connectionDetails,
                                     fileNamesInSnakeCase = FALSE,
                                     incremental = FALSE,
                                     databaseId = NULL,
+                                    minCellCount = 5,
                                     cohortDefinitionSet = NULL,
                                     tablePrefix = "") {
   if (is.null(connection)) {
@@ -80,7 +82,18 @@ exportCohortStatsTables <- function(connectionDetails,
                           tablePrefix) {
     fullFileName <- file.path(cohortStatisticsFolder, paste0(tablePrefix, fileName))
     primaryKeyColumns <- getPrimaryKey(resultsDataModelTableName)
+    columnsToCensor <- getColumnsToCensor(resultsDataModelTableName)
     rlang::inform(paste0("- Saving data to - ", fullFileName))
+    
+    # Make sure the data is censored before saving
+    if (length(columnsToCensor) > 0) {
+      for (i in seq_along(columnsToCensor)) {
+        colName <- ifelse(isTRUE(snakeCaseToCamelCase), yes = columnsToCensor[i], no = SqlRender::camelCaseToSnakeCase(columnsToCensor[i]))
+        data <- data %>%
+          enforceMinCellValue(colName, minCellCount)
+      }
+    }
+    
     if (incremental) {
       # Dynamically build the arguments to the saveIncremental
       # to specify the primary key(s) for the file
@@ -225,4 +238,36 @@ getPrimaryKey <- function(tableName) {
     dplyr::pull(.data$columnName) %>%
     SqlRender::snakeCaseToCamelCase()
   return(columns)
+}
+
+getColumnsToCensor <- function(tableName) {
+  columns <- readCsv(
+    file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
+  ) %>%
+    dplyr::filter(.data$tableName == !!tableName & tolower(.data$minCellCount) == "yes") %>%
+    dplyr::pull(.data$columnName) %>%
+    SqlRender::snakeCaseToCamelCase()
+  return(columns)
+}
+
+enforceMinCellValue <- function(data, fieldName, minValues, silent = FALSE) {
+  toCensor <- !is.na(pull(data, fieldName)) & pull(data, fieldName) < minValues & pull(data, fieldName) != 0
+  if (!silent) {
+    percent <- round(100 * sum(toCensor) / nrow(data), 1)
+    message(
+      "    censoring ",
+      sum(toCensor),
+      " values (",
+      percent,
+      "%) from ",
+      fieldName,
+      " because value below minimum"
+    )
+  }
+  if (length(minValues) == 1) {
+    data[toCensor, fieldName] <- -minValues
+  } else {
+    data[toCensor, fieldName] <- -minValues[toCensor]
+  }
+  return(data)
 }
