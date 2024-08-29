@@ -20,9 +20,9 @@ createDemographicSubset(
 
 \item{ageMax}{The maximum age}
 
-\item{gender}{Gender demographics - concepts - 0, 8532, 8507, 0 "male", "female".
-Any string that is not (case insensitive) "male" or "female" is converted to gender concept 0
-https://www.ohdsi.org/web/wiki/doku.php?id=documentation:vocabulary:gender
+\item{gender}{Gender demographics - concepts - 0, 8532, 8507, 0, "female", "male". 
+Any string that is not "male" or "female" (case insensitive) is converted to gender concept 0. 
+https://athena.ohdsi.org/search-terms/terms?standardConcept=Standard&domain=Gender&page=1&pageSize=15&query= 
 Specific concept ids not in this set can be used but are not explicitly validated}
 
 \item{race}{Race demographics - concept ID list}

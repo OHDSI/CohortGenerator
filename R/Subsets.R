@@ -637,9 +637,9 @@ DemographicSubsetOperator <- R6::R6Class(
 #' @param name         Optional char name
 #' @param ageMin       The minimum age
 #' @param ageMax       The maximum age
-#' @param gender       Gender demographics - concepts - 0, 8532, 8507, 0 "male", "female".
-#'                     Any string that is not (case insensitive) "male" or "female" is converted to gender concept 0
-#'                     https://www.ohdsi.org/web/wiki/doku.php?id=documentation:vocabulary:gender
+#' @param gender       Gender demographics - concepts - 0, 8532, 8507, 0, "female", "male". 
+#'                     Any string that is not "male" or "female" (case insensitive) is converted to gender concept 0. 
+#'                     https://athena.ohdsi.org/search-terms/terms?standardConcept=Standard&domain=Gender&page=1&pageSize=15&query= 
 #'                     Specific concept ids not in this set can be used but are not explicitly validated
 #' @param race         Race demographics - concept ID list
 #' @param ethnicity    Ethnicity demographics - concept ID list
@@ -838,8 +838,8 @@ LimitSubsetOperator <- R6::R6Class(
 #' Subset cohorts using specified limit criteria
 #' @export
 #' @param name              Name of operation
-#' @param priorTime                 Required prior observation window
-#' @param followUpTime              Required post observation window
+#' @param priorTime         Required prior observation window (specified as a positive integer)
+#' @param followUpTime      Required post observation window (specified as a positive integer)
 #' @param limitTo           character one of:
 #'                              "firstEver" - only first entry in patient history
 #'                              "earliestRemaining" - only first entry after washout set by priorTime
