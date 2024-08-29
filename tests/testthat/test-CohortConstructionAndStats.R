@@ -398,8 +398,6 @@ test_that("Insert cohort stats expected use-case", {
     table = cohortTableNames$cohortInclusionTable,
     snakeCaseToCamelCase = TRUE
   )
-  # HACK: SqlLite does not support bigint so convert the results returned
-  results$cohortDefinitionId <- bit64::as.integer64(results$cohortDefinitionId)
   expect_equal(results, cohortInclusionRules)
   DatabaseConnector::disconnect(conn)
 })
@@ -465,8 +463,6 @@ test_that("Insert cohort stats with inclusion rule name that is empty", {
     table = cohortTableNames$cohortInclusionTable,
     snakeCaseToCamelCase = TRUE
   )
-  # HACK: SqlLite does not support bigint so convert the results returned
-  results$cohortDefinitionId <- bit64::as.integer64(results$cohortDefinitionId)
   expect_equal(results, cohortInclusionRules)
   DatabaseConnector::disconnect(conn)
 })
@@ -506,8 +502,6 @@ test_that("Insert cohort stats with INT64 for cohort_definition_id", {
   # Obtain a list of cohorts to test
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
 
-  # Hack the cohortDefinitionId to force to 64 bit integer
-  cohortsWithStats$cohortId <- bit64::as.integer64(cohortsWithStats$cohortId)
   cohortsWithStats$cohortId <- cohortsWithStats$cohortId + .Machine$integer.max
 
   # Insert the inclusion rule names
@@ -526,8 +520,6 @@ test_that("Insert cohort stats with INT64 for cohort_definition_id", {
     table = cohortTableNames$cohortInclusionTable,
     snakeCaseToCamelCase = TRUE
   )
-  # HACK: SqlLite does not support bigint so convert the results returned
-  results$cohortDefinitionId <- bit64::as.integer64(results$cohortDefinitionId)
   expect_equal(results, cohortInclusionRules)
   DatabaseConnector::disconnect(conn)
 })
