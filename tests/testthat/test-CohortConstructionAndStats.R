@@ -502,7 +502,7 @@ test_that("Insert cohort stats with INT64 for cohort_definition_id", {
   # Obtain a list of cohorts to test
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
 
-  cohortsWithStats$cohortId <- cohortsWithStats$cohortId + .Machine$integer.max
+  cohortsWithStats$cohortId <- cohortsWithStats$cohortId + as.numeric(.Machine$integer.max)
 
   # Insert the inclusion rule names
   cohortInclusionRules <- insertInclusionRuleNames(
