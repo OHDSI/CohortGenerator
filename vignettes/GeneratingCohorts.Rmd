@@ -31,28 +31,19 @@ library(CohortGenerator)
 
 # Guide for generating cohorts using CohortGenerator
 
-This guide will provide examples of using the CohortGenerator package to generate [cohorts](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html) in R. In this vignette, we will walk through the process of downloading cohorts from ATLAS and look at the options available for generating the cohorts.
+This guide will provide examples of using the CohortGenerator package to generate [cohorts](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html) in R. In this vignette, we will walk through the process of building a cohort definition set cohorts and look at the options available for generating the cohorts.
 
 ## Basic Example
 
-### Downloading cohorts from ATLAS
+### Loading a cohort definition set from ATLAS
 
-We can create cohorts using [ATLAS](https://github.com/OHDSI/Atlas) and download them for generation in R. To do this, we will use the `ROhdsiWebApi` package to download some cohort definitions to R:
+We can create cohorts using [ATLAS](https://github.com/OHDSI/Atlas) and download them for generation in R using the [exportCohortDefinitionSet](https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html) function of the `ROhdsiWebApi` package.
 
+### Loading an example cohort definition set 
 
-```{r eval=FALSE}
-# A list of cohort IDs for use in this vignette
-cohortIds <- c(1778211, 1778212, 1778213)
-# Get the SQL/JSON for the cohorts
-cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(
-  baseUrl = baseUrl,
-  cohortIds = cohortIds
-)
-```
+Here we will load a cohort definition set using some cohorts we use to test the `CohortGenerator` package:
 
-```{r echo=FALSE, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-# Hidden code block to load the cohortDefinitionSet from the package vs. trying to
-# download using ROhdsiWebApi to prevent errors when running GHA
+```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
 cohortDefinitionSet <- getCohortDefinitionSet(
   settingsFileName = "testdata/name/Cohorts.csv",
   jsonFolder = "testdata/name/cohorts",
@@ -63,13 +54,12 @@ cohortDefinitionSet <- getCohortDefinitionSet(
   verbose = FALSE
 )
 
-cohortDefinitionSet$cohortId <- cohortDefinitionSet$cohortId + 1778210 # Match the cohort Ids from Atlas
 cohortIds <- cohortDefinitionSet$cohortId
 cohortDefinitionSet$atlasId <- cohortDefinitionSet$cohortId
 cohortDefinitionSet$logicDescription <- ""
 ```
 
-The code above connects to ATLAS' WebAPI, retrieves all of the `cohortDefinitions` and then filters them based on the name to produce the `cohortsForGeneration` dataframe. `cohortsForGeneration` contains the list of cohort IDs to use for calling the function `ROhdsiWebApi::exportCohortDefinitionSet` to download the set of cohort definitions into `cohortDefinitionSet`. The cohort definition set data frame has the following columns:
+The code above constructs a `cohortDefinitionSet` data.frame using a set of cohorts that come with the CohortGenerator package. The `cohortDefinitionSet` data frame has the following columns:
 
 ```{r}
 names(cohortDefinitionSet)
@@ -80,7 +70,7 @@ Here is how these columns are used:
 - **cohortId**: The cohortId will be the same as the atlasId upon export from ATLAS. We provide this column in case you'd like to alter the numbering scheme for your cohort definition set.
 - **cohortName**: The name of the cohort in ATLAS.
 - **sql**: The SQL used to construct the cohort.
-- **json**: The [Circe](https://github.com/OHDSI/circe-be) compliant JSON representation of the cohort definition
+- **json**: The [Circe](https://github.com/OHDSI/circe-be) compliant JSON representation of the cohort definition. The [CirceR](https://ohdsi.github.io/CirceR/index.html) package is used to create the SQL from the Circe json.
 - **logicDescription**: The description of the cohort from ATLAS.
 
 ### Saving in a study package
@@ -126,7 +116,7 @@ cohortDefinitionSet <- getCohortDefinitionSet(
 
 ### Generating Cohorts
 
-Now that we have obtained the `cohortDefinitionSet` from ROhdsiWebApi, we're ready to generate our cohorts against our OMOP CDM. In this example, we will use the [Eunomia](https://github.com/OHDSI/Eunomia) data set as our CDM.
+Now that we have created the `cohortDefinitionSet`, we're ready to generate our cohorts against our OMOP CDM. In this example, we will use the [Eunomia](https://github.com/OHDSI/Eunomia) data set as our CDM.
 
 ```{r, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 # Get the Eunomia connection details
@@ -169,16 +159,39 @@ getCohortCounts(
 
 ### Cohort Statistics (Inclusion Rule Statistics)
 
-Cohorts defined in ATLAS may define one or more inclusion criteria as part of the cohort's logic. As part of cohort generation, we may want to capture these cohort statistics for use in other packages. For example, [CohortDiagnostics](https://ohdsi.github.io/CohortDiagnostics) has functionality that allows for review of inclusion rule statistics to understand how these rules may materialize between data sources. Here we will review how to generate cohorts with inclusion rule statistics and how to export these results for use by downstream packages such as CohortDiagnostics. Building on our basic example, let's export the cohorts from WebAPI but this time indicate that we'd like to also include the code that `generatesStats`:
+Cohorts defined in ATLAS may define one or more inclusion criteria as part of the cohort's logic. As part of cohort generation, we may want to capture these cohort statistics for use in other packages. For example, [CohortDiagnostics](https://ohdsi.github.io/CohortDiagnostics) has functionality that allows for review of inclusion rule statistics to understand how these rules may materialize between data sources. 
 
-```{r, eval=FALSE}
-# Get the cohorts and include the code to generate inclusion rule stats
-cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(
-  baseUrl = baseUrl,
-  cohortIds = cohortIds,
-  generateStats = TRUE
-)
+Here we will review how to generate cohorts with inclusion rule statistics and how to export these results for use by downstream packages such as CohortDiagnostics. If you have constructed your cohorts in ATLAS, you can again use the [exportCohortDefinitionSet](https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html) function of the `ROhdsiWebApi` package. The [exportCohortDefinitionSet](https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html) function has an additional parameter called `generateStats` which when set to TRUE will include the SQL necessary to generate the cohort statistics.
+
+Building on our previous example where we loaded a cohort set from the `CohortGenerator` package, let's include the code that will build the SQL for the cohort statistics:
+
+```{r, eval=TRUE}
+# First construct a cohort definition set: an empty 
+# data frame with the cohorts to generate
+cohortDefinitionSet <- CohortGenerator::createEmptyCohortDefinitionSet()
+
+# Fill the cohort set using  cohorts included in this 
+# package as an example
+cohortJsonFiles <- list.files(path = system.file("testdata/name/cohorts", package = "CohortGenerator"), full.names = TRUE)
+for (i in 1:length(cohortJsonFiles)) {
+  cohortJsonFileName <- cohortJsonFiles[i]
+  cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
+  # Here we read in the JSON in order to create the SQL
+  # using [CirceR](https://ohdsi.github.io/CirceR/)
+  # If you have your JSON and SQL stored differently, you can
+  # modify this to read your JSON/SQL files however you require
+  cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
+  cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
+  cohortSql <- CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = TRUE))
+  cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(cohortId = i,
+                                                               cohortName = cohortName, 
+                                                               json = cohortJson,
+                                                               sql = cohortSql,
+                                                               stringsAsFactors = FALSE))
+}
 ```
+
+In the code above, we read in the cohort JSON files from the package and then use [CirceR](https://ohdsi.github.io/CirceR/index.html) to build the cohort query SQL using the `CirceR::buildCohortQuery` command. Note that in this function we are specifying the `options = CirceR::createGenerateOptions(generateStats = TRUE)` to indicate that the SQL should include the code necessary to compute the cohort statistics.
 
 Next we'll create the tables to store the cohort and the cohort statistics. Then we can generate the cohorts.
 
