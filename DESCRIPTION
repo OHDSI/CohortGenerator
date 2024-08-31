@@ -36,7 +36,6 @@ Suggests:
   Eunomia,
   knitr,
   rmarkdown,
-  ROhdsiWebApi,
   testthat,
   withr,
   zip
