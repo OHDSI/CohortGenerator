@@ -17,6 +17,7 @@ runCohortGeneration(
   stopOnError = TRUE,
   outputFolder,
   databaseId = 1,
+  minCellCount = 5,
   incremental = FALSE,
   incrementalFolder = NULL
 )
@@ -79,6 +80,10 @@ identified in the return value from this function.}
 
 \item{databaseId}{A unique ID for the database. This will be appended to
 most tables.}
+
+\item{minCellCount}{To preserve privacy: the minimum number of subjects contributing
+to a count before it can be included in the results. If the
+count is below this threshold, it will be set to `-minCellCount`.}
 
 \item{incremental}{Create only cohorts that haven't been created before?}
 
