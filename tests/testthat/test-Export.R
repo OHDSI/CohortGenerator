@@ -384,7 +384,7 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames
   )
-  
+
   # Generate with stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   generateCohortSet(
@@ -395,7 +395,7 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
     cohortDatabaseSchema = "main",
     incremental = FALSE
   )
-  
+
   # Export the results
   exportCohortStatsTables(
     connectionDetails = connectionDetails,
@@ -406,7 +406,7 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
     databaseId = "Eunomia",
     cohortDefinitionSet = cohortsWithStats
   )
-  
+
   # Get the row counts for each file on the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   firstPassRowCounts <- data.frame(
@@ -423,8 +423,8 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
       )
     )
   }
-  
-  
+
+
   # Re-export the stats
   exportCohortStatsTables(
     connectionDetails = connectionDetails,
@@ -435,7 +435,7 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
     databaseId = "Eunomia",
     cohortDefinitionSet = cohortsWithStats
   )
-  
+
   # Get the row counts for each file on the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   secondPassRowCounts <- data.frame(
@@ -452,7 +452,7 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
       )
     )
   }
-  
+
   compareRowCounts <- merge(firstPassRowCounts, secondPassRowCounts)
   for (i in 1:nrow(compareRowCounts)) {
     expect_equal(compareRowCounts$rowCountFirstPass[i], compareRowCounts$rowCountSecondPass[i])

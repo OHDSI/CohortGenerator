@@ -420,7 +420,7 @@ createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator
 #' @title Demographic Subset Operator
 #' @description
 #' Operators for subsetting a cohort by demographic criteria
-#' 
+#'
 #' @export
 DemographicSubsetOperator <- R6::R6Class(
   classname = "DemographicSubsetOperator",
@@ -637,9 +637,9 @@ DemographicSubsetOperator <- R6::R6Class(
 #' @param name         Optional char name
 #' @param ageMin       The minimum age
 #' @param ageMax       The maximum age
-#' @param gender       Gender demographics - concepts - 0, 8532, 8507, 0, "female", "male". 
-#'                     Any string that is not "male" or "female" (case insensitive) is converted to gender concept 0. 
-#'                     https://athena.ohdsi.org/search-terms/terms?standardConcept=Standard&domain=Gender&page=1&pageSize=15&query= 
+#' @param gender       Gender demographics - concepts - 0, 8532, 8507, 0, "female", "male".
+#'                     Any string that is not "male" or "female" (case insensitive) is converted to gender concept 0.
+#'                     https://athena.ohdsi.org/search-terms/terms?standardConcept=Standard&domain=Gender&page=1&pageSize=15&query=
 #'                     Specific concept ids not in this set can be used but are not explicitly validated
 #' @param race         Race demographics - concept ID list
 #' @param ethnicity    Ethnicity demographics - concept ID list

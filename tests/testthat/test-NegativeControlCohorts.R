@@ -238,9 +238,9 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'fi
     cohortTableNames = cohortTableNames
   )
   ncSet <- getNegativeControlOutcomeCohortsForTest()
-  
+
   # Set the cohort ID to something other than the concept ID
-  ncSet <- ncSet %>% 
+  ncSet <- ncSet %>%
     mutate(cohortId = row_number())
   expect_output(
     generateNegativeControlOutcomeCohorts(
@@ -253,7 +253,7 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'fi
       detectOnDescendants = FALSE
     )
   )
-  
+
   # Get the cohort counts from the first run
   counts1 <- getCohortCounts(
     connection = connection,
@@ -281,8 +281,8 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'fi
     cohortTable = cohortTableNames$cohortTable,
     cohortDefinitionSet = ncSet
   )
-  
-  expect_equal(counts1,counts2)
+
+  expect_equal(counts1, counts2)
 })
 
 test_that("incremental mode", {

@@ -166,11 +166,11 @@ Here we will review how to generate cohorts with inclusion rule statistics and h
 Building on our previous example where we loaded a cohort set from the `CohortGenerator` package, let's include the code that will build the SQL for the cohort statistics:
 
 ```{r, eval=TRUE}
-# First construct a cohort definition set: an empty 
+# First construct a cohort definition set: an empty
 # data frame with the cohorts to generate
 cohortDefinitionSet <- CohortGenerator::createEmptyCohortDefinitionSet()
 
-# Fill the cohort set using  cohorts included in this 
+# Fill the cohort set using  cohorts included in this
 # package as an example
 cohortJsonFiles <- list.files(path = system.file("testdata/name/cohorts", package = "CohortGenerator"), full.names = TRUE)
 for (i in 1:length(cohortJsonFiles)) {
@@ -183,11 +183,13 @@ for (i in 1:length(cohortJsonFiles)) {
   cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)
   cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
   cohortSql <- CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = TRUE))
-  cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(cohortId = i,
-                                                               cohortName = cohortName, 
-                                                               json = cohortJson,
-                                                               sql = cohortSql,
-                                                               stringsAsFactors = FALSE))
+  cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(
+    cohortId = i,
+    cohortName = cohortName,
+    json = cohortJson,
+    sql = cohortSql,
+    stringsAsFactors = FALSE
+  ))
 }
 ```
 

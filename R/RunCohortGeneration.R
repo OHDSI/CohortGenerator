@@ -58,7 +58,7 @@
 #'
 #' @param databaseId    A unique ID for the database. This will be appended to
 #'                      most tables.
-#'                      
+#'
 #' @template minCellCount
 #'
 #' @param incremental   Create only cohorts that haven't been created before?
