@@ -86,7 +86,7 @@ test_that("Call runCohortGeneration and verify censoring of minimum cell counts"
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   ncSet <- getNegativeControlOutcomeCohortsForTest()
   expectedDatabaseId <- "db1"
-  
+
   runCohortGeneration(
     connectionDetails = connectionDetails,
     cdmDatabaseSchema = "main",
@@ -102,7 +102,7 @@ test_that("Call runCohortGeneration and verify censoring of minimum cell counts"
     minCellCount = 0,
     incremental = F
   )
-  
+
   runCohortGeneration(
     connectionDetails = connectionDetails,
     cdmDatabaseSchema = "main",
@@ -118,15 +118,15 @@ test_that("Call runCohortGeneration and verify censoring of minimum cell counts"
     minCellCount = minCellCountForTest,
     incremental = F
   )
-  
-  
+
+
   # Verify that values below the minCellCountForTest are censored properly
   spec <- CohortGenerator::readCsv(
     file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
   ) %>%
     dplyr::filter(tolower(.data$minCellCount) == "yes") %>%
     dplyr::arrange(.data$tableName, .data$columnName)
-  
+
   for (i in 1:nrow(spec)) {
     data1 <- readr::read_csv(file = file.path(testOutputFolder1, paste0(spec$tableName[i], ".csv")), col_types = readr::cols(), lazy = F)
     data2 <- readr::read_csv(file = file.path(testOutputFolder2, paste0(spec$tableName[i], ".csv")), col_types = readr::cols(), lazy = F)

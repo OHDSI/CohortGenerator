@@ -25,7 +25,6 @@ knitr::opts_chunk$set(
 )
 someFolder <- tempdir()
 packageRoot <- tempdir()
-baseUrl <- "https://api.ohdsi.org/WebAPI"
 library(CohortGenerator)
 ```
 # Introduction
@@ -57,19 +56,7 @@ This type of operation allows you to subset a cohort to only those subjects incl
 
 ## Defining a subset definition
 First get a Cohort definition set:
-```{r eval=FALSE}
-library(CohortGenerator)
-# A list of cohort IDs for use in this vignette
-cohortIds <- c(1778211, 1778212, 1778213)
-# Get the SQL/JSON for the cohorts
-cohortDefinitionSet <- ROhdsiWebApi::exportCohortDefinitionSet(
-  baseUrl = baseUrl,
-  cohortIds = cohortIds
-)
-```
-```{r echo=FALSE, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-# Hidden code block to load the cohortDefinitionSet from the package vs. trying to
-# download using ROhdsiWebApi to prevent errors when running GHA
+```{r echo=TRUE, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 cohortDefinitionSet <- getCohortDefinitionSet(
   settingsFileName = "testdata/name/Cohorts.csv",
   jsonFolder = "testdata/name/cohorts",
@@ -80,11 +67,12 @@ cohortDefinitionSet <- getCohortDefinitionSet(
   verbose = FALSE
 )
 
-cohortDefinitionSet$cohortId <- cohortDefinitionSet$cohortId + 1778210 # Match the cohort Ids from Atlas
+cohortDefinitionSet$cohortId <- cohortDefinitionSet$cohortId + 1778210 # Match the cohort Ids taken from Atlas
 cohortIds <- cohortDefinitionSet$cohortId
 cohortDefinitionSet$atlasId <- cohortDefinitionSet$cohortId
 cohortDefinitionSet$logicDescription <- ""
 ```
+
 A definition can include different subset operations - these are applied strictly in order:
 
 ```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
