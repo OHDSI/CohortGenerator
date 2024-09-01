@@ -59,6 +59,8 @@
 #' @param databaseId    A unique ID for the database. This will be appended to
 #'                      most tables.
 #'
+#' @template minCellCount
+#'
 #' @param incremental   Create only cohorts that haven't been created before?
 #'
 #' @param incrementalFolder If \code{incremental = TRUE}, specify a folder where
@@ -78,6 +80,7 @@ runCohortGeneration <- function(connectionDetails,
                                 stopOnError = TRUE,
                                 outputFolder,
                                 databaseId = 1,
+                                minCellCount = 5,
                                 incremental = FALSE,
                                 incrementalFolder = NULL) {
   if (is.null(cohortDefinitionSet) && is.null(negativeControlOutcomeCohortSet)) {
@@ -127,6 +130,7 @@ runCohortGeneration <- function(connectionDetails,
     stopOnError = stopOnError,
     outputFolder = outputFolder,
     databaseId = databaseId,
+    minCellCount = minCellCount,
     incremental = incremental,
     incrementalFolder = incrementalFolder
   )
@@ -142,6 +146,7 @@ runCohortGeneration <- function(connectionDetails,
     detectOnDescendants = detectOnDescendants,
     outputFolder = outputFolder,
     databaseId = databaseId,
+    minCellCount = minCellCount,
     incremental = incremental,
     incrementalFolder = incrementalFolder
   )
@@ -164,6 +169,7 @@ generateAndExportCohorts <- function(connection,
                                      stopOnError,
                                      outputFolder,
                                      databaseId,
+                                     minCellCount,
                                      incremental,
                                      incrementalFolder) {
   # Generate the cohorts
@@ -220,6 +226,9 @@ generateAndExportCohorts <- function(connection,
   }
 
   rlang::inform("Saving cohort counts")
+  cohortCounts <- cohortCounts %>%
+    enforceMinCellValue("cohortEntries", minCellCount) %>%
+    enforceMinCellValue("cohortSubjects", minCellCount)
   writeCsv(
     x = cohortCounts,
     file = cohortCountsFileName
@@ -235,6 +244,7 @@ generateAndExportCohorts <- function(connection,
     fileNamesInSnakeCase = TRUE,
     incremental = incremental,
     databaseId = databaseId,
+    minCellCount = minCellCount,
     cohortDefinitionSet = cohortDefinitionSet,
     tablePrefix = "cg_"
   )
@@ -254,6 +264,7 @@ generateAndExportNegativeControls <- function(connection,
                                               detectOnDescendants,
                                               outputFolder,
                                               databaseId,
+                                              minCellCount,
                                               incremental,
                                               incrementalFolder) {
   # Generate any negative controls
@@ -299,6 +310,9 @@ generateAndExportNegativeControls <- function(connection,
   )
 
   rlang::inform("Saving negative control outcome cohort counts")
+  cohortCountsNegativeControlOutcomes <- cohortCountsNegativeControlOutcomes %>%
+    enforceMinCellValue("cohortEntries", minCellCount) %>%
+    enforceMinCellValue("cohortSubjects", minCellCount)
   writeCsv(
     x = cohortCountsNegativeControlOutcomes,
     file = cohortCountsNegativeControlOutcomesFileName

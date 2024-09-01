@@ -16,9 +16,9 @@ createLimitSubset(
 \arguments{
 \item{name}{Name of operation}
 
-\item{priorTime}{Required prior observation window}
+\item{priorTime}{Required prior observation window (specified as a positive integer)}
 
-\item{followUpTime}{Required post observation window}
+\item{followUpTime}{Required post observation window (specified as a positive integer)}
 
 \item{limitTo}{character one of:
                              "firstEver" - only first entry in patient history

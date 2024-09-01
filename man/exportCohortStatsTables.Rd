@@ -14,6 +14,7 @@ exportCohortStatsTables(
   fileNamesInSnakeCase = FALSE,
   incremental = FALSE,
   databaseId = NULL,
+  minCellCount = 5,
   cohortDefinitionSet = NULL,
   tablePrefix = ""
 )
@@ -50,6 +51,10 @@ overwriting an existing results}
 
 \item{databaseId}{Optional - when specified, the databaseId will be added
 to the exported results}
+
+\item{minCellCount}{To preserve privacy: the minimum number of subjects contributing
+to a count before it can be included in the results. If the
+count is below this threshold, it will be set to `-minCellCount`.}
 
 \item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
 the following columns: \describe{

@@ -45,6 +45,7 @@
 #'
 #' @param databaseId                  Optional - when specified, the databaseId will be added
 #'                                    to the exported results
+#' @template minCellCount
 #'
 #' @template CohortDefinitionSet
 #'
@@ -61,6 +62,7 @@ exportCohortStatsTables <- function(connectionDetails,
                                     fileNamesInSnakeCase = FALSE,
                                     incremental = FALSE,
                                     databaseId = NULL,
+                                    minCellCount = 5,
                                     cohortDefinitionSet = NULL,
                                     tablePrefix = "") {
   if (is.null(connection)) {
@@ -76,17 +78,37 @@ exportCohortStatsTables <- function(connectionDetails,
   # Internal function to export the stats
   exportStats <- function(data,
                           fileName,
+                          resultsDataModelTableName,
                           tablePrefix) {
     fullFileName <- file.path(cohortStatisticsFolder, paste0(tablePrefix, fileName))
+    primaryKeyColumns <- getPrimaryKey(resultsDataModelTableName)
+    columnsToCensor <- getColumnsToCensor(resultsDataModelTableName)
     rlang::inform(paste0("- Saving data to - ", fullFileName))
-    if (incremental) {
-      if (snakeCaseToCamelCase) {
-        cohortDefinitionIds <- unique(data$cohortDefinitionId)
-        saveIncremental(data, fullFileName, cohortDefinitionId = cohortDefinitionIds)
-      } else {
-        cohortDefinitionIds <- unique(data$cohort_definition_id)
-        saveIncremental(data, fullFileName, cohort_definition_id = cohortDefinitionIds)
+
+    # Make sure the data is censored before saving
+    if (length(columnsToCensor) > 0) {
+      for (i in seq_along(columnsToCensor)) {
+        colName <- ifelse(isTRUE(snakeCaseToCamelCase), yes = columnsToCensor[i], no = SqlRender::camelCaseToSnakeCase(columnsToCensor[i]))
+        data <- data %>%
+          enforceMinCellValue(colName, minCellCount)
       }
+    }
+
+    if (incremental) {
+      # Dynamically build the arguments to the saveIncremental
+      # to specify the primary key(s) for the file
+      args <- list(
+        data = data,
+        file = fullFileName
+      )
+      for (i in seq_along(primaryKeyColumns)) {
+        colName <- ifelse(isTRUE(snakeCaseToCamelCase), yes = primaryKeyColumns[i], no = SqlRender::camelCaseToSnakeCase(primaryKeyColumns[i]))
+        args[[colName]] <- data[[colName]]
+      }
+      do.call(
+        what = CohortGenerator::saveIncremental,
+        args = args
+      )
     } else {
       .writeCsv(x = data, file = fullFileName)
     }
@@ -94,14 +116,16 @@ exportCohortStatsTables <- function(connectionDetails,
 
   tablesToExport <- data.frame(
     tableName = c("cohortInclusionResultTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable", "cohortCensorStatsTable"),
-    fileName = c("cohort_inc_result.csv", "cohort_inc_stats.csv", "cohort_summary_stats.csv", "cohort_censor_stats.csv")
+    fileName = c("cohort_inc_result.csv", "cohort_inc_stats.csv", "cohort_summary_stats.csv", "cohort_censor_stats.csv"),
+    resultsDataModelTableName = c("cg_cohort_inc_result", "cg_cohort_inc_stats", "cg_cohort_summary_stats", "cg_cohort_censor_stats")
   )
 
   if (is.null(cohortDefinitionSet)) {
     warning("No cohortDefinitionSet specified; please make sure you've inserted the inclusion rule names using the insertInclusionRuleNames function.")
     tablesToExport <- rbind(tablesToExport, data.frame(
       tableName = "cohortInclusionTable",
-      fileName = paste0(tablePrefix, "cohort_inclusion.csv")
+      fileName = "cohort_inclusion.csv",
+      resultsDataModelTableName = "cg_cohort_inclusion"
     ))
   } else {
     inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
@@ -109,6 +133,7 @@ exportCohortStatsTables <- function(connectionDetails,
     exportStats(
       data = inclusionRules,
       fileName = "cohort_inclusion.csv",
+      resultsDataModelTableName = "cg_cohort_inclusion",
       tablePrefix = tablePrefix
     )
   }
@@ -131,6 +156,7 @@ exportCohortStatsTables <- function(connectionDetails,
     exportStats(
       data = cohortStats[[tablesToExport$tableName[i]]],
       fileName = fileName,
+      resultsDataModelTableName = tablesToExport$resultsDataModelTableName[[i]],
       tablePrefix = tablePrefix
     )
   }
@@ -202,4 +228,46 @@ createEmptyResult <- function(tableName) {
   result <- tibble::as_tibble(t(result), name_repair = "check_unique")
   result <- result[FALSE, ]
   return(result)
+}
+
+getPrimaryKey <- function(tableName) {
+  columns <- readCsv(
+    file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
+  ) %>%
+    dplyr::filter(.data$tableName == !!tableName & tolower(.data$primaryKey) == "yes") %>%
+    dplyr::pull(.data$columnName) %>%
+    SqlRender::snakeCaseToCamelCase()
+  return(columns)
+}
+
+getColumnsToCensor <- function(tableName) {
+  columns <- readCsv(
+    file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
+  ) %>%
+    dplyr::filter(.data$tableName == !!tableName & tolower(.data$minCellCount) == "yes") %>%
+    dplyr::pull(.data$columnName) %>%
+    SqlRender::snakeCaseToCamelCase()
+  return(columns)
+}
+
+enforceMinCellValue <- function(data, fieldName, minValues, silent = FALSE) {
+  toCensor <- !is.na(pull(data, fieldName)) & pull(data, fieldName) < minValues & pull(data, fieldName) != 0
+  if (!silent) {
+    percent <- round(100 * sum(toCensor) / nrow(data), 1)
+    message(
+      "    censoring ",
+      sum(toCensor),
+      " values (",
+      percent,
+      "%) from ",
+      fieldName,
+      " because value below minimum"
+    )
+  }
+  if (length(minValues) == 1) {
+    data[toCensor, fieldName] <- -minValues
+  } else {
+    data[toCensor, fieldName] <- -minValues[toCensor]
+  }
+  return(data)
 }

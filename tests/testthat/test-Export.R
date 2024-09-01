@@ -374,3 +374,89 @@ test_that("Export cohort stats using cohortDefinitionSet for inclusion rule name
   }
   unlink(cohortStatsFolder)
 })
+
+test_that("Export cohort stats multiple times in incremental mode - expect the same data in the results", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsInclRule")
+  cohortStatsFolder <- file.path(outputFolder, "stats")
+  # First create the cohort tables
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
+  # Generate with stats
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  generateCohortSet(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortsWithStats,
+    cdmDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = "main",
+    incremental = FALSE
+  )
+
+  # Export the results
+  exportCohortStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortStatisticsFolder = cohortStatsFolder,
+    incremental = TRUE,
+    databaseId = "Eunomia",
+    cohortDefinitionSet = cohortsWithStats
+  )
+
+  # Get the row counts for each file on the file system
+  exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
+  firstPassRowCounts <- data.frame(
+    fileName = character(),
+    rowCountFirstPass = integer()
+  )
+  for (i in 1:length(exportedFiles)) {
+    data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
+    firstPassRowCounts <- rbind(
+      firstPassRowCounts,
+      data.frame(
+        fileName = basename(exportedFiles[i]),
+        rowCountFirstPass = nrow(data)
+      )
+    )
+  }
+
+
+  # Re-export the stats
+  exportCohortStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortStatisticsFolder = cohortStatsFolder,
+    incremental = TRUE,
+    databaseId = "Eunomia",
+    cohortDefinitionSet = cohortsWithStats
+  )
+
+  # Get the row counts for each file on the file system
+  exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
+  secondPassRowCounts <- data.frame(
+    fileName = character(),
+    rowCountSecondPass = integer()
+  )
+  for (i in 1:length(exportedFiles)) {
+    data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
+    secondPassRowCounts <- rbind(
+      secondPassRowCounts,
+      data.frame(
+        fileName = basename(exportedFiles[i]),
+        rowCountSecondPass = nrow(data)
+      )
+    )
+  }
+
+  compareRowCounts <- merge(firstPassRowCounts, secondPassRowCounts)
+  for (i in 1:nrow(compareRowCounts)) {
+    expect_equal(compareRowCounts$rowCountFirstPass[i], compareRowCounts$rowCountSecondPass[i])
+  }
+
+  unlink(cohortStatsFolder)
+})

@@ -1,12 +1,28 @@
+CohortGenerator 0.11.0
+=======================
+
+New Features
+
+- Add support for minimum cell count (#176)
+
+Bug Fixes
+
+- Multiple calls to export stats causing duplicates in cohort inclusion file (#179)
+- Updates to subset documentation (#180, #181)
+- Negative control outcome generation bug (#177)
+
 CohortGenerator 0.10.0
 =======================
+
 New Features
+
 - Add `runCohortGeneration` function (Issue #165)
 - Adopt ResultModelManager for handling results data models & uploading. Extend results data model to include information on cohort subsets(#154, #162)
 - Remove REMOTES entries for CirceR and Eunomia which are now in CRAN (#145)
 - Unit tests now running on all OHDSI DB Platforms (#151)
 
 Bug Fixes
+
 - Negation of cohort subset operator must join on `subject_id` AND `start_date` (#167)
 - Allow integer as cohort ID (#146)
 - Use native messaging functions for output vs. ParallelLogger (#97)

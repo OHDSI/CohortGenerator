@@ -1,4 +1,5 @@
 library(testthat)
+library(dplyr)
 library(CohortGenerator)
 
 # createEmptyNegativeControlOutcomeCohortSet ----------
@@ -227,6 +228,62 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'fi
   )
 })
 
+test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'first' and detectOnDescendants == FALSE multiple times to ensure there are no duplicates", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "ot_first_dod_f")
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  on.exit(DatabaseConnector::disconnect(connection))
+  createCohortTables(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+  ncSet <- getNegativeControlOutcomeCohortsForTest()
+
+  # Set the cohort ID to something other than the concept ID
+  ncSet <- ncSet %>%
+    mutate(cohortId = row_number())
+  expect_output(
+    generateNegativeControlOutcomeCohorts(
+      connection = connection,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTable = cohortTableNames$cohortTable,
+      negativeControlOutcomeCohortSet = ncSet,
+      occurrenceType = "first",
+      detectOnDescendants = FALSE
+    )
+  )
+
+  # Get the cohort counts from the first run
+  counts1 <- getCohortCounts(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable,
+    cohortDefinitionSet = ncSet
+  )
+
+  # Regenerate the negative control outcomes
+  expect_output(
+    generateNegativeControlOutcomeCohorts(
+      connection = connection,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTable = cohortTableNames$cohortTable,
+      negativeControlOutcomeCohortSet = ncSet,
+      occurrenceType = "first",
+      detectOnDescendants = FALSE
+    )
+  )
+
+  counts2 <- getCohortCounts(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTable = cohortTableNames$cohortTable,
+    cohortDefinitionSet = ncSet
+  )
+
+  expect_equal(counts1, counts2)
+})
 
 test_that("incremental mode", {
   incrementalFolder <- tempfile()
