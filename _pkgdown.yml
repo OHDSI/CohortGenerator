@@ -1,5 +1,8 @@
+url: https://ohdsi.github.io/CohortGenerator/
+
 template:
-  params:
+  bootstrap: 5
+  bslib:
     bootswatch: cosmo
 
 home:
@@ -129,6 +132,7 @@ reference:
       - sampleCohortDefinitionSet
 
 navbar:
+  bg: dark
   structure:
     right: [hades, github]
   components:
