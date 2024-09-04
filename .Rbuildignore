@@ -10,3 +10,4 @@ deploy.sh
 docs
 extras
 man-roxygen
+^cran-comments\.md$
