@@ -81,6 +81,7 @@ testCreateSchema <- function(connectionDetails, resultsDatabaseSchema) {
 }
 
 test_that("Create schema", {
+  skip_on_cran()
   testCreateSchema(
     connectionDetails = postgresConnectionDetails,
     resultsDatabaseSchema = postgresResultsDatabaseSchema
@@ -126,6 +127,7 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
 }
 
 test_that("Results upload", {
+  skip_on_cran()
   unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
   dir.create(path = unzipFolder, recursive = TRUE)
   on.exit(unlink(unzipFolder, recursive = TRUE), add = TRUE)

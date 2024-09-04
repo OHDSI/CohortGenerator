@@ -1,6 +1,6 @@
 Package: CohortGenerator
 Type: Package
-Title: An R Package for Cohort Generation Against the OMOP CDM
+Title: Cohort Generation using an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) Database
 Version: 0.11.0
 Date: 2024-08-31
 Authors@R: c(
@@ -11,7 +11,7 @@ Authors@R: c(
   person("Observational Health Data Science and Informatics", role = c("cph"))
   )
 Maintainer: Anthony Sena <sena@ohdsi.org>
-Description: An R package for that encapsulates the functions for generating cohorts against the OMOP CDM.
+Description: An R package for that encapsulates the functions for generating cohorts using an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) Database.
 Depends:
   DatabaseConnector (>= 5.0.0),
   R (>= 3.6.0),
