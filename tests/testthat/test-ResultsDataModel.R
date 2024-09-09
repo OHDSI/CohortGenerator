@@ -34,15 +34,16 @@ sqliteResultsDatabaseSchema <- "main"
 
 withr::defer(
   {
-    connection <- DatabaseConnector::connect(connectionDetails = postgresConnectionDetails)
-    sql <- "DROP SCHEMA IF EXISTS @resultsDatabaseSchema CASCADE;"
-    DatabaseConnector::renderTranslateExecuteSql(
-      sql = sql,
-      resultsDatabaseSchema = postgresResultsDatabaseSchema,
-      connection = connection
-    )
-
-    DatabaseConnector::disconnect(connection)
+    if (Sys.getenv("CDM5_POSTGRESQL_SERVER") != "") {
+      connection <- DatabaseConnector::connect(connectionDetails = postgresConnectionDetails)
+      sql <- "DROP SCHEMA IF EXISTS @resultsDatabaseSchema CASCADE;"
+      DatabaseConnector::renderTranslateExecuteSql(
+        sql = sql,
+        resultsDatabaseSchema = postgresResultsDatabaseSchema,
+        connection = connection
+      )
+      DatabaseConnector::disconnect(connection)
+    }
     unlink(databaseFile, force = TRUE)
   },
   testthat::teardown_env()
