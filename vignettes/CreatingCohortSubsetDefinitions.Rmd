@@ -17,7 +17,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-options(width = 80)
+old <- options(width = 80)
 knitr::opts_chunk$set(
   cache = FALSE,
   comment = "#>",
@@ -246,4 +246,8 @@ For the purpose of writing to disk we recommend the use of `ParallelLogger` for 
 ```{r results='hide', eval=FALSE}
 # Save to a file
 ParallelLogger::saveSettingsToJson(subsetDef$toList(), "subsetDefinition1.json")
+```
+
+```{r results='hide'}
+options(old)
 ```

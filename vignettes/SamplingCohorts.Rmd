@@ -17,7 +17,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-options(width = 80)
+old <- options(width = 80)
 knitr::opts_chunk$set(
   cache = FALSE,
   comment = "#>",
@@ -127,3 +127,6 @@ parameter to all other OHDSI packages with minimal issues.
 For example, `FeatureExtraction` will be able to use this sample unchanged.
 
 
+```{r results='hide'}
+options(old)
+```
