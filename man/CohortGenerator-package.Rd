@@ -4,9 +4,9 @@
 \name{CohortGenerator-package}
 \alias{CohortGenerator}
 \alias{CohortGenerator-package}
-\title{CohortGenerator: An R Package for Cohort Generation Against the OMOP CDM}
+\title{CohortGenerator: Cohort Generation using an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) Database}
 \description{
-An R package for that encapsulates the functions for generating cohorts against the OMOP CDM.
+An R package for that encapsulates the functions for generating cohorts using an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) Database.
 }
 \seealso{
 Useful links:

@@ -17,7 +17,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-options(width = 80)
+old <- options(width = 80)
 knitr::opts_chunk$set(
   cache = FALSE,
   comment = "#>",
@@ -309,3 +309,6 @@ Incremental mode makes some assumptions to provide a more flexible way to genera
 
 - **Record keeping files**: The incremental approach for cohort generation makes use of a record keeping file to check if a cohort has already been generated. It does **not** check the database to verify this so you need to take care and preserve the file system where you store the record keeping file. If the file is removed, CohortGenerator will simply repeat the cohort generation process.
 
+```{r results='hide'}
+options(old)
+```

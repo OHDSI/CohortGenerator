@@ -1,3 +1,8 @@
+CohortGenerator 0.11.1
+=======================
+
+- CohortGenerator added to CRAN (#77)
+
 CohortGenerator 0.11.0
 =======================
 
