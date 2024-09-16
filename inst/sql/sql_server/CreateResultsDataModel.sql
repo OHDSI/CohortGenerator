@@ -1,5 +1,5 @@
 CREATE TABLE @database_schema.@table_prefixcg_cohort_definition (
-  	 cohort_definition_id BIGINT NOT NULL,
+	 cohort_definition_id BIGINT NOT NULL,
 	 cohort_name VARCHAR,
 	 description VARCHAR,
 	 json TEXT,
@@ -11,7 +11,7 @@ CREATE TABLE @database_schema.@table_prefixcg_cohort_definition (
 );
  
 CREATE TABLE @database_schema.@table_prefixcg_cohort_generation (
-  	 cohort_id BIGINT NOT NULL,
+	 cohort_id BIGINT NOT NULL,
 	 cohort_name VARCHAR,
 	 generation_status VARCHAR,
 	 start_time TIMESTAMP,
@@ -21,7 +21,7 @@ CREATE TABLE @database_schema.@table_prefixcg_cohort_generation (
 );
  
 CREATE TABLE @database_schema.@table_prefixcg_cohort_inclusion (
-  	 cohort_definition_id BIGINT NOT NULL,
+	 cohort_definition_id BIGINT NOT NULL,
 	 rule_sequence INT NOT NULL,
 	 name VARCHAR NOT NULL,
 	 description VARCHAR,
@@ -29,7 +29,7 @@ CREATE TABLE @database_schema.@table_prefixcg_cohort_inclusion (
 );
  
 CREATE TABLE @database_schema.@table_prefixcg_cohort_inc_result (
-  	 database_id VARCHAR NOT NULL,
+	 database_id VARCHAR NOT NULL,
 	 cohort_definition_id BIGINT NOT NULL,
 	 inclusion_rule_mask INT NOT NULL,
 	 person_count BIGINT NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE @database_schema.@table_prefixcg_cohort_inc_result (
 );
  
 CREATE TABLE @database_schema.@table_prefixcg_cohort_inc_stats (
-  	 database_id VARCHAR NOT NULL,
+	 database_id VARCHAR NOT NULL,
 	 cohort_definition_id BIGINT NOT NULL,
 	 rule_sequence INT NOT NULL,
 	 person_count BIGINT NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE @database_schema.@table_prefixcg_cohort_inc_stats (
 );
  
 CREATE TABLE @database_schema.@table_prefixcg_cohort_summary_stats (
-  	 database_id VARCHAR NOT NULL,
+	 database_id VARCHAR NOT NULL,
 	 cohort_definition_id BIGINT NOT NULL,
 	 base_count BIGINT NOT NULL,
 	 final_count BIGINT NOT NULL,
@@ -58,13 +58,13 @@ CREATE TABLE @database_schema.@table_prefixcg_cohort_summary_stats (
 );
  
 CREATE TABLE @database_schema.@table_prefixcg_cohort_censor_stats (
-  	 cohort_definition_id BIGINT NOT NULL,
+	 cohort_definition_id BIGINT NOT NULL,
 	 lost_count BIGINT NOT NULL,
 	PRIMARY KEY(cohort_definition_id,lost_count)
 );
  
 CREATE TABLE @database_schema.@table_prefixcg_cohort_count (
-  	 database_id VARCHAR NOT NULL,
+	 database_id VARCHAR NOT NULL,
 	 cohort_id BIGINT NOT NULL,
 	 cohort_entries BIGINT NOT NULL,
 	 cohort_subjects BIGINT NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE @database_schema.@table_prefixcg_cohort_count (
 );
  
 CREATE TABLE @database_schema.@table_prefixcg_cohort_count_neg_ctrl (
-  	 database_id VARCHAR NOT NULL,
+	 database_id VARCHAR NOT NULL,
 	 cohort_id BIGINT NOT NULL,
 	 cohort_entries BIGINT NOT NULL,
 	 cohort_subjects BIGINT NOT NULL,
