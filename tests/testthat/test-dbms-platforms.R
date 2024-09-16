@@ -86,6 +86,7 @@ testPlatform <- function(dbmsDetails) {
 
 # This file contains platform specific tests
 test_that("platform specific create cohorts with stats, Incremental, get results", {
+  skip_on_cran()
   # Note that these tests are designed to be quick and just test the platform in a general way
   # Sqlite completes the bulk of the packages testing
   for (dbmsPlatform in dbmsPlatforms) {
