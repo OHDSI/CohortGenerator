@@ -1,5 +1,6 @@
 # CohortGenerator
 
+[![CRAN status](https://www.r-pkg.org/badges/version/CohortGenerator)](https://CRAN.R-project.org/package=CohortGenerator)
 [![Build Status](https://github.com/OHDSI/CohortGenerator/workflows/R-CMD-check/badge.svg)](https://github.com/OHDSI/CohortGenerator/actions?query=workflow%3AR-CMD-check) [![codecov.io](https://codecov.io/github/OHDSI/CohortGenerator/coverage.svg?branch=main)](https://app.codecov.io/github/OHDSI/CohortGenerator?branch=main)
 
 CohortGenerator is part of [HADES](https://ohdsi.github.io/Hades/).
