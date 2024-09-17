@@ -198,6 +198,7 @@ createNegativeControlOutcomesQuery <- function(connection,
   }
   selectClause
   ncSetQuery <- paste0(
+    "DROP TABLE IF EXISTS #nc_set;",
     "CREATE TABLE #nc_set (",
     "  cohort_id bigint NOT NULL,",
     "  outcome_concept_id bigint NOT NULL",

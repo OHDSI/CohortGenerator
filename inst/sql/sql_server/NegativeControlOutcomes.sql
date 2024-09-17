@@ -1,5 +1,6 @@
 @nc_set_query
 
+DROP TABLE IF EXISTS #Codesets;
 CREATE TABLE #Codesets (
   cohort_definition_id bigint NOT NULL,
   ancestor_concept_id int NOT NULL,
