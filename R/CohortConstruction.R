@@ -106,24 +106,28 @@ generateCohortSet <- function(connectionDetails = NULL,
   if (incremental) {
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
 
-    if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
-      cohortDefinitionSet$checksum <- ""
-      for (i in 1:nrow(cohortDefinitionSet)) {
+    cohortDefinitionSet$checksum <- ""
+    for (i in 1:nrow(cohortDefinitionSet)) {
+      if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
         # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
-        if (cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
+        if (cohortDefinitionSet$isSubset[i] && cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
           j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet$subsetParent[i])
           cohortDefinitionSet$checksum[i] <- computeChecksum(paste(
             cohortDefinitionSet$sql[j],
             cohortDefinitionSet$sql[i]
           ))
-        } else {
-          cohortDefinitionSet$checksum[i] <- computeChecksum(cohortDefinitionSet$sql[i])
         }
+      } else if (isTRUE(attr(cohortDefinitionSet, "hasCombinedCohorts"))) {
+        dependantCohortIds <- as.integer(strsplit(cohortDefinitionSet$dependentCohorts[i]))
+        dependentCohortIdx <- which(cohortDefinitionSet$cohortId %in% dependantCohortIds)
+        cohortDefinitionSet$checksum[i] <- 
+          computeChecksum(paste0(c(cohortDefinitionSet$sql[dependentCohortIdx], cohortDefinitionSet$sql[i]), collapse = ""))
+      } else {
+        cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
       }
-    } else {
-      cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
     }
   }
+  
   # Create the cluster
   # DEV NOTE :: running subsets in a multiprocess setup will not work with subsets that subset other subsets
   # To resolve this issue we need to execute the dependency tree.
@@ -145,7 +149,7 @@ generateCohortSet <- function(connectionDetails = NULL,
       dplyr::select("cohortId") %>%
       dplyr::pull()
   }
-
+  
   # Apply the generation operation to the cluster
   cohortsGenerated <- ParallelLogger::clusterApply(
     cluster,
@@ -253,7 +257,15 @@ generateCohort <- function(cohortId = NULL,
     rlang::inform(paste0(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName, " (id = ", cohortId, ")"))
     sql <- cohortDefinitionSet$sql[i]
 
-    if (!isSubset) {
+    if (isSubset) {
+      sql <- SqlRender::render(
+        sql = sql,
+        cdm_database_schema = cdmDatabaseSchema,
+        cohort_table = cohortTableNames$cohortTable,
+        cohort_database_schema = cohortDatabaseSchema,
+        warnOnMissingParameters = FALSE
+      )
+    } else {  # combined cohorts apply same paramaters as standard cohort generation
       sql <- SqlRender::render(
         sql = sql,
         cdm_database_schema = cdmDatabaseSchema,
@@ -267,14 +279,6 @@ generateCohort <- function(cohortId = NULL,
         results_database_schema.cohort_inclusion_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionStatsTable, sep = "."),
         results_database_schema.cohort_summary_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortSummaryStatsTable, sep = "."),
         results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep = "."),
-        warnOnMissingParameters = FALSE
-      )
-    } else {
-      sql <- SqlRender::render(
-        sql = sql,
-        cdm_database_schema = cdmDatabaseSchema,
-        cohort_table = cohortTableNames$cohortTable,
-        cohort_database_schema = cohortDatabaseSchema,
         warnOnMissingParameters = FALSE
       )
     }
