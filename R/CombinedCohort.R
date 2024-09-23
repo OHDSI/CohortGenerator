@@ -213,12 +213,11 @@ addCombinedCohort <- function(cohortDefinitionSet,
     checkmate::assertSubset(dependentCohortIds, cohortDefinitionSet$cohortId)
   }
 
-  # TODO: going to just fail if the cohortId exists for now, later we can implement overwrite
   if (!overwriteExisting && nrow(cohortDefinitionSet %>% dplyr::filter(.data$cohortId == combinedCohortDefiniton$cohortId)) > 0) {
     stop("The specified cohortId for this combined cohort already exists in the cohort definition set")
   } else {
     # remove this definition from the set
-    cohortDefinitionSet <- cohortDefinitionSet %>% filter(cohortId != combinedCohortDefiniton$cohortId)
+    cohortDefinitionSet <- cohortDefinitionSet %>% dplyr::filter(.data$cohortId != combinedCohortDefiniton$cohortId)
   }
 
   defSql <- SqlRender::readSql(system.file("sql", "sql_server", "combinedCohorts", "CombinedCohortDefinition.sql", package = "CohortGenerator"))
