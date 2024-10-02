@@ -4,9 +4,9 @@
 \name{CohortGenerator-package}
 \alias{CohortGenerator}
 \alias{CohortGenerator-package}
-\title{CohortGenerator: Cohort Generation using an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) Database}
+\title{CohortGenerator: Cohort Generation for the OMOP Common Data Model}
 \description{
-An R package for that encapsulates the functions for generating cohorts using an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) Database.
+Generate cohorts and subsets using an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) Database. Cohorts are defined using 'CIRCE' (\url{https://github.com/ohdsi/circe-be}) or SQL compatible with 'SqlRender' (\url{https://github.com/OHDSI/SqlRender}).
 }
 \seealso{
 Useful links:
