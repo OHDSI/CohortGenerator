@@ -7,6 +7,7 @@ test_that("Call getCohortTableNames with defaults", {
     getCohortTableNames(),
     list(
       cohortTable = "cohort",
+      cohortSampleTable = "cohort",
       cohortInclusionTable = "cohort_inclusion",
       cohortInclusionResultTable = "cohort_inclusion_result",
       cohortInclusionStatsTable = "cohort_inclusion_stats",
@@ -28,6 +29,7 @@ test_that("Call getCohortTableNames with custom table names", {
     ),
     list(
       cohortTable = "a",
+      cohortSampleTable = "a",
       cohortInclusionTable = "b",
       cohortInclusionResultTable = "c",
       cohortInclusionStatsTable = "d",
@@ -157,6 +159,22 @@ test_that("Create cohort tables with incremental = TRUE and partial table creati
   }
 
   DatabaseConnector::disconnect(conn)
+})
+
+test_that("Cohort sample table does not exist for backwards compatibility", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortSampleTable")
+
+  # Remove the sample table to make sure the create cohort table works
+  cohortTableNames <- cohortTableNames[-which(names(cohortTableNames) == "cohortSampleTable")]
+
+  # Create the cohort tables
+  expect_invisible(
+    createCohortTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames
+    )
+  )
 })
 
 # drop cohort stats tables --------------

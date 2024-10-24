@@ -1,6 +1,6 @@
 # @file PackageMaintenance
 #
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 # 
@@ -20,9 +20,9 @@
 OhdsiRTools::formatRFolder("./R") #(note: this function has been impacted by change in formatR)
 OhdsiRTools::checkUsagePackage("CohortGenerator")
 OhdsiRTools::updateCopyrightYearFolder()
+devtools::spell_check()
 styler::style_pkg()
 devtools::document()
-devtools::spell_check()
 
 # Create manual and vignettes:
 unlink("extras/CohortGenerator.pdf")
@@ -37,6 +37,12 @@ rmarkdown::render("vignettes/GeneratingCohorts.Rmd",
 
 rmarkdown::render("vignettes/CreatingCohortSubsetDefinitions.Rmd",
                   output_file = "../inst/doc/CreatingCohortSubsetDefinitions.pdf",
+                  rmarkdown::pdf_document(latex_engine = "pdflatex",
+                                          toc = TRUE,
+                                          number_sections = TRUE))
+
+rmarkdown::render("vignettes/SamplingCohorts.Rmd",
+                  output_file = "../inst/doc/SamplingCohorts.pdf",
                   rmarkdown::pdf_document(latex_engine = "pdflatex",
                                           toc = TRUE,
                                           number_sections = TRUE))

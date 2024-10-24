@@ -1,5 +1,9 @@
+library(testthat)
+library(CohortGenerator)
+
 testPlatform <- function(dbmsDetails) {
   cohortTableNames <- getCohortTableNames(cohortTable = dbmsDetails$cohortTable)
+  platformOutputFolder <- file.path(outputFolder, dbmsDetails$connectionDetails$dbms)
   on.exit({
     dropCohortStatsTables(
       connectionDetails = dbmsDetails$connectionDetails,
@@ -7,13 +11,9 @@ testPlatform <- function(dbmsDetails) {
       cohortTableNames = cohortTableNames,
       dropCohortTable = TRUE
     )
+    unlink(platformOutputFolder, recursive = TRUE)
   })
 
-  createCohortTables(
-    connectionDetails = dbmsDetails$connectionDetails,
-    cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
-    cohortTableNames = cohortTableNames
-  )
   cohortsWithStats <- getCohortDefinitionSet(
     settingsFileName = "testdata/name/Cohorts.csv",
     jsonFolder = "testdata/name/cohorts",
@@ -23,18 +23,6 @@ testPlatform <- function(dbmsDetails) {
     packageName = "CohortGenerator",
     verbose = FALSE
   )
-
-  cohortsGenerated <- generateCohortSet(
-    connectionDetails = dbmsDetails$connectionDetails,
-    cdmDatabaseSchema = dbmsDetails$cdmDatabaseSchema,
-    cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
-    cohortTableNames = cohortTableNames,
-    cohortDefinitionSet = cohortsWithStats,
-    incremental = TRUE,
-    incrementalFolder = file.path(outputFolder, "RecordKeeping", dbmsDetails$connectionDetails$dbms)
-  )
-  expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
-
   subsetOperations <- list(
     createCohortSubset(
       cohortIds = 2,
@@ -62,27 +50,51 @@ testPlatform <- function(dbmsDetails) {
     subsetOperators = subsetOperations
   )
   cohortsWithSubsets <- addCohortSubsetDefinition(cohortsWithStats, subsetDef)
-  cohortsGenerated <- generateCohortSet(
+
+  ncSet <- getNegativeControlOutcomeCohortsForTest()
+
+  runCohortGeneration(
     connectionDetails = dbmsDetails$connectionDetails,
     cdmDatabaseSchema = dbmsDetails$cdmDatabaseSchema,
     cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithSubsets,
-    incremental = TRUE,
-    incrementalFolder = file.path(outputFolder, "RecordKeeping", dbmsDetails$connectionDetails$dbms)
+    negativeControlOutcomeCohortSet = ncSet,
+    occurrenceType = "first",
+    detectOnDescendants = TRUE,
+    outputFolder = platformOutputFolder,
+    databaseId = dbmsDetails$connectionDetails$dbms,
+    incremental = F
+  )
+
+  # Check the output to verify the generation worked properly
+  cohortsGenerated <- readCsv(
+    file = file.path(platformOutputFolder, "cg_cohort_generation.csv")
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithSubsets))
+
+  cohortCounts <- readCsv(
+    file = file.path(platformOutputFolder, "cg_cohort_count.csv")
+  )
+  expect_equal(nrow(cohortsGenerated), nrow(cohortCounts))
+
+  ncCohortCounts <- readCsv(
+    file = file.path(platformOutputFolder, "cg_cohort_count_neg_ctrl.csv")
+  )
+  expect_equal(nrow(ncSet), nrow(ncCohortCounts))
 }
 
 # This file contains platform specific tests
 test_that("platform specific create cohorts with stats, Incremental, get results", {
+  skip_on_cran()
   # Note that these tests are designed to be quick and just test the platform in a general way
   # Sqlite completes the bulk of the packages testing
   for (dbmsPlatform in dbmsPlatforms) {
     dbmsDetails <- getPlatformConnectionDetails(dbmsPlatform)
     if (is.null(dbmsDetails)) {
-      print(paste("No pltatform details available for", dbmsPlatform))
+      print(paste("No platform details available for", dbmsPlatform))
     } else {
+      print(paste("Testing", dbmsPlatform))
       testPlatform(dbmsDetails)
     }
   }

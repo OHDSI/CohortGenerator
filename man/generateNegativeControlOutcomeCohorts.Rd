@@ -13,6 +13,8 @@ generateNegativeControlOutcomeCohorts(
   cohortTable = getCohortTableNames()$cohortTable,
   negativeControlOutcomeCohortSet,
   occurrenceType = "all",
+  incremental = FALSE,
+  incrementalFolder = NULL,
   detectOnDescendants = FALSE
 )
 }
@@ -50,6 +52,11 @@ the following columns: \describe{
 
 \item{occurrenceType}{The occurrenceType will detect either: the first time an outcomeConceptId occurs
 or all times the outcomeConceptId occurs for a person. Values accepted: 'all' or 'first'.}
+
+\item{incremental}{Create only cohorts that haven't been created before?}
+
+\item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
+kept of which definition has been executed.}
 
 \item{detectOnDescendants}{When set to TRUE, detectOnDescendants will use the vocabulary to find negative control
 outcomes using the outcomeConceptId and all descendants via the concept_ancestor table.

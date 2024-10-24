@@ -2,7 +2,7 @@
 % Please edit documentation in R/Subsets.R
 \name{SubsetOperator}
 \alias{SubsetOperator}
-\title{SubsetOperator}
+\title{Abstract base class for subsets.}
 \description{
 Abstract Base Class for subsets. Subsets should inherit from this and implement their own requirements.
 }

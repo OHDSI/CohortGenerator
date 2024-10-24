@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -23,6 +23,7 @@
 #' and cohort statistics tables.
 #'
 #' @param cohortTable                  Name of the cohort table.
+#' @param cohortSampleTable            Name of the cohort table for sampled cohorts (defaults to the same as the cohort table).
 #'
 #' @param cohortInclusionTable         Name of the inclusion table, one of the tables for storing
 #'                                     inclusion rule statistics.
@@ -40,6 +41,7 @@
 #'
 #' @export
 getCohortTableNames <- function(cohortTable = "cohort",
+                                cohortSampleTable = cohortTable,
                                 cohortInclusionTable = paste0(cohortTable, "_inclusion"),
                                 cohortInclusionResultTable = paste0(cohortTable, "_inclusion_result"),
                                 cohortInclusionStatsTable = paste0(cohortTable, "_inclusion_stats"),
@@ -47,6 +49,7 @@ getCohortTableNames <- function(cohortTable = "cohort",
                                 cohortCensorStatsTable = paste0(cohortTable, "_censor_stats")) {
   return(list(
     cohortTable = cohortTable,
+    cohortSampleTable = cohortSampleTable,
     cohortInclusionTable = cohortInclusionTable,
     cohortInclusionResultTable = cohortInclusionResultTable,
     cohortInclusionStatsTable = cohortInclusionStatsTable,
@@ -95,24 +98,31 @@ createCohortTables <- function(connectionDetails = NULL,
     for (i in 1:length(cohortTableNames)) {
       if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
         createTableFlagList[i] <- FALSE
-        ParallelLogger::logInfo("Table \"", cohortTableNames[i], "\" already exists and in incremental mode, so not recreating it.")
+        rlang::inform(paste0("Table \"", cohortTableNames[i], "\" already exists and in incremental mode, so not recreating it."))
       }
     }
   }
 
   if (any(unlist(createTableFlagList, use.names = FALSE))) {
-    ParallelLogger::logInfo("Creating cohort tables")
+    rlang::inform("Creating cohort tables")
+    createSampleTable <- ifelse(
+      test = is.null(createTableFlagList$cohortSampleTable),
+      yes = FALSE,
+      no = (createTableFlagList$cohortSampleTable && cohortTableNames$cohortSampleTable != cohortTableNames$cohortTable)
+    )
     sql <- SqlRender::readSql(system.file("sql/sql_server/CreateCohortTables.sql", package = "CohortGenerator", mustWork = TRUE))
     sql <- SqlRender::render(
       sql = sql,
       cohort_database_schema = cohortDatabaseSchema,
       create_cohort_table = createTableFlagList$cohortTable,
+      create_cohort_sample_table = createSampleTable,
       create_cohort_inclusion_table = createTableFlagList$cohortInclusionTable,
       create_cohort_inclusion_result_table = createTableFlagList$cohortInclusionResultTable,
       create_cohort_inclusion_stats_table = createTableFlagList$cohortInclusionStatsTable,
       create_cohort_summary_stats_table = createTableFlagList$cohortSummaryStatsTable,
       create_cohort_censor_stats_table = createTableFlagList$cohortCensorStatsTable,
       cohort_table = cohortTableNames$cohortTable,
+      cohort_sample_table = cohortTableNames$cohortSampleTable,
       cohort_inclusion_table = cohortTableNames$cohortInclusionTable,
       cohort_inclusion_result_table = cohortTableNames$cohortInclusionResultTable,
       cohort_inclusion_stats_table = cohortTableNames$cohortInclusionStatsTable,
@@ -127,7 +137,7 @@ createCohortTables <- function(connectionDetails = NULL,
     DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
 
     logCreateTableMessage <- function(schema, tableName) {
-      ParallelLogger::logInfo("- Created table ", schema, ".", tableName)
+      rlang::inform(paste0("- Created table ", schema, ".", tableName))
     }
     for (i in 1:length(createTableFlagList)) {
       if (createTableFlagList[[i]]) {
@@ -136,7 +146,7 @@ createCohortTables <- function(connectionDetails = NULL,
     }
 
     delta <- Sys.time() - start
-    ParallelLogger::logInfo("Creating cohort tables took ", round(delta, 2), attr(delta, "units"))
+    rlang::inform(paste0("Creating cohort tables took ", round(delta, 2), attr(delta, "units")))
   }
 }
 
@@ -163,7 +173,7 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
 
   # Export the stats
   dropTable <- function(table) {
-    ParallelLogger::logInfo("- Dropping ", table)
+    rlang::inform(paste0("- Dropping ", table))
     sql <- "TRUNCATE TABLE @cohort_database_schema.@table;
             DROP TABLE @cohort_database_schema.@table;"
     DatabaseConnector::renderTranslateExecuteSql(
@@ -183,5 +193,32 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
 
   if (dropCohortTable) {
     dropTable(cohortTableNames$cohortTable)
+  }
+}
+
+.checkCohortTables <- function(connection,
+                               cohortDatabaseSchema,
+                               cohortTableNames) {
+  # Verify the cohort tables exist and if they do not
+  # stop the generation process
+  tableExistsFlagList <- lapply(cohortTableNames, FUN = function(x) {
+    x <- FALSE
+  })
+  tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
+  for (i in 1:length(cohortTableNames)) {
+    if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
+      tableExistsFlagList[i] <- TRUE
+    }
+  }
+
+  if (!all(unlist(tableExistsFlagList, use.names = FALSE))) {
+    errorMsg <- "The following tables have not been created: \n"
+    for (i in 1:length(cohortTableNames)) {
+      if (!tableExistsFlagList[[i]]) {
+        errorMsg <- paste0(errorMsg, "   - ", cohortTableNames[i], "\n")
+      }
+    }
+    errorMsg <- paste(errorMsg, "Please use the createCohortTables function to ensure all tables exist before generating cohorts.", sep = "\n")
+    stop(errorMsg)
   }
 }

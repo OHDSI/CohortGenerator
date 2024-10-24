@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -35,7 +35,7 @@
 
 
 # SubsetCohortWindow -------------
-#' SubsetCohortWindow settings
+#' @title Time Window For Cohort Subset Operator
 #' @export
 #' @description
 #' Representation of a time window to use when subsetting a target cohort with a subset cohort
@@ -47,7 +47,6 @@ SubsetCohortWindow <- R6::R6Class(
     .targetAnchor = "cohortStart"
   ),
   public = list(
-    #' @title to List
     #' @description List representation of object
     toList = function() {
       objRepr <- list()
@@ -128,7 +127,7 @@ createSubsetCohortWindow <- function(startDay, endDay, targetAnchor) {
 }
 
 # SubsetOperator ------------------------------
-#' @title SubsetOperator
+#' @title Abstract base class for subsets.
 #' @export
 #' @description
 #' Abstract Base Class for subsets. Subsets should inherit from this and implement their own requirements.
@@ -403,7 +402,7 @@ CohortSubsetOperator <- R6::R6Class(
 #'
 #' @param startWindow               A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
 #' @param endWindow                 A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
-#' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria (NOT YET IMPLEMENTED)
+#' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria
 #' @returns a CohortSubsetOperator instance
 createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator, negate, startWindow, endWindow) {
   subset <- CohortSubsetOperator$new()
@@ -418,7 +417,10 @@ createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator
 }
 
 # DemographicSubsetOperator ------------------------------
-#' Criteria Subset
+#' @title Demographic Subset Operator
+#' @description
+#' Operators for subsetting a cohort by demographic criteria
+#'
 #' @export
 DemographicSubsetOperator <- R6::R6Class(
   classname = "DemographicSubsetOperator",
@@ -635,9 +637,9 @@ DemographicSubsetOperator <- R6::R6Class(
 #' @param name         Optional char name
 #' @param ageMin       The minimum age
 #' @param ageMax       The maximum age
-#' @param gender       Gender demographics - concepts - 0, 8532, 8507, 0 "male", "female".
-#'                     Any string that is not (case insensitive) "male" or "female" is converted to gender concept 0
-#'                     https://www.ohdsi.org/web/wiki/doku.php?id=documentation:vocabulary:gender
+#' @param gender       Gender demographics - concepts - 0, 8532, 8507, 0, "female", "male".
+#'                     Any string that is not "male" or "female" (case insensitive) is converted to gender concept 0.
+#'                     https://athena.ohdsi.org/search-terms/terms?standardConcept=Standard&domain=Gender&page=1&pageSize=15&query=
 #'                     Specific concept ids not in this set can be used but are not explicitly validated
 #' @param race         Race demographics - concept ID list
 #' @param ethnicity    Ethnicity demographics - concept ID list
@@ -836,8 +838,8 @@ LimitSubsetOperator <- R6::R6Class(
 #' Subset cohorts using specified limit criteria
 #' @export
 #' @param name              Name of operation
-#' @param priorTime                 Required prior observation window
-#' @param followUpTime              Required post observation window
+#' @param priorTime         Required prior observation window (specified as a positive integer)
+#' @param followUpTime      Required post observation window (specified as a positive integer)
 #' @param limitTo           character one of:
 #'                              "firstEver" - only first entry in patient history
 #'                              "earliestRemaining" - only first entry after washout set by priorTime

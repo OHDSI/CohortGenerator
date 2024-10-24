@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -76,6 +76,13 @@ generateCohortSet <- function(connectionDetails = NULL,
       "sql"
     )
   )
+  assertLargeInteger(cohortDefinitionSet$cohortId)
+  # Verify that cohort IDs are not repeated in the cohort definition
+  # set before generating
+  if (length(unique(cohortDefinitionSet$cohortId)) != length(cohortDefinitionSet$cohortId)) {
+    duplicatedCohortIds <- cohortDefinitionSet$cohortId[duplicated(cohortDefinitionSet$cohortId)]
+    stop("Cannot generate! Duplicate cohort IDs found in your cohortDefinitionSet: ", paste(duplicatedCohortIds, sep = ","), ". Please fix your cohortDefinitionSet and try again.")
+  }
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
   }
@@ -94,28 +101,7 @@ generateCohortSet <- function(connectionDetails = NULL,
     on.exit(DatabaseConnector::disconnect(connection))
   }
 
-  # Verify the cohort tables exist and if they do not
-  # stop the generation process
-  tableExistsFlagList <- lapply(cohortTableNames, FUN = function(x) {
-    x <- FALSE
-  })
-  tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
-  for (i in 1:length(cohortTableNames)) {
-    if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
-      tableExistsFlagList[i] <- TRUE
-    }
-  }
-
-  if (!all(unlist(tableExistsFlagList, use.names = FALSE))) {
-    errorMsg <- "The following tables have not been created: \n"
-    for (i in 1:length(cohortTableNames)) {
-      if (!tableExistsFlagList[[i]]) {
-        errorMsg <- paste0(errorMsg, "   - ", cohortTableNames[i], "\n")
-      }
-    }
-    errorMsg <- paste(errorMsg, "Please use the createCohortTables function to ensure all tables exist before generating cohorts.", sep = "\n")
-    stop(errorMsg)
-  }
+  .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
 
   generatedTemplateCohorts <- c()
   if ("isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
@@ -283,7 +269,7 @@ generateCohort <- function(cohortId = NULL,
       connection <- DatabaseConnector::connect(connectionDetails)
       on.exit(DatabaseConnector::disconnect(connection))
     }
-    ParallelLogger::logInfo(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName)
+    rlang::inform(paste0(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName, " (id = ", cohortId, ")"))
     sql <- cohortDefinitionSet$sql[i]
 
     if (!isSubset) {

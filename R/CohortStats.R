@@ -1,4 +1,4 @@
-# Copyright 2023 Observational Health Data Sciences and Informatics
+# Copyright 2024 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -47,14 +47,6 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
     stop("You must provide either a database connection or the connection details.")
   }
 
-  checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
-  checkmate::assertNames(colnames(cohortDefinitionSet),
-    must.include = c(
-      "cohortId",
-      "cohortName",
-      "json"
-    )
-  )
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
@@ -65,44 +57,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
     stop(paste0(cohortInclusionTable, " table not found in schema: ", cohortDatabaseSchema, ". Please make sure the table is created using the createCohortTables() function before calling this function."))
   }
 
-  # Assemble the cohort inclusion rules
-  # NOTE: This data frame must match the @cohort_inclusion_table
-  # structure as defined in inst/sql/sql_server/CreateCohortTables.sql
-  inclusionRules <- data.frame(
-    cohortDefinitionId = bit64::integer64(),
-    ruleSequence = integer(),
-    name = character(),
-    description = character()
-  )
-  # Remove any cohort definitions that do not include the JSON property
-  cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) | is.na(cohortDefinitionSet$json)), ]
-  for (i in 1:nrow(cohortDefinitionSet)) {
-    cohortDefinition <- RJSONIO::fromJSON(content = cohortDefinitionSet$json[i], digits = 23)
-    if (!is.null(cohortDefinition$InclusionRules)) {
-      nrOfRules <- length(cohortDefinition$InclusionRules)
-      if (nrOfRules > 0) {
-        for (j in 1:nrOfRules) {
-          ruleName <- cohortDefinition$InclusionRules[[j]]$name
-          ruleDescription <- cohortDefinition$InclusionRules[[j]]$description
-          if (is.na(ruleName) || ruleName == "") {
-            ruleName <- paste0("Unamed rule (Sequence ", j - 1, ")")
-          }
-          if (is.null(ruleDescription)) {
-            ruleDescription <- ""
-          }
-          inclusionRules <- rbind(
-            inclusionRules,
-            data.frame(
-              cohortDefinitionId = bit64::as.integer64(cohortDefinitionSet$cohortId[i]),
-              ruleSequence = as.integer(j - 1),
-              name = ruleName,
-              description = ruleDescription
-            )
-          )
-        }
-      }
-    }
-  }
+  inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
 
   # Remove any existing data to prevent duplication
   DatabaseConnector::renderTranslateExecuteSql(
@@ -116,7 +71,7 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
 
   # Insert the inclusion rules
   if (nrow(inclusionRules) > 0) {
-    ParallelLogger::logInfo("Inserting inclusion rule names")
+    rlang::inform("Inserting inclusion rule names")
     DatabaseConnector::insertTable(
       connection = connection,
       databaseSchema = cohortDatabaseSchema,
@@ -152,8 +107,8 @@ getStatsTable <- function(connectionDetails,
     databaseId <- NULL
   }
 
-  ParallelLogger::logInfo("- Fetching data from ", table)
-  sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} * FROM @cohort_database_schema.@table"
+  rlang::inform(paste0("- Fetching data from ", table))
+  sql <- "SELECT {@database_id != ''}?{CAST('@database_id' as VARCHAR(255)) as database_id,} t.* FROM @cohort_database_schema.@table t"
   data <- DatabaseConnector::renderTranslateQuerySql(
     sql = sql,
     connection = connection,
@@ -174,6 +129,7 @@ getStatsTable <- function(connectionDetails,
 }
 
 #' Get Cohort Inclusion Stats Table Data
+#'
 #' @description
 #' This function returns a data frame of the data in the Cohort Inclusion Tables.
 #' Results are organized in to a list with 5 different data frames:
@@ -238,8 +194,73 @@ getCohortStats <- function(connectionDetails,
       cohortDatabaseSchema = cohortDatabaseSchema,
       table = cohortTableNames[[table]],
       snakeCaseToCamelCase = snakeCaseToCamelCase,
-      includeDatabaseId = includeDatabaseId
+      includeDatabaseId = includeDatabaseId,
+      databaseId = databaseId
     )
   }
   return(results)
+}
+
+
+#' Get Cohort Inclusion Rules from a cohort definition set
+#'
+#' @description
+#' This function returns a data frame of the inclusion rules defined
+#' in a cohort definition set.
+#'
+#' @md
+#' @template CohortDefinitionSet
+#'
+#' @export
+getCohortInclusionRules <- function(cohortDefinitionSet) {
+  checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
+  checkmate::assertNames(colnames(cohortDefinitionSet),
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "json"
+    )
+  )
+
+  # Assemble the cohort inclusion rules
+  # NOTE: This data frame must match the @cohort_inclusion_table
+  # structure as defined in inst/sql/sql_server/CreateCohortTables.sql
+  inclusionRules <- data.frame(
+    cohortDefinitionId = numeric(),
+    ruleSequence = integer(),
+    name = character(),
+    description = character()
+  )
+
+  # Remove any cohort definitions that do not include the JSON property
+  cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) | is.na(cohortDefinitionSet$json)), ]
+  for (i in 1:nrow(cohortDefinitionSet)) {
+    cohortDefinition <- RJSONIO::fromJSON(content = cohortDefinitionSet$json[i], digits = 23)
+    if (!is.null(cohortDefinition$InclusionRules)) {
+      nrOfRules <- length(cohortDefinition$InclusionRules)
+      if (nrOfRules > 0) {
+        for (j in 1:nrOfRules) {
+          ruleName <- cohortDefinition$InclusionRules[[j]]$name
+          ruleDescription <- cohortDefinition$InclusionRules[[j]]$description
+          if (is.na(ruleName) || ruleName == "") {
+            ruleName <- paste0("Unamed rule (Sequence ", j - 1, ")")
+          }
+          if (is.null(ruleDescription)) {
+            ruleDescription <- ""
+          }
+          inclusionRules <- rbind(
+            inclusionRules,
+            data.frame(
+              cohortDefinitionId = as.numeric(cohortDefinitionSet$cohortId[i]),
+              ruleSequence = as.integer(j - 1),
+              name = ruleName,
+              description = ruleDescription
+            )
+          )
+        }
+      }
+    }
+  }
+
+  invisible(inclusionRules)
 }

@@ -64,7 +64,7 @@ test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator pack
     packageName = "CohortGenerator",
     verbose = TRUE
   )
-  expect_equal(nrow(cohortDefinitionSet), 3)
+  expect_equal(nrow(cohortDefinitionSet), 4)
 })
 
 test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator package where json/sql use the cohort id", {
@@ -74,7 +74,7 @@ test_that("Call getCohortDefinitionSet with settingsFile in CohortGenerator pack
     sqlFolder = "testdata/id/sql/sql_server",
     packageName = "CohortGenerator"
   )
-  expect_equal(nrow(cohortDefinitionSet), 3)
+  expect_equal(nrow(cohortDefinitionSet), 4)
 })
 
 
@@ -179,7 +179,7 @@ test_that("Call saveCohortDefinitionSet with missing json", {
     ))
   }
 
-  expect_output(
+  expect_message(
     saveCohortDefinitionSet(
       cohortDefinitionSet = cohortsToCreate,
       settingsFileName = file.path(tempdir(), "settings"),
@@ -228,6 +228,12 @@ test_that("Call isCohortDefinitionSet with incorrect cohort definition set and e
   )$x
   cohortDefinitionSetError <- cohortDefinitionSet[, !(names(cohortDefinitionSet) %in% c("json"))]
   expect_warning(expect_false(isCohortDefinitionSet(cohortDefinitionSetError)))
+})
+
+test_that("Call isCohortDefinitionSet with cohort definition set with integer data type for cohort ID and expect TRUE", {
+  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
+  cohortDefinitionSet$cohortId <- as.integer(cohortDefinitionSet$cohortId)
+  expect_true(isCohortDefinitionSet(cohortDefinitionSet))
 })
 
 test_that("Call isCohortDefinitionSet with cohort definition set with incorrect data type and expect FALSE", {

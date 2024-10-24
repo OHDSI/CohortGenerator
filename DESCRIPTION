@@ -1,8 +1,8 @@
 Package: CohortGenerator
 Type: Package
-Title: An R Package for Cohort Generation Against the OMOP CDM
-Version: 0.8.1
-Date: 2023-10-10
+Title: Cohort Generation for the OMOP Common Data Model
+Version: 0.11.2
+Date: 2024-09-30
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Jamie", "Gilbert", role = c("aut")),
@@ -11,40 +11,41 @@ Authors@R: c(
   person("Observational Health Data Science and Informatics", role = c("cph"))
   )
 Maintainer: Anthony Sena <sena@ohdsi.org>
-Description: An R package for that encapsulates the functions for generating cohorts against the OMOP CDM.
+Description: Generate cohorts and subsets using an Observational 
+  Medical Outcomes Partnership (OMOP) Common Data Model (CDM) Database. 
+  Cohorts are  defined using 'CIRCE' (<https://github.com/ohdsi/circe-be>) or 
+  SQL compatible with 'SqlRender' (<https://github.com/OHDSI/SqlRender>).
 Depends:
   DatabaseConnector (>= 5.0.0),
   R (>= 3.6.0),
   R6
 Imports:
-  bit64,
   checkmate,
   digest,
   dplyr,
   lubridate,
+  methods,
   ParallelLogger (>= 3.0.0),
   readr (>= 2.1.0),
   rlang,
   RJSONIO,
   jsonlite,
+  ResultModelManager,
   SqlRender (>= 1.11.1),
-  stringi (>= 1.7.6)
+  stringi (>= 1.7.6),
+  tibble
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
   knitr,
   rmarkdown,
-  ROhdsiWebApi,
   testthat,
-  withr
-Remotes:
-  ohdsi/CirceR,
-  ohdsi/Eunomia,
-  ohdsi/ROhdsiWebApi
+  withr,
+  zip
 License: Apache License
 VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
 BugReports: https://github.com/OHDSI/CohortGenerator/issues
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Encoding: UTF-8
 Language: en-US

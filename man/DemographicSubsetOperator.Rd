@@ -2,15 +2,13 @@
 % Please edit documentation in R/Subsets.R
 \name{DemographicSubsetOperator}
 \alias{DemographicSubsetOperator}
-\title{Criteria Subset}
+\title{Demographic Subset Operator}
 \value{
 char vector
 Get auto generated name
 }
 \description{
-Criteria Subset
-
-Criteria Subset
+Operators for subsetting a cohort by demographic criteria
 }
 \section{Super class}{
 \code{\link[CohortGenerator:SubsetOperator]{CohortGenerator::SubsetOperator}} -> \code{DemographicSubsetOperator}

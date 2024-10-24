@@ -1,0 +1,54 @@
+table_name,column_name,data_type,is_required,primary_key,min_cell_count,description
+cg_cohort_definition,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_definition,cohort_name,varchar,Yes,No,No,The name of the cohort definition
+cg_cohort_definition,description,varchar,No,No,No,A description of the cohort definition
+cg_cohort_definition,json,text,No,No,No,The circe-be compiliant JSON expression
+cg_cohort_definition,sql_command,text,No,No,No,The OHDSI-SQL command used to construct the cohort
+cg_cohort_definition,subset_parent,bigint,No,No,No,The parent cohort id if this cohort is a subset
+cg_cohort_definition,is_subset,int,No,No,No,This value is 1 when the cohort is a subset
+cg_cohort_definition,subset_definition_id,bigint,No,No,No,The cohort subset definition
+cg_cohort_generation,cohort_id,bigint,Yes,Yes,No,The uniqe identifier for the cohort definition
+cg_cohort_generation,cohort_name,varchar,Yes,No,No,The name of the cohort generated
+cg_cohort_generation,generation_status,varchar,No,No,No,The cohort generation status
+cg_cohort_generation,start_time,Timestamp,No,No,No,The start time of the generation process
+cg_cohort_generation,end_time,Timestamp,No,No,No,The end time of the generation process
+cg_cohort_generation,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_inclusion,cohort_definition_id,bigint,bigint,Yes,No,The unique identifier for the cohort definition
+cg_cohort_inclusion,rule_sequence,int,Yes,Yes,No,The rule sequence for the inclusion rule
+cg_cohort_inclusion,name,varchar,Yes,Yes,No,The name of the inclusion rule
+cg_cohort_inclusion,description,varchar,No,No,No,The description of the inclusion rule
+cg_cohort_inc_result,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_inc_result,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_inc_result,inclusion_rule_mask,int,Yes,Yes,No,A bit-mask for the inclusion rule
+cg_cohort_inc_result,person_count,bigint,Yes,Yes,Yes,The number of persons satisifying the inclusion rule
+cg_cohort_inc_result,mode_id,int,Yes,Yes,No,The mode of the inclusion rule.
+cg_cohort_inc_stats,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_inc_stats,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_inc_stats,rule_sequence,int,Yes,Yes,No,The rule sequence
+cg_cohort_inc_stats,person_count,bigint,Yes,Yes,Yes,The person count
+cg_cohort_inc_stats,gain_count,bigint,Yes,Yes,No,The gain count
+cg_cohort_inc_stats,person_total,bigint,Yes,Yes,Yes,The person total
+cg_cohort_inc_stats,mode_id,int,Yes,Yes,No,The mode id
+cg_cohort_summary_stats,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_summary_stats,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_summary_stats,base_count,bigint,Yes,Yes,Yes,The base count
+cg_cohort_summary_stats,final_count,bigint,Yes,Yes,Yes,The final count
+cg_cohort_summary_stats,mode_id,int,Yes,Yes,No,The mode id
+cg_cohort_censor_stats,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_censor_stats,lost_count,bigint,Yes,Yes,Yes,The number lost due to censoring
+cg_cohort_censor_stats,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_count,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_count,cohort_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_count,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort entries
+cg_cohort_count,cohort_subjects,bigint,Yes,Yes,Yes,The number of unique subjects
+cg_cohort_count_neg_ctrl,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_count_neg_ctrl,cohort_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_count_neg_ctrl,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort entries
+cg_cohort_count_neg_ctrl,cohort_subjects,bigint,Yes,Yes,Yes,The number of unique subjects
+cg_cohort_subset_definition,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
+cg_cohort_subset_definition,json,text,Yes,No,No,The JSON representation of the subset definition
+cg_cohort_definition_neg_ctrl,cohort_id,bigint,Yes,Yes,No,The cohort identifier for the negative control outcome
+cg_cohort_definition_neg_ctrl,outcome_concept_id,bigint,Yes,No,No,The concept ID for the negative control outcome
+cg_cohort_definition_neg_ctrl,cohort_name,varchar,Yes,No,No,The concept name for the negative control outcome
+cg_cohort_definition_neg_ctrl,occurrence_type,varchar,Yes,No,No,The occurrenceType will detect either: the first time an outcomeConceptId occurs or all times the outcome_concept_id occurs for a person. Values accepted: 'all' or 'first'
+cg_cohort_definition_neg_ctrl,detect_on_descendants,int,Yes,No,No,When set to 1 detect_on_descendants used the vocabulary to find negative control outcomes using the outcome_concept_id and all descendants via the concept_ancestor table. When set to 0 only the exact outcome_concept_id was used to detect the outcome

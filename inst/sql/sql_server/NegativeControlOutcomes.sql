@@ -1,4 +1,6 @@
--- NOTE: #nc_set is created by R before calling this SQL code
+@nc_set_query
+
+DROP TABLE IF EXISTS #Codesets;
 CREATE TABLE #Codesets (
   cohort_definition_id bigint NOT NULL,
   ancestor_concept_id int NOT NULL,
@@ -28,7 +30,7 @@ CREATE TABLE #Codesets (
 
 DELETE FROM @cohort_database_schema.@cohort_table
 WHERE cohort_definition_id IN (
-  SELECT DISTINCT ancestor_concept_id
+  SELECT DISTINCT cohort_definition_id
   FROM #Codesets
 )
 ;

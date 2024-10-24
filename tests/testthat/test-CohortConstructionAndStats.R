@@ -19,6 +19,32 @@ test_that("Call generateCohortSet with default parameters", {
   )
 })
 
+test_that("Call generateCohortSet with cohortDefinitionSet containing duplicate IDs", {
+  cohortDefinitionSet <- data.frame(
+    cohortId = 1,
+    cohortName = "duplicate #1",
+    sql = "",
+    json = ""
+  )
+  cohortDefinitionSet <- rbind(
+    cohortDefinitionSet,
+    data.frame(
+      cohortId = 1,
+      cohortName = "duplicate #2",
+      sql = "",
+      json = ""
+    )
+  )
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortDefinitionSet
+    ),
+    message = "(Cannot generate! Duplicate cohort IDs found in your cohortDefinitionSet)"
+  )
+})
+
+
 test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter", {
   expect_error(
     generateCohortSet(
@@ -26,6 +52,23 @@ test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter
       cohortDefinitionSet = data.frame()
     ),
     message = "(must contain the following columns)"
+  )
+})
+
+test_that("Call instatiateCohortSet with cohortDefinitionSet with non-integer data type", {
+  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
+  cohortDefinitionSet <- rbind(cohortDefinitionSet, data.frame(
+    cohortId = 1.2,
+    cohortName = "Test",
+    sql = "sql",
+    foo = "foo"
+  ))
+  expect_error(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortDefinitionSet
+    ),
+    message = "(included non-integer)"
   )
 })
 
@@ -40,7 +83,7 @@ test_that("Call instatiateCohortSet with cohortDefinitionSet with extra columns"
   expect_error(
     generateCohortSet(
       connectionDetails = connectionDetails,
-      cohortDefinitionSet = data.frame()
+      cohortDefinitionSet = cohortDefinitionSet
     ),
     message = "(must contain the following columns)"
   )
@@ -296,7 +339,7 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "FAILED", ]), 1)
-  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 3)
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 4)
 
   # Now update the cohort that was failing to use a SQL statement that will work
   sqlThatWillWork <- "
@@ -318,7 +361,7 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 1)
-  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "SKIPPED", ]), 3)
+  expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "SKIPPED", ]), 4)
   unlink(recordKeepingFolder, recursive = TRUE)
   if (file.exists("errorReportSql.txt")) {
     unlink("errorReportSql.txt")
@@ -355,8 +398,6 @@ test_that("Insert cohort stats expected use-case", {
     table = cohortTableNames$cohortInclusionTable,
     snakeCaseToCamelCase = TRUE
   )
-  # HACK: SqlLite does not support bigint so convert the results returned
-  results$cohortDefinitionId <- bit64::as.integer64(results$cohortDefinitionId)
   expect_equal(results, cohortInclusionRules)
   DatabaseConnector::disconnect(conn)
 })
@@ -422,8 +463,6 @@ test_that("Insert cohort stats with inclusion rule name that is empty", {
     table = cohortTableNames$cohortInclusionTable,
     snakeCaseToCamelCase = TRUE
   )
-  # HACK: SqlLite does not support bigint so convert the results returned
-  results$cohortDefinitionId <- bit64::as.integer64(results$cohortDefinitionId)
   expect_equal(results, cohortInclusionRules)
   DatabaseConnector::disconnect(conn)
 })
@@ -463,9 +502,7 @@ test_that("Insert cohort stats with INT64 for cohort_definition_id", {
   # Obtain a list of cohorts to test
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
 
-  # Hack the cohortDefinitionId to force to 64 bit integer
-  cohortsWithStats$cohortId <- bit64::as.integer64(cohortsWithStats$cohortId)
-  cohortsWithStats$cohortId <- cohortsWithStats$cohortId + .Machine$integer.max
+  cohortsWithStats$cohortId <- cohortsWithStats$cohortId + as.numeric(.Machine$integer.max)
 
   # Insert the inclusion rule names
   cohortInclusionRules <- insertInclusionRuleNames(
@@ -483,8 +520,6 @@ test_that("Insert cohort stats with INT64 for cohort_definition_id", {
     table = cohortTableNames$cohortInclusionTable,
     snakeCaseToCamelCase = TRUE
   )
-  # HACK: SqlLite does not support bigint so convert the results returned
-  results$cohortDefinitionId <- bit64::as.integer64(results$cohortDefinitionId)
   expect_equal(results, cohortInclusionRules)
   DatabaseConnector::disconnect(conn)
 })

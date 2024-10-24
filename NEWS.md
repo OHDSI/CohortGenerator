@@ -1,9 +1,65 @@
+CohortGenerator 0.11.2
+=======================
+
+- Ensure temp tables are dropped before creating them (#188)
+
+CohortGenerator 0.11.1
+=======================
+
+- CohortGenerator added to CRAN (#77)
+
+CohortGenerator 0.11.0
+=======================
+
+New Features
+
+- Add support for minimum cell count (#176)
+
+Bug Fixes
+
+- Multiple calls to export stats causing duplicates in cohort inclusion file (#179)
+- Updates to subset documentation (#180, #181)
+- Negative control outcome generation bug (#177)
+
+CohortGenerator 0.10.0
+=======================
+
+New Features
+
+- Add `runCohortGeneration` function (Issue #165)
+- Adopt ResultModelManager for handling results data models & uploading. Extend results data model to include information on cohort subsets(#154, #162)
+- Remove REMOTES entries for CirceR and Eunomia which are now in CRAN (#145)
+- Unit tests now running on all OHDSI DB Platforms (#151)
+
+Bug Fixes
+
+- Negation of cohort subset operator must join on `subject_id` AND `start_date` (#167)
+- Allow integer as cohort ID (#146)
+- Use native messaging functions for output vs. ParallelLogger (#97)
+- Prevent upload of inclusion rule information (#78)
+- Expose `colTypes` when working with .csv files (#59)
+- Remove `bit64` from package (mostly) (#152)
+- Updated documentation for cohort subset negate feature (#111)
+
+CohortGenerator 0.9.0
+=======================
+- Random sample functionality (for development only) (Issue #129)
+- Incremental mode for negative control cohort generation (Issue #137)
+- Fixes getCohortCounts() if cohortIds is not specified, but cohortDefinitionSet is. (Issue #136)
+- Add cohort ID to generation output messages (Issue #132)
+- Add databaseId to output of getStatsTable() (Issue #116)
+- Prevent duplicate cohort IDs in cohortDefinitionSet (Issue #130)
+- Fix cohort stats query for Oracle (Issue #143)
+- Ensure databaseId applied to all returned cohort counts (Issue #144)
+- Preserve backwards compatibility if cohort sample table is not in the list of cohort table names (Issue #147) 
+
+
 CohortGenerator 0.8.1
 =======================
 - Include cohorts with 0 people in cohort counts (Issue #91).
 - Use numeric for cohort ID (Issue #98)
 - Allow big ints for target pairs (#103)
-- Pass `tempEmulationSchema` when creating negative controlc ohorts (#104)
+- Pass `tempEmulationSchema` when creating negative control cohorts (#104)
 - Target CDM v5.4 for unit tests (#119)
 - Fix for subset references (#115)
 - Allow for subset cohort name templating (#118)

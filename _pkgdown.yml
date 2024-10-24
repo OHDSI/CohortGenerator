@@ -1,5 +1,8 @@
+url: https://ohdsi.github.io/CohortGenerator/
+
 template:
-  params:
+  bootstrap: 5
+  bslib:
     bootswatch: cosmo
 
 home:
@@ -8,6 +11,13 @@ home:
     href: http://forums.ohdsi.org
 
 reference:
+  - title: "Cohort Generation"
+    desc: >
+      Functions that support generating cohorts.
+    contents:
+      - runCohortGeneration
+      - generateCohortSet
+
   - title: "Cohort Tables"
     desc: >
       Functions that support creating the necessary cohort tables.
@@ -25,13 +35,6 @@ reference:
       - checkAndFixCohortDefinitionSetDataTypes
       - isCohortDefinitionSet
       
-  - title: "Cohort Generation"
-    desc: >
-      Functions that support generating cohorts.
-    contents:
-      - generateCohortSet
-      - createEmptyCohortDefinitionSet
-      
   - title: "Cohort Counts"
     desc: >
       Function for obtaining the counts of subjects and events for one or
@@ -39,23 +42,27 @@ reference:
     contents:
       - getCohortCounts
       
-  - title: "Cohort Subset"
+  - title: "Cohort Subset Functions"
     desc: >
-      Functions and R6 classes for creating cohort subset definitions and subset 
-      operators.
+      Functions for creating cohort subset definitions and subset operators.
     contents:
       - addCohortSubsetDefinition
-      - CohortSubsetDefinition
-      - CohortSubsetOperator
       - createCohortSubset
       - createCohortSubsetDefinition
       - createDemographicSubset
       - createLimitSubset
       - createSubsetCohortWindow
-      - DemographicSubsetOperator
       - getSubsetDefinitions
-      - LimitSubsetOperator
       - saveCohortSubsetDefinition
+
+  - title: "Cohort Subset Classes"
+    desc: >
+      R6 classes for cohort subset definitions and subset operators.
+    contents:
+      - CohortSubsetDefinition
+      - CohortSubsetOperator
+      - DemographicSubsetOperator
+      - LimitSubsetOperator
       - SubsetCohortWindow
       - SubsetOperator
       
@@ -63,9 +70,12 @@ reference:
     desc: >
       Functions for inserting inclusion rule names from a cohort definition,
       exporting the cohort statistics to the file system and a helper function 
-      for dropping those tables when they are no longer needed.
+      for dropping those tables when they are no longer needed. These functions
+      assume you are using [Circe](https://github.com/OHDSI/circe-be) for 
+      inclusion rules and cohort statistics.
     contents:
       - getCohortStats
+      - getCohortInclusionRules
       - insertInclusionRuleNames
       - exportCohortStatsTables
       - dropCohortStatsTables
@@ -77,6 +87,17 @@ reference:
     contents:
       - createEmptyNegativeControlOutcomeCohortSet
       - generateNegativeControlOutcomeCohorts
+      
+  - title: "Result Model Management"
+    desc: >
+      Functions for managing the results of running Cohort Generator via
+      `runCohortGeneration`
+    contents:
+      - createResultsDataModel
+      - getDataMigrator
+      - getResultsDataModelSpecifications
+      - migrateDataModel
+      - uploadResults
 
   - title: "CSV File Helpers"
     desc: >
@@ -102,8 +123,16 @@ reference:
       - isTaskRequired
       - saveIncremental
       - computeChecksum
+      
+  - title: "Cohort Sampling"
+    desc: >
+      Functions that support sampling a cohort. Please note this is only for
+      software development purposes and NOT for running studies.
+    contents:
+      - sampleCohortDefinitionSet
 
 navbar:
+  bg: dark
   structure:
     right: [hades, github]
   components:
