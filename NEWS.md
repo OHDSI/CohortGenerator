@@ -1,3 +1,8 @@
+CohortGenerator 0.11.2
+=======================
+
+- Ensure temp tables are dropped before creating them (#188)
+
 CohortGenerator 0.11.1
 =======================
 
