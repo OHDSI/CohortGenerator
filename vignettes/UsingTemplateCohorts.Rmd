@@ -1,0 +1,57 @@
+t ---
+title: "Using Template Cohorts"
+author: "James P. Gilbert"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Generating Cohorts}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  chunk_output_type: console
+---
+
+# Introduction
+This guide intends to demonstrate the usage of template cohorts within the Cohort Generator package.
+This can provide a convenient approach to computing large sets of features.
+While this is possible through the use of custom scripts, doing so will often require one-off approaches to integrating
+references within studies or other OHDSI packages, greatly limiting their reproducibility.
+
+The principle behind this implementation is that, for all intents and purposes, cohorts created via "bulk" operations
+should be treated no differently to cohorts created through circe definitions.
+
+## Limitations of this approach
+For the design of reliable, reusable Phenotype Algorithms, we strongly advise the usage of circe based approaches.
+While there is a trade-off that such an approach may be less efficient that pure SQL, this will greatly limit the
+reproducibility and replicability of studies using these cohorts.
+
+# Basic templates
+
+## Drug ingredient cohorts
+
+- Example code
+- ATC ingredients
+
+## SNOMED condition cohorts
+
+- Example code
+
+# Creating custom cohort templates
+
+Creating custom cohort templates can be useful for generating large sets of cohorts, utilizing vocabularies.
+This requires a good understanding of OHDSI standard vocabularies and the OMOP Common Data Model.
+
+In this example, we generate cohorts based on procedure codes using the Healthcare Common Procedure Coding System (HCPCS).
+To simplify computation we will use only blood based procedures.
+To do this we require a function that has two steps
+
+1. **Creating references for cohorts**: all cohorts used within cohort generator required certain properties to allow
+usage in other tools. These references may come from the vocabulary used by the cdm, or they may be defined via
+other means.
+
+2. **Creating cohort logic in SQL**: This requires careful considerations for how cohorts interact within the CDM.
