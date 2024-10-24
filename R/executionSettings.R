@@ -165,3 +165,34 @@ ExecutionSettings <- R6::R6Class(
     
   )
 )
+
+
+#' @title
+#' Create an ExecutionSettings object and set its attributes
+#'
+#' @param connectionDetails A DatabaseConnector connectionDetails object (optional if connection is specified)
+#' @param connection A DatabaseConnector connection object (optional if connectionDetails is specified)
+#' @param cdmDatabaseSchema The schema of the OMOP CDM database
+#' @param workDatabaseSchema The schema to which results will be written
+#' @param tempEmulationSchema Some database platforms like Oracle and Snowflake do not truly support temp tables. To emulate temp tables, provide a schema with write privileges where temp tables can be created.
+#' @param targetCohortTable The name of the table where the target cohort(s) are stored
+#' @param cdmSourceName A human-readable name for the OMOP CDM source
+#'
+#' @return An ExecutionSettings object
+#' @export
+createExecutionSettings <- function(connectionDetails,
+                                    connection = NULL,
+                                    cdmDatabaseSchema,
+                                    workDatabaseSchema,
+                                    tempEmulationSchema,
+                                    targetCohortTable,
+                                    cdmSourceName) {
+  executionSettings <- ExecutionSettings$new(connectionDetails = connectionDetails,
+                                             connection = connection,
+                                             cdmDatabaseSchema = cdmDatabaseSchema,
+                                             workDatabaseSchema = workDatabaseSchema,
+                                             tempEmulationSchema = tempEmulationSchema,
+                                             targetCohortTable = targetCohortTable,
+                                             cdmSourceName = cdmSourceName)
+  return(executionSettings)
+}
