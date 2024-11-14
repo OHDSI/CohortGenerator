@@ -1,3 +1,10 @@
+CohortGenerator 0.12.0
+======================
+
+- Backwards compatable extension to CohortSubsetOperators and cohortSubsetWindows to allow windowing to be logic of any
+length
+
+
 CohortGenerator 0.11.2
 =======================
 

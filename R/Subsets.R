@@ -134,7 +134,10 @@ SubsetCohortWindow <- R6::R6Class(
 #' @param targetAnchor To anchor using the target cohort's start date or end date
 #' @param subsetAnchor To anchor using the subset cohort's start date or end date
 #' @returns a SubsetCohortWindow instance
-createSubsetCohortWindow <- function(startDay, endDay, targetAnchor, subsetAnchor) {
+createSubsetCohortWindow <- function(startDay, endDay, targetAnchor, subsetAnchor = NULL) {
+  if (is.null(subsetAnchor))
+    subsetAnchor <- "cohortStart"
+
   window <- SubsetCohortWindow$new()
   window$startDay <- startDay
   window$endDay <- endDay
@@ -339,20 +342,23 @@ CohortSubsetOperator <- R6::R6Class(
       cohortIds <- sprintf("cohorts: (%s)", paste(self$cohortIds, collapse = ", "))
       nameString <- paste0(nameString, cohortIds)
 
+      windowString <- lapply(self$windows, function(window) {
+        paste(
+          "subset",
+          tolower(SqlRender::camelCaseToTitleCase(window$subsetAnchor)),
+          "is within D:",
+          window$startDay,
+          "- D:",
+          window$endDay,
+          "of target",
+          tolower(SqlRender::camelCaseToTitleCase(window$targetAnchor))
+        )
+      })
+
       nameString <- paste(
         nameString,
-        "starts within D:",
-        self$startWindow$startDay,
-        "- D:",
-        self$startWindow$endDay,
-        "of",
-        tolower(SqlRender::camelCaseToTitleCase(self$startWindow$targetAnchor)),
-        "and ends D:",
-        self$endWindow$startDay,
-        "- D:",
-        self$endWindow$endDay,
-        "of",
-        tolower(SqlRender::camelCaseToTitleCase(self$endWindow$targetAnchor))
+        "where",
+        paste(windowString, collapse = " and ")
       )
 
       return(paste0(nameString))
@@ -395,15 +401,17 @@ CohortSubsetOperator <- R6::R6Class(
     #' start relative to the target cohort
     windows = function(windows) {
       if (missing(windows)) {
-        return(private$.startWindow)
+        return(private$.windows)
+      }
+      realWindows <- list()
+      for (window in windows) {
+        if (is.list(window))
+          window <- do.call(createSubsetCohortWindow, window)
+        realWindows[[length(realWindows) + 1]] <- window
       }
 
-      if (is.list(window)) {
-        window <- do.call(createSubsetCohortWindow, window)
-      }
-
-      checkmate::assertList(x = windows, types = "SubsetCohortWindow")
-      private$windows <- windows
+      checkmate::assertList(x = realWindows, types = "SubsetCohortWindow")
+      private$.windows <- realWindows
       self
     }
   )
@@ -418,23 +426,26 @@ CohortSubsetOperator <- R6::R6Class(
 #' @param cohortCombinationOperator "any" or "all" if using more than one cohort id allow a subject to be in any cohort
 #'                                  or require that they are in all cohorts in specified windows
 #'
-#' @param startWindow               A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow) (deprecated - use windows)
-#' @param endWindow                 A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow) (deprecated - use windows)
+#' @param startWindow               A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
+#' @param endWindow                 A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)
+#' @param windows                   A list of additional windows to be applied (logic is to always apply these with AND conditions)
 #' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria
 #' @returns a CohortSubsetOperator instance
-createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator, negate, windows, startWindow = lifecycle::deprecated(), endWindow = lifecycle::deprecated()) {
+createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator, negate, windows = list(), startWindow = NULL, endWindow = NULL) {
   subset <- CohortSubsetOperator$new()
   subset$name <- name
   subset$cohortIds <- cohortIds
   subset$cohortCombinationOperator <- cohortCombinationOperator
   subset$negate <- negate
 
-  if (!missing(startWindow) || !missing(endWindow)) {
-    warning("Start Window and End Window are deprecated, use a list of windows")
-    if (missing(windows))
-      windows <- list()
-
+  # Start and end windows must always have subset anchor values set to support backwards compatibility
+  if (!is.null(startWindow)){
+    startWindow$subsetAnchor <- "cohortStart"
     windows[[length(windows) + 1]] <- startWindow
+  }
+
+  if (!is.null(endWindow)) {
+    endWindow$subsetAnchor <- "cohortEnd"
     windows[[length(windows) + 1]] <- endWindow
   }
 
