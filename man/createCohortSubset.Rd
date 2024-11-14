@@ -9,8 +9,9 @@ createCohortSubset(
   cohortIds,
   cohortCombinationOperator,
   negate,
-  startWindow,
-  endWindow
+  windows = list(),
+  startWindow = NULL,
+  endWindow = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ createCohortSubset(
 or require that they are in all cohorts in specified windows}
 
 \item{negate}{The opposite of this definition - include patients who do NOT meet the specified criteria}
+
+\item{windows}{A list of additional windows to be applied (logic is to always apply these with AND conditions)}
 
 \item{startWindow}{A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)}
 

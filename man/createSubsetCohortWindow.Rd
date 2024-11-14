@@ -4,7 +4,7 @@
 \alias{createSubsetCohortWindow}
 \title{A definition of subset functions to be applied to a set of cohorts}
 \usage{
-createSubsetCohortWindow(startDay, endDay, targetAnchor)
+createSubsetCohortWindow(startDay, endDay, targetAnchor, subsetAnchor = NULL)
 }
 \arguments{
 \item{startDay}{The start day for the window}
@@ -12,6 +12,8 @@ createSubsetCohortWindow(startDay, endDay, targetAnchor)
 \item{endDay}{The end day for the window}
 
 \item{targetAnchor}{To anchor using the target cohort's start date or end date}
+
+\item{subsetAnchor}{To anchor using the subset cohort's start date or end date}
 }
 \value{
 a SubsetCohortWindow instance

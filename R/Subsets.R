@@ -114,7 +114,7 @@ SubsetCohortWindow <- R6::R6Class(
       private$.targetAnchor <- targetAnchor
       return(self)
     },
-    #' @field targetAnchor Boolean
+    #' @field subsetAnchor Boolean
     subsetAnchor = function(subsetAnchor) {
       if (missing(subsetAnchor)) {
         return(private$.subsetAnchor)
@@ -397,8 +397,7 @@ CohortSubsetOperator <- R6::R6Class(
       private$.negate <- negate
       self
     },
-    #' @field startWindow The time window to use evaluating the subset cohort
-    #' start relative to the target cohort
+    #' @field windows list of time windows to use evaluating the subset cohort relative to the target cohort
     windows = function(windows) {
       if (missing(windows)) {
         return(private$.windows)
