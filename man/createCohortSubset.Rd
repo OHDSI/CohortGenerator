@@ -24,11 +24,14 @@ or require that they are in all cohorts in specified windows}
 
 \item{negate}{The opposite of this definition - include patients who do NOT meet the specified criteria}
 
-\item{windows}{A list of additional windows to be applied (logic is to always apply these with AND conditions)}
+\item{windows}{A list of time windows to use to evaluate subset cohorts in relation to the 
+target  cohorts. The logic is to always apply these windows with logical AND conditions.
+See [@seealso [createSubsetCohortWindow()]] for more details on how to create
+these windows.}
 
-\item{startWindow}{A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)}
+\item{startWindow}{DEPRECATED: Use `windows` instead.}
 
-\item{endWindow}{A SubsetCohortWindow that patients must fall inside (see createSubsetCohortWindow)}
+\item{endWindow}{DEPRECATED: Use `windows` instead.}
 }
 \value{
 a CohortSubsetOperator instance
