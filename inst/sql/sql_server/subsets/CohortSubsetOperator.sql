@@ -14,8 +14,8 @@ FROM (
   FROM @target_table T
   JOIN @cohort_database_schema.@cohort_table S ON T.subject_id = S.subject_id
   WHERE S.cohort_definition_id in (@cohort_ids)
-    AND (S.cohort_start_date >= DATEADD(d, @start_window_start_day, T.@start_window_anchor) AND S.cohort_start_date <= DATEADD(d, @start_window_end_day, T.@start_window_anchor))
-    AND (S.cohort_end_date >= DATEADD(d, @end_window_start_day, T.@end_window_anchor) and S.cohort_end_date <= DATEADD(d, @end_window_end_day, T.@end_window_anchor))
+  -- AND Cohort lies within window criteria
+  @cohort_window_logic
   GROUP BY T.subject_id, T.cohort_start_date, T.cohort_end_date
   HAVING COUNT (DISTINCT S.COHORT_DEFINITION_ID) >= @subset_length
 ) A
