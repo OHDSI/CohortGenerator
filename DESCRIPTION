@@ -28,7 +28,6 @@ Imports:
   ParallelLogger (>= 3.0.0),
   readr (>= 2.1.0),
   rlang,
-  RJSONIO,
   jsonlite,
   ResultModelManager,
   SqlRender (>= 1.11.1),
