@@ -22,7 +22,7 @@ jobs:
         config:
           #- {os: windows-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
           #- {os: macOS-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-24.04, r: 'release', rtools: ''}
+          - {os: ubuntu-22.04, r: 'release', rtools: ''}
     env:
       GITHUB_PAT: ${{ secrets.GH_TOKEN }}
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -96,7 +96,7 @@ jobs:
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
           
       - name: Setup Java
-        if: runner.os == 'macOS' || runner.os == 'Linux'
+        if: runner.os == 'macOS'
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
