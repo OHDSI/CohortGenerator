@@ -96,7 +96,7 @@ jobs:
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
           
       - name: Setup Java
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' || runner.os == 'Linux'
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
