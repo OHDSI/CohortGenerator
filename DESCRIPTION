@@ -41,6 +41,8 @@ Suggests:
   testthat,
   withr,
   zip
+Remotes:
+  OHDSI/DatabaseConnector@update-snowflake-driver
 License: Apache License
 VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
