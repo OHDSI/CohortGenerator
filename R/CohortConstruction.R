@@ -14,6 +14,58 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+#' Get last generated cohort checksums
+#'
+#' @description
+#' This gets a log of the last checksum for each cohort id stored in the cohort_checksum table.
+#'
+#' This should be used to audit cohort generation as (if generated with cohort_generator) cohorts should always have an
+#' end time in this table. The last end time will be the cohort that is in the cohort table (assuming no other manual
+#' modifications are made to the cohort table itself).
+#'
+#' This can be used downstream of CohortGeneratro to evaluate if cohorts are consistent with passed definitions.
+#'
+#' @inheritParams generateCohortSet
+#'
+#' @param .checkTables used internally
+getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
+                                            connection = NULL,
+                                            cohortDatabaseSchema,
+                                            cohortTableNames = getCohortTableNames(),
+                                            .checkTables = TRUE) {
+  if (is.null(connection) && is.null(connectionDetails)) {
+    stop("You must provide either a database connection or the connection details.")
+  }
+
+  if (is.null(connection)) {
+    connection <- DatabaseConnector::connect(connectionDetails)
+    on.exit(DatabaseConnector::disconnect(connection))
+  }
+
+  .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
+  sql <- "
+  WITH ranked_times AS (
+      SELECT
+          cohort_definition_id,
+          checksum,
+          start_time,
+          end_time,
+          ROW_NUMBER() OVER (PARTITION BY cohort_definition_id ORDER BY end_time DESC) AS rank
+      FROM
+          @cohort_database_schema.@cohort_checksum_table
+     WHERE end_time IS NOT NULL
+  )
+
+  SELECT cohort_definition_id, checksum, start_time, end_time FROM ranked_times WHERE rank = 1;"
+
+  DatabaseConnector::renderTranslateQuerySql(connection = connection,
+                                             sql = sql,
+                                             cohort_database_schema = cohortDatabaseSchema,
+                                             snakeCaseToCamelCase = TRUE)
+}
+
+
 #' Generate a set of cohorts
 #'
 #' @description
@@ -70,11 +122,11 @@ generateCohortSet <- function(connectionDetails = NULL,
                               incrementalFolder = NULL) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-    must.include = c(
-      "cohortId",
-      "cohortName",
-      "sql"
-    )
+                         must.include = c(
+                           "cohortId",
+                           "cohortName",
+                           "sql"
+                         )
   )
   assertLargeInteger(cohortDefinitionSet$cohortId)
   # Verify that cohort IDs are not repeated in the cohort definition
@@ -103,10 +155,6 @@ generateCohortSet <- function(connectionDetails = NULL,
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
 
-  if (incremental) {
-    recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
-  }
-
   if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
     cohortDefinitionSet$checksum <- ""
     for (i in 1:nrow(cohortDefinitionSet)) {
@@ -125,6 +173,37 @@ generateCohortSet <- function(connectionDetails = NULL,
     cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
   }
 
+  if (incremental) {
+    recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
+    computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
+                                                         cohortDatabaseSchema = cohortDatabaseSchema,
+                                                         cohortTableNames = cohortTableNames) |>
+      dplyr::rename(lastChecksum = "checksum")
+
+
+    uncomputedCohorts <- cohortDefinitionSet |>
+      dplyr::left_join(computedChecksums, by = "cohortDefinitionId") |>
+      dplyr::filter(.data$checksum != .data$lastChecksum) |> # only compute items where the stored checksum differs
+      dplyr::select(dplyr::all_of(colnames(cohortDefinitionSet)))
+  } else {
+    uncomputedCohorts <- cohortDefinitionSet
+  }
+
+  cohortsToGenerate <- uncomputedCohorts$cohortId
+  subsetsToGenerate <- c()
+  # Generate top level cohorts first
+  if (isTRUE(attr(uncomputedCohorts, "hasSubsetDefinitions"))) {
+    cohortsToGenerate <- uncomputedCohorts %>%
+      dplyr::filter(!.data$isSubset) %>%
+      dplyr::select("cohortId") %>%
+      dplyr::pull()
+
+    subsetsToGenerate <- uncomputedCohorts %>%
+      dplyr::filter(.data$isSubset) %>%
+      dplyr::select("cohortId") %>%
+      dplyr::pull()
+  }
+
   # Create the cluster
   # DEV NOTE :: running subsets in a multiprocess setup will not work with subsets that subset other subsets
   # To resolve this issue we need to execute the dependency tree.
@@ -132,20 +211,6 @@ generateCohortSet <- function(connectionDetails = NULL,
   # the execution is in order. If you set numberOfThreads > 1 you should implement this!
   cluster <- ParallelLogger::makeCluster(numberOfThreads = 1)
   on.exit(ParallelLogger::stopCluster(cluster), add = TRUE)
-  cohortsToGenerate <- cohortDefinitionSet$cohortId
-  subsetsToGenerate <- c()
-  # Generate top level cohorts first
-  if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
-    cohortsToGenerate <- cohortDefinitionSet %>%
-      dplyr::filter(!.data$isSubset) %>%
-      dplyr::select("cohortId") %>%
-      dplyr::pull()
-
-    subsetsToGenerate <- cohortDefinitionSet %>%
-      dplyr::filter(.data$isSubset) %>%
-      dplyr::select("cohortId") %>%
-      dplyr::pull()
-  }
 
   # Apply the generation operation to the cluster
   cohortsGenerated <- ParallelLogger::clusterApply(
@@ -206,7 +271,7 @@ generateCohortSet <- function(connectionDetails = NULL,
     SET end_time = NOW()
     WHERE cohort_definition_id = @target_cohort_id
     AND checksum = @checksum;
-  ", sql = sql, warnOnMissingParameters = FALSE )
+  ", sql = sql, warnOnMissingParameters = FALSE)
 }
 
 
