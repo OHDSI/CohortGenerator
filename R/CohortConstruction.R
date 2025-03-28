@@ -62,6 +62,7 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
   DatabaseConnector::renderTranslateQuerySql(connection = connection,
                                              sql = sql,
                                              cohort_database_schema = cohortDatabaseSchema,
+                                             cohort_checksum_table = cohortTableNames$cohortChecksumTable,
                                              snakeCaseToCamelCase = TRUE)
 }
 
@@ -266,6 +267,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                          VALUES (@target_cohort_id, @checksum, NOW(), NULL);
 
     @sql;
+
     -- If this time is null then the cohort is either being generated or the execution stoped
     UPDATE @results_database_schema.@cohort_checksum_table
     SET end_time = NOW()
