@@ -16,6 +16,8 @@ test_that("sampleCohortDefinitionSet", {
   )
 
   cds <- getCohortsForTest(cohorts = cohorts)
+
+  
   generateCohortSet(
     cohortDefinitionSet = cds,
     connection = conn,
@@ -195,7 +197,8 @@ test_that(".sampleCohort", {
     data = tData
   )
   sampleTable <- data.frame(rand_id = c(7, 8, 9, 10, 33, 198))
-  .sampleCohort(connection,
+  .sampleCohort(
+    connection,
     targetCohortId = 1,
     targetTable = "cohort",
     outputCohortId = 999,
@@ -203,8 +206,10 @@ test_that(".sampleCohort", {
     cohortDatabaseSchema = "main",
     outputDatabaseSchema = "main",
     sampleTable = sampleTable,
+    checksumTable = "cohort_checksum",
     seed = 1,
-    tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+    tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+    checksum = "some_random_value"
   )
 
   resCohort <- DatabaseConnector::renderTranslateQuerySql(connection,

@@ -52,7 +52,6 @@ testPlatform <- function(dbmsDetails) {
   cohortsWithSubsets <- addCohortSubsetDefinition(cohortsWithStats, subsetDef)
 
   ncSet <- getNegativeControlOutcomeCohortsForTest()
-
   runCohortGeneration(
     connectionDetails = dbmsDetails$connectionDetails,
     cdmDatabaseSchema = dbmsDetails$cdmDatabaseSchema,

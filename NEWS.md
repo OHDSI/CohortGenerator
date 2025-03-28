@@ -1,4 +1,9 @@
-CohortGenerator 0.12.0
+CohortGenerator 0.13.0
+======================
+- creation of cohort_checksum tables that enable verifcation of generated cohorts and incremental execution in distributed
+environments
+
+ohortGenerator 0.12.0
 ======================
 
 - Backwards compatable extension to CohortSubsetOperators and cohortSubsetWindows to allow windowing to be logic of any

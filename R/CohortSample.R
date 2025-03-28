@@ -31,10 +31,10 @@
   countSql <- "SELECT COUNT(DISTINCT SUBJECT_ID) as cnt FROM  @cohort_database_schema.@target_table
    WHERE cohort_definition_id = @target_cohort_id"
   count <- DatabaseConnector::renderTranslateQuerySql(connection,
-    countSql,
-    cohort_database_schema = cohortDatabaseSchema,
-    target_cohort_id = targetCohortId,
-    target_table = targetTable
+                                                      countSql,
+                                                      cohort_database_schema = cohortDatabaseSchema,
+                                                      target_cohort_id = targetCohortId,
+                                                      target_table = targetTable
   ) %>%
     dplyr::pull()
 
@@ -64,11 +64,16 @@
                           targetTable,
                           outputCohortId,
                           outputTable,
+                          checksumTable,
                           cohortDatabaseSchema,
                           outputDatabaseSchema,
                           sampleTable,
                           seed,
-                          tempEmulationSchema) {
+                          tempEmulationSchema,
+                          checksum,
+                          incremental,
+                          recordKeepingFile) {
+  startTime <- lubridate::now()
   randSampleTableName <- paste0("#SAMPLE_TABLE_", seed)
   DatabaseConnector::insertTable(
     connection = connection,
@@ -80,17 +85,24 @@
   )
 
   execSql <- SqlRender::readSql(system.file("sql", "sql_server", "sampling", "RandomSample.sql", package = "CohortGenerator"))
-  DatabaseConnector::renderTranslateExecuteSql(connection,
+  SqlRender::render(
+    connection,
     execSql,
     tempEmulationSchema = tempEmulationSchema,
+    cohort_checksum_table = checksumTable,
     random_sample_table = randSampleTableName,
     target_cohort_id = targetCohortId,
     output_cohort_id = outputCohortId,
     cohort_database_schema = cohortDatabaseSchema,
     output_database_schema = outputDatabaseSchema,
+    results_database_schema = cohortDatabaseSchema,
     output_table = outputTable,
-    target_table = targetTable
-  )
+    target_table = targetTable,
+    checksum = checksum
+  ) |>
+    SqlRender::translate(dbms = DatabaseConnector::dbms(connection))
+
+  .runCohortSql(connection, sql, startTime, cohortDatabaseSchema, checksumTable, incremental, outputCohortId, checksum, recordKeepingFile)
 }
 
 
@@ -169,11 +181,11 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
   checkmate::assertIntegerish(seed, min.len = 1)
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-    must.include = c(
-      "cohortId",
-      "cohortName",
-      "sql"
-    )
+                         must.include = c(
+                           "cohortId",
+                           "cohortName",
+                           "sql"
+                         )
   )
 
   if (is.null(n) && is.null(sampleFraction)) {
@@ -204,6 +216,10 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
   }
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
+  computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
+                                                       cohortDatabaseSchema = cohortDatabaseSchema,
+                                                       cohortTableNames = cohortTableNames)
+
   sampledCohorts <-
     base::Map(function(seed, targetCohortId) {
       sampledCohortDefinition <- cohortDefinitionSet %>%
@@ -240,12 +256,14 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         )
       }
 
-      if (incremental && !isTaskRequired(
-        cohortId = outputCohortId,
-        seed = seed,
-        checksum = computeChecksum(paste0(sampledCohortDefinition$sql, n, seed, outputCohortId)),
-        recordKeepingFile = recordKeepingFile
-      )) {
+      sampleChecksum <- computeChecksum(paste0(sampledCohortDefinition$sql, n, seed, outputCohortId))
+      cohortComputed <- computedChecksums |>
+        dplyr::filter(.data$checksum == sampleChecksum,
+                      .data$cohortDefinitionId == outputCohortId) |>
+        dplyr::count() |>
+        dplyr::pull() > 0
+
+      if (incremental && !cohortComputed) {
         sampledCohortDefinition$status <- "skipped"
         return(sampledCohortDefinition)
       }
@@ -266,32 +284,26 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         return(sampledCohortDefinition)
       }
       # Called only for side effects
-      .sampleCohort(
+      sampledCohortDefinition$status <- .sampleCohort(
         connection = connection,
         targetCohortId = targetCohortId,
         targetTable = cohortTableNames$cohortTable,
         outputCohortId = outputCohortId,
         outputTable = cohortTableNames$cohortSampleTable,
+        checksumTable = cohortTableNames$cohortChecksumTable,
         cohortDatabaseSchema = cohortDatabaseSchema,
         outputDatabaseSchema = outputDatabaseSchema,
         sampleTable = sampleTable,
         seed = seed + targetCohortId, # Seed is unique to each target cohort
-        tempEmulationSchema = tempEmulationSchema
+        tempEmulationSchema = tempEmulationSchema,
+        checksum = sampleChecksum,
+        incremental = incremental,
+        recordKeepingFile = recordKeepingFile
       )
 
-      sampledCohortDefinition$status <- "generated"
-      if (incremental) {
-        recordTasksDone(
-          cohortId = sampledCohortDefinition$cohortId,
-          seed = seed,
-          checksum = computeChecksum(paste0(sampledCohortDefinition$sql, n, seed, outputCohortId)),
-          recordKeepingFile = recordKeepingFile
-        )
-      }
       return(sampledCohortDefinition)
     }, seed, cohortIds) %>%
-    dplyr::bind_rows()
-
+      dplyr::bind_rows()
 
 
   attr(sampledCohorts, "isSampledCohortDefinition") <- TRUE

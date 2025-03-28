@@ -92,13 +92,13 @@
 }:{}
 
 {@create_cohort_checksum_table}?{
-
-  DROP TABLE IF EXISTS @cohort_database_schema.@cohort_checksum_table;
+  IF OBJECT_ID('@cohort_database_schema.@cohort_checksum_table', 'U') IS NOT NULL
+  	DROP TABLE @cohort_database_schema.@cohort_checksum_table;
 
   CREATE TABLE @cohort_database_schema.@cohort_checksum_table(
     cohort_definition_id int NOT NULL,
-    cohort_checksum varchar(256) NOT NULL,
-    start_time DATETIME,
-    end_time DATETIME
+    checksum varchar(500) NOT NULL,
+    start_time varchar(500),
+    end_time varchar(500)
   );
 }:{}
