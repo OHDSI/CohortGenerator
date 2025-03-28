@@ -105,25 +105,26 @@ generateCohortSet <- function(connectionDetails = NULL,
 
   if (incremental) {
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
-
-    if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
-      cohortDefinitionSet$checksum <- ""
-      for (i in 1:nrow(cohortDefinitionSet)) {
-        # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
-        if (cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
-          j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet$subsetParent[i])
-          cohortDefinitionSet$checksum[i] <- computeChecksum(paste(
-            cohortDefinitionSet$sql[j],
-            cohortDefinitionSet$sql[i]
-          ))
-        } else {
-          cohortDefinitionSet$checksum[i] <- computeChecksum(cohortDefinitionSet$sql[i])
-        }
-      }
-    } else {
-      cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
-    }
   }
+
+  if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
+    cohortDefinitionSet$checksum <- ""
+    for (i in 1:nrow(cohortDefinitionSet)) {
+      # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
+      if (cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
+        j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet$subsetParent[i])
+        cohortDefinitionSet$checksum[i] <- computeChecksum(paste(
+          cohortDefinitionSet$sql[j],
+          cohortDefinitionSet$sql[i]
+        ))
+      } else {
+        cohortDefinitionSet$checksum[i] <- computeChecksum(cohortDefinitionSet$sql[i])
+      }
+    }
+  } else {
+    cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
+  }
+
   # Create the cluster
   # DEV NOTE :: running subsets in a multiprocess setup will not work with subsets that subset other subsets
   # To resolve this issue we need to execute the dependency tree.
@@ -193,6 +194,22 @@ generateCohortSet <- function(connectionDetails = NULL,
   invisible(cohortsGenerated)
 }
 
+.wrapChecksumSql <- function(sql) {
+  SqlRender::render("
+    DELETE FROM  @results_database_schema.@cohort_checksum_table WHERE cohort_definition_id = @target_cohort_id;
+    INSERT INTO @results_database_schema.@cohort_checksum_table (cohort_definition_id, checksum, start_time, end_time)
+                                                         VALUES (@target_cohort_id, @checksum, NOW(), NULL);
+
+    @sql;
+    -- If this time is null then the cohort is either being generated or the execution stoped
+    UPDATE @results_database_schema.@cohort_checksum_table
+    SET end_time = NOW()
+    WHERE cohort_definition_id = @target_cohort_id
+    AND checksum = @checksum;
+  ", sql = sql, warnOnMissingParameters = FALSE )
+}
+
+
 #' Generates a cohort
 #'
 #' @description
@@ -253,6 +270,8 @@ generateCohort <- function(cohortId = NULL,
     rlang::inform(paste0(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName, " (id = ", cohortId, ")"))
     sql <- cohortDefinitionSet$sql[i]
 
+    sql <- .wrapChecksumSql(sql)
+
     if (!isSubset) {
       sql <- SqlRender::render(
         sql = sql,
@@ -267,6 +286,8 @@ generateCohort <- function(cohortId = NULL,
         results_database_schema.cohort_inclusion_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortInclusionStatsTable, sep = "."),
         results_database_schema.cohort_summary_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortSummaryStatsTable, sep = "."),
         results_database_schema.cohort_censor_stats = paste(cohortDatabaseSchema, cohortTableNames$cohortCensorStatsTable, sep = "."),
+        cohort_checksum_table = paste(cohortDatabaseSchema, cohortTableNames$cohortChecksumTable, sep = "."),
+        checksum = cohortDefinitionSet$checksum[i],
         warnOnMissingParameters = FALSE
       )
     } else {
@@ -275,6 +296,8 @@ generateCohort <- function(cohortId = NULL,
         cdm_database_schema = cdmDatabaseSchema,
         cohort_table = cohortTableNames$cohortTable,
         cohort_database_schema = cohortDatabaseSchema,
+        cohort_checksum_table = paste(cohortDatabaseSchema, cohortTableNames$cohortChecksumTable, sep = "."),
+        checksum = cohortDefinitionSet$checksum[i],
         warnOnMissingParameters = FALSE
       )
     }

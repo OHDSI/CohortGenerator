@@ -5,6 +5,7 @@
 {DEFAULT @create_cohort_inclusion_stats_table = TRUE}
 {DEFAULT @create_cohort_summary_stats_table = TRUE}
 {DEFAULT @create_cohort_censor_stats_table = TRUE}
+{DEFAULT @create_cohort_checksum_table = TRUE}
 
 {@create_cohort_table}?{
   IF OBJECT_ID('@cohort_database_schema.@cohort_table', 'U') IS NOT NULL
@@ -88,4 +89,16 @@
     cohort_definition_id int NOT NULL,
     lost_count BIGINT NOT NULL
   	);
+}:{}
+
+{@create_cohort_checksum_table}?{
+
+  DROP TABLE IF EXISTS @cohort_database_schema.@cohort_checksum_table;
+
+  CREATE TABLE @cohort_database_schema.@cohort_checksum_table(
+    cohort_definition_id int NOT NULL,
+    cohort_checksum varchar(256) NOT NULL,
+    start_time DATETIME,
+    end_time DATETIME
+  );
 }:{}
