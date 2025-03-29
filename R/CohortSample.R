@@ -85,24 +85,30 @@
   )
 
   execSql <- SqlRender::readSql(system.file("sql", "sql_server", "sampling", "RandomSample.sql", package = "CohortGenerator"))
-  SqlRender::render(
-    connection,
+  execSql <- SqlRender::render(
     execSql,
     tempEmulationSchema = tempEmulationSchema,
-    cohort_checksum_table = checksumTable,
     random_sample_table = randSampleTableName,
     target_cohort_id = targetCohortId,
     output_cohort_id = outputCohortId,
     cohort_database_schema = cohortDatabaseSchema,
     output_database_schema = outputDatabaseSchema,
-    results_database_schema = cohortDatabaseSchema,
     output_table = outputTable,
-    target_table = targetTable,
-    checksum = checksum
-  ) |>
-    SqlRender::translate(dbms = DatabaseConnector::dbms(connection))
-
-  .runCohortSql(connection, sql, startTime, cohortDatabaseSchema, checksumTable, incremental, outputCohortId, checksum, recordKeepingFile)
+    target_table = targetTable
+  )
+  execSql <- SqlRender::translate(execSql,
+                                  targetDialect = DatabaseConnector::dbms(connection))
+  
+  browser()
+  .runCohortSql(connection = connection,
+                sql = execSql,
+                startTime = startTime,
+                resultsDatabaseSchema = cohortDatabaseSchema,
+                cohortChecksumTable = checksumTable,
+                incremental = incremental,
+                cohortId = targetCohortId,
+                checksum = checksum,
+                recordKeepingFile = recordKeepingFile)$generationStatus
 }
 
 
@@ -263,7 +269,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         dplyr::count() |>
         dplyr::pull() > 0
 
-      if (incremental && !cohortComputed) {
+      if (incremental && cohortComputed) {
         sampledCohortDefinition$status <- "skipped"
         return(sampledCohortDefinition)
       }
