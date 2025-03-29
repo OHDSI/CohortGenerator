@@ -215,7 +215,8 @@ test_that(".sampleCohort", {
     checksumTable = "cohort_checksum",
     seed = 1,
     tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-    checksum = "some_random_value"
+    checksum = "some_random_value",
+    incremental = FALSE
   )
 
   resCohort <- DatabaseConnector::renderTranslateQuerySql(connection,

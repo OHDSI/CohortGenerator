@@ -87,7 +87,6 @@
   execSql <- SqlRender::readSql(system.file("sql", "sql_server", "sampling", "RandomSample.sql", package = "CohortGenerator"))
   execSql <- SqlRender::render(
     execSql,
-    tempEmulationSchema = tempEmulationSchema,
     random_sample_table = randSampleTableName,
     target_cohort_id = targetCohortId,
     output_cohort_id = outputCohortId,
@@ -105,7 +104,7 @@
                 resultsDatabaseSchema = cohortDatabaseSchema,
                 cohortChecksumTable = checksumTable,
                 incremental = incremental,
-                cohortId = targetCohortId,
+                cohortId = outputCohortId,
                 checksum = checksum,
                 recordKeepingFile = recordKeepingFile)$generationStatus
 }
@@ -288,6 +287,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         rlang::inform(paste0("No entires found for ", targetCohortId, " was it generated?"))
         return(sampledCohortDefinition)
       }
+
       # Called only for side effects
       sampledCohortDefinition$status <- .sampleCohort(
         connection = connection,
