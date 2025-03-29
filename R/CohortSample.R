@@ -98,8 +98,7 @@
   )
   execSql <- SqlRender::translate(execSql,
                                   targetDialect = DatabaseConnector::dbms(connection))
-  
-  browser()
+
   .runCohortSql(connection = connection,
                 sql = execSql,
                 startTime = startTime,
