@@ -28,8 +28,8 @@ testPlatform <- function(dbmsDetails) {
       cohortIds = 2,
       cohortCombinationOperator = "all",
       negate = FALSE,
-      startWindow = createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-      endWindow = createSubsetCohortWindow(-99999, 99999, "cohortEnd")
+      windows = list(createSubsetCohortWindow(-99999, 99999, "cohortStart"),
+                     createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
     ),
     createLimitSubset(
       priorTime = 365,

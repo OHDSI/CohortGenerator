@@ -3,8 +3,7 @@ test_that("Cohort subset naming and instantitation", {
     cohortIds = c(11, 22),
     cohortCombinationOperator = "all",
     negate = FALSE,
-    startWindow = createSubsetCohortWindow(0, 90, "cohortStart"),
-    endWindow = createSubsetCohortWindow(0, 50, "cohortEnd")
+    windows = list(createSubsetCohortWindow(0, 90, "cohortStart"), createSubsetCohortWindow(0, 50, "cohortEnd"))
   )
   expectedName <- "in all of cohorts: (11, 22) where subset cohort start is within D: 0 - D: 90 of target cohort start and subset cohort end is within D: 0 - D: 50 of target cohort end"
   expect_equal(expectedName, cohortSubsetNamed$name)
@@ -16,8 +15,7 @@ test_that("Cohort subset naming and instantitation", {
     cohortIds = c(11, 22),
     cohortCombinationOperator = "any",
     negate = TRUE,
-    startWindow = createSubsetCohortWindow(0, 90, "cohortStart"),
-    endWindow = createSubsetCohortWindow(0, 50, "cohortEnd")
+    windows = list(createSubsetCohortWindow(0, 90, "cohortStart"), createSubsetCohortWindow(0, 50, "cohortEnd"))
   )
   expectedName <- "not in any of cohorts: (11, 22) where subset cohort start is within D: 0 - D: 90 of target cohort start and subset cohort end is within D: 0 - D: 50 of target cohort end"
   expect_equal(expectedName, cohortSubsetNamed$name)
