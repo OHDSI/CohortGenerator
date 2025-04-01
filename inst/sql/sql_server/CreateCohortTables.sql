@@ -98,7 +98,7 @@
   CREATE TABLE @cohort_database_schema.@cohort_checksum_table(
     cohort_definition_id int NOT NULL,
     checksum varchar(500) NOT NULL,
-    start_time varchar(500),
-    end_time varchar(500)
+    start_time BIGINT,
+    end_time BIGINT
   );
 }:{}
