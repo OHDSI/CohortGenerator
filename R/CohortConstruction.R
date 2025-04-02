@@ -72,8 +72,8 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
                                                         cohort_checksum_table = cohortTableNames$cohortChecksumTable,
                                                         snakeCaseToCamelCase = TRUE)
 
-  results$startTime <- as.POSIXct(results$startTime, origin = "1970-01-01", tz = "UTC")
-  results$endTime <- as.POSIXct(results$endTime, origin = "1970-01-01", tz = "UTC")
+  results$startTime <- as.POSIXct(results$startTime/1000, origin = "1970-01-01", tz = "UTC")
+  results$endTime <- as.POSIXct(results$endTime/1000, origin = "1970-01-01", tz = "UTC")
 
   return(results)
 }
