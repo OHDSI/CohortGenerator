@@ -291,7 +291,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                cohort_checksum_table = cohortChecksumTable,
                                                target_cohort_id = cohortId,
                                                checksum = checksum,
-                                               start_time = as.integer(as.POSIXct( Sys.time() )),
+                                               start_time = as.numeric(Sys.time()) * 1000,
                                                progressBar = FALSE)
   DatabaseConnector::executeSql(connection, sql)
   endSql <- "
@@ -306,7 +306,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                results_database_schema = resultsDatabaseSchema,
                                                cohort_checksum_table = cohortChecksumTable,
                                                checksum = checksum,
-                                               end_time = as.integer(as.POSIXct( Sys.time() )),
+                                               end_time = as.numeric(Sys.time()) * 1000,
                                                progressBar = FALSE)
 
   if (incremental) {

@@ -28,7 +28,7 @@ test_that("getLastGeneratedCohortChecksums returns correct data frame", {
   startTime <- lubridate::now()
   # Generate the same cohort id twice, expect only one row to be returned
   .runCohortSql(connection, sql, startTime, "main", cts$cohortChecksumTable, FALSE, 1, "ABC", "file.out")
-  Sys.sleep(1) # Required for record of new cohort to take place
+
   startTime <- lubridate::now()
   .runCohortSql(connection, sql, startTime, "main", cts$cohortChecksumTable, FALSE, 1, "ABCDEFG", "file.out")
 
