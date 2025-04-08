@@ -647,8 +647,8 @@ test_that("Subset logic checks", {
         cohortIds = c(2),
         negate = F,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(-99999, 0, "cohortStart"),
-                       createSubsetCohortWindow(0, 99999, "cohortStart"))
+        windows = list(createSubsetCohortWindow(-99999, 0, "cohortStart", "cohortStart"),
+                       createSubsetCohortWindow(0, 99999, "cohortStart", "cohortEnd"))
       )
     )
   )
@@ -662,8 +662,8 @@ test_that("Subset logic checks", {
         cohortIds = c(3),
         negate = F,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(-99999, -1, "cohortStart"),
-                       createSubsetCohortWindow(1, 99999, "cohortEnd"))
+        windows = list(createSubsetCohortWindow(-99999, -1, "cohortStart", "cohortStart"),
+                       createSubsetCohortWindow(1, 99999, "cohortEnd", "cohortEnd"))
       )
     )
   )
@@ -677,8 +677,8 @@ test_that("Subset logic checks", {
         cohortIds = c(4),
         negate = F,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(1, 99999, "cohortStart"),
-                       createSubsetCohortWindow(-99999, 1, "cohortEnd"))
+        windows = list(createSubsetCohortWindow(1, 99999, "cohortStart", "cohortStart"),
+                       createSubsetCohortWindow(-99999, 1, "cohortEnd", "cohortEnd"))
       )
     )
   )
@@ -692,8 +692,8 @@ test_that("Subset logic checks", {
         cohortIds = c(5),
         negate = F,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(-99999, 0, "cohortEnd"),
-                       createSubsetCohortWindow(0, 99999, "cohortEnd"))
+        windows = list(createSubsetCohortWindow(-99999, 0, "cohortEnd", "cohortStart"),
+                       createSubsetCohortWindow(0, 99999, "cohortEnd", "cohortEnd"))
       )
     )
   )
@@ -707,8 +707,8 @@ test_that("Subset logic checks", {
         cohortIds = c(5),
         negate = T,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(-99999, 0, "cohortEnd"),
-                       createSubsetCohortWindow(0, 99999, "cohortEnd"))
+        windows = list(createSubsetCohortWindow(-99999, 0, "cohortEnd", "cohortStart"),
+                       createSubsetCohortWindow(0, 99999, "cohortEnd", "cohortEnd"))
       )
     )
   )
@@ -722,8 +722,8 @@ test_that("Subset logic checks", {
         cohortIds = c(2, 3),
         negate = F,
         cohortCombinationOperator = "all",
-        windows = list(createSubsetCohortWindow(-99999, 0, "cohortStart"),
-                       createSubsetCohortWindow(0, 99999, "cohortStart"))
+        windows = list(createSubsetCohortWindow(-99999, 0, "cohortStart", "cohortStart"),
+                       createSubsetCohortWindow(0, 99999, "cohortStart", "cohortEnd"))
       )
     )
   )
@@ -901,7 +901,6 @@ test_that("Subset logic checks", {
   expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1202,]), 4) # 1202 - Gender
   expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1203,]), 4) # 1203 - Race
   expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1204,]), 4) # 1204 - Ethnicity
-
   # Cohort subsets cohort definition 1300 range ------
   expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1301,]), 2) # 1301 - Subset overlaps cohort start
   expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1302,]), 2) # 1302 - Subset overlaps entire target cohort period
