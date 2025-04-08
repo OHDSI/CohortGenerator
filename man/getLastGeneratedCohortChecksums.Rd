@@ -7,6 +7,7 @@
 getLastGeneratedCohortChecksums(
   connectionDetails = NULL,
   connection = NULL,
+  cohortId = NULL,
   cohortDatabaseSchema,
   cohortTableNames = getCohortTableNames(),
   .checkTables = TRUE
@@ -23,6 +24,8 @@ provided.}
 DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
+
+\item{cohortId}{cohortId to check. If NULL, all cohorts will be returned.}
 
 \item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
