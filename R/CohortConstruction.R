@@ -292,6 +292,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                target_cohort_id = cohortId,
                                                checksum = checksum,
                                                start_time = as.numeric(Sys.time()) * 1000,
+                                               reportOverallTime = FALSE,
                                                progressBar = FALSE)
   DatabaseConnector::executeSql(connection, sql)
   endSql <- "
@@ -307,7 +308,8 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                cohort_checksum_table = cohortChecksumTable,
                                                checksum = checksum,
                                                end_time = as.numeric(Sys.time()) * 1000,
-                                               progressBar = FALSE)
+                                               progressBar = FALSE,
+                                               reportOverallTime = FALSE)
 
   if (incremental) {
     recordTasksDone(
