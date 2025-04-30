@@ -235,7 +235,7 @@ getCohortInclusionRules <- function(cohortDefinitionSet) {
   # Remove any cohort definitions that do not include the JSON property
   cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) | is.na(cohortDefinitionSet$json)), ]
   for (i in 1:nrow(cohortDefinitionSet)) {
-    cohortDefinition <- RJSONIO::fromJSON(content = cohortDefinitionSet$json[i], digits = 23)
+    cohortDefinition <- ParallelLogger::convertJsonToSettings(json = cohortDefinitionSet$json[i])
     if (!is.null(cohortDefinition$InclusionRules)) {
       nrOfRules <- length(cohortDefinition$InclusionRules)
       if (nrOfRules > 0) {

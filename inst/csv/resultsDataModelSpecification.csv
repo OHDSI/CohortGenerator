@@ -13,6 +13,7 @@ cg_cohort_generation,generation_status,varchar,No,No,No,The cohort generation st
 cg_cohort_generation,start_time,Timestamp,No,No,No,The start time of the generation process
 cg_cohort_generation,end_time,Timestamp,No,No,No,The end time of the generation process
 cg_cohort_generation,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_generation,checksum,varchar,Yes,No,No,Checksum of the cohort
 cg_cohort_inclusion,cohort_definition_id,bigint,bigint,Yes,No,The unique identifier for the cohort definition
 cg_cohort_inclusion,rule_sequence,int,Yes,Yes,No,The rule sequence for the inclusion rule
 cg_cohort_inclusion,name,varchar,Yes,Yes,No,The name of the inclusion rule
