@@ -169,7 +169,7 @@ generateCohortSet <- function(connectionDetails = NULL,
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
   recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
   # Template cohorts generate first as a tempalte cannot be a subset, but a subset can apply to a template
-  generatedTemplateCohorts <- c()
+  generatedTemplateCohorts <- data.frame()
   if ("isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
     cohortDefinitionSet <- cohortDefinitionSet |> dplyr::filter(!.data$isTemplatedCohort)
     generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
@@ -272,7 +272,7 @@ generateCohortSet <- function(connectionDetails = NULL,
     stopOnError = stopOnError,
     progressBar = TRUE
   )
-  subsetsGenerated <- c()
+  subsetsGenerated <- list()
   if (length(subsetsToGenerate)) {
     subsetsGenerated <- ParallelLogger::clusterApply(
       cluster,
@@ -294,7 +294,7 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   # Convert the list to a data frame
-  cohortsGenerated <- do.call(rbind, c(cohortsGenerated, subsetsGenerated, generatedTemplateCohorts, computedCohorts))
+  cohortsGenerated <- dplyr::bind_rows(cohortsGenerated, subsetsGenerated, generatedTemplateCohorts, computedCohorts)
 
   delta <- Sys.time() - start
   writeLines(paste("Generating cohort set took", round(delta, 2), attr(delta, "units")))
