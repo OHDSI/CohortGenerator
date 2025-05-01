@@ -72,8 +72,8 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
                                                         cohort_checksum_table = cohortTableNames$cohortChecksumTable,
                                                         snakeCaseToCamelCase = TRUE)
 
-  results$startTime <- as.POSIXct(results$startTime/1000, origin = "1970-01-01", tz = "UTC")
-  results$endTime <- as.POSIXct(results$endTime/1000, origin = "1970-01-01", tz = "UTC")
+  results$startTime <- as.POSIXct(results$startTime / 1000, origin = "1970-01-01", tz = "UTC")
+  results$endTime <- as.POSIXct(results$endTime / 1000, origin = "1970-01-01", tz = "UTC")
 
   return(results)
 }
@@ -167,7 +167,8 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
-
+  recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
+  # Template cohorts generate first as a tempalte cannot be a subset, but a subset can apply to a template
   generatedTemplateCohorts <- c()
   if ("isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
     cohortDefinitionSet <- cohortDefinitionSet |> dplyr::filter(!.data$isTemplatedCohort)
@@ -179,34 +180,15 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                         cohortTableNames = cohortTableNames,
                                                         stopOnError = stopOnError,
                                                         incremental = incremental,
-                                                        incrementalFolder = incrementalFolder)
+                                                        recordKeepingFile = recordKeepingFile)
 
-    if (nrow(cohortDefinitionSet) == 0) {
-      return(invisible(generatedTemplateCohorts))
-    }
+    if (nrow(cohortDefinitionSet) == 0)
+      return(generatedTemplateCohorts)
+
+  } else {
+    cohortDefinitionSet$isTemplatedCohort <- FALSE
   }
 
-
-  if (incremental) {
-    recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
-
-    if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
-      cohortDefinitionSet$checksum <- ""
-      for (i in 1:nrow(cohortDefinitionSet)) {
-        # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
-        if (cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
-          j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet$subsetParent[i])
-          cohortDefinitionSet$checksum[i] <- computeChecksum(paste(
-            cohortDefinitionSet$sql[j],
-            cohortDefinitionSet$sql[i]
-          ))
-        } else {
-          cohortDefinitionSet$checksum[i] <- computeChecksum(cohortDefinitionSet$sql[i])
-        }
-      }
-    } else {
-      cohortDefinitionSet$checksum <- computeChecksum(cohortDefinitionSet$sql)
-    }
   if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
     cohortDefinitionSet$checksum <- ""
     for (i in 1:nrow(cohortDefinitionSet)) {
@@ -226,7 +208,6 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   if (incremental) {
-    recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
     computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
                                                          cohortDatabaseSchema = cohortDatabaseSchema,
                                                          cohortTableNames = cohortTableNames) |>
@@ -244,7 +225,7 @@ generateCohortSet <- function(connectionDetails = NULL,
       dplyr::mutate(generationStatus = "SKIPPED")
 
     computedStr <- paste(computedCohorts$cohortId, collapse = ', ')
-      ParallelLogger::logInfo(paste("Skipping cohorts already generated: ", computedStr))
+    ParallelLogger::logInfo(paste("Skipping cohorts already generated: ", computedStr))
   } else {
     uncomputedCohorts <- cohortDefinitionSet
     computedCohorts <- data.frame()
@@ -321,7 +302,15 @@ generateCohortSet <- function(connectionDetails = NULL,
 }
 
 # Helper function used within the tryCatch block below
-.runCohortSql <- function(connection, sql, startTime, resultsDatabaseSchema, cohortChecksumTable, incremental, cohortId, checksum, recordKeepingFile) {
+.runCohortSql <- function(connection,
+                          sql,
+                          startTime,
+                          resultsDatabaseSchema,
+                          cohortChecksumTable,
+                          incremental,
+                          cohortId,
+                          checksum,
+                          recordKeepingFile) {
   startSql <- "DELETE FROM @results_database_schema.@cohort_checksum_table WHERE cohort_definition_id = @target_cohort_id AND checksum = '@checksum';
       INSERT INTO @results_database_schema.@cohort_checksum_table (cohort_definition_id, checksum, start_time, end_time) VALUES (@target_cohort_id, '@checksum', @start_time, NULL);"
   DatabaseConnector::renderTranslateExecuteSql(connection,
@@ -499,6 +488,79 @@ generateCohort <- function(cohortId = NULL,
 }
 
 
+# Helper function used within the tryCatch block below
+.runTemplateCohortSql <- function(connection,
+                                  template,
+                                  ref,
+                                  startTime,
+                                  cdmDatabaseSchema,
+                                  tempEmulationSchema,
+                                  resultsDatabaseSchema,
+                                  cohortTableNames,
+                                  incremental,
+                                  recordKeepingFile) {
+
+  #TODO: this will be slow or fail as the query length can get huge
+  startSql <- "DELETE FROM @results_database_schema.@cohort_checksum_table
+                      WHERE cohort_definition_id IN (@target_cohort_ids) AND checksum = '@checksum';"
+  DatabaseConnector::renderTranslateExecuteSql(connection,
+                                               startSql,
+                                               results_database_schema = resultsDatabaseSchema,
+                                               cohort_checksum_table = cohortTableNames$cohortChecksumTable,
+                                               target_cohort_ids = ref$cohortId,
+                                               checksum = template$getChecksum(),
+                                               reportOverallTime = FALSE,
+                                               progressBar = FALSE)
+
+  refMap <- data.frame(
+    cohortDefinitionId = ref$cohortId,
+    checksum = template$getChecksum(),
+    startTime = as.numeric(Sys.time()) * 1000
+  )
+  DatabaseConnector::insertTable(connection,
+                                 data = refMap,
+                                 dropTableIfExists = FALSE,
+                                 createTable = FALSE,
+                                 tableName = cohortTableNames$cohortChecksumTable,
+                                 camelCaseToSnakeCase = TRUE)
+
+  template$executeTemplateSql(connection = connection,
+                              cohortDatabaseSchema = resultsDatabaseSchema,
+                              tempEmulationSchema = tempEmulationSchema,
+                              cdmDatabaseSchema = cdmDatabaseSchema,
+                              cohortTableNames = cohortTableNames)
+  endTime <- lubridate::now()
+  endSql <- "
+      UPDATE @results_database_schema.@cohort_checksum_table
+      SET end_time = @end_time
+      WHERE cohort_definition_id IN (@target_cohort_ids)
+      AND checksum = '@checksum';"
+
+
+  DatabaseConnector::renderTranslateExecuteSql(connection, endSql,
+                                               target_cohort_ids = ref$cohortId,
+                                               results_database_schema = resultsDatabaseSchema,
+                                               cohort_checksum_table = cohortTableNames$cohortChecksumTable,
+                                               checksum = template$getChecksum(),
+                                               end_time = as.numeric(Sys.time()) * 1000,
+                                               progressBar = FALSE,
+                                               reportOverallTime = FALSE)
+
+  if (incremental) {
+    recordTasksDone(
+      cohortId = ref$cohortId,
+      checksum = template$getChecksum(),
+      recordKeepingFile = recordKeepingFile
+    )
+  }
+
+  return(list(
+    generationStatus = "COMPLETE",
+    startTime = startTime,
+    endTime = endTime
+  ))
+}
+
 generateTemplateCohorts <- function(connection,
                                     cohortDefinitionSet,
                                     cdmDatabaseSchema,
@@ -507,32 +569,51 @@ generateTemplateCohorts <- function(connection,
                                     cohortTableNames,
                                     stopOnError,
                                     incremental,
-                                    incrementalFolder) {
+                                    recordKeepingFile) {
 
   templateDefs <- .getTemplateDefinitions(cohortDefinitionSet)
   statusTbl <- data.frame()
-  for (tpl in templateDefs) {
-    status <- tryCatch({
-      ParallelLogger::logInfo("GENERATING TEMPLATE COHORT: ", tpl$getName())
-      status <- tpl$executeTemplateSql(connection = connection,
-                                       cohortDatabaseSchema = cohortDatabaseSchema,
-                                       tempEmulationSchema = tempEmulationSchema,
-                                       cdmDatabaseSchema = cdmDatabaseSchema,
-                                       cohortTableNames = cohortTableNames,
-                                       incremental = incremental,
-                                       incrementalFolder = incrementalFolder)
-    }, error = function(err) {
-      if (stopOnError)
-        stop(err)
+  computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
+                                                       cohortDatabaseSchema = cohortDatabaseSchema,
+                                                       cohortTableNames = cohortTableNames)
 
-      ParallelLogger::logError(error)
-      return(list(startTime = NA, endTime = NA, generationStatus = "FAILED"))
-    })
-    refs <- tpl$getTemplateReferences(connection = connection)
-    statusTbl <- statusTbl |> dplyr::bind_rows(data.frame(cohortId = refs$cohortId,
-                                                          cohortName = refs$cohortName,
-                                                          generationStatus = status$generationStatus,
-                                                          startTime = status$startTime,
-                                                          endTime = status$endTime))
+  for (template in templateDefs) {
+    startTime <- lubridate::now()
+    refs <- template$getTemplateReferences(connection = connection)
+    skipit <- all(incremental,
+                  refs$cohortId %in% computedChecksums$cohortDefinitionId,
+                  template$getChecksum() %in% computedChecksums$checksum)
+    if (skipit) {
+      status <- list(startTime = startTime, endTime = startTime, generationStatus = "SKIPPED")
+    } else {
+      status <- tryCatch({
+        ParallelLogger::logInfo("GENERATING TEMPLATE COHORT: ", template$getName())
+        status <- .runTemplateCohortSql(connection,
+                                        template,
+                                        refs,
+                                        startTime = lubridate::now(),
+                                        cdmDatabaseSchema = cdmDatabaseSchema,
+                                        tempEmulationSchema = tempEmulationSchema,
+                                        resultsDatabaseSchema = cohortDatabaseSchema,
+                                        cohortTableNames = cohortTableNames,
+                                        incremental = incremental,
+                                        recordKeepingFile = recordKeepingFile)
+      }, error = function(err) {
+        if (stopOnError)
+          stop(err)
+
+        ParallelLogger::logError(error)
+        return(list(startTime = startTime, endTime = lubridate::now(), generationStatus = "FAILED"))
+      })
+    }
+
+    statusTbl <- statusTbl |> dplyr::bind_rows(
+      data.frame(cohortId = refs$cohortId,
+                 cohortName = refs$cohortName,
+                 generationStatus = status$generationStatus,
+                 startTime = status$startTime,
+                 endTime = status$endTime,
+                 checksum = template$getChecksum())
+    )
   }
 }

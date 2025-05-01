@@ -43,7 +43,7 @@
                                  cohortDatabaseSchema,
                                  cohortTableNames,
                                  vocabularyDatabaseSchema,
-                                 tempEmulationSchema,
+                                 tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                  rxNormTable,
                                  priorObservationPeriod = 365) {
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "rx_norm", "definition.sql"),
@@ -51,6 +51,7 @@
                                            packageName = utils::packageName(),
                                            rx_norm_table = rxNormTable,
                                            cohort_table = cohortTableNames$cohortTable,
+                                           tempEmulationSchema = tempEmulationSchema,
                                            prior_observation_period = priorObservationPeriod,
                                            vocabulary_database_schema = vocabularyDatabaseSchema,
                                            cohort_database_schema = cohortDatabaseSchema,

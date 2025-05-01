@@ -82,44 +82,15 @@ CohortTemplateDefinition <- R6::R6Class(
                                   cohortDatabaseSchema,
                                   cdmDatabaseSchema,
                                   tempEmulationSchema,
-                                  cohortTableNames,
-                                  incremental,
-                                  incrementalFolder) {
-      generate <- TRUE
-      if (incremental) {
-        recordKeepingFile <- file.path(incrementalFolder, "GeneratedTemplateCohorts.csv")
-        generate <- isTaskRequired(
-          templateId = self$getId(),
-          checksum = self$getChecksum(),
-          recordKeepingFile = recordKeepingFile
-        )
-      }
+                                  cohortTableNames) {
 
-      if (generate) {
-        args <- self$executeArgs
-        args$connection <- connection
-        args$cohortDatabaseSchema <- cohortDatabaseSchema
-        args$cdmDatabaseSchema <- cdmDatabaseSchema
-        args$cohortTableNames <- cohortTableNames
-        args$tempEmulationSchema <- tempEmulationSchema
-        start <- Sys.time()
-        do.call(self$executeFun, args)
-        end <- Sys.time()
-        status <- "COMPLETE"
-        if (incremental) {
-          recordTasksDone(
-            templateId = self$getId(),
-            checksum = self$getChecksum(),
-            recordKeepingFile = recordKeepingFile
-          )
-        }
-      } else {
-        start <- NA
-        end <- NA
-        status <- "SKIPPED"
-      }
-
-      return(list(startTime = start, endTime = end, generationStatus = status))
+      args <- self$executeArgs
+      args$connection <- connection
+      args$cohortDatabaseSchema <- cohortDatabaseSchema
+      args$cdmDatabaseSchema <- cdmDatabaseSchema
+      args$cohortTableNames <- cohortTableNames
+      args$tempEmulationSchema <- tempEmulationSchema
+      do.call(self$executeFun, args)
     },
 
     getTemplateReferences = function(connection = NULL) {
@@ -209,10 +180,10 @@ addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDe
   }
 
   checkmate::assertNames(colnames(references),
-    must.include = c(
-      "cohortId",
-      "cohortName"
-    )
+                         must.include = c(
+                           "cohortId",
+                           "cohortName"
+                         )
   )
 
   if (!"json" %in% colnames(references)) {

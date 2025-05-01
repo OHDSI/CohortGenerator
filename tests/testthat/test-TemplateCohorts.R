@@ -93,9 +93,7 @@ test_that("Test ATC Template", {
                             cohortDatabaseSchema = "main",
                             cdmDatabaseSchema = "main",
                             tempEmulationSchema = NULL,
-                            cohortTableNames = getCohortTableNames(),
-                            incremental = F,
-                            incrementalFolder = NULL)
+                            cohortTableNames = getCohortTableNames())
 
   #NOTE - No ATC classes included in Eunomia
   expect_error(
