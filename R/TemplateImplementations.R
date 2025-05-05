@@ -201,7 +201,6 @@ createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_i
                                   vocabularyDatabaseSchema,
                                   tempEmulationSchema,
                                   conditionsTable,
-                                  includeDescendants,
                                   indentifierExpression) {
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "snomed", "references.sql"),
                                            packageName = utils::packageName(),
