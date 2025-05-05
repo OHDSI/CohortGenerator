@@ -355,6 +355,8 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
 #'                              in conjunction with the cohortFileNameFormat parameter.
 #'
 #' @param subsetJsonFolder      Defines the folder to store the subset JSON
+#' @param sqlTemplateFolder     Defines the folder to store sql template cohorts that can be saved as part of the definition
+#'                              Sql will be copied to this location when `saveCohortDefinitionSet` is called.
 #'
 #' @param verbose           When TRUE, logging messages are emitted to indicate export
 #'                          progress.

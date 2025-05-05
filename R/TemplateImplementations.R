@@ -67,7 +67,7 @@
 #' cohortId = conceptId * 1000, note that this can be customised with the "identifierExpression" if you are using this
 #' with other cohorts you may wish to change this to allow uniqueness
 #' @param indentifierExpression   an expression for setting the cohort id for the resulting cohort. Must produce unique ids
-#' @param rxNormTable
+#' @param rxNormTable Table to save references in
 #' @param priorObservationPeriod (optional) required prior observation period for individuals
 #' @inheritParams generateCohortSet
 #' @returns a CohortTemplateDefinition instance
@@ -157,7 +157,7 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
 #' cohortId = conceptId * 1000 + 4, note that this can be customised with the "identifierExpression" if you are using this
 #' with other cohorts you may wish to change this to allow uniqueness
 #' @param indentifierExpression   an expression for setting the cohort id for the resulting cohort. Must produce unique ids
-#' @param rxNormTable
+#' @param atcTable  Table to save references in
 #' @param priorObservationPeriod (optional) required prior observation period for individuals
 #' @inheritParams generateCohortSet
 #' @returns a CohortTemplateDefinition instance

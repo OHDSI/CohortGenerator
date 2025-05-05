@@ -38,7 +38,7 @@
 #'   \item{\code{getTemplateReferences}}{Executes the \code{templateRefFun} function
 #'     and retrieves template references, ensuring they are returned as data frames.}
 #' }
-#'
+#' @noRd
 CohortTemplateDefinition <- R6::R6Class(
   "CohortTemplateDefinition",
   private = list(
