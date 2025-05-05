@@ -1,4 +1,4 @@
-
+{DEFAULT @require_second_diagnosis = FALSE}
 -- Create outcome cohort definitions
 create table #cpt_anc_grp as
 select
@@ -12,8 +12,8 @@ inner join
     , c1.concept_name
     , c1.vocabulary_id
     , c1.domain_id
-  from @vocabulary_schema.concept c1
-  inner join @vocabulary_schema.concept_ancestor ca1
+  from @vocabulary_database_schema.concept c1
+  inner join @vocabulary_database_schema.concept_ancestor ca1
     on ca1.ancestor_concept_id = 441840 /* clinical finding */
     and c1.concept_id = ca1.descendant_concept_id
   where
@@ -38,7 +38,7 @@ inner join
 ;
 
 --outcomes not requiring a hospitalization
-INSERT INTO @cohort_database_schema.@condition_table
+INSERT INTO @cohort_database_schema.@conditions_table
 ( cohort_definition_id,
   cohort_definition_name
   ,	short_name
