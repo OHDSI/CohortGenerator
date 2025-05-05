@@ -52,6 +52,6 @@ select
   ,	c1.concept_id as concept_id
 from
 #cpt_anc_grp ca1
-inner join @vocabulary_schema.concept c1
+inner join @vocabulary_database_schema.concept c1
   on ca1.ancestor_concept_id = c1.concept_id
 ;
