@@ -265,8 +265,7 @@ createSnomedCohortTemplateDefinition <- function(indentifierExpression = "concep
     vocabularyDatabaseSchema = vocabularyDatabaseSchema,
     priorObservationPeriod = priorObservationPeriod,
     conditionsTable = conditionsTable,
-    tempEmulationSchema = tempEmulationSchema,
-    includeDescendants = includeDescendants
+    tempEmulationSchema = tempEmulationSchema
   )
 
   templateRefArgs <- list(
@@ -274,8 +273,7 @@ createSnomedCohortTemplateDefinition <- function(indentifierExpression = "concep
     vocabularyDatabaseSchema = vocabularyDatabaseSchema,
     indentifierExpression = indentifierExpression,
     conditionsTable = conditionsTable,
-    tempEmulationSchema = tempEmulationSchema,
-    includeDescendants = includeDescendants
+    tempEmulationSchema = tempEmulationSchema
   )
 
   def <- createCohortTemplateDefintion(name = "All SNOMED Conditions",
