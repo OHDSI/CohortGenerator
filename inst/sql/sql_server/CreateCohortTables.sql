@@ -86,7 +86,7 @@
   	DROP TABLE @cohort_database_schema.@cohort_censor_stats_table;
 
   CREATE TABLE @cohort_database_schema.@cohort_censor_stats_table(
-    cohort_definition_id int NOT NULL,
+    cohort_definition_id BIGINT NOT NULL,
     lost_count BIGINT NOT NULL
   	);
 }:{}
@@ -96,7 +96,7 @@
   	DROP TABLE @cohort_database_schema.@cohort_checksum_table;
 
   CREATE TABLE @cohort_database_schema.@cohort_checksum_table(
-    cohort_definition_id int NOT NULL,
+    cohort_definition_id BIGINT NOT NULL,
     checksum varchar(500) NOT NULL,
     start_time FLOAT,
     end_time FLOAT

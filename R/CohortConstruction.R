@@ -512,8 +512,8 @@ generateCohort <- function(cohortId = NULL,
                                                progressBar = FALSE)
 
   refMap <- data.frame(
-    cohortDefinitionId = ref$cohortId,
-    checksum = template$getChecksum(),
+    cohortDefinitionId = as.numeric(ref$cohortId),
+    checksum = as.character(template$getChecksum()),
     startTime = as.numeric(Sys.time()) * 1000
   )
   DatabaseConnector::insertTable(connection,
