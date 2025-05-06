@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS @cohort_database_schema.@conditions_table;
 
 CREATE TABLE @cohort_database_schema.@conditions_table(
   cohort_definition_id BIGINT,
-  cohort_definition_name VARCHAR(255),
+  cohort_name VARCHAR(255),
   short_name VARCHAR(255),
   concept_id BIGINT
 );
@@ -19,8 +19,8 @@ INSERT INTO @cohort_database_schema.@conditions_table
 select
   DISTINCT
   @identifier_expression as cohort_definition_id,
-  'outcome of ' + c1.concept_name + ' - first occurence of diagnosis' {@require_second_diagnosis} ? {' with 2 diagnosis codes '} as cohort_definition_name
-  , ' outcome of ' + c1.concept_name {@require_second_diagnosis} ? {+ ' requiring 2 DX'} as short_name
+  c1.concept_name + ' - first occurence of diagnosis' {@require_second_diagnosis} ? {' with 2 diagnosis codes '} as cohort_name
+  , c1.concept_name {@require_second_diagnosis} ? {+ ' requiring 2 DX'} as short_name
   ,	c1.concept_id as concept_id
 from (
 --- CONCEPT ANCESTOR SUB QUERY START
