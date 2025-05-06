@@ -533,13 +533,6 @@ generateCohort <- function(cohortId = NULL,
     sql <- SqlRender::translate(sql, targetDialect = dbms(connection), tempEmulationSchema = tempEmulationSchema)
     executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
   }
-  # DatabaseConnector::insertTable(connection,
-  #                              data = refMap,
-  #                              dropTableIfExists = FALSE,
-  #                              createTable = FALSE,
-  #                              tableName = cohortTableNames$cohortChecksumTable,
-  #                              databaseSchema = resultsDatabaseSchema,
-  #                              camelCaseToSnakeCase = TRUE)
 
   template$executeTemplateSql(connection = connection,
                               cohortDatabaseSchema = resultsDatabaseSchema,
