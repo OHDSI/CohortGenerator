@@ -546,7 +546,7 @@ generateCohort <- function(cohortId = NULL,
                               tempEmulationSchema = tempEmulationSchema,
                               cdmDatabaseSchema = cdmDatabaseSchema,
                               cohortTableNames = cohortTableNames)
-  endTime <- lubridate::now()
+  endTime <- as.numeric(Sys.time()) * 1000
   endSql <- "
       UPDATE @results_database_schema.@cohort_checksum_table
       SET end_time = @end_time
@@ -559,7 +559,7 @@ generateCohort <- function(cohortId = NULL,
                                                results_database_schema = resultsDatabaseSchema,
                                                cohort_checksum_table = cohortTableNames$cohortChecksumTable,
                                                checksum = template$getChecksum(),
-                                               end_time = as.numeric(Sys.time()) * 1000,
+                                               end_time = endTime,
                                                progressBar = FALSE,
                                                reportOverallTime = FALSE)
 
@@ -573,8 +573,9 @@ generateCohort <- function(cohortId = NULL,
 
   return(list(
     generationStatus = "COMPLETE",
-    startTime = startTime,
-    endTime = endTime
+    # Date time conversion back to lubridate for compatibility
+    startTime = lubridate::as_datetime(startTime/1000),
+    endTime = lubridate::as_datetime(endTime/1000)
   ))
 }
 
