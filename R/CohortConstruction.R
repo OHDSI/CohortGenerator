@@ -511,10 +511,11 @@ generateCohort <- function(cohortId = NULL,
                                                reportOverallTime = FALSE,
                                                progressBar = FALSE)
   batchSize <- 1000
+  startTime <- as.numeric(Sys.time()) * 1000
   # Batch insert ids - fails with bigints on spark - crossplatform workaround
-  for (start in seq(1, nrow(refMap), by = batchSize)) {
+  for (start in seq(1, nrow(ref), by = batchSize)) {
     end <- min(start + batchSize - 1, nrow(data))
-    valuesString <- paste0(ref$cohortId, ", '", template$getChecksum(), "', ",  as.numeric(Sys.time()) * 1000) |>
+    valuesString <- paste0(ref$cohortId, ", '", template$getChecksum(), "', ",  startTime) |>
       paste(collapse = "),(")
 
     valuesString <- paste0("(", valuesString, ")")
