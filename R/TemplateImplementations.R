@@ -215,8 +215,7 @@ createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_i
   references <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
                                                            sql = sql,
                                                            cohort_database_schema = cohortDatabaseSchema,
-                                                           snakeCaseToCamelCase = TRUE,
-                                                           atc_table = atcTable)
+                                                           snakeCaseToCamelCase = TRUE)
   return(references)
 }
 
