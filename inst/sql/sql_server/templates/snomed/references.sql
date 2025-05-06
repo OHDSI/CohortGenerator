@@ -12,7 +12,7 @@ CREATE TABLE @cohort_database_schema.@conditions_table(
 --outcomes not requiring a hospitalization
 INSERT INTO @cohort_database_schema.@conditions_table
 ( cohort_definition_id,
-  cohort_definition_name
+  cohort_name
   ,	short_name
   , concept_id
 )
