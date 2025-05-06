@@ -211,10 +211,11 @@ createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_i
                                            vocabulary_database_schema = vocabularyDatabaseSchema)
   DatabaseConnector::executeSql(connection, sql)
 
-  sql <- "SELECT cohort_definition_id as cohort_id, cohort_name FROM @cohort_database_schema.@atc_table;"
+  sql <- "SELECT cohort_definition_id as cohort_id, cohort_name FROM @cohort_database_schema.@conditions_table;"
   references <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
                                                            sql = sql,
                                                            cohort_database_schema = cohortDatabaseSchema,
+                                                           conditions_table = conditionsTable,
                                                            snakeCaseToCamelCase = TRUE)
   return(references)
 }

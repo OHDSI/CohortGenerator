@@ -37,7 +37,8 @@ from (
         , c1.domain_id
       from @vocabulary_database_schema.concept c1
       inner join @vocabulary_database_schema.concept_ancestor ca1
-        on ca1.ancestor_concept_id = 441840 /* clinical finding */
+        --clinical finding
+        on ca1.ancestor_concept_id = 441840
         and c1.concept_id = ca1.descendant_concept_id
       where
       (
