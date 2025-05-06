@@ -510,22 +510,17 @@ generateCohort <- function(cohortId = NULL,
                                                checksum = template$getChecksum(),
                                                reportOverallTime = FALSE,
                                                progressBar = FALSE)
-
-  refMap <- data.frame(
-    cohortDefinitionId = as.numeric(ref$cohortId),
-    checksum = as.character(template$getChecksum()),
-    startTime = as.numeric(Sys.time()) * 1000
-  )
   batchSize <- 1000
   # Batch insert ids - fails with bigints on spark - crossplatform workaround
   for (start in seq(1, nrow(refMap), by = batchSize)) {
     end <- min(start + batchSize - 1, nrow(data))
-    valuesString <- paste0(refMap$cohorDefinitionId, ", '", refMap$checksum, "', ", refMap$startTime) |>
+    valuesString <- paste0(ref$cohortId, ", '", template$getChecksum(), "', ",  as.numeric(Sys.time()) * 1000) |>
       paste(collapse = "),(")
 
     valuesString <- paste0("(", valuesString, ")")
-    sql <- "INSERT INTO @results_database_schema.@cohort_checksum_table (cohort_definition_id, checksum, start_time)
-     VALUE @values"
+    sql <- "INSERT INTO @results_database_schema.@cohort_checksum_table
+                   (cohort_definition_id, checksum, start_time) VALUES
+            @values"
     sql <- SqlRender::render(sql = sql,
                              results_database_schema = resultsDatabaseSchema,
                              cohort_checksum_table = cohortTableNames$cohortChecksumTable,
