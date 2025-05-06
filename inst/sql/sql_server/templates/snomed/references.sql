@@ -1,5 +1,14 @@
 {DEFAULT @require_second_diagnosis = FALSE}
 -- Create outcome cohort definitions
+DROP TABLE IF EXISTS @cohort_database_schema.@conditions_table;
+
+CREATE TABLE @cohort_database_schema.@conditions_table(
+  cohort_definition_id BIGINT,
+  cohort_definition_name VARCHAR,
+  short_name VARCHAR,
+  concept_id BIGINT
+);
+
 --outcomes not requiring a hospitalization
 INSERT INTO @cohort_database_schema.@conditions_table
 ( cohort_definition_id,
