@@ -516,13 +516,30 @@ generateCohort <- function(cohortId = NULL,
     checksum = as.character(template$getChecksum()),
     startTime = as.numeric(Sys.time()) * 1000
   )
-  DatabaseConnector::insertTable(connection,
-                                 data = refMap,
-                                 dropTableIfExists = FALSE,
-                                 createTable = FALSE,
-                                 tableName = cohortTableNames$cohortChecksumTable,
-                                 databaseSchema = resultsDatabaseSchema,
-                                 camelCaseToSnakeCase = TRUE)
+  batchSize <- 1000
+  # Batch insert ids - fails with bigints on spark - crossplatform workaround
+  for (start in seq(1, nrow(refMap), by = batchSize)) {
+    end <- min(start + batchSize - 1, nrow(data))
+    valuesString <- paste0(refMap$cohorDefinitionId, ", '", refMap$checksum, "', ", refMap$startTime) |>
+      paste(collapse = "),(")
+
+    valuesString <- paste0("(", valuesString, ")")
+    sql <- "INSERT INTO @results_database_schema.@cohort_checksum_table (cohort_definition_id, checksum, start_time)
+     VALUE @values"
+    sql <- SqlRender::render(sql = sql,
+                             results_database_schema = resultsDatabaseSchema,
+                             cohort_checksum_table = cohortTableNames$cohortChecksumTable,
+                             values = valuesString)
+    sql <- SqlRender::translate(sql, targetDialect = dbms(connection), tempEmulationSchema = tempEmulationSchema)
+    executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
+  }
+  # DatabaseConnector::insertTable(connection,
+  #                              data = refMap,
+  #                              dropTableIfExists = FALSE,
+  #                              createTable = FALSE,
+  #                              tableName = cohortTableNames$cohortChecksumTable,
+  #                              databaseSchema = resultsDatabaseSchema,
+  #                              camelCaseToSnakeCase = TRUE)
 
   template$executeTemplateSql(connection = connection,
                               cohortDatabaseSchema = resultsDatabaseSchema,
