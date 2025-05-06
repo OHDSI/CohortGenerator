@@ -1,12 +1,18 @@
 {DEFAULT @prior_observation_period = 365}
 
-DELETE FROM @cohort_database_schema.@cohort_table
-WHERE cohort_definition_id IN (SELECT COHORT_DEFINITION_ID FROM @cohort_database_schema.@atc_table);
-
-DROP TABLE IF EXISTS #ingredient_eras;
--- First, create ingredient level cohorts
---HINT DISTRIBUTE_ON_KEY(person_id)
-create table #ingredient_eras as
+insert into @cohort_database_schema.@cohort_table
+(
+  cohort_definition_id
+  , subject_id
+  , cohort_start_date
+  , cohort_end_date
+)
+select
+  cohort_definition_id
+  , person_id
+  , cohort_start_date
+  , cohort_end_date
+from (
 select
   et.cohort_definition_id
   , de1.concept_name
@@ -36,25 +42,8 @@ from
 INNER JOIN @cohort_database_schema.@atc_table et ON (et.concept_id = de1.drug_concept_id)
 inner join @cdm_database_schema.observation_period op1
   on de1.person_id = op1.person_id
-  and de1.cohort_start_date >= dateadd(dd,@prior_observation_period,op1.observation_period_start_date)
+  and de1.cohort_start_date >= dateadd(dd, @prior_observation_period, op1.observation_period_start_date)
   and de1.cohort_start_date <= op1.observation_period_end_date
   and de1.row_num = 1
-;
-
-insert into @cohort_database_schema.@cohort_table
-(
-  cohort_definition_id
-  , subject_id
-  , cohort_start_date
-  , cohort_end_date
 )
-select
-  cohort_definition_id
-  , person_id
-  , cohort_start_date
-  , cohort_end_date
-from #ingredient_eras
 ;
-
-TRUNCATE TABLE #ingredient_eras;
-DROP TABLE #ingredient_eras;

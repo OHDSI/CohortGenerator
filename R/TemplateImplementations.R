@@ -95,7 +95,7 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
     tempEmulationSchema = tempEmulationSchema
   )
 
-  def <- createCohortTemplateDefintion(name = "All ATC 4 class exposures",
+  def <- createCohortTemplateDefintion(name = "All RxNorm ingredient exposures",
                                        templateRefFun = .rxNormTemplateRefFun,
                                        executeFun = .createRxNormCohorts,
                                        templateRefArgs = templateRefArgs,
@@ -185,7 +185,7 @@ createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_i
     tempEmulationSchema = tempEmulationSchema
   )
 
-  def <- createCohortTemplateDefintion(name = "All rxNorm Ingredients",
+  def <- createCohortTemplateDefintion(name = "All ATC 4 class exposures",
                                        templateRefFun = .atcTemplateRefFun,
                                        executeFun = .createAtcCohorts,
                                        templateRefArgs = templateRefArgs,
