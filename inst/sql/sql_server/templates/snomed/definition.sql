@@ -4,8 +4,14 @@
 
 DROP TABLE IF EXISTS #concept_ancestor_grp;
 
+CREATE TABLE #concept_ancestor_grp (
+    ancestor_concept_id BIGINT,
+    descendant_concept_id BIGINT
+);
+
 --HINT DISTRIBUTE_ON_KEY(descendant_concept_id)
-select
+INSERT INTO #concept_ancestor_grp (ancestor_concept_id, descendant_concept_id)
+SELECT
   ca1.ancestor_concept_id
   , ca1.descendant_concept_id
 into #concept_ancestor_grp
@@ -19,7 +25,8 @@ inner join
     , c1.domain_id
   from @cdm_database_schema.concept c1
   inner join @cdm_database_schema.concept_ancestor ca1
-    on ca1.ancestor_concept_id = 441840 -- clinical finding
+     -- clinical finding
+    on ca1.ancestor_concept_id = 441840
     and c1.concept_id = ca1.descendant_concept_id
   where
   (
