@@ -24,7 +24,8 @@ inner join
   where
   (
     ca1.min_levels_of_separation > 2
-  	or c1.concept_id in (433736, 433595, 441408, 72404, 192671, 137977, 434621, 437312, 439847, 4171917, 438555, 4299449, 375258, 76784, 40483532, 4145627, 434157, 433778, 258449, 313878)
+  	or c1.concept_id in (433736, 433595, 441408, 72404, 192671, 137977, 434621, 437312, 439847, 4171917, 438555,
+  	                     4299449, 375258, 76784, 40483532, 4145627, 434157, 433778, 258449, 313878)
   )
   -- NOTE: this set could be improved to exclude more irrelevant/useless cohorts but has been used in REWARD
   and c1.concept_name not like '%finding'

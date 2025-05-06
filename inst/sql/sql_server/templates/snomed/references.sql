@@ -4,7 +4,7 @@ create table #cpt_anc_grp as
 select
   ca1.ancestor_concept_id
   , ca1.descendant_concept_id
-from @vocabulary_schema.concept_ancestor ca1
+from @vocabulary_database_schema.concept_ancestor ca1
 inner join
 (
   select
