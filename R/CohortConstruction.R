@@ -500,7 +500,6 @@ generateCohort <- function(cohortId = NULL,
                                   incremental,
                                   recordKeepingFile) {
 
-  #TODO: this will be slow or fail as the query length can get huge
   startSql <- "DELETE FROM @results_database_schema.@cohort_checksum_table
                       WHERE cohort_definition_id IN (@target_cohort_ids) AND checksum = '@checksum';"
   DatabaseConnector::renderTranslateExecuteSql(connection,
@@ -522,6 +521,7 @@ generateCohort <- function(cohortId = NULL,
                                  dropTableIfExists = FALSE,
                                  createTable = FALSE,
                                  tableName = cohortTableNames$cohortChecksumTable,
+                                 databaseSchema = resultsDatabaseSchema,
                                  camelCaseToSnakeCase = TRUE)
 
   template$executeTemplateSql(connection = connection,
