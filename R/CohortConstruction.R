@@ -515,7 +515,8 @@ generateCohort <- function(cohortId = NULL,
   # Batch insert ids - fails with bigints on spark - crossplatform workaround
   for (start in seq(1, nrow(ref), by = batchSize)) {
     end <- min(start + batchSize - 1, nrow(ref))
-    valuesString <- paste0(ref$cohortId, ", '", template$getChecksum(), "', ",  startTime) |>
+    batch <- ref[start:end, , drop = FALSE]
+    valuesString <- paste0(batch$cohortId, ", '", template$getChecksum(), "', ", startTime) |>
       paste(collapse = "),\n(")
 
     valuesString <- paste0("(", valuesString, ")")
@@ -528,6 +529,16 @@ generateCohort <- function(cohortId = NULL,
                              values = valuesString)
     sql <- SqlRender::translate(sql, targetDialect = dbms(connection), tempEmulationSchema = tempEmulationSchema)
     executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
+
+    # Delete existing batch ids from cohort table prior to generation as user may not have done this
+    delSql <-  "DELETE FROM @results_database_schema.@cohort_table WHERE cohort_definition_id IN (@cohort_ids)"
+    DatabaseConnector::renderTranslateExecuteSql(connection,
+                                                 delSql,
+                                                 cohort_ids = batch$cohortId,
+                                                 results_database_schema = resultsDatabaseSchema,
+                                                 cohort_table = cohortTableNames$cohortTable,
+                                                 progressBar = FALSE,
+                                                 reportOverallTime = FALSE)
   }
 
   template$executeTemplateSql(connection = connection,
@@ -542,8 +553,8 @@ generateCohort <- function(cohortId = NULL,
       WHERE cohort_definition_id IN (@target_cohort_ids)
       AND checksum = '@checksum';"
 
-
-  DatabaseConnector::renderTranslateExecuteSql(connection, endSql,
+  DatabaseConnector::renderTranslateExecuteSql(connection,
+                                               endSql,
                                                target_cohort_ids = ref$cohortId,
                                                results_database_schema = resultsDatabaseSchema,
                                                cohort_checksum_table = cohortTableNames$cohortChecksumTable,
