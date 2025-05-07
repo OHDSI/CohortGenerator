@@ -20,7 +20,7 @@ select
   DISTINCT
   @identifier_expression as cohort_definition_id,
   CONCAT(c1.concept_name, ' - first occurence of diagnosis' {@require_second_diagnosis} ? {, ' with 2 diagnosis codes '}) as cohort_name,
-  CONCAT(c1.concept_name, {@require_second_diagnosis} ? {, ' requiring 2 DX'}) as short_name,
+  CONCAT(c1.concept_name {@require_second_diagnosis} ? {, ' requiring 2 DX'}) as short_name,
   c1.concept_id as concept_id
 from (
 --- CONCEPT ANCESTOR SUB QUERY START
