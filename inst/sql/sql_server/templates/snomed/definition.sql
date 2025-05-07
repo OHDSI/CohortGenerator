@@ -15,7 +15,6 @@ INSERT INTO #concept_ancestor_grp (ancestor_concept_id, descendant_concept_id)
 SELECT
   ca1.ancestor_concept_id
   , ca1.descendant_concept_id
-into #concept_ancestor_grp
 from @cdm_database_schema.concept_ancestor ca1
 inner join
 (
