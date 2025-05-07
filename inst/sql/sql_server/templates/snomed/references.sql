@@ -4,8 +4,8 @@ DROP TABLE IF EXISTS @cohort_database_schema.@conditions_table;
 
 CREATE TABLE @cohort_database_schema.@conditions_table(
   cohort_definition_id BIGINT,
-  cohort_name VARCHAR(255),
-  short_name VARCHAR(255),
+  cohort_name VARCHAR(500),
+  short_name VARCHAR(500),
   concept_id BIGINT
 );
 
