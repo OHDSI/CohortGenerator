@@ -1,6 +1,7 @@
-{DEFAULT @require_visit_occurence=FALSE}
+{DEFAULT @require_visit_occurence = FALSE}
 {DEFAULT @visit_occurrence_ids = 9201} -- INPATIENT VISIT
 {DEFAULT @require_second_diagnosis = FALSE}
+{DEFAULT @prior_observation_period = 365}
 
 DROP TABLE IF EXISTS #concept_ancestor_grp;
 
@@ -24,7 +25,7 @@ inner join
     , c1.vocabulary_id
     , c1.domain_id
   from @cdm_database_schema.concept c1
-  inner join @cdm_database_schema.concept_ancestor ca1
+  inner join @vocabulary_database_schema.concept_ancestor ca1
      -- clinical finding
     on ca1.ancestor_concept_id = 441840
     and c1.concept_id = ca1.descendant_concept_id
@@ -48,7 +49,7 @@ inner join
   and c1.concept_name not like '%of specific body structure%'
   and c1.domain_id = 'Condition'
 ) t1 on ca1.ancestor_concept_id = t1.concept_id
-inner join @reference_schema.@outcome_cohort ocr ON (
+inner join @cohort_database_schema.@outcome_cohort ocr ON (
     ocr.referent_concept_id = ca1.ancestor_concept_id and ocr.outcome_type = 1
 )
 ;
@@ -79,7 +80,7 @@ from
     co1.person_id
     , ca1.ancestor_concept_id
 ) t1
-inner join @reference_schema.@outcome_cohort ocr ON (
+inner join @cohort_database_schema.@outcome_cohort ocr ON (
     ocr.referent_concept_id = t1.ancestor_concept_id
 )
 inner join
@@ -101,6 +102,8 @@ inner join
 ) t2
   on t1.person_id = t2.person_id
   and t1.ancestor_concept_id = t2.ancestor_concept_id
+inner join @cdm_database_schema.observation_period op1 on op1.person_id = t1.person_id
+  where t1.cohort_start_date >= dateadd(dd, @prior_observation_period, op1.observation_period_start_date)
   {@require_second_diagnosis} ? {where t2.cohort_start_date < t2.confirmed_date}
 ;
 
