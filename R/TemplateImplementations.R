@@ -135,13 +135,18 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
                               cohortTableNames,
                               vocabularyDatabaseSchema,
                               tempEmulationSchema,
+                              identifier_expression,
+                              mergeIngredientEras,
                               atcTable,
                               priorObservationPeriod = 365) {
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("templates", "atc", "definition.sql"),
                                            dbms = DatabaseConnector::dbms(connection),
+                                           tempEmulationSchema = tempEmulationSchema,
                                            packageName = utils::packageName(),
+                                           mergeIngredientEras,
                                            atc_table = atcTable,
                                            cohort_table = cohortTableNames$cohortTable,
+                                           identifier_expression = indentifierExpression,
                                            prior_observation_period = priorObservationPeriod,
                                            vocabulary_database_schema = vocabularyDatabaseSchema,
                                            cohort_database_schema = cohortDatabaseSchema,
@@ -159,6 +164,7 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
 #' @param indentifierExpression   an expression for setting the cohort id for the resulting cohort. Must produce unique ids
 #' @param atcTable  Table to save references in
 #' @param priorObservationPeriod (optional) required prior observation period for individuals
+#' @param mergeIngredientEras boolean if TRUE (default) then different ingredients under the same ATC code will be merged
 #' @inheritParams generateCohortSet
 #' @returns a CohortTemplateDefinition instance
 #' @export
@@ -167,6 +173,7 @@ createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_i
                                               atcTable = "cohort_atc_ref",
                                               tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                               cohortDatabaseSchema,
+                                              mergeIngredientEras = TRUE,
                                               priorObservationPeriod = 365,
                                               vocabularyDatabaseSchema = cdmDatabaseSchema) {
 
@@ -174,7 +181,9 @@ createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_i
     vocabularyDatabaseSchema = vocabularyDatabaseSchema,
     priorObservationPeriod = priorObservationPeriod,
     atcTable = atcTable,
-    tempEmulationSchema = tempEmulationSchema
+    tempEmulationSchema = tempEmulationSchema,
+    indentifierExpression = indentifierExpression,
+    mergeIngredientEras = mergeIngredientEras
   )
 
   templateRefArgs <- list(
@@ -245,7 +254,7 @@ createAtcCohortTemplateDefinition <- function(indentifierExpression = "concept_i
 #' @description
 #' Template cohort definition for all OHDSI standard conditions
 #' This cohort will use the vocaublary tables to automaticall generate a set of cohorts that have the
-#' cohortId = conceptId * 1000 + 4, note that this can be customised with the "identifierExpression" if you are using this
+#' cohortId = conceptId * 1000 note that this can be customised with the "identifierExpression" if you are using this
 #' with other cohorts you may wish to change this to allow uniqueness
 #' @param indentifierExpression   an expression for setting the cohort id for the resulting cohort. Must produce unique ids
 #' @param conditionsTable reference table to store condition cohorts
