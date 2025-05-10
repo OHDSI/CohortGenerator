@@ -143,7 +143,7 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
                                            dbms = DatabaseConnector::dbms(connection),
                                            tempEmulationSchema = tempEmulationSchema,
                                            packageName = utils::packageName(),
-                                           mergeIngredientEras,
+                                           merge_ingredient_eras = mergeIngredientEras,
                                            atc_table = atcTable,
                                            cohort_table = cohortTableNames$cohortTable,
                                            identifier_expression = indentifierExpression,
