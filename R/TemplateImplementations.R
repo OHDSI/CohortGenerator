@@ -135,7 +135,7 @@ createRxNormCohortTemplateDefinition <- function(indentifierExpression = "concep
                               cohortTableNames,
                               vocabularyDatabaseSchema,
                               tempEmulationSchema,
-                              identifier_expression,
+                              identifierExpression,
                               mergeIngredientEras,
                               atcTable,
                               priorObservationPeriod = 365) {
