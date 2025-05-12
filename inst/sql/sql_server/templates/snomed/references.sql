@@ -1,21 +1,5 @@
 {DEFAULT @require_second_diagnosis = FALSE}
--- Create outcome cohort definitions
-DROP TABLE IF EXISTS @cohort_database_schema.@conditions_table;
 
-CREATE TABLE @cohort_database_schema.@conditions_table(
-  cohort_definition_id BIGINT,
-  cohort_name VARCHAR(500),
-  short_name VARCHAR(500),
-  concept_id BIGINT
-);
-
---outcomes not requiring a hospitalization
-INSERT INTO @cohort_database_schema.@conditions_table
-( cohort_definition_id,
-  cohort_name
-  ,	short_name
-  , concept_id
-)
 select
   DISTINCT
   @identifier_expression as cohort_definition_id,
@@ -64,4 +48,3 @@ from (
 ) cag
 inner join @vocabulary_database_schema.concept c1
   on cag.ancestor_concept_id = c1.concept_id
-;

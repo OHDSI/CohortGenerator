@@ -2,6 +2,7 @@
 {DEFAULT @visit_occurrence_ids = 9201} -- INPATIENT VISIT
 {DEFAULT @require_second_diagnosis = FALSE}
 {DEFAULT @prior_observation_period = 365}
+{DEFAULT @identifier_expression = concept_id * 1000}
 
 DROP TABLE IF EXISTS #concept_ancestor_grp;
 
@@ -13,12 +14,14 @@ CREATE TABLE #concept_ancestor_grp (
 --HINT DISTRIBUTE_ON_KEY(descendant_concept_id)
 INSERT INTO #concept_ancestor_grp (ancestor_concept_id, descendant_concept_id)
 SELECT
+  cohort_definition_id,
   ca1.ancestor_concept_id
   , ca1.descendant_concept_id
 from @cdm_database_schema.concept_ancestor ca1
 inner join
 (
   select
+  @identifier_expression as cohort_definition_id,
     c1.concept_id
     , c1.concept_name
     , c1.vocabulary_id
@@ -59,15 +62,16 @@ insert into @cohort_database_schema.@cohort_table
   , cohort_end_date
 )
 select
-  ocr.cohort_definition_id
+  @identifier_expression as cohort_definition_id
   , t1.person_id as subject_id
   , t1.cohort_start_date
+  -- Raw events only. Cohorts do not have a duration
   , t1.cohort_start_date as cohort_end_date
 from
 (
   select
     co1.person_id
-    , ca1.ancestor_concept_id
+    , ca1.ancestor_concept_id as concept_id
     , min(co1.condition_start_date) as cohort_start_date
   from @cdm_database_schema.condition_occurrence co1
   inner join #concept_ancestor_grp ca1
@@ -76,7 +80,6 @@ from
     co1.person_id
     , ca1.ancestor_concept_id
 ) t1
-inner join @cohort_database_schema.@conditions_table ocr ON ocr.concept_id = t1.ancestor_concept_id
 inner join
 (
   select
@@ -95,10 +98,10 @@ inner join
     , ca1.ancestor_concept_id
 ) t2
   on t1.person_id = t2.person_id
-  and t1.ancestor_concept_id = t2.ancestor_concept_id
+  and t1.concept_id = t2.ancestor_concept_id
 inner join @cdm_database_schema.observation_period op1 on op1.person_id = t1.person_id
   where t1.cohort_start_date >= dateadd(dd, @prior_observation_period, op1.observation_period_start_date)
-  {@require_second_diagnosis} ? {where t2.cohort_start_date < t2.confirmed_date}
+  {@require_second_diagnosis} ? {where t1.cohort_start_date < t2.cohort_start_date}
 ;
 
 TRUNCATE TABLE #concept_ancestor_grp;

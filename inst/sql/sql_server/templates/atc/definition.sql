@@ -1,6 +1,7 @@
 {DEFAULT @prior_observation_period = 365}
 {DEFAULT @merge_ingredient_eras = TRUE}
 {DEFAULT @atc_level = 'ATC 4th'}
+{DEFAULT @vocabulary_database_schema = @cdm_database_schema}
 
 -- Definitions will either merge distinct ingredient eras into a single cohort definition or take the first exposure
 -- As the ATC class member
@@ -71,11 +72,11 @@ from (
 								de.drug_exposure_start_date as start_date,
 								coalesce(de.drug_exposure_end_date, dateadd(day, de.days_supply, de.drug_exposure_start_date ), dateadd(day, 1, de.drug_exposure_start_date)) as end_date
 							from @cdm_database_schema.drug_exposure de
-							join @cdm_database_schema.concept_ancestor ca
+							join @vocabulary_database_schema.concept_ancestor ca
 								on de.drug_concept_id = ca.descendant_concept_id
-							join @cdm_database_schema.concept c
+							join @vocabulary_database_schema.concept c
 								on ca.ancestor_concept_id = c.concept_id
-							join @cdm_database_schema.concept c2
+							join @vocabulary_database_schema.concept c2
 								on de.drug_concept_id = c2.concept_id
 							where c.vocabulary_id = 'ATC' and c.concept_class_id = @atc_level) de
 					order by person_id, drug_concept_id, start_date) raw_data
@@ -99,7 +100,7 @@ insert into @cohort_database_schema.@cohort_table
   , cohort_end_date
 )
 select
-  cohort_definition_id
+  @identifier_expression AS COHORT_DEFINITION_ID,
   , person_id
   , cohort_start_date
   , cohort_end_date
@@ -114,7 +115,7 @@ from
   (
     select
         de0.person_id
-        , atc_rxnorm.atc_concept_id  as drug_concept_id
+        , atc_rxnorm.atc_concept_id  as concept_id
         , atc_rxnorm.atc_concept_name as concept_name
         , de0.drug_era_start_date as cohort_start_date
         , de0.drug_era_end_date as cohort_end_date
@@ -130,7 +131,6 @@ from
       ) atc_rxnorm
       on de0.drug_concept_id = atc_rxnorm.descendant_concept_id
   ) de1
-INNER JOIN @cohort_database_schema.@atc_table et ON (et.concept_id = de1.drug_concept_id)
 inner join @cdm_database_schema.observation_period op1
   on de1.person_id = op1.person_id
   and de1.cohort_start_date >= dateadd(dd, @prior_observation_period, op1.observation_period_start_date)
