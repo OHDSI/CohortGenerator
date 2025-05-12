@@ -589,7 +589,7 @@ generateTemplateCohorts <- function(connection,
                                     incremental,
                                     recordKeepingFile) {
 
-  templateDefs <- .getTemplateDefinitions(cohortDefinitionSet)
+  templateDefs <- getTemplateDefinitions(cohortDefinitionSet)
   statusTbl <- data.frame()
   computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
                                                        cohortDatabaseSchema = cohortDatabaseSchema,
@@ -597,7 +597,7 @@ generateTemplateCohorts <- function(connection,
 
   for (template in templateDefs) {
     startTime <- lubridate::now()
-    refs <- template$getTemplateReferences(connection = connection)
+    refs <- template$getTemplateReferences()
     skipit <- all(incremental,
                   refs$cohortId %in% computedChecksums$cohortDefinitionId,
                   template$getChecksum() %in% computedChecksums$checksum)
@@ -617,10 +617,9 @@ generateTemplateCohorts <- function(connection,
                                         incremental = incremental,
                                         recordKeepingFile = recordKeepingFile)
       }, error = function(err) {
+        ParallelLogger::logError(err)
         if (stopOnError)
           stop(err)
-
-        ParallelLogger::logError(error)
         return(list(startTime = startTime, endTime = lubridate::now(), generationStatus = "FAILED"))
       })
     }

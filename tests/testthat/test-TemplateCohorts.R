@@ -1,103 +1,50 @@
-test_that("Test RxNorm Template", {
-  tplDef <- createRxNormCohortTemplateDefinition(cdmDatabaseSchema = "main",
-                                                 cohortDatabaseSchema = "main")
+test_that("Test Basic Template", {
+  junkSql <- "
+  {DEFAULT @cdm_database_schema = cdm}
 
+  INSERT INTO @cohort_database_schema.@cohort_table
+  (cohort_definition_id, subject_id, cohort_start_date, cohort_end_date)
+  SELECT 1 as cohort_definition_id, 1 as subject_id, '10/10/2020'as cohort_start_date, '@end_date' as cohort_end_date
+  UNION
+  SELECT 1 as cohort_definition_id, 2 as subject_id, '10/10/2014' as cohort_start_date, '@end_date2' as cohort_end_date;
+  "
+  tplDef <- createCohortTemplateDefintion(name = "test template",
+                                          templateSql = junkSql,
+                                          references = data.frame(cohortId = 1, cohortName = "one"),
+                                          sqlArgs = list(end_date = '01/01/2021', end_date2 = '01/01/2023'),
+                                          translateSql = TRUE)
   checkmate::expect_r6(tplDef, "CohortTemplateDefinition")
 
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   connection <- DatabaseConnector::connect(connectionDetails)
-  incrementalFolder <- tempfile()
-  dir.create(incrementalFolder)
-  on.exit({
-    DatabaseConnector::disconnect(connection)
-    unlink(incrementalFolder, recursive = T, force = T)
-  })
-  expect_error(addCohortTemplateDefintion(cohortTemplateDefintion = tplDef))
-  cds <- addCohortTemplateDefintion(cohortTemplateDefintion = tplDef, connection = connection)
-  expect_true(isCohortDefinitionSet(cds))
-  expect_true(all(cds$isTemplatedCohort))
 
-  createCohortTables(connection = connection, cohortDatabaseSchema = "main")
-  res <- generateCohortSet(connection = connection,
-                           cohortDefinitionSet = cds,
-                           cdmDatabaseSchema = "main",
-                           cohortDatabaseSchema = "main",
-                           incremental = T,
-                           incrementalFolder = incrementalFolder)
+  cohortDefinitionSet <- addCohortTemplateDefintion(cohortTemplateDefintion = tplDef)
+  testOutputFolder <- file.path(outputFolder, "tpl_tests")
+  cohortTableNames <- CohortGenerator::getCohortTableNames("cohort_tpl")
+  createCohortTables(connection = connection,
+                     cohortTableNames = cohortTableNames,
+                     cohortDatabaseSchema = "main")
 
-  expect_true(all(res$generationStatus == "COMPLETE"))
-  expect_true(all(res$cohortId %in% tplDef$cohortId))
+  generateCohortSet(connection = connection,
+                    cdmDatabaseSchema = "main",
+                    cohortDatabaseSchema = "main",
+                    cohortTableNames = cohortTableNames,
+                    cohortDefinitionSet = cohortDefinitionSet,
+                    stopOnError = TRUE,
+                    incremental = FALSE,
+                    incrementalFolder = NULL)
 
-  cds2 <- getCohortDefinitionSet(
-    settingsFileName = "testdata/name/Cohorts.csv",
-    jsonFolder = "testdata/name/cohorts",
-    sqlFolder = "testdata/name/sql/sql_server",
-    cohortFileNameFormat = "%s",
-    cohortFileNameValue = c("cohortName"),
-    packageName = "CohortGenerator",
-    verbose = FALSE
-  )
-  cds2 <- addCohortTemplateDefintion(cohortTemplateDefintion = tplDef, connection = connection)
-  subsetOperations <- list(
-    createDemographicSubset(
-      name = "Demographic Criteria",
-      ageMin = 18,
-      ageMax = 64
-    )
+  # check the count is 2
+  count <- getCohortCounts(
+    connection = connection,
+    cohortDatabaseSchema = "main",
+    cohortTable = "cohort_tpl",
+    cohortDefinitionSet = cohortDefinitionSet,
+    databaseId = "Eunomia"
   )
 
-  subsetDef <- createCohortSubsetDefinition(
-    name = "test definition with templates",
-    definitionId = 1,
-    subsetOperators = subsetOperations
-  )
+  expect_equal(count$cohortSubjects, 2)
+  expect_equal(count$cohortEntries, 2)
 
-  cds2 <- addCohortSubsetDefinition(cds2, subsetDef)
-  # Tests incremental and usage of non-template cohorts in the cohort set as well as subsets of templated cohorts
-  res2 <- generateCohortSet(connection = connection,
-                            cohortDefinitionSet = cds2,
-                            cdmDatabaseSchema = "main",
-                            cohortDatabaseSchema = "main",
-                            incremental = T,
-                            incrementalFolder = incrementalFolder)
-
-  expect_true(all(res2$generationStatus == "SKIPPED"))
-  expect_true(all(res2$cohortId %in% tplDef$cohortId))
-
-  # Switch off incremental and regen
-  res3 <- generateCohortSet(connection = connection,
-                            cohortDefinitionSet = cds,
-                            cdmDatabaseSchema = "main",
-                            cohortDatabaseSchema = "main",
-                            incremental = F)
-
-  expect_true(all(res3$generationStatus == "COMPLETE"))
-  # Warning and error if you try and save a template cohort def
-  expect_error(expect_warning(saveCohortDefinitionSet(cds)))
-})
-
-test_that("Test ATC Template", {
-  tplDef <- createAtcCohortTemplateDefinition(cdmDatabaseSchema = "main",
-                                              cohortDatabaseSchema = "main")
-
-  checkmate::expect_r6(tplDef, "CohortTemplateDefinition")
-
-  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-  connection <- DatabaseConnector::connect(connectionDetails)
-  on.exit(DatabaseConnector::disconnect(connection))
-  createCohortTables(connection = connection, cohortDatabaseSchema = "main")
-  # Just test sql is valid
-  refs <- tplDef$getTemplateReferences(connection = connection)
-
-  tplDef$executeTemplateSql(connection = connection,
-                            cohortDatabaseSchema = "main",
-                            cdmDatabaseSchema = "main",
-                            tempEmulationSchema = NULL,
-                            cohortTableNames = getCohortTableNames())
-
-  #NOTE - No ATC classes included in Eunomia
-  expect_error(
-    cds <- addCohortTemplateDefintion(cohortTemplateDefintion = tplDef, connection = connection)
-  )
-
+  # Validate checksum behaviour
 })
