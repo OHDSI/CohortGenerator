@@ -97,7 +97,7 @@ createAtcCohortTemplateDefinition <- function(connection,
     identifier_expression = identifierExpression,
     tempEmulationSchema = tempEmulationSchema,
     vocabulary_database_schema = vocabularyDatabaseSchema,
-    nameSuffix = nameSuffix
+    name_suffix = nameSuffix
   )
 
   references <- DatabaseConnector::querySql(connection = connection,

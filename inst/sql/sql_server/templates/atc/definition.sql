@@ -3,9 +3,7 @@
 {DEFAULT @atc_level = 'ATC 4th'}
 {DEFAULT @vocabulary_database_schema = @cdm_database_schema}
 
--- Definitions will either merge distinct ingredient eras into a single cohort definition or take the first exposure
--- As the ATC class member
-{@merge_ingredient_eras} ? {
+
 insert into @cohort_database_schema.@cohort_table
 (
   cohort_definition_id
@@ -13,6 +11,9 @@ insert into @cohort_database_schema.@cohort_table
   , cohort_start_date
   , cohort_end_date
 )
+{@merge_ingredient_eras} ? {
+-- Definitions will either merge distinct ingredient eras into a single cohort definition or take the first exposure
+-- As the ATC class member
 select
 	@identifier_expression AS COHORT_DEFINITION_ID,
 	first_era.person_id as subject_id,
@@ -84,21 +85,15 @@ from (
 			) grp
 			group by drug_concept_id, person_id, group_idx) eras
 	) eras_counted
-	where era_num = 1) first_era
+	where era_num = 1
+) first_era
 join @cdm_database_schema.observation_period op
 	on first_era.person_id = op.person_id
 	   and first_era.start_date >= dateadd(day, @prior_observation_period, op.observation_period_start_date)
 	   and first_era.start_date <= op.observation_period_end_date
-order by first_era.drug_concept_id, first_era.person_id;
+order by first_era.concept_id, first_era.person_id;
 } : {
 -- OLDER approach, just select first ingredient and don't merge eras
-insert into @cohort_database_schema.@cohort_table
-(
-  cohort_definition_id
-  , subject_id
-  , cohort_start_date
-  , cohort_end_date
-)
 select
   @identifier_expression AS COHORT_DEFINITION_ID
   , person_id
