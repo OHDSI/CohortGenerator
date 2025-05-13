@@ -168,23 +168,22 @@ generateCohortSet <- function(connectionDetails = NULL,
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
   recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
-  # Template cohorts generate first as a tempalte cannot be a subset, but a subset can apply to a template
-  generatedTemplateCohorts <- data.frame()
   if ("isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
     cohortDefinitionSet <- cohortDefinitionSet |> dplyr::filter(!.data$isTemplatedCohort)
-    generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
-                                                        cohortDefinitionSet = cohortDefinitionSet,
-                                                        cdmDatabaseSchema = cdmDatabaseSchema,
-                                                        tempEmulationSchema = tempEmulationSchema,
-                                                        cohortDatabaseSchema = cohortDatabaseSchema,
-                                                        cohortTableNames = cohortTableNames,
-                                                        stopOnError = stopOnError,
-                                                        incremental = incremental,
-                                                        recordKeepingFile = recordKeepingFile)
 
-    if (nrow(cohortDefinitionSet) == 0)
+
+    if (nrow(cohortDefinitionSet) == 0) {
+      generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
+                                                          cohortDefinitionSet = cohortDefinitionSet,
+                                                          cdmDatabaseSchema = cdmDatabaseSchema,
+                                                          tempEmulationSchema = tempEmulationSchema,
+                                                          cohortDatabaseSchema = cohortDatabaseSchema,
+                                                          cohortTableNames = cohortTableNames,
+                                                          stopOnError = stopOnError,
+                                                          incremental = incremental,
+                                                          recordKeepingFile = recordKeepingFile)
       return(generatedTemplateCohorts)
-
+    }
   } else {
     cohortDefinitionSet$isTemplatedCohort <- FALSE
   }
@@ -272,6 +271,17 @@ generateCohortSet <- function(connectionDetails = NULL,
     stopOnError = stopOnError,
     progressBar = TRUE
   )
+
+  generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
+                                                      cohortDefinitionSet = cohortDefinitionSet,
+                                                      cdmDatabaseSchema = cdmDatabaseSchema,
+                                                      tempEmulationSchema = tempEmulationSchema,
+                                                      cohortDatabaseSchema = cohortDatabaseSchema,
+                                                      cohortTableNames = cohortTableNames,
+                                                      stopOnError = stopOnError,
+                                                      incremental = incremental,
+                                                      recordKeepingFile = recordKeepingFile)
+
   subsetsGenerated <- list()
   if (length(subsetsToGenerate)) {
     subsetsGenerated <- ParallelLogger::clusterApply(
