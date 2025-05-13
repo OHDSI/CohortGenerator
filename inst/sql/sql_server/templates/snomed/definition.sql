@@ -7,12 +7,13 @@
 DROP TABLE IF EXISTS #concept_ancestor_grp;
 
 CREATE TABLE #concept_ancestor_grp (
+    cohort_definition_id BIGINT,
     ancestor_concept_id BIGINT,
     descendant_concept_id BIGINT
 );
 
 --HINT DISTRIBUTE_ON_KEY(descendant_concept_id)
-INSERT INTO #concept_ancestor_grp (ancestor_concept_id, descendant_concept_id)
+INSERT INTO #concept_ancestor_grp (cohort_definition_id, ancestor_concept_id, descendant_concept_id)
 SELECT
   cohort_definition_id,
   ca1.ancestor_concept_id

@@ -32,7 +32,7 @@
 createRxNormCohortTemplateDefinition <- function(connection,
                                                  identifierExpression = "concept_id * 1000",
                                                  cdmDatabaseSchema,
-                                                 rxNormTable = "cohort_rx_norm_ref",
+                                                 rxNormTable = "#cohort_rx_norm_ref",
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  cohortDatabaseSchema,
                                                  priorObservationPeriod = 365,
@@ -99,7 +99,7 @@ createRxNormCohortTemplateDefinition <- function(connection,
 createAtcCohortTemplateDefinition <- function(connection,
                                               identifierExpression = "concept_id * 1000 + 4",
                                               cdmDatabaseSchema,
-                                              atcTable = "cohort_atc_ref",
+                                              atcTable = "#cohort_atc_ref",
                                               tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                               cohortDatabaseSchema,
                                               mergeIngredientEras = TRUE,
@@ -165,10 +165,11 @@ createAtcCohortTemplateDefinition <- function(connection,
 createSnomedCohortTemplateDefinition <- function(connection,
                                                  identifierExpression = "concept_id * 1000",
                                                  cdmDatabaseSchema,
-                                                 conditionsTable = "cohort_conditions_ref",
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  cohortDatabaseSchema,
                                                  priorObservationPeriod = 365,
+                                                 requireSecondDiagnosis = FALSE,
+                                                 nameSuffix = '',
                                                  vocabularyDatabaseSchema = cdmDatabaseSchema) {
 
   # Helper function to create references
@@ -177,34 +178,31 @@ createSnomedCohortTemplateDefinition <- function(connection,
       sqlFilename = file.path("templates", "snomed", "references.sql"),
       packageName = utils::packageName(),
       identifier_expression = identifierExpression,
-      cohort_database_schema = cohortDatabaseSchema,
       tempEmulationSchema = tempEmulationSchema,
-      conditions_table = conditionsTable,
+      require_second_diagnosis = requireSecondDiagnosis,
+      name_suffix = nameSuffix,
       vocabulary_database_schema = vocabularyDatabaseSchema
     )
-    DatabaseConnector::executeSql(connection, sql)
 
-    sql <- "SELECT cohort_definition_id as cohort_id, cohort_name FROM @cohort_database_schema.@conditions_table;"
-    references <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
-                                                             sql = sql,
-                                                             cohort_database_schema = cohortDatabaseSchema,
-                                                             conditions_table = conditionsTable,
-                                                             snakeCaseToCamelCase = TRUE)
+    references <- DatabaseConnector::querySql(connection = connection,
+                                              sql = sql,
+                                              snakeCaseToCamelCase = TRUE)
     return(references)
   }
 
-  sqlArgs <- list(
-    vocabulary_database_schema = vocabularyDatabaseSchema,
-    prior_observation_period = priorObservationPeriod,
-    conditions_table = conditionsTable,
-    temp_emulation_schema = tempEmulationSchema
+  references <- createReferences()
+  templateSql <- SqlRender::loadRenderTranslateSql(
+    sqlFilename = file.path("templates", "snomed", "definition.sql"),
+    packageName = utils::packageName(),
+    identifier_expression = identifierExpression,
+    tempEmulationSchema = tempEmulationSchema,
+    require_second_diagnosis = requireSecondDiagnosis,
+    warnOnMissingParameters = FALSE
   )
 
-  references <- createReferences()
-
   def <- createCohortTemplateDefintion(
-    name = "All SNOMED Conditions",
-    sqlArgs = sqlArgs,
+    name = paste("All SNOMED Conditions", nameSuffix),
+    templateSql = templateSql,
     references = references
   )
 

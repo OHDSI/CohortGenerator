@@ -1,16 +1,15 @@
 {DEFAULT @require_second_diagnosis = FALSE}
+{DEFAULT @name_suffix = ''}
+{DEFAULT @identifier_expression = concept_id * 1000}
 
-select
+SELECT
   DISTINCT
-  @identifier_expression as cohort_definition_id,
-  CONCAT(c1.concept_name, ' - first occurence of diagnosis' {@require_second_diagnosis} ? {, ' with 2 diagnosis codes '}) as cohort_name,
-  CONCAT(c1.concept_name {@require_second_diagnosis} ? {, ' requiring 2 DX'}) as short_name,
-  c1.concept_id as concept_id
+  @identifier_expression as cohort_id,
+  CONCAT(c1.concept_name, '@name_suffix') as cohort_name
 from (
 --- CONCEPT ANCESTOR SUB QUERY START
     select
       ca1.ancestor_concept_id
-      , ca1.descendant_concept_id
     from @vocabulary_database_schema.concept_ancestor ca1
     inner join
     (
