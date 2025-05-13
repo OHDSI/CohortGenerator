@@ -101,7 +101,7 @@ select
   , cohort_end_date
 from (
 select
-  , de1.concept_id
+  de1.concept_id
   , de1.person_id
   , de1.cohort_start_date
   , de1.cohort_end_date
