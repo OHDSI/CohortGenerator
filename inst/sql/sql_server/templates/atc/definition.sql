@@ -100,7 +100,7 @@ insert into @cohort_database_schema.@cohort_table
   , cohort_end_date
 )
 select
-  @identifier_expression AS COHORT_DEFINITION_ID,
+  @identifier_expression AS COHORT_DEFINITION_ID
   , person_id
   , cohort_start_date
   , cohort_end_date

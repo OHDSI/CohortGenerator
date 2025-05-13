@@ -32,49 +32,33 @@
 createRxNormCohortTemplateDefinition <- function(connection,
                                                  identifierExpression = "concept_id * 1000",
                                                  cdmDatabaseSchema,
-                                                 rxNormTable = "#cohort_rx_norm_ref",
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  cohortDatabaseSchema,
                                                  priorObservationPeriod = 365,
-                                                 requireSecondDiagnosis = FALSE,
-                                                 visitOccurrenceIds = NULL,
+                                                 nameSuffix = '',
                                                  vocabularyDatabaseSchema = cdmDatabaseSchema) {
 
-  # Helper function to create references
-  createReferences <- function() {
-    sql <- SqlRender::loadRenderTranslateSql(
-      sqlFilename = file.path("templates", "rx_norm", "references.sql"),
-      packageName = utils::packageName(),
-      identifier_expression = identifierExpression,
-      cohort_database_schema = cohortDatabaseSchema,
-      tempEmulationSchema = tempEmulationSchema,
-      rx_norm_table = rxNormTable,
-      vocabulary_database_schema = vocabularyDatabaseSchema
-    )
-    DatabaseConnector::executeSql(connection, sql)
-
-    sql <- "SELECT cohort_definition_id as cohort_id, cohort_name FROM @cohort_database_schema.@rx_norm_table;"
-    references <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
-                                                             sql = sql,
-                                                             cohort_database_schema = cohortDatabaseSchema,
-                                                             snakeCaseToCamelCase = TRUE,
-                                                             rx_norm_table = rxNormTable)
-    return(references)
-  }
-
-  sqlArgs <- list(
-    prior_observation_period = priorObservationPeriod,
+  sql <- SqlRender::loadRenderTranslateSql(
+    sqlFilename = file.path("templates", "rx_norm", "references.sql"),
+    packageName = utils::packageName(),
     identifier_expression = identifierExpression,
-    visit_occurrence_ids = visitOccurrenceIds,
-    require_visit_occurrence = !is.null(visitOccurrenceIds),
-    require_second_diagnosis = requireSecondDiagnosis
+    tempEmulationSchema = tempEmulationSchema,
+    name_suffix = nameSuffix,
+    vocabulary_database_schema = vocabularyDatabaseSchema
   )
-
-  references <- createReferences()
+  references <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
+  templateSql <- SqlRender::loadRenderTranslateSql(
+    sqlFilename = file.path("templates", "rx_norm", "definition.sql"),
+    packageName = utils::packageName(),
+    prior_observation_period = priorObservationPeriod,
+    temp_emulation_schema = tempEmulationSchema,
+    identifier_expression = identifierExpression,
+    warnOnMissingParameters = FALSE
+  )
 
   def <- createCohortTemplateDefintion(
     name = "All RxNorm ingredient exposures",
-    sqlArgs = sqlArgs,
+    templateSql = templateSql,
     references = references
   )
 
@@ -97,51 +81,42 @@ createRxNormCohortTemplateDefinition <- function(connection,
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createAtcCohortTemplateDefinition <- function(connection,
-                                              identifierExpression = "concept_id * 1000 + 4",
+                                              identifierExpression = "concept_id * 1000",
                                               cdmDatabaseSchema,
-                                              atcTable = "#cohort_atc_ref",
                                               tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                               cohortDatabaseSchema,
+                                              nameSuffix = '',
                                               mergeIngredientEras = TRUE,
                                               priorObservationPeriod = 365,
                                               vocabularyDatabaseSchema = cdmDatabaseSchema) {
 
-  # Helper function to create references
-  createReferences <- function() {
-    sql <- SqlRender::loadRenderTranslateSql(
-      sqlFilename = file.path("templates", "atc", "references.sql"),
-      packageName = utils::packageName(),
-      identifier_expression = identifierExpression,
-      cohort_database_schema = cohortDatabaseSchema,
-      tempEmulationSchema = tempEmulationSchema,
-      atc_table = atcTable,
-      vocabulary_database_schema = vocabularyDatabaseSchema
-    )
-    DatabaseConnector::executeSql(connection, sql)
 
-    sql <- "SELECT cohort_definition_id as cohort_id, cohort_name FROM @cohort_database_schema.@atc_table;"
-    references <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
-                                                             sql = sql,
-                                                             cohort_database_schema = cohortDatabaseSchema,
-                                                             snakeCaseToCamelCase = TRUE,
-                                                             atc_table = atcTable)
-    return(references)
-  }
-
-  sqlArgs <- list(
-    vocabulary_database_schema = vocabularyDatabaseSchema,
-    prior_observation_period = priorObservationPeriod,
-    atc_table = atcTable,
-    temp_emulation_schema = tempEmulationSchema,
+  sql <- SqlRender::loadRenderTranslateSql(
+    sqlFilename = file.path("templates", "atc", "references.sql"),
+    packageName = utils::packageName(),
     identifier_expression = identifierExpression,
-    merge_ingredient_eras = mergeIngredientEras
+    tempEmulationSchema = tempEmulationSchema,
+    vocabulary_database_schema = vocabularyDatabaseSchema,
+    nameSuffix = nameSuffix
   )
 
-  references <- createReferences()
+  references <- DatabaseConnector::querySql(connection = connection,
+                                            sql = sql,
+                                            snakeCaseToCamelCase = TRUE)
+
+  templateSql <- SqlRender::loadRenderTranslateSql(
+    sqlFilename = file.path("templates", "atc", "definition.sql"),
+    packageName = utils::packageName(),
+    prior_observation_period = priorObservationPeriod,
+    temp_emulation_schema = tempEmulationSchema,
+    identifier_expression = identifierExpression,
+    merge_ingredient_eras = mergeIngredientEras,
+    warnOnMissingParameters = FALSE
+  )
 
   def <- createCohortTemplateDefintion(
-    name = "All ATC 4 class exposures",
-    sqlArgs = sqlArgs,
+    name = "All ATC class exposures",
+    templateSql = templateSql,
     references = references
   )
 
@@ -171,26 +146,19 @@ createSnomedCohortTemplateDefinition <- function(connection,
                                                  requireSecondDiagnosis = FALSE,
                                                  nameSuffix = '',
                                                  vocabularyDatabaseSchema = cdmDatabaseSchema) {
+  sql <- SqlRender::loadRenderTranslateSql(
+    sqlFilename = file.path("templates", "snomed", "references.sql"),
+    packageName = utils::packageName(),
+    identifier_expression = identifierExpression,
+    tempEmulationSchema = tempEmulationSchema,
+    require_second_diagnosis = requireSecondDiagnosis,
+    name_suffix = nameSuffix,
+    vocabulary_database_schema = vocabularyDatabaseSchema
+  )
 
-  # Helper function to create references
-  createReferences <- function() {
-    sql <- SqlRender::loadRenderTranslateSql(
-      sqlFilename = file.path("templates", "snomed", "references.sql"),
-      packageName = utils::packageName(),
-      identifier_expression = identifierExpression,
-      tempEmulationSchema = tempEmulationSchema,
-      require_second_diagnosis = requireSecondDiagnosis,
-      name_suffix = nameSuffix,
-      vocabulary_database_schema = vocabularyDatabaseSchema
-    )
-
-    references <- DatabaseConnector::querySql(connection = connection,
-                                              sql = sql,
-                                              snakeCaseToCamelCase = TRUE)
-    return(references)
-  }
-
-  references <- createReferences()
+  references <- DatabaseConnector::querySql(connection = connection,
+                                            sql = sql,
+                                            snakeCaseToCamelCase = TRUE)
   templateSql <- SqlRender::loadRenderTranslateSql(
     sqlFilename = file.path("templates", "snomed", "definition.sql"),
     packageName = utils::packageName(),
