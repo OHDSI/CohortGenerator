@@ -96,7 +96,7 @@ order by first_era.concept_id, first_era.person_id;
 -- OLDER approach, just select first ingredient and don't merge eras
 select
   @identifier_expression AS COHORT_DEFINITION_ID
-  , person_id
+  , person_id as subject_id
   , cohort_start_date
   , cohort_end_date
 from (
