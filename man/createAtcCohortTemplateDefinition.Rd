@@ -2,43 +2,43 @@
 % Please edit documentation in R/TemplateImplementations.R
 \name{createAtcCohortTemplateDefinition}
 \alias{createAtcCohortTemplateDefinition}
-\title{Create atc cohort Template Definition}
+\title{Create ATC Cohort Template Definition}
 \usage{
 createAtcCohortTemplateDefinition(
-  indentifierExpression = "concept_id * 1000 + 4",
+  connection,
+  identifierExpression = "concept_id * 1000",
   cdmDatabaseSchema,
-  atcTable = "cohort_atc_ref",
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   cohortDatabaseSchema,
+  nameSuffix = "",
+  mergeIngredientEras = TRUE,
   priorObservationPeriod = 365,
   vocabularyDatabaseSchema = cdmDatabaseSchema
 )
 }
 \arguments{
-\item{indentifierExpression}{an expression for setting the cohort id for the resulting cohort. Must produce unique ids}
+\item{connection}{Database connection object}
 
-\item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
-Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'.}
+\item{identifierExpression}{An expression for setting the cohort id for the resulting cohort. Must produce unique ids}
+
+\item{cdmDatabaseSchema}{CDM database schema}
+
+\item{tempEmulationSchema}{Temporary emulation schema}
+
+\item{cohortDatabaseSchema}{Cohort database schema}
+
+\item{mergeIngredientEras}{(optional) Boolean indicating if different ingredients under the same ATC code should be merged}
+
+\item{priorObservationPeriod}{(optional) Required prior observation period for individuals}
+
+\item{vocabularyDatabaseSchema}{Vocabulary database schema}
 
 \item{atcTable}{Table to save references in}
-
-\item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
-temp tables. To emulate temp tables, provide a schema with write
-privileges where temp tables can be created.}
-
-\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
-this should include both the database and schema name, for example
-'scratch.dbo'.}
-
-\item{priorObservationPeriod}{(optional) required prior observation period for individuals}
 }
 \value{
-a CohortTemplateDefinition instance
+A CohortTemplateDefinition instance
 }
 \description{
-Template cohort definition for all ATC level 4 class exposures
-This cohort will use the vocaublary tables to automaticall generate a set of cohorts that have the
-cohortId = conceptId * 1000 + 4, note that this can be customised with the "identifierExpression" if you are using this
-with other cohorts you may wish to change this to allow uniqueness
+Template cohort definition for all ATC level 4 class exposures. The cohortId = conceptId * 1000 + 4.
+The "identifierExpression" can be customized for uniqueness.
 }

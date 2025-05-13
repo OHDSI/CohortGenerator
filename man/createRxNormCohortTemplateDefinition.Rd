@@ -5,40 +5,38 @@
 \title{Create Rx Norm Cohort Template Definition}
 \usage{
 createRxNormCohortTemplateDefinition(
-  indentifierExpression = "concept_id * 1000",
+  connection,
+  identifierExpression = "concept_id * 1000",
   cdmDatabaseSchema,
-  rxNormTable = "cohort_rx_norm_ref",
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   cohortDatabaseSchema,
   priorObservationPeriod = 365,
+  nameSuffix = "",
   vocabularyDatabaseSchema = cdmDatabaseSchema
 )
 }
 \arguments{
-\item{indentifierExpression}{an expression for setting the cohort id for the resulting cohort. Must produce unique ids}
+\item{connection}{Database connection object}
 
-\item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
-Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'.}
+\item{identifierExpression}{An expression for setting the cohort id for the resulting cohort. Must produce unique ids}
+
+\item{cdmDatabaseSchema}{CDM database schema}
+
+\item{tempEmulationSchema}{Temporary emulation schema}
+
+\item{cohortDatabaseSchema}{Cohort database schema}
+
+\item{priorObservationPeriod}{(optional) Required prior observation period for individuals}
 
 \item{rxNormTable}{Table to save references in}
 
-\item{tempEmulationSchema}{Some database platforms like Oracle and Impala do not truly support
-temp tables. To emulate temp tables, provide a schema with write
-privileges where temp tables can be created.}
-
-\item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
-this should include both the database and schema name, for example
-'scratch.dbo'.}
-
-\item{priorObservationPeriod}{(optional) required prior observation period for individuals}
+\item{requireSecondDiagnosis}{(optional) Logical - require a second diagnosis code for this definition?}
 }
 \value{
-a CohortTemplateDefinition instance
+A CohortTemplateDefinition instance
 }
 \description{
-Template cohort definition for all RxNorm ingredients
-This cohort will use the vocaublary tables to automaticall generate a set of cohorts that have the
-cohortId = conceptId * 1000, note that this can be customised with the "identifierExpression" if you are using this
-with other cohorts you may wish to change this to allow uniqueness
+Template cohort definition for all RxNorm ingredients. This cohort will use the
+vocabulary tables to automatically generate a set of cohorts that have the
+cohortId = conceptId * 1000. The "identifierExpression" can be customized for uniqueness.
 }

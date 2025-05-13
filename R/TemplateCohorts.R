@@ -117,8 +117,11 @@ CohortTemplateDefinition <- R6::R6Class(
     }
   ),
   public = list(
+    #' @field sqlArgs            optional arguments for sql
     sqlArgs = NULL,
+    #' @field templateSql             sql template
     templateSql = NULL,
+    #' @field translateSql            translate the sql for different platforms
     translateSql = FALSE,
     #' @param name                    A name for the template definition. This is not used in the checksum of the cohort
     #'
@@ -180,7 +183,13 @@ CohortTemplateDefinition <- R6::R6Class(
     #' ever want to call this function outside of a testing environment.
     #' It is best practice to always use the standard runCohortGeneration/generateCohortSet pipeline to ensure
     #' validity of execution steps.
-    #' @inheritParams generateCohortSet
+    #'
+    #' @template Connection
+    #' @template CohortDatabaseSchema
+    #' @template CdmDatabaseSchema
+    #' @template CohortTableNames
+    #' @param vocabularyDatabaseSchema      vocabulary database schema
+    #' @param tempEmulationSchema           cdm temp emulation schema
     executeTemplateSql = function(connection,
                                   cohortDatabaseSchema,
                                   cdmDatabaseSchema,
@@ -222,11 +231,15 @@ CohortTemplateDefinition <- R6::R6Class(
       return(status)
     },
     #' get template references data.frame
+    #' @description
+    #' Returns data.frame of references
     getTemplateReferences = function() {
       return(private$.references)
     },
 
     #' get the name of the definition
+    #' @description
+    #' Name field
     getName = function() {
       return(private$.name)
     },

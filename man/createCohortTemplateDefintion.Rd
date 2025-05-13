@@ -6,11 +6,10 @@
 \usage{
 createCohortTemplateDefintion(
   name,
-  templateRefFun,
-  executeFun,
-  templateRefArgs,
-  executeArgs,
-  requireConnectionRefs
+  templateSql,
+  references,
+  sqlArgs = list(),
+  translateSql = TRUE
 )
 }
 \description{
