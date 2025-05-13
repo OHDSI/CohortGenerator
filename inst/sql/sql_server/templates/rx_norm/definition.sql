@@ -1,5 +1,5 @@
 {DEFAULT @prior_observation_period = 365}
-
+{DEFAULT @vocabulary_database_schema = @cdm_database_schema}
 
 INSERT INTO @cohort_database_schema.@cohort_table (
     cohort_definition_id

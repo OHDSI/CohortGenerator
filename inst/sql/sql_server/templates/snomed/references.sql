@@ -1,6 +1,7 @@
 {DEFAULT @require_second_diagnosis = FALSE}
 {DEFAULT @name_suffix = ''}
 {DEFAULT @identifier_expression = concept_id * 1000}
+{DEFAULT @vocabulary_database_schema = @cdm_database_schema}
 
 SELECT
   DISTINCT

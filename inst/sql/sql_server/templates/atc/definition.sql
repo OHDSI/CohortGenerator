@@ -78,7 +78,7 @@ from (
 								on ca.ancestor_concept_id = c.concept_id
 							join @vocabulary_database_schema.concept c2
 								on de.drug_concept_id = c2.concept_id
-							where c.vocabulary_id = 'ATC' and c.concept_class_id = @atc_level) de
+							where c.vocabulary_id = 'ATC' and c.concept_class_id = '@atc_level') de
 					order by person_id, drug_concept_id, start_date) raw_data
 				) starts
 			) grp
@@ -127,7 +127,7 @@ from
         from @vocabulary_database_schema.concept c1
       	inner join @vocabulary_database_schema.concept_ancestor ca1 on c1.concept_id = ca1.descendant_concept_id
       	inner join @vocabulary_database_schema.concept c2 on ca1.ancestor_concept_id = c2.concept_id
-      	where c1.vocabulary_id IN ('RxNorm') AND c2.concept_class_id = @atc_level
+      	where c1.vocabulary_id IN ('RxNorm') AND c2.concept_class_id = '@atc_level'
       ) atc_rxnorm
       on de0.drug_concept_id = atc_rxnorm.descendant_concept_id
   ) de1
