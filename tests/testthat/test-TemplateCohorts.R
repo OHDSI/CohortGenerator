@@ -100,3 +100,5 @@ test_that("Stop with a bad cohort", {
                       incremental = FALSE,
                       incrementalFolder = NULL)
 })
+
+# Saving and loading, TODO:

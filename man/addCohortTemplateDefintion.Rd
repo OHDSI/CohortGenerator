@@ -33,6 +33,7 @@ Adds a cohort template definition to an existing cohort definition set or create
 Other templateCohorts: 
 \code{\link{CohortTemplateDefinition}},
 \code{\link{addSqlCohortDefinition}()},
+\code{\link{createCohortTemplateDefintion}()},
 \code{\link{getTemplateDefinitions}()}
 }
 \concept{templateCohorts}

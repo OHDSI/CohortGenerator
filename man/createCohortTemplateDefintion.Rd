@@ -37,3 +37,11 @@ for seralizing and uniqiuely idenitifying template cohort definitions.}
 \description{
 construct a cohort template definition
 }
+\seealso{
+Other templateCohorts: 
+\code{\link{CohortTemplateDefinition}},
+\code{\link{addCohortTemplateDefintion}()},
+\code{\link{addSqlCohortDefinition}()},
+\code{\link{getTemplateDefinitions}()}
+}
+\concept{templateCohorts}

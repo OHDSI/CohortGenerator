@@ -36,6 +36,9 @@ in conjunction with the cohortFileNameFormat parameter.}
 
 \item{subsetJsonFolder}{Defines the folder to store the subset JSON}
 
+\item{templateFolder}{Defines the folder to store sql template cohorts that can be loaded as part of the definition
+Json files are loaded into cohort definition set}
+
 \item{packageName}{The name of the package containing the cohort definitions.}
 
 \item{warnOnMissingJson}{Provide a warning if a .JSON file is not found for a

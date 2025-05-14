@@ -43,11 +43,11 @@ in conjunction with the cohortFileNameFormat parameter.}
 
 \item{subsetJsonFolder}{Defines the folder to store the subset JSON}
 
+\item{templateFolder}{Defines the folder to store sql template cohorts that can be saved as part of the definition
+Sql will be copied to this location when `saveCohortDefinitionSet` is called.}
+
 \item{verbose}{When TRUE, logging messages are emitted to indicate export
 progress.}
-
-\item{sqlTemplateFolder}{Defines the folder to store sql template cohorts that can be saved as part of the definition
-Sql will be copied to this location when `saveCohortDefinitionSet` is called.}
 }
 \description{
 This function saves a cohortDefinitionSet to the file system and provides

@@ -80,6 +80,7 @@ cohortDefinitionSet = createEmptyCohortDefinitionSet() |>
 Other templateCohorts: 
 \code{\link{CohortTemplateDefinition}},
 \code{\link{addCohortTemplateDefintion}()},
+\code{\link{createCohortTemplateDefintion}()},
 \code{\link{getTemplateDefinitions}()}
 }
 \concept{templateCohorts}

@@ -30,6 +30,7 @@ CURRENTLY NOT SUPPORTED:
 Other templateCohorts: 
 \code{\link{addCohortTemplateDefintion}()},
 \code{\link{addSqlCohortDefinition}()},
+\code{\link{createCohortTemplateDefintion}()},
 \code{\link{getTemplateDefinitions}()}
 }
 \concept{templateCohorts}

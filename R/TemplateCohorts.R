@@ -540,7 +540,8 @@ loadTemplateFromJson <- function(filePath) {
   CohortTemplateDefinition$new(ParallelLogger::loadSettingsFromJson(filePath))
 }
 
-
+#' saves json files in sequence
+#' @noRd
 saveCohortTemplateDefinitions <- function(templateDefinitions, templateFolder) {
   rlang::inform("saving cohort template definions...")
   dir.create(templateFolder, recursive = TRUE, showWarnings = FALSE)
@@ -553,6 +554,8 @@ saveCohortTemplateDefinitions <- function(templateDefinitions, templateFolder) {
 }
 
 
+#' loads json files - they must be numbered as they are loaded in sequence
+#' @noRd
 loadTemplateDefinitionsFolder <- function(cohortDefinitionSet, templateFolder) {
   templateDefinitions <- list()
   files <- list.files(path = templateFolder, pattern = "^[0-9]+\\.json$", full.names = TRUE)

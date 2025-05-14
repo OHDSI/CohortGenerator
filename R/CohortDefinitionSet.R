@@ -194,6 +194,8 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
 #'
 #' @param sqlFolder        The name of the folder that will hold the SQL representation
 #'                         of the cohort.
+#' @param templateFolder  Defines the folder to store sql template cohorts that can be loaded as part of the definition
+#'                        Json files are loaded into cohort definition set
 #'
 #' @param cohortFileNameFormat  Defines the format string  for naming the cohort
 #'                              JSON and SQL files. The format string follows the
@@ -300,6 +302,8 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   }
 
   cohortDefinitionSet <- cbind(settings, fileData)
+  loadTemplateDefinitionsFolder(cohortDefinitionSet, templateFolder)
+
   # Loading cohort subset definitions with their associated targets
   if (loadSubsets & nrow(subsetsToLoad) > 0) {
     if (dir.exists(subsetJsonFolder)) {
@@ -356,7 +360,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
 #'                              in conjunction with the cohortFileNameFormat parameter.
 #'
 #' @param subsetJsonFolder      Defines the folder to store the subset JSON
-#' @param sqlTemplateFolder     Defines the folder to store sql template cohorts that can be saved as part of the definition
+#' @param templateFolder     Defines the folder to store sql template cohorts that can be saved as part of the definition
 #'                              Sql will be copied to this location when `saveCohortDefinitionSet` is called.
 #'
 #' @param verbose           When TRUE, logging messages are emitted to indicate export
@@ -379,7 +383,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   checkmate::assert_true(all(cohortFileNameValue %in% names(cohortDefinitionSet)))
 
   templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
-  if (length() > 0) {
+  if (length(templateDefinitions) > 0) {
     saveCohortTemplateDefinitions(templateDefinitions, templateFolder)
     if (all(cohortDefinitionSet$isTemplatedCohort))
       return(invisible())
