@@ -12,6 +12,7 @@ saveCohortDefinitionSet(
   cohortFileNameFormat = "\%s",
   cohortFileNameValue = c("cohortId"),
   subsetJsonFolder = "inst/cohort_subset_definitions/",
+  templateFolder = "inst/cohort_template_definitions/",
   verbose = FALSE
 )
 }

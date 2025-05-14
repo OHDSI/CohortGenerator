@@ -41,8 +41,11 @@ CohortTemplateDefinition <- R6::R6Class(
     .checksum = NULL,
     .name = NULL,
     .references = NULL,
-    generateId = function(...) {
-      private$.checksum <- digest::digest(list(...))
+    .templateSql = NULL,
+    .translateSql = NULL,
+    .sqlArgs = NULL,
+    generateId = function() {
+      private$.checksum <- digest::digest(list(private$.references, private$.templateSql, private$.sqlArgs))
       private$.id <- paste0("CohortTemplate_", private$.checksum)
     },
 
@@ -116,35 +119,22 @@ CohortTemplateDefinition <- R6::R6Class(
       return(endTime)
     }
   ),
-  public = list(
-    #' @field sqlArgs            optional arguments for sql
-    sqlArgs = NULL,
-    #' @field templateSql             sql template
-    templateSql = NULL,
-    #' @field translateSql            translate the sql for different platforms
-    translateSql = FALSE,
-    #' @param name                    A name for the template definition. This is not used in the checksum of the cohort
-    #'
-    #' @param sqlArgs                 Optional parameters for execution of the query - for example vocabulary schema
-    #'                                These are arguments that should be passed to the sql. These are used in the checksum
-    #'                                if using paramtaried sql for different definitions (e.g. a definition requiring
-    #'                                varying observation lengths. This is used to distingish them)
-    #'                                This should not include cdm/data source
-    #'                                specfic parameters such as the cohort table names,
-    #'                                cdm database schema or vocabulary database schema. If the definition requires
-    #'                                runtime specific arguments (e.g. non standard tables) this presents a problem
-    #'                                for seralizing and uniqiuely idenitifying template cohort definitions.
-    #' @param references              This is a data frame that must contain cohortId and cohortName. Optionally, this
-    #'                                can contain the columns sql and json as well. It must be bindable to a
-    #'                                cohort definition set instance.
-    #' @param templateSql             Sql string that is used to generate the cohorts. This should be in OHDSI sql
-    #'                                form, translatable to other db platforms.
-    #' @param translateSql            to translate the sql or not.
-    initialize = function(name,
-                          references,
-                          templateSql,
-                          sqlArgs = list(),
-                          translateSql = TRUE) {
+  active = list(
+    #' @field name                name for this template definition that describes the cohorts it creation
+    #' @field sqlArgs             optional arguments for sql
+    #' @field templateSql         sql template
+    #' @field translateSql        translate the sql for different platforms
+    #' @field references          data.frame of name/id references for cohort template that aligns with cohort set
+    name = function(val) {
+      if (missing(val))
+        return(private$.name)
+      checkmate::assertString(val)
+      private$.name <- val
+    },
+
+    sqlArgs = function(sqlArgs) {
+      if (missing(sqlArgs))
+        return(sqlArgs)
       # Check if eecuteFun are functions
       checkmate::assertList(sqlArgs)
 
@@ -152,18 +142,24 @@ CohortTemplateDefinition <- R6::R6Class(
       if (any(warnFields %in% names(sqlArgs)))
         warning(paste("Fields", paste(warnFields, collapse = ", "), "should not be included in template definitions"))
 
+      private$.sqlArgs <- sqlArgs
+      private$generateId()
+    },
+
+    templateSql = function(templateSql) {
+      if (missing(templateSql))
+        return(private$.templateSql)
       checkmate::assertString(templateSql)
-      checkmate::assertString(name)
-      # Must have cohort references
+      private$.templateSql <- templateSql
+      private$generateId()
+    },
+
+    references = function(references) {
+      if (missing(references))
+        return(private$.references)
+
       checkmate::assertDataFrame(references, min.rows = 1)
       checkmate::assertNames(colnames(references), must.include = c("cohortId", "cohortName"))
-      checkmate::assertLogical(translateSql)
-      self$translateSql <- translateSql
-      self$templateSql <- templateSql
-      private$.name <- name
-      private$generateId(references, templateSql, sqlArgs)
-      self$sqlArgs <- sqlArgs
-
       if (!"json" %in% colnames(references)) {
         references$json <- paste("{}")
       }
@@ -173,7 +169,27 @@ CohortTemplateDefinition <- R6::R6Class(
         references$sql <- paste0("SELECT '", references$cohortId, " - ", self$getName(), "';")
 
       references$isTemplatedCohort <- TRUE
+
       private$.references <- references
+      private$generateId()
+    },
+
+    translateSql = function(translateSql) {
+      if (missing(translateSql))
+        return(private$.translateSql)
+
+      checkmate::assertLogical(translateSql)
+      private$.translateSql <- translateSql
+    }
+  ),
+  public = list(
+    #' @param settings          Settings of object to load seealso createCohortTemplateDefinition
+    initialize = function(settings) {
+      self$translateSql <- settings$translateSql
+      self$templateSql <- settings$templateSql
+      self$name <- settings$name
+      self$sqlArgs <- settings$sqlArgs
+      self$references <- settings$references
     },
 
     #' To alter the execution, override this function in a subclass.
@@ -204,8 +220,7 @@ CohortTemplateDefinition <- R6::R6Class(
       checkmate::assertList(cohortTableNames)
       checkmate::assertNames(names(cohortTableNames),
                              must.include = c("cohortTable", "cohortChecksumTable"))
-
-      args <- self$sqlArgs
+      args <- private$.sqlArgs
       args$sql <- self$templateSql
       args$cohort_database_schema <- cohortDatabaseSchema
       args$cdm_database_schema <- cdmDatabaseSchema
@@ -234,14 +249,14 @@ CohortTemplateDefinition <- R6::R6Class(
     #' @description
     #' Returns data.frame of references
     getTemplateReferences = function() {
-      return(private$.references)
+      return(self$references)
     },
 
     #' get the name of the definition
     #' @description
     #' Name field
     getName = function() {
-      return(private$.name)
+      return(self$name)
     },
 
     #' get the generated id of the template definition
@@ -263,8 +278,8 @@ CohortTemplateDefinition <- R6::R6Class(
     #' For seralizing the definition
     toList = function() {
       def <- list(
-        name = self$getName(),
-        references = self$getTemplateReferences(),
+        name = self$name,
+        references = self$references,
         templateSql = self$templateSql,
         sqlArgs = self$sqlArgs,
         translateSql = self$translateSql
@@ -277,22 +292,52 @@ CohortTemplateDefinition <- R6::R6Class(
     #' json seraalized form of the template definition
     toJson = function() {
       .toJSON(self$toList())
+    },
+
+    #' save to disk
+    #' @description
+    #' Save object to specified json path
+    #' @param filePath      File path to save json serialized from
+    saveTemplate = function(filePath) {
+      checkmate::assertPathForOutput(filePath, overwrite = TRUE)
+      ParallelLogger::saveSettingsToJson(filePath, self$toList())
     }
   )
 )
 
 #' Create Cohort Template Definition
 #' @description construct a cohort template definition
+#' @param name                    A name for the template definition. This is not used in the checksum of the cohort
+#'
+#' @param sqlArgs                 Optional parameters for execution of the query - for example vocabulary schema
+#'                                These are arguments that should be passed to the sql. These are used in the checksum
+#'                                if using paramtaried sql for different definitions (e.g. a definition requiring
+#'                                varying observation lengths. This is used to distingish them)
+#'                                This should not include cdm/data source
+#'                                specfic parameters such as the cohort table names,
+#'                                cdm database schema or vocabulary database schema. If the definition requires
+#'                                runtime specific arguments (e.g. non standard tables) this presents a problem
+#'                                for seralizing and uniqiuely idenitifying template cohort definitions.
+#' @param references              This is a data frame that must contain cohortId and cohortName. Optionally, this
+#'                                can contain the columns sql and json as well. It must be bindable to a
+#'                                cohort definition set instance.
+#' @param templateSql             Sql string that is used to generate the cohorts. This should be in OHDSI sql
+#'                                form, translatable to other db platforms.
+#' @param translateSql            to translate the sql or not.
+#' @export
+#' @family templateCohorts
 createCohortTemplateDefintion <- function(name,
                                           templateSql,
                                           references,
                                           sqlArgs = list(),
                                           translateSql = TRUE) {
-  def <- CohortTemplateDefinition$new(name = name,
-                                      sqlArgs = sqlArgs,
-                                      references = references,
-                                      templateSql = templateSql,
-                                      translateSql = translateSql)
+  settings <- list(name = name,
+                   sqlArgs = sqlArgs,
+                   references = references,
+                   templateSql = templateSql,
+                   translateSql = translateSql)
+
+  def <- CohortTemplateDefinition$new(settings)
   return(invisible(def))
 }
 
@@ -489,4 +534,35 @@ generateTemplateCohorts <- function(connection,
   }
 
   return(statusTbl)
+}
+
+loadTemplateFromJson <- function(filePath) {
+  CohortTemplateDefinition$new(ParallelLogger::loadSettingsFromJson(filePath))
+}
+
+
+saveCohortTemplateDefinitions <- function(templateDefinitions, templateFolder) {
+  rlang::inform("saving cohort template definions...")
+  dir.create(templateFolder, recursive = TRUE, showWarnings = FALSE)
+  tplOrder <- 1
+  lapply(templateDefinitions, function(tpl) {
+    tpl$saveTemplate(file.path(templateFolder, paste0(tplOrder, ".json")))
+    tplOrder <<- tplOrder + 1
+  })
+  rlang::inform("saved cohort template definions")
+}
+
+
+loadTemplateDefinitionsFolder <- function(cohortDefinitionSet, templateFolder) {
+  templateDefinitions <- list()
+  files <- list.files(path = templateFolder, pattern = "^[0-9]+\\.json$", full.names = TRUE)
+  # Order numerically
+  files <- files[order(as.numeric(gsub("\\.json$", "", basename(files))))]
+  for (jsonFile in files) {
+    template <- loadTemplateFromJson(jsonFile)
+    cohortDefinitionSet <- cohortDefinitionSet |>
+      addCohortTemplateDefintion(template)
+  }
+
+  return(cohortDefinitionSet)
 }

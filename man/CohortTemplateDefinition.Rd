@@ -33,14 +33,18 @@ Other templateCohorts:
 \code{\link{getTemplateDefinitions}()}
 }
 \concept{templateCohorts}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
+\item{\code{name}}{name for this template definition that describes the cohorts it creation}
+
 \item{\code{sqlArgs}}{optional arguments for sql}
 
 \item{\code{templateSql}}{sql template}
 
 \item{\code{translateSql}}{translate the sql for different platforms}
+
+\item{\code{references}}{data.frame of name/id references for cohort template that aligns with cohort set}
 }
 \if{html}{\out{</div>}}
 }
@@ -55,6 +59,7 @@ Other templateCohorts:
 \item \href{#method-CohortTemplateDefinition-getChecksum}{\code{CohortTemplateDefinition$getChecksum()}}
 \item \href{#method-CohortTemplateDefinition-toList}{\code{CohortTemplateDefinition$toList()}}
 \item \href{#method-CohortTemplateDefinition-toJson}{\code{CohortTemplateDefinition$toJson()}}
+\item \href{#method-CohortTemplateDefinition-saveTemplate}{\code{CohortTemplateDefinition$saveTemplate()}}
 \item \href{#method-CohortTemplateDefinition-clone}{\code{CohortTemplateDefinition$clone()}}
 }
 }
@@ -63,38 +68,13 @@ Other templateCohorts:
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$new(
-  name,
-  references,
-  templateSql,
-  sqlArgs = list(),
-  translateSql = TRUE
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$new(settings)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{A name for the template definition. This is not used in the checksum of the cohort}
-
-\item{\code{references}}{This is a data frame that must contain cohortId and cohortName. Optionally, this
-can contain the columns sql and json as well. It must be bindable to a
-cohort definition set instance.}
-
-\item{\code{templateSql}}{Sql string that is used to generate the cohorts. This should be in OHDSI sql
-form, translatable to other db platforms.}
-
-\item{\code{sqlArgs}}{Optional parameters for execution of the query - for example vocabulary schema
-These are arguments that should be passed to the sql. These are used in the checksum
-if using paramtaried sql for different definitions (e.g. a definition requiring
-varying observation lengths. This is used to distingish them)
-This should not include cdm/data source
-specfic parameters such as the cohort table names,
-cdm database schema or vocabulary database schema. If the definition requires
-runtime specific arguments (e.g. non standard tables) this presents a problem
-for seralizing and uniqiuely idenitifying template cohort definitions.}
-
-\item{\code{translateSql}}{to translate the sql or not.
+\item{\code{settings}}{Settings of object to load seealso createCohortTemplateDefinition
 To alter the execution, override this function in a subclass.
 This translates and executes the sql of the cohort definition
 Note that calling this function will generate the cohorts but will not do so in an incremental manner.
@@ -213,10 +193,28 @@ to json
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-toJson}{}}}
 \subsection{Method \code{toJson()}}{
 json seraalized form of the template definition
+save to disk
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$toJson()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CohortTemplateDefinition-saveTemplate"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-saveTemplate}{}}}
+\subsection{Method \code{saveTemplate()}}{
+Save object to specified json path
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$saveTemplate(filePath)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{filePath}}{File path to save json serialized from}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-clone"></a>}}

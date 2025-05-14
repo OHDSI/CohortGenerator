@@ -221,6 +221,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
                                    cohortFileNameFormat = "%s",
                                    cohortFileNameValue = c("cohortId"),
                                    subsetJsonFolder = "inst/cohort_subset_definitions/",
+                                   templateFolder = "inst/cohort_template_definitions/",
                                    packageName = NULL,
                                    warnOnMissingJson = TRUE,
                                    verbose = FALSE) {
@@ -369,6 +370,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
                                     cohortFileNameFormat = "%s",
                                     cohortFileNameValue = c("cohortId"),
                                     subsetJsonFolder = "inst/cohort_subset_definitions/",
+                                    templateFolder = "inst/cohort_template_definitions/",
                                     verbose = FALSE) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assert_vector(cohortFileNameValue)
@@ -376,10 +378,13 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   assertSettingsColumns(names(cohortDefinitionSet))
   checkmate::assert_true(all(cohortFileNameValue %in% names(cohortDefinitionSet)))
 
-  if (length(.getTemplateDefinitions(cohortDefinitionSet)) > 0) {
-    warning("Saving template cohort definitions is not currently supported")
+  templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
+  if (length() > 0) {
+    saveCohortTemplateDefinitions(templateDefinitions, templateFolder)
     if (all(cohortDefinitionSet$isTemplatedCohort))
-      stop("Cohort contains only template cohorts, cannot be saved")
+      return(invisible())
+    # Don't save templates as regular cohorts
+    cohortDefinitionSet <- dplyr::filter(!.data$isTemplatedCohort)
   }
 
   settingsFolder <- dirname(settingsFileName)
