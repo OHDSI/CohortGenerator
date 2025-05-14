@@ -59,7 +59,8 @@ createRxNormCohortTemplateDefinition <- function(connection,
   def <- createCohortTemplateDefintion(
     name = "All RxNorm ingredient exposures",
     templateSql = templateSql,
-    references = references
+    references = references,
+    sqlArgs = list(warnOnMissingParameters = FALSE)
   )
 
   return(invisible(def))
@@ -115,9 +116,10 @@ createAtcCohortTemplateDefinition <- function(connection,
   )
 
   def <- createCohortTemplateDefintion(
-    name = "All ATC class exposures",
+    name = paste0("All ATC class exposures", nameSuffix),
     templateSql = templateSql,
-    references = references
+    references = references,
+    sqlArgs = list(warnOnMissingParameters = FALSE)
   )
 
   return(invisible(def))
@@ -164,14 +166,14 @@ createSnomedCohortTemplateDefinition <- function(connection,
     packageName = utils::packageName(),
     identifier_expression = identifierExpression,
     tempEmulationSchema = tempEmulationSchema,
-    require_second_diagnosis = requireSecondDiagnosis,
-    warnOnMissingParameters = FALSE
+    require_second_diagnosis = requireSecondDiagnosis
   )
 
   def <- createCohortTemplateDefintion(
     name = paste("All SNOMED Conditions", nameSuffix),
     templateSql = templateSql,
-    references = references
+    references = references,
+    sqlArgs = list(warnOnMissingParameters = FALSE)
   )
 
   return(invisible(def))
