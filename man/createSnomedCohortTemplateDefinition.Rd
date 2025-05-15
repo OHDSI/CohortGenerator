@@ -29,9 +29,10 @@ createSnomedCohortTemplateDefinition(
 
 \item{priorObservationPeriod}{(optional) Required prior observation period for individuals}
 
-\item{vocabularyDatabaseSchema}{Vocabulary database schema}
+\item{nameSuffix}{A name suffix to use to add to the cohort names - this is useful if you're using multiple
+paramaterized versions of this definition}
 
-\item{conditionsTable}{Reference table to store condition cohorts}
+\item{vocabularyDatabaseSchema}{Vocabulary database schema}
 }
 \value{
 A CohortTemplateDefinition instance
@@ -39,4 +40,10 @@ A CohortTemplateDefinition instance
 \description{
 Template cohort definition for all OHDSI standard conditions. The cohortId = conceptId * 1000.
 The "identifierExpression" can be customized for uniqueness.
+This definition uses any valid snomed condition code and all its descedants.
+
+Excluded terms include word patterns:
+
+  '%finding', 'disorder of%', 'finding of%', 'disease of%' 'injury of%' '%by site' '%by body site' '%by mechanism'
+   '%of body region' '%of anatomical site' '%of specific body structure%'
 }

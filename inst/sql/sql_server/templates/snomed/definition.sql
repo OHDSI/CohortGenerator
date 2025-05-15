@@ -2,6 +2,7 @@
 {DEFAULT @visit_occurrence_ids = 9201} -- INPATIENT VISIT
 {DEFAULT @require_second_diagnosis = FALSE}
 {DEFAULT @prior_observation_period = 365}
+
 {DEFAULT @identifier_expression = concept_id * 1000}
 
 DROP TABLE IF EXISTS #concept_ancestor_grp;
@@ -102,7 +103,7 @@ inner join
   and t1.concept_id = t2.ancestor_concept_id
 inner join @cdm_database_schema.observation_period op1 on op1.person_id = t1.person_id
   where t1.cohort_start_date >= dateadd(dd, @prior_observation_period, op1.observation_period_start_date)
-  {@require_second_diagnosis} ? {where t1.cohort_start_date < t2.cohort_start_date}
+  {@require_second_diagnosis} ? {and t1.cohort_start_date < t2.cohort_start_date}
 ;
 
 TRUNCATE TABLE #concept_ancestor_grp;

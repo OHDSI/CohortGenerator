@@ -28,7 +28,10 @@ createRxNormCohortTemplateDefinition(
 
 \item{priorObservationPeriod}{(optional) Required prior observation period for individuals}
 
-\item{rxNormTable}{Table to save references in}
+\item{nameSuffix}{A name suffix to use to add to the cohort names - this is useful if you're using multiple
+paramaterized versions of this definition}
+
+\item{vocabularyDatabaseSchema}{Vocabulary database schema}
 
 \item{requireSecondDiagnosis}{(optional) Logical - require a second diagnosis code for this definition?}
 }

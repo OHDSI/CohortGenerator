@@ -18,13 +18,8 @@ the following columns: \describe{
 Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
 
-\item{cohortTemplateDefintion}{An instance of CohortTemplateDefinition (or subclass)}
-
-\item{references}{A data.frame containing all cohort ids and names for cohorts. Cohort Id must be
-unique and not clash with any cohorts in the existing cohort definition set.
-Json can optionally be provided. For example, in the case where the sql is intended
-as a bulk speed up, it is likely possible to have an equivalent Circe cohort
-definition.}
+\item{cohortTemplateDefintion}{An instance of CohortTemplateDefinition (or subclass).
+See [@seealso [createCohortTemplateDefinition()]].}
 }
 \description{
 Adds a cohort template definition to an existing cohort definition set or creates one if none provided

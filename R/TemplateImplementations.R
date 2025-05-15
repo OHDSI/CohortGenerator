@@ -22,11 +22,13 @@
 #' @param connection Database connection object
 #' @param identifierExpression An expression for setting the cohort id for the resulting cohort. Must produce unique ids
 #' @param cdmDatabaseSchema CDM database schema
-#' @param rxNormTable Table to save references in
 #' @param tempEmulationSchema Temporary emulation schema
 #' @param cohortDatabaseSchema Cohort database schema
 #' @param priorObservationPeriod (optional) Required prior observation period for individuals
 #' @param requireSecondDiagnosis (optional) Logical - require a second diagnosis code for this definition?
+#' @param vocabularyDatabaseSchema Vocabulary database schema
+#' @param nameSuffix    A name suffix to use to add to the cohort names - this is useful if you're using multiple
+#'                      paramaterized versions of this definition
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createRxNormCohortTemplateDefinition <- function(connection,
@@ -73,12 +75,13 @@ createRxNormCohortTemplateDefinition <- function(connection,
 #' @param connection Database connection object
 #' @param identifierExpression An expression for setting the cohort id for the resulting cohort. Must produce unique ids
 #' @param cdmDatabaseSchema CDM database schema
-#' @param atcTable Table to save references in
 #' @param tempEmulationSchema Temporary emulation schema
 #' @param cohortDatabaseSchema Cohort database schema
 #' @param mergeIngredientEras (optional) Boolean indicating if different ingredients under the same ATC code should be merged
 #' @param priorObservationPeriod (optional) Required prior observation period for individuals
 #' @param vocabularyDatabaseSchema Vocabulary database schema
+#' @param nameSuffix    A name suffix to use to add to the cohort names - this is useful if you're using multiple
+#'                      paramaterized versions of this definition
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createAtcCohortTemplateDefinition <- function(connection,
@@ -129,14 +132,22 @@ createAtcCohortTemplateDefinition <- function(connection,
 #' @description
 #' Template cohort definition for all OHDSI standard conditions. The cohortId = conceptId * 1000.
 #' The "identifierExpression" can be customized for uniqueness.
+#' This definition uses any valid snomed condition code and all its descedants.
+#' 
+#' Excluded terms include word patterns:
+#' 
+#'   '%finding', 'disorder of%', 'finding of%', 'disease of%' 'injury of%' '%by site' '%by body site' '%by mechanism'
+#'    '%of body region' '%of anatomical site' '%of specific body structure%'
+#' 
 #' @param connection Database connection object
 #' @param identifierExpression An expression for setting the cohort id for the resulting cohort. Must produce unique ids
 #' @param cdmDatabaseSchema CDM database schema
-#' @param conditionsTable Reference table to store condition cohorts
 #' @param tempEmulationSchema Temporary emulation schema
 #' @param cohortDatabaseSchema Cohort database schema
 #' @param priorObservationPeriod (optional) Required prior observation period for individuals
 #' @param vocabularyDatabaseSchema Vocabulary database schema
+#' @param nameSuffix    A name suffix to use to add to the cohort names - this is useful if you're using multiple
+#'                      paramaterized versions of this definition
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createSnomedCohortTemplateDefinition <- function(connection,

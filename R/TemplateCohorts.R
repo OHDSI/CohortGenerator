@@ -366,12 +366,8 @@ getTemplateDefinitions <- function(cohortDefinitionSet) {
 #' @description Adds a cohort template definition to an existing cohort definition set or creates one if none provided
 #' @inheritParams generateCohortSet
 #' @export
-#' @param references                A data.frame containing all cohort ids and names for cohorts. Cohort Id must be
-#'                                  unique and not clash with any cohorts in the existing cohort definition set.
-#'                                  Json can optionally be provided. For example, in the case where the sql is intended
-#'                                  as a bulk speed up, it is likely possible to have an equivalent Circe cohort
-#'                                  definition.
-#' @param cohortTemplateDefintion   An instance of CohortTemplateDefinition (or subclass)
+#' @param cohortTemplateDefintion   An instance of CohortTemplateDefinition (or subclass).
+#'                                  See [@seealso [createCohortTemplateDefinition()]].
 #' @family templateCohorts
 addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDefinitionSet(),
                                        cohortTemplateDefintion) {
