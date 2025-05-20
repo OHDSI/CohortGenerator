@@ -1,0 +1,506 @@
+---
+title: "Advanced Cohort Subsets Tutorial"
+format: html
+highlight-style: github
+editor: 
+  markdown: 
+    wrap: 72
+
+---
+
+```{r setup, include=FALSE,warning=FALSE}
+old <- options(width = 80)
+knitr::opts_chunk$set(
+  cache = FALSE,
+  comment = "#>",
+  error = FALSE
+)
+someFolder <- tempdir()
+packageRoot <- tempdir()
+```
+
+# Introduction
+
+Cohort subsets can be complex definitions of 'meta-cohorts' that are not
+initially straightforward to interpret. This guide attempts to use more
+advanced windowing functions to ccapture definitions of populations that
+are often impossible or extremely challenging with conventional Circe
+definitions.
+
+It is important to note that, for the vast majority of cohort
+definitions the use of subset populations is often uneccessary, and
+using the Atlas designer or `{Capr}` package are preffered.
+
+**Currently this code works off of the develop branch of cohort
+generator** install with
+`remotes::install_github("OHDSI/CohortGenerator", ref='develop')`
+
+## Setup
+
+```{r eval=FALSE, warning=FALSE}
+install.packages("remotes")
+remotes::install_github("OHDSI/CohortGenerator", ref='develop')
+remotes::install_github("OHDSI/Capr")
+```
+
+## Terminology
+
+-   **Target cohort** in all examples the target cohort is the cohort
+    for which you are creating a subset population off of for example
+    `patients exposed to Celecoxib`
+-   **Subset cohorts** these are cohorts that are the result of applying
+    a subset definition to target cohort. For example
+    `patients exposed to Celecoxib with no prior history of GI Bleeding`
+-   **Operator cohorts** these are cohorts that are used in calls to
+    `createCohortSubset` to modify target cohorts. Cruically, these
+    cohorts will not effect the index date of the subset cohort, they
+    can only be used for presence (or not) within specified time
+    windows. In the above example of a subset cohort, the operator
+    cohort is `GI Bleeding` as patients in the specified time window
+    (all time before Celecoxib exposure) are excluded from the resulting
+    subset cohort if they are inside the `GI bleeding` cohort.
+-   **Subet definitions** subset definitions are abstract `R` objects
+    that can be applied to an arbitrary number of cohorts. For example
+    in the above, the subset definition would be
+    `no prior history of GI Bleeding`. We could then apply this to a
+    cohort definition set containing dozens of RxNorm ingredients.
+
+### Recipe for example terms
+
+The following demnstrates R code for creating the above definition, for
+this we will use the `Capr` HADES package to define our initial cohorts.
+
+First we define a `celcoxib` exposure cohort using `Capr` - this is our
+**target** cohort,
+
+```{r,warning=FALSE}
+celcoxibConceptSet <- Capr::cs(Capr::descendants(1118084), name = "Rx Norm celcoxib")
+# 1. Create a cohort for Celcoxib exposure
+celcoxibCohort <- Capr::cohort(
+  entry = Capr::entry(
+    Capr::drugExposure(celcoxibConceptSet),
+    observationWindow = Capr::continuousObservation(priorDays = 365)
+  ),
+  exit = Capr::exit(
+    endStrategy = Capr::observationExit()
+  )
+)
+```
+
+We then define our **operator cohort** of GI bleeding events
+
+```{r,warning=FALSE}
+giConceptSet <- Capr::cs(Capr::descendants(192671), name = "Gastrointestinal hemorrhage")
+
+# any GI events
+giBleedEvents <- Capr::cohort(
+  entry = Capr::entry(
+    Capr::conditionOccurrence(giConceptSet)
+  )
+)
+```
+
+In addition we will define ibuprofen exposures:
+
+```{r}
+ibuprofenConceptSet <- Capr::cs(Capr::descendants(1177480), name = "Rx Norm ibuprofen")
+# 1. Create a cohort for Celcoxib exposure
+ibuprofenCohort <- Capr::cohort(
+  entry = Capr::entry(
+    Capr::drugExposure(ibuprofenConceptSet),
+    observationWindow = Capr::continuousObservation(priorDays = 365)
+  ),
+  exit = Capr::exit(
+    endStrategy = Capr::observationExit()
+  )
+)
+```
+
+We then add these to a cohort definition set.
+
+```{r}
+
+celcoxibSql <- CirceR::buildCohortQuery(
+  expression = CirceR::cohortExpressionFromJson(Capr::as.json(celcoxibCohort)),
+  options = CirceR::createGenerateOptions(generateStats = TRUE)
+)
+
+giSql <- CirceR::buildCohortQuery(
+  expression = CirceR::cohortExpressionFromJson(Capr::as.json(giBleedEvents)),
+  options = CirceR::createGenerateOptions(generateStats = TRUE)
+)
+
+ibuprofenSql <- CirceR::buildCohortQuery(
+  expression = CirceR::cohortExpressionFromJson(Capr::as.json(ibuprofenCohort)),
+  options = CirceR::createGenerateOptions(generateStats = TRUE)
+)
+
+
+cohortDefinitionSet <- tibble::tibble(
+  cohortId = c(1,2,3),
+  cohortName = c("celcoxib", "GI Bleed", "ibuprofen"),
+  sql = c(celcoxibSql, giSql,ibuprofenSql),
+  json = c(Capr::as.json(celcoxibCohort), Capr::as.json(giBleedEvents), Capr::as.json(ibuprofenCohort))
+)
+```
+
+Next, we create our subset definition for
+`no prior history of GI Bleeding`.
+
+```{r output = FALSE }
+library(CohortGenerator)
+
+noPriorGiBleeds <- createCohortSubsetDefinition(
+  name = "with",
+  definitionId = 1,
+  subsetOperators = list(
+    # here we are saying 'subset to only those patients in cohort 2'
+    createCohortSubset(
+      name = "no prior history of GI Bleed",
+      # Note that this can be set to any id - if the
+      # cohort is empty or doesn't exist this will not error
+      cohortIds = 2, # Operator cohort ID
+      cohortCombinationOperator = "any", # Only applies if you use multiple operator cohorts
+      negate = TRUE, # This means, only patients who do NOT match the below window logic
+      windows = list(
+        # Target person is in the operator cohort any time prior to index
+        createSubsetCohortWindow(
+            startDay = -9999,
+            endDay = 0,
+            targetAnchor = "cohortStart"
+        )
+      )
+    )
+  )
+)
+
+```
+
+We can then apply this subset definition to to the cohort definition
+set; resulting in a new **subset cohort**.
+
+```{r}
+cohortDefinitionSet <- cohortDefinitionSet |>
+  addCohortSubsetDefinition(noPriorGiBleeds, targetCohortIds = c(1))
+
+cohortDefinitionSet |> 
+  dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
+  gt::gt()
+```
+
+### During target window functions
+
+Prior history (or not) of a disease is a relatively striaghtforward
+concept to capture with conventional Circe definitions. A more complex
+form of window logic is the notion of a cohort that only happens
+*during* a time window. For example, if you want to find patients who
+have a GI bleed while exposed or unexposed to a medication. This logic
+is complicated because an individual can enter and exit the drug
+exposure many times.
+
+One common window function may be to define a subset of our target
+population such that events of the operator cohort occur only during our
+exposed time. For this example, we can create a series window function
+using the `subsetAnchor` parameter such as this:
+
+```{r}
+withinTargetWindows <- list(
+  # operator end must occur after target start
+  createSubsetCohortWindow(
+    startDay = 0, 
+    endDay = 99999,
+    targetAnchor = "cohortStart", 
+    subsetAnchor = "cohortStart"
+  ),
+  # operator start must happen before target end
+  createSubsetCohortWindow(
+    startDay = 0, 
+    endDay = 0, 
+    targetAnchor = "cohortEnd", 
+    subsetAnchor = "cohortStart"
+  )
+)
+```
+
+This would read as:
+
+```         
+The object cohort must START on or after the target cohort's index
+                            
+AND
+                            
+The object cohort must START on or before the target cohort's end
+```
+
+Note, that without the second window rule, the event could happen any
+time after the exposure starts, even if the individual were no longer
+exposed to celcoxib.
+
+We can then apply this windowing logic inside a second subset definition
+
+```{r}
+withGiBleedDuringExplosure <- createCohortSubsetDefinition(
+  name = "requring event of ",
+  definitionId = 2,
+  subsetOperators = list(
+    # here we are saying 'subset to only those patients in cohort 2'
+    createCohortSubset(
+      name = "GI Bleed during cohort",
+      # Note that this can be set to any id - if the
+      # cohort is empty or doesn't exist this will not error
+      cohortIds = c(2), # Operator cohort ID
+      cohortCombinationOperator = "any", # Only applies if you use multiple operator cohorts
+      negate = FALSE,
+      windows = withinTargetWindows
+    )
+  )
+)
+
+cohortDefinitionSet <- cohortDefinitionSet |>
+  addCohortSubsetDefinition(withGiBleedDuringExplosure, targetCohortIds = c(1, 3))
+
+# View both subset cohorts
+cohortDefinitionSet |>
+  dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
+  gt::gt()
+
+```
+
+Note: any number of window operators can be applied with chains of `AND`
+logic.
+
+The above logic can be vieried in sql form:
+
+```{r eval=FALSE}
+cohortDefinitionSet |> 
+  dplyr::filter(subsetDefinitionId == 2) |> 
+  dplyr::pull("sql") |> 
+  writeLines()
+```
+
+```{sql eval = FALSE}
+DELETE FROM @cohort_database_schema.@cohort_table WHERE cohort_definition_id = 1002;
+DROP TABLE IF EXISTS #cohort_sub_base;
+SELECT * INTO #cohort_sub_base FROM @cohort_database_schema.@cohort_table
+WHERE cohort_definition_id = 1;
+DROP TABLE IF EXISTS #S_1;
+ SELECT
+  A.subject_id, 
+  A.cohort_start_date, 
+  A.cohort_end_date
+INTO #S_1
+FROM (
+  SELECT
+    T.subject_id, 
+    T.cohort_start_date, 
+    T.cohort_end_date
+  FROM #cohort_sub_base T
+  JOIN @cohort_database_schema.@cohort_table S ON T.subject_id = S.subject_id
+  WHERE S.cohort_definition_id in (2)
+  -- AND Cohort lies within window criteria
+   AND (S.cohort_start_date >= DATEADD(d, 0, T.cohort_start_date) AND S.cohort_start_date <= DATEADD(d, 99999, T.cohort_start_date))
+   AND (S.cohort_start_date >= DATEADD(d, 0, T.cohort_end_date) AND S.cohort_start_date <= DATEADD(d, 0, T.cohort_end_date))
+  GROUP BY T.subject_id, T.cohort_start_date, T.cohort_end_date
+  HAVING COUNT (DISTINCT S.COHORT_DEFINITION_ID) >= 1
+) A
+
+;
+INSERT INTO @cohort_database_schema.@cohort_table
+SELECT
+    1002 as cohort_definition_id,
+    T.subject_id,
+    T.cohort_start_date,
+    T.cohort_end_date
+FROM #S_1 T;
+
+DROP TABLE IF EXISTS #cohort_sub_base;
+DROP TABLE IF EXISTS #S_1;
+```
+
+Note that in this case, an individual may have multiple `celcoxib`
+exposure windows but only the windows that have a GI bleed would be
+included in a subset cohort.
+
+### Object era during target era windows
+
+In the previous example, we were only concerned with acute events during
+some exposure window. This would not capture a more complex case, for
+example, where individuals are exposed a second medication (such as
+ibuprofen) during their celcoxib exposure, that terminates during their
+celocxib exposure (i.e. they do not remain exposed to ibuprofen).
+
+In this example we would seek to define a slightly different window
+function to the one above:
+
+```{r}
+strictlyWithinTargetWindows <- list(
+
+  createSubsetCohortWindow(
+    startDay = 0, 
+    endDay = 99999,
+    targetAnchor = "cohortStart", 
+    subsetAnchor = "cohortStart"
+  ),
+
+  createSubsetCohortWindow(
+    startDay = 0, 
+    endDay = 0, 
+    targetAnchor = "cohortEnd", 
+    subsetAnchor = "cohortEnd"
+  )
+)
+
+ibuprofenDuring <- createCohortSubsetDefinition(
+  name = "requring exposure of",
+  definitionId = 3,
+  subsetOperators = list(
+    createCohortSubset(
+      name = "Iburpofen strictly during target",
+      # Note that this can be set to any id - if the
+      # cohort is empty or doesn't exist this will not error
+      cohortIds = 3, # Operator cohort ID
+      cohortCombinationOperator = "any", # Only applies if you use multiple operator cohorts
+      negate = FALSE,
+      windows = strictlyWithinTargetWindows
+    )
+  )
+)
+
+cohortDefinitionSet <- cohortDefinitionSet |>
+  addCohortSubsetDefinition(ibuprofenDuring, targetCohortIds = c(1))
+
+# View both subset cohorts
+cohortDefinitionSet |>
+  dplyr::filter(subsetDefinitionId == 3) |>
+  dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
+  gt::gt()
+```
+
+Another example window function may be patients exposed ibuprofen,
+strictly in the year before their celcoxib exposure, but does not
+overlap with the celcoxib. Note, in this example we also limit to only
+the first celocxib exposure:
+
+```{r}
+strictlyBeforeTargetWindows <- list(
+  # operator start must occur before target start
+  createSubsetCohortWindow(
+    startDay = -365, 
+    endDay = -1,
+    targetAnchor = "cohortStart", 
+    subsetAnchor = "cohortStart"
+  ),
+  # operator end must end before the target start 
+  createSubsetCohortWindow(
+    startDay = -365,
+    endDay = -1, 
+    targetAnchor = "cohortStart", 
+    subsetAnchor = "cohortEnd"
+  )
+)
+
+ibuprofenStrictlyBefore <- createCohortSubsetDefinition(
+  name = "requring",
+  definitionId = 4,
+  subsetOperators = list(
+    createLimitSubset(name = "first exposure", limitTo = "firstEver"),
+    createCohortSubset(
+      name = "with iburpofen strictly prior to target",
+      # Note that this can be set to any id - if the
+      # cohort is empty or doesn't exist this will not error
+      cohortIds = 3, # Operator cohort ID
+      cohortCombinationOperator = "any", # Only applies if you use multiple operator cohorts
+      negate = FALSE,
+      windows = strictlyBeforeTargetWindows
+    )
+  )
+)
+
+
+cohortDefinitionSet <- cohortDefinitionSet |>
+  addCohortSubsetDefinition(ibuprofenStrictlyBefore, targetCohortIds = c(1))
+
+cohortDefinitionSet |>
+  dplyr::filter(subsetDefinitionId == 4) |>
+  dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
+  gt::gt()
+```
+
+In both the above cases we note that the index dates for the resuling
+subsets will always be on celcoxib. By design, all subset operators
+maintain the target cohort's index dates as they are strictly subsets.
+
+### Object era after target era window
+In the last example, we focus on patients exposed to ibuprofen strictly within the year after their celcoxib exposure, but does not overlap with the celcoxib.
+```{r}
+strictlyAfterTargetWindows <- list(
+  #Operator must start strictly after the target's end date
+  CohortGenerator::createSubsetCohortWindow(
+    startDay = 1,
+    endDay = 365,
+    targetAnchor = "cohortEnd",
+    subsetAnchor = "cohortStart"
+  )
+)
+
+ibuprofenStrictlyAfter <- CohortGenerator::createCohortSubsetDefinition(
+  name = "requiring",
+  definitionId = 5,
+  subsetOperators = list(
+    CohortGenerator::createLimitSubset(name = "first exposure", limitTo = "firstEver"),
+    CohortGenerator::createCohortSubset(
+      name = "with iburpofen strictly after to target",
+      cohortIds = 3,
+      cohortCombinationOperator = "any",
+      negate = FALSE,
+      windows = strictlyAfterTargetWindows
+    )
+  )
+)
+
+cohortDefinitionSet <- cohortDefinitionSet |>
+  CohortGenerator::addCohortSubsetDefinition(ibuprofenStrictlyAfter, targetCohortIds = c(1))
+
+cohortDefinitionSet |>
+  dplyr::filter(subsetDefinitionId == 5) |>
+  dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
+  gt::gt()
+```
+
+# Running on Eunomia
+
+Of course we would like to actually generate our cohorts. This can be
+done as follows:
+
+```{r eval=FALSE}
+connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+runCohortGeneration(connectionDetails, 
+                    cohortDefinitionSet = cohortDefinitionSet,
+                    cdmDatabaseSchema = "main", 
+                    cohortDatabaseSchema = "main",
+                    outputFolder = tempfile())
+```
+
+```{r message=FALSE,include=FALSE}
+connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+runCohortGeneration(connectionDetails, 
+                    cohortDefinitionSet = cohortDefinitionSet,
+                    cdmDatabaseSchema = "main", 
+                    cohortDatabaseSchema = "main",
+                    outputFolder = tempfile())
+```
+
+```{r message=FALSE}
+counts <- getCohortCounts(connectionDetails = connectionDetails, 
+                          cohortDatabaseSchema = "main")
+
+cohortDefinitionSet |>
+  dplyr::left_join(counts, by = "cohortId") |>
+  dplyr::select("cohortId", "cohortName", "cohortEntries","cohortSubjects") |>
+  gt::gt()
+```
+
+# Conclusion
+
+In this tutorial we have demonstrated how to use different windowing
+functions with the `CohortGenerator` subsetting functionality.
