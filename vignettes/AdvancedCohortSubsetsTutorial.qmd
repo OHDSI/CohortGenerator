@@ -31,13 +31,10 @@ It is important to note that, for the vast majority of cohort
 definitions the use of subset populations is often uneccessary, and
 using the Atlas designer or `{Capr}` package are preffered.
 
-**Currently this code works off of the develop branch of cohort
-generator** install with
-`remotes::install_github("OHDSI/CohortGenerator", ref='develop')`
-
 ## Setup
 
 ```{r eval=FALSE, warning=FALSE}
+install.packages("gt")
 install.packages("remotes")
 remotes::install_github("OHDSI/CohortGenerator", ref='develop')
 remotes::install_github("OHDSI/Capr")
@@ -104,7 +101,7 @@ In addition we will define ibuprofen exposures:
 
 ```{r}
 ibuprofenConceptSet <- Capr::cs(Capr::descendants(1177480), name = "Rx Norm ibuprofen")
-# 1. Create a cohort for Celcoxib exposure
+# 1. Create a cohort for ibuprofen exposure
 ibuprofenCohort <- Capr::cohort(
   entry = Capr::entry(
     Capr::drugExposure(ibuprofenConceptSet),
@@ -431,7 +428,7 @@ subsets will always be on celcoxib. By design, all subset operators
 maintain the target cohort's index dates as they are strictly subsets.
 
 ### Object era after target era window
-In the last example, we focus on patients exposed to ibuprofen strictly within the year after their celcoxib exposure, but does not overlap with the celcoxib.
+In the last scenario, we focus on patients exposed to ibuprofen strictly within 1 to 365 days after their celcoxib exposure end date. This means any ibuprofen exposure that starts before the specified time window (celcoxib exposure end date) are to be excluded from the subset. Any ibuprofen exposure that starts within 1 to 365 days after celcoxib exposure end date are to be included in the subset. 
 ```{r}
 strictlyAfterTargetWindows <- list(
   #Operator must start strictly after the target's end date
@@ -466,6 +463,62 @@ cohortDefinitionSet |>
   dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
   gt::gt()
 ```
+We can make this scenario slightly more complex: to only include patients who start ibuprofen a year after their celcoxib exposure end date and exclude patients who start ibuprofen exposure within 1 to 365 days after their celcoxib exposure end date. 
+```{r}
+
+
+excludeWindow <- list(
+  CohortGenerator::createSubsetCohortWindow(
+    startDay = 1,
+    endDay = 365,
+    targetAnchor = "cohortEnd",
+    subsetAnchor = "cohortStart"
+  )
+)
+includeWindow <- list(
+  CohortGenerator::createSubsetCohortWindow(
+    startDay = 366,
+    endDay = 99999,
+    targetAnchor = "cohortEnd",
+    subsetAnchor = "cohortStart"
+  )
+)
+
+ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition(
+  name = "requiring",
+  definitionId = 6,
+  subsetOperators = list(
+    CohortGenerator::createLimitSubset(name = "first exposure", limitTo = "firstEver"),
+    CohortGenerator::createCohortSubset(
+      name = "with ibuprofen after a year",
+      cohortIds = 3,
+      cohortCombinationOperator = "any",
+      negate = FALSE,
+      windows = includeWindow
+    ),
+    CohortGenerator::createCohortSubset(
+      name = "",
+      cohortIds = 3,
+      cohortCombinationOperator = "any",
+      negate = TRUE,
+      windows = excludeWindow
+    )
+  )
+)
+
+cohortDefinitionSet <- cohortDefinitionSet |>
+  CohortGenerator::addCohortSubsetDefinition(ibuprofenYearAfter, targetCohortIds = c(1))
+
+cohortDefinitionSet |>
+  dplyr::filter(subsetDefinitionId == 6) |>
+  dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
+  gt::gt()
+
+
+
+```
+In the above example, the patients of interest are those who take ibuprofen only after the first year of their celcoxib exposure ends.
+
 
 # Running on Eunomia
 
