@@ -51,10 +51,9 @@ CohortSubsetQb <- R6::R6Class(
     innerQuery = function(targetTable) {
       cohortWindowLogic <- lapply(private$operator$windows, function(window) {
         #WHEN negate = TRUE: AND NOT
-        lsql <- "{@negate} ? {NOT} AND (S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))
-        :AND (S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))"
+        lsql <- "AND {@negate} ? {NOT} (S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))"
         SqlRender::render(lsql,
-                          negate = ifelse(window$negate == TRUE, "1", "0"),
+                          negate = window$negate,
                           window_anchor = ifelse(window$targetAnchor == "cohortStart",
                                                  yes = "cohort_start_date",
                                                  no = "cohort_end_date"),
@@ -71,7 +70,7 @@ CohortSubsetQb <- R6::R6Class(
       sql <- SqlRender::render(sql,
         target_table = targetTable,
         output_table = self$getTableObjectId(),
-        negate = ifelse(private$operator$negate == TRUE, yes = "1", no = "0"),
+        negate = private$operator$negate,
         cohort_window_logic = cohortWindowLogic,
         cohort_ids = private$operator$cohortIds,
         subset_length = ifelse(private$operator$cohortCombinationOperator == "any",
