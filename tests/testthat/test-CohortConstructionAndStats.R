@@ -443,9 +443,9 @@ test_that("Insert cohort stats with inclusion rule name that is empty", {
   # Obtain a list of cohorts with inclusion rule stats
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
   # Change the cohort definition so the inclusion rule is empty
-  cohortDefinition <- RJSONIO::fromJSON(content = cohortsWithStats$json[2], digits = 23)
+  cohortDefinition <- ParallelLogger::convertJsonToSettings(json = cohortsWithStats$json[2])
   cohortDefinition$InclusionRules[[1]]$name <- ""
-  cohortsWithStats$json[2] <- RJSONIO::toJSON(cohortDefinition)
+  cohortsWithStats$json[2] <- ParallelLogger::convertSettingsToJson(object = cohortDefinition)
 
   # Insert the inclusion rule names
   cohortInclusionRules <- insertInclusionRuleNames(

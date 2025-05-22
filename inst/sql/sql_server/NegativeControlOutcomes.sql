@@ -61,6 +61,13 @@ FROM (
     d.condition_start_date  cohort_start_date
   FROM @cdm_database_schema.condition_occurrence d
   INNER JOIN #Codesets c ON c.concept_id = d.condition_concept_id
+  UNION ALL
+  SELECT 
+    o.person_id subject_id,
+    c.cohort_definition_id,
+    o.observation_date  cohort_start_date
+  FROM @cdm_database_schema.observation o
+  INNER JOIN #Codesets c ON c.concept_id = o.observation_concept_id
   {@occurrence_type == 'first'}?{
   ) e
   }:{}
