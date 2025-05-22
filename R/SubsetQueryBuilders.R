@@ -50,7 +50,9 @@ CohortSubsetQb <- R6::R6Class(
   private = list(
     innerQuery = function(targetTable) {
       cohortWindowLogic <- lapply(private$operator$windows, function(window) {
-        lsql <- " AND (S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))"
+        #WHEN negate = TRUE: AND NOT
+        lsql <- "{@negate} ? NOT (S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))
+        :(S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))"
         SqlRender::render(lsql,
                           window_anchor = ifelse(window$targetAnchor == "cohortStart",
                                                  yes = "cohort_start_date",
