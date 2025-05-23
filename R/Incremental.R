@@ -30,12 +30,12 @@
 #' Returns a string containing the checksum
 #'
 #' @export
-computeChecksum <- function(vals) {
-  vals <- as.character(vals)
+computeChecksum <- function(val) {
+  val <- as.character(val)
   # strip whitespace
-  vals <- gsub("[\r\n]", "", vals)
-  vals <- trimws(vals)
-  hashes <- sapply(vals, digest::digest, algo = "md5", serialize = FALSE, USE.NAMES = FALSE)
+  val <- gsub("[\r\n]", "", val)
+  val <- trimws(val)
+  hashes <- sapply(val, digest::digest, algo = "md5", serialize = FALSE, USE.NAMES = FALSE)
   return(hashes)
 }
 
