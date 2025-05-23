@@ -22,6 +22,7 @@
 #' to store in a record keeping file. This function leverages the md5
 #' hash from the digest package
 #'
+#'
 #' @param val   The value to hash. It is converted to a character to perform
 #'              the hash.
 #'
@@ -29,8 +30,13 @@
 #' Returns a string containing the checksum
 #'
 #' @export
-computeChecksum <- function(val) {
-  return(sapply(as.character(val), digest::digest, algo = "md5", serialize = FALSE))
+computeChecksum <- function(vals) {
+  vals <- as.character(vals)
+  # strip whitespace
+  vals <- gsub("[\r\n]", "", vals)
+  vals <- trimws(vals)
+  hashes <- sapply(vals, digest::digest, algo = "md5", serialize = FALSE, USE.NAMES = FALSE)
+  return(hashes)
 }
 
 #' Is a task required when running in incremental mode

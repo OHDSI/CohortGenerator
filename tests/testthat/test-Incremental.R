@@ -389,3 +389,11 @@ test_that("recordTasksDone exits if no key(s) provided", {
 
   unlink(rkf)
 })
+
+test_that("New lines don't break checksums", {
+  myString <- "sm,dlskdkskdsdsldkslkd"
+  tFile <- tempfile()
+  writeLines(c(" ", myString, "\n "), tFile)
+  myReadString <- SqlRender::readSql(tFile)
+  expect_identical(computeChecksum(myString), computeChecksum(myReadString))
+})
