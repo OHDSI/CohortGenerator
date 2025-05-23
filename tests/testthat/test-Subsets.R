@@ -463,7 +463,6 @@ test_that("Subset name templates function", {
 })
 
 test_that("Basic Negate logic check",{
-  source("E:/Freddy/git/CohortGenerator/R/Subsets.R")
   window1 <- createSubsetCohortWindow(
     startDay = 1,
     endDay = 10,
