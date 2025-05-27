@@ -492,14 +492,14 @@ ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition(
     CohortGenerator::createCohortSubset(
       name = "with ibuprofen after a year",
       cohortIds = 3,
-      cohortCombinationOperator = "any",
+      cohortCombinationOperator = "all",
       negate = FALSE,
       windows = includeWindow
     ),
     CohortGenerator::createCohortSubset(
       name = "",
       cohortIds = 3,
-      cohortCombinationOperator = "any",
+      cohortCombinationOperator = "all",
       negate = TRUE,
       windows = excludeWindow
     )
