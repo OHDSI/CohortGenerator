@@ -463,6 +463,8 @@ test_that("Subset name templates function", {
 })
 
 test_that("Basic Negate logic check",{
+  
+  #Testing if Negate is found in json structure
   window1 <- createSubsetCohortWindow(
     startDay = 1,
     endDay = 10,
@@ -476,103 +478,13 @@ test_that("Basic Negate logic check",{
   expect_true(grepl('"negate": true', jsonOutput)) 
   
   
-  #CHECKING SQL STATEMENT
-  #to start off, define the target cohort:
-  celcoxibConceptSet <- Capr::cs(Capr::descendants(1118084), name = "Rx Norm celcoxib")
-  # 1. Create a cohort for Celcoxib exposure
-  celcoxibCohort <- Capr::cohort(
-    entry = Capr::entry(
-      Capr::drugExposure(celcoxibConceptSet),
-      observationWindow = Capr::continuousObservation(priorDays = 365)
-    ),
-    exit = Capr::exit(
-      endStrategy = Capr::observationExit()
-    )
-  )
+
+  #Testing if Negate (AND NOT) IS FOUND IN SQL QUERY
+  #What this test does is check if using a cohort celcoxib, 
+  #create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
   
-  
-  #this is the operator cohort of GI bleeding events
-  giConceptSet <- Capr::cs(Capr::descendants(192671), name = "Gastrointestinal hemorrhage")
-  # any GI events
-  giBleedEvents <- Capr::cohort(
-    entry = Capr::entry(
-      Capr::conditionOccurrence(giConceptSet)
-    )
-  )
-  
-  #additional cohort
-  ibuprofenConceptSet <- Capr::cs(Capr::descendants(1177480), name = "Rx Norm ibuprofen")
-  # 1. Create a cohort for Celcoxib exposure
-  ibuprofenCohort <- Capr::cohort(
-    entry = Capr::entry(
-      Capr::drugExposure(ibuprofenConceptSet),
-      observationWindow = Capr::continuousObservation(priorDays = 365)
-    ),
-    exit = Capr::exit(
-      endStrategy = Capr::observationExit()
-    )
-  )
-  
-  
-  celcoxibSql <- CirceR::buildCohortQuery(
-    expression = CirceR::cohortExpressionFromJson(Capr::as.json(celcoxibCohort)),
-    options = CirceR::createGenerateOptions(generateStats = TRUE)
-  )
-  
-  giSql <- CirceR::buildCohortQuery(
-    expression = CirceR::cohortExpressionFromJson(Capr::as.json(giBleedEvents)),
-    options = CirceR::createGenerateOptions(generateStats = TRUE)
-  )
-  
-  ibuprofenSql <- CirceR::buildCohortQuery(
-    expression = CirceR::cohortExpressionFromJson(Capr::as.json(ibuprofenCohort)),
-    options = CirceR::createGenerateOptions(generateStats = TRUE)
-  )
-  
-  #has the target, operator, and ibuprofen exposure
-  cohortDefinitionSet <- tibble::tibble(
-    cohortId = c(1,2,3),
-    cohortName = c("celcoxib", "GI Bleed", "ibuprofen"),
-    sql = c(celcoxibSql, giSql,ibuprofenSql),
-    json = c(Capr::as.json(celcoxibCohort), Capr::as.json(giBleedEvents), Capr::as.json(ibuprofenCohort))
-  )
-  
-  
-  
-  windows <- list(
-    CohortGenerator::createSubsetCohortWindow(
-      startDay = 1,
-      endDay = 365,
-      targetAnchor = "cohortEnd",
-      subsetAnchor = "cohortStart"
-    ),
-    CohortGenerator::createSubsetCohortWindow(
-      startDay = 366,
-      endDay = 99999,
-      targetAnchor = "cohortEnd",
-      subsetAnchor = "cohortStart",
-      negate = TRUE
-    )
-  )
-  
-  ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition(
-    name = "requiring",
-    definitionId = 6,
-    subsetOperators = list(
-      CohortGenerator::createLimitSubset(name = "first exposure", limitTo = "firstEver"),
-      CohortGenerator::createCohortSubset(
-        name = "with ibuprofen after a year",
-        cohortIds = 3,
-        cohortCombinationOperator = "any",
-        negate = FALSE,
-        windows = windows
-      )
-    )
-  )
-  
-  cohortDefinitionSet <- cohortDefinitionSet |>
-    CohortGenerator::addCohortSubsetDefinition(ibuprofenYearAfter, targetCohortIds = c(1))
-  
+  jsonFilePath <- "CohortGenerator/tests/SaveCohorts.JSON" 
+  cohortDefinitionSet <- fromJSON(jsonFilePath)
   sqlForCohort1006 <-  cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
   expect_true(grepl("AND NOT", sqlForCohort1006, ignore.case = TRUE))
   
