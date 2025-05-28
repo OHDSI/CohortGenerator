@@ -20,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          #- {os: windows-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
-          #- {os: macOS-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
+          - {os: windows-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
+          - {os: macOS-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04, r: 'release', rtools: ''}
     env:
       GITHUB_PAT: ${{ secrets.GH_TOKEN }}
@@ -81,6 +81,14 @@ jobs:
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
+      - name: Cache R packages
+        if: runner.os != 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
@@ -88,8 +96,7 @@ jobs:
           sudo apt-get install -y default-jdk
           sudo apt-get install -y libcurl4-openssl-dev
           sudo apt-get install -y libssl-dev
-          sudo apt-get install -y libglpk-dev 
-          Rscript -e 'install.packages("remotes")'
+          sudo apt-get install -y libglpk-dev
           while read -r cmd
           do
             eval sudo $cmd
@@ -124,14 +131,6 @@ jobs:
         if: runner.os == 'macOS'
         run: unlink("check", recursive = TRUE)
         shell: Rscript {0}
-
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
       
       - name: Check
         env:
