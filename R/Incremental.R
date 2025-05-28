@@ -184,7 +184,8 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
 #'
 #' @export
 saveIncremental <- function(data, fileName, ...) {
-  if (length(list(...)[[1]]) == 0) {
+  if (length(list(...)) == 0) {
+    warning(paste0("saveIncremental missing key values arguments. Not saving any information to ", fileName))
     return()
   }
   if (file.exists(fileName)) {
