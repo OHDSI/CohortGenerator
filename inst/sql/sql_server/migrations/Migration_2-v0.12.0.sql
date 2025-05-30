@@ -7,6 +7,7 @@ CREATE TABLE @database_schema.@table_prefixcg_cohort_censor_stats_temp (
 	 lost_count BIGINT NOT NULL,
 	 database_id VARCHAR
 )
+;
 
 INSERT INTO @database_schema.@table_prefixcg_cohort_censor_stats_temp
 SELECT
@@ -17,12 +18,14 @@ FROM @database_schema.@table_prefixcg_cohort_censor_stats
 ;
 
 DROP TABLE @database_schema.@table_prefixcg_cohort_censor_stats;
+
 CREATE TABLE @database_schema.@table_prefixcg_cohort_censor_stats_temp (
 	 cohort_definition_id BIGINT NOT NULL,
 	 lost_count BIGINT NOT NULL,
 	 database_id VARCHAR,
 	 PRIMARY KEY(cohort_definition_id,lost_count,database_id)
 )
+;
 
 INSERT INTO @database_schema.@table_prefixcg_cohort_censor_stats
 SELECT
