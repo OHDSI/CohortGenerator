@@ -19,7 +19,7 @@ FROM @database_schema.@table_prefixcg_cohort_censor_stats
 
 DROP TABLE @database_schema.@table_prefixcg_cohort_censor_stats;
 
-CREATE TABLE @database_schema.@table_prefixcg_cohort_censor_stats_temp (
+CREATE TABLE @database_schema.@table_prefixcg_cohort_censor_stats (
 	 cohort_definition_id BIGINT NOT NULL,
 	 lost_count BIGINT NOT NULL,
 	 database_id VARCHAR,
