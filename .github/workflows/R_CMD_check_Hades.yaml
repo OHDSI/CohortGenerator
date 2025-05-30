@@ -22,7 +22,7 @@ jobs:
         config:
           - {os: windows-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
           - {os: macOS-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-20.04, r: 'release', rtools: '', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: ubuntu-22.04, r: 'release', rtools: ''}
     env:
       GITHUB_PAT: ${{ secrets.GH_TOKEN }}
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -51,7 +51,7 @@ jobs:
       CDM_SNOWFLAKE_OHDSI_SCHEMA: ${{ secrets.CDM_SNOWFLAKE_OHDSI_SCHEMA }}
       CDM_SNOWFLAKE_PASSWORD: ${{ secrets.CDM_SNOWFLAKE_PASSWORD }}
       CDM_SNOWFLAKE_CONNECTION_STRING: ${{ secrets.CDM_SNOWFLAKE_CONNECTION_STRING }}
-      CDM_SNOWFLAKE_USER: ${{ secrets.CDM_SNOWFLAKE_USER }}      
+      CDM_SNOWFLAKE_USER: ${{ secrets.CDM_SNOWFLAKE_USER }}
       CDM5_SPARK_USER: ${{ secrets.CDM5_SPARK_USER }}
       CDM5_SPARK_PASSWORD: ${{ secrets.CDM5_SPARK_PASSWORD }}
       CDM5_SPARK_CONNECTION_STRING: ${{ secrets.CDM5_SPARK_CONNECTION_STRING }}
@@ -96,11 +96,11 @@ jobs:
           sudo apt-get install -y default-jdk
           sudo apt-get install -y libcurl4-openssl-dev
           sudo apt-get install -y libssl-dev
-          sudo apt-get install -y libglpk-dev        
+          sudo apt-get install -y libglpk-dev
           while read -r cmd
           do
             eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
           
       - name: Setup Java
         if: runner.os == 'macOS'
@@ -122,16 +122,17 @@ jobs:
         shell: Rscript {0}
         
       - name: Install covr
-        if: runner.os == 'macOS'
+        if: runner.os == 'Linux'
         run: |
           remotes::install_cran("covr")
+          remotes::install_cran("xml2")
         shell: Rscript {0}
         
       - name: Remove check folder if exists
         if: runner.os == 'macOS'
         run: unlink("check", recursive = TRUE)
         shell: Rscript {0}
-
+      
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
@@ -153,9 +154,23 @@ jobs:
           path: check/*.tar.gz
       
       - name: Test coverage
-        if: runner.os == 'macOS'
-        run: covr::codecov()
+        if: runner.os == 'Linux'
+        run: |
+          cov <- covr::package_coverage(
+            quiet = FALSE,
+            clean = FALSE,
+            install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
+          )
+          covr::to_cobertura(cov)
         shell: Rscript {0}
+        
+      - uses: codecov/codecov-action@v4
+        if: runner.os == 'Linux'
+        with:
+          file: ./cobertura.xml
+          plugin: noop
+          disable_search: true
+          token: ${{ secrets.CODECOV_TOKEN }}        
 
   Release:
     needs: R-CMD-Check
