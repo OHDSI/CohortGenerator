@@ -483,8 +483,8 @@ test_that("Basic Negate logic check",{
   #What this test does is check if using a cohort celcoxib, 
   #create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
   
-  jsonFilePath <- "CohortGenerator/tests/SaveCohorts.JSON" 
-  cohortDefinitionSet <- fromJSON(jsonFilePath)
+  jsonFilePath <- system.file("testdata", "SaveCohorts.JSON", package = "CohortGenerator")
+  cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
   sqlForCohort1006 <-  cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
   expect_true(grepl("AND NOT", sqlForCohort1006, ignore.case = TRUE))
   

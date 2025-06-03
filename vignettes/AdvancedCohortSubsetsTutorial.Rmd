@@ -1,6 +1,7 @@
 ---
 title: "Advanced Cohort Subsets Tutorial"
-format: html
+author: "Freddy A. Cruz and James Gilbert"
+output: html_document
 highlight-style: github
 editor: 
   markdown: 
@@ -144,7 +145,7 @@ cohortDefinitionSet <- tibble::tibble(
 Next, we create our subset definition for
 `no prior history of GI Bleeding`.
 
-```{r output = FALSE }
+```{r echo = TRUE, results = 'hide', warning = FALSE, message = FALSE}
 library(CohortGenerator)
 
 noPriorGiBleeds <- createCohortSubsetDefinition(
@@ -484,7 +485,7 @@ includeWindow <- list(
   )
 )
 
-ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition(
+ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition( 
   name = "requiring",
   definitionId = 6,
   subsetOperators = list(
