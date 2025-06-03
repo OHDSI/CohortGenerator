@@ -60,8 +60,6 @@ cohortDefinitionSet <- tibble::tibble(
   json = c(Capr::as.json(celcoxibCohort), Capr::as.json(giBleedEvents), Capr::as.json(ibuprofenCohort))
 )
 
-
-
 windows <- list(
   CohortGenerator::createSubsetCohortWindow(
     startDay = 1,
@@ -96,9 +94,6 @@ ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition(
 cohortDefinitionSet <- cohortDefinitionSet |>
   CohortGenerator::addCohortSubsetDefinition(ibuprofenYearAfter, targetCohortIds = c(1))
 
-sqlForCohort1006 <-  cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
-expect_true(grepl("AND NOT", sqlForCohort1006, ignore.case = TRUE))
-# 
 # #Save to JSON
 cohortList <- lapply(1:length(cohortDefinitionSet$cohortId), function(i) {
   list(
@@ -116,7 +111,7 @@ cohortList <- lapply(1:length(cohortDefinitionSet$cohortId), function(i) {
 jsonFormatted <- toJSON(cohortList, pretty = TRUE, auto_unbox = TRUE)
 
 # Save the JSON to a file
-jsonFilePath <- "E:/Freddy/git/CohortGenerator/tests/SaveCohorts.JSON"
+jsonFilePath <- "inst/testdata/SaveCohorts.JSON"
 write(jsonFormatted, file = jsonFilePath)
 
 
