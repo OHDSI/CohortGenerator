@@ -6,6 +6,10 @@ highlight-style: github
 editor: 
   markdown: 
     wrap: 72
+vignette: >
+  %\VignetteIndexEntry{Creating Cohort Subset Definitions}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 
 ---
 
