@@ -312,39 +312,42 @@ generateCohortSet <- function(connectionDetails = NULL,
 }
 
 # Helper function used within the tryCatch block below
-.runCohortSql <- function(connection,
-                          sql,
-                          startTime,
-                          resultsDatabaseSchema,
-                          cohortChecksumTable,
-                          incremental,
-                          cohortId,
-                          checksum,
-                          recordKeepingFile) {
-  startSql <- "DELETE FROM @results_database_schema.@cohort_checksum_table WHERE cohort_definition_id = @target_cohort_id AND checksum = '@checksum';
-      INSERT INTO @results_database_schema.@cohort_checksum_table (cohort_definition_id, checksum, start_time, end_time) VALUES (@target_cohort_id, '@checksum', @start_time, NULL);"
+.runCohortSql <- function(connection, sql, startTime, resultsDatabaseSchema, cohortChecksumTable, incremental, cohortId, checksum, recordKeepingFile) {
+
+  startTimeTt <- as.numeric(Sys.time()) * 1000
+  startSql <- "
+  DELETE FROM @results_database_schema.@cohort_checksum_table
+  WHERE cohort_definition_id = @target_cohort_id AND checksum = '@checksum';
+
+  INSERT INTO @results_database_schema.@cohort_checksum_table (cohort_definition_id, checksum, start_time, end_time)
+  VALUES (@target_cohort_id, '@checksum', @start_time, NULL);"
+
   DatabaseConnector::renderTranslateExecuteSql(connection,
                                                startSql,
                                                results_database_schema = resultsDatabaseSchema,
                                                cohort_checksum_table = cohortChecksumTable,
                                                target_cohort_id = cohortId,
                                                checksum = checksum,
-                                               start_time = as.numeric(Sys.time()) * 1000,
+                                               start_time = startTimeTt,
                                                reportOverallTime = FALSE,
                                                progressBar = FALSE)
   DatabaseConnector::executeSql(connection, sql)
-  endSql <- "
-      UPDATE @results_database_schema.@cohort_checksum_table
-      SET end_time = @end_time
-      WHERE cohort_definition_id = @target_cohort_id
-      AND checksum = '@checksum';"
-
   endTime <- lubridate::now()
-  DatabaseConnector::renderTranslateExecuteSql(connection, endSql,
+
+  # Use delete instead of update to improve performance on MPP platforms
+  endSql <- "
+  DELETE FROM @results_database_schema.@cohort_checksum_table
+  WHERE cohort_definition_id = @target_cohort_id AND checksum = '@checksum';
+
+  INSERT INTO @results_database_schema.@cohort_checksum_table (cohort_definition_id, checksum, start_time, end_time)
+  VALUES (@target_cohort_id, '@checksum', @start_time, @end_time);"
+  DatabaseConnector::renderTranslateExecuteSql(connection,
+                                               endSql,
                                                target_cohort_id = cohortId,
                                                results_database_schema = resultsDatabaseSchema,
                                                cohort_checksum_table = cohortChecksumTable,
                                                checksum = checksum,
+                                               start_time = startTimeTt,
                                                end_time = as.numeric(Sys.time()) * 1000,
                                                progressBar = FALSE,
                                                reportOverallTime = FALSE)

@@ -1,9 +1,9 @@
 -- Database migrations for version 0.12.0
--- Adds missing database_id to cg_cohort_censor_stats primary key
 -- Adds checksum to cohort definition_table
 {DEFAULT @cg_cohort_generation = cg_cohort_generation}
 ALTER TABLE @database_schema.@table_prefix@cg_cohort_generation ADD checksum VARCHAR;
 
+-- Adds missing database_id to cg_cohort_censor_stats primary key
 DROP TABLE IF EXISTS @database_schema.@table_prefixcg_cohort_censor_stats_temp;
 
 CREATE TABLE @database_schema.@table_prefixcg_cohort_censor_stats_temp (
