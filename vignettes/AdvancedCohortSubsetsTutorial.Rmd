@@ -43,7 +43,6 @@ using the Atlas designer or `{Capr}` package are preffered.
 install.packages("gt")
 install.packages("remotes")
 remotes::install_github("OHDSI/CohortGenerator", ref='develop')
-remotes::install_github("OHDSI/Capr")
 library(Capr)
 ```
 
@@ -71,81 +70,28 @@ library(Capr)
 
 ### Recipe for example terms
 
-The following demnstrates R code for creating the above definition, for
-this we will use the `Capr` HADES package to define our initial cohorts.
+
+The following cohorts are produced by a script called SubsetVignetteCohort
+found in the testdata folder in inst's folder.
+The script uses the `Capr` HADES package to define the initial targets.
 
 First we define a `celcoxib` exposure cohort using `Capr` - this is our
 **target** cohort,
 
-```{r,warning=FALSE}
-celcoxibConceptSet <- Capr::cs(Capr::descendants(1118084), name = "Rx Norm celcoxib")
-# 1. Create a cohort for Celcoxib exposure
-celcoxibCohort <- Capr::cohort(
-  entry = Capr::entry(
-    Capr::drugExposure(celcoxibConceptSet),
-    observationWindow = Capr::continuousObservation(priorDays = 365)
-  ),
-  exit = Capr::exit(
-    endStrategy = Capr::observationExit()
-  )
-)
-```
-
 We then define our **operator cohort** of GI bleeding events
-
-```{r,warning=FALSE}
-giConceptSet <- Capr::cs(Capr::descendants(192671), name = "Gastrointestinal hemorrhage")
-
-# any GI events
-giBleedEvents <- Capr::cohort(
-  entry = Capr::entry(
-    Capr::conditionOccurrence(giConceptSet)
-  )
-)
-```
 
 In addition we will define ibuprofen exposures:
 
-```{r}
-ibuprofenConceptSet <- Capr::cs(Capr::descendants(1177480), name = "Rx Norm ibuprofen")
-# 1. Create a cohort for ibuprofen exposure
-ibuprofenCohort <- Capr::cohort(
-  entry = Capr::entry(
-    Capr::drugExposure(ibuprofenConceptSet),
-    observationWindow = Capr::continuousObservation(priorDays = 365)
-  ),
-  exit = Capr::exit(
-    endStrategy = Capr::observationExit()
-  )
-)
-```
-
-We then add these to a cohort definition set.
+We then add these to a cohort definition set, in which we pull from here.
 
 ```{r}
+jsonFilePath <- here::here("inst","testdata","VignetteCohorts.JSON")
 
-celcoxibSql <- CirceR::buildCohortQuery(
-  expression = CirceR::cohortExpressionFromJson(Capr::as.json(celcoxibCohort)),
-  options = CirceR::createGenerateOptions(generateStats = TRUE)
-)
+cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
 
-giSql <- CirceR::buildCohortQuery(
-  expression = CirceR::cohortExpressionFromJson(Capr::as.json(giBleedEvents)),
-  options = CirceR::createGenerateOptions(generateStats = TRUE)
-)
-
-ibuprofenSql <- CirceR::buildCohortQuery(
-  expression = CirceR::cohortExpressionFromJson(Capr::as.json(ibuprofenCohort)),
-  options = CirceR::createGenerateOptions(generateStats = TRUE)
-)
-
-
-cohortDefinitionSet <- tibble::tibble(
-  cohortId = c(1,2,3),
-  cohortName = c("celcoxib", "GI Bleed", "ibuprofen"),
-  sql = c(celcoxibSql, giSql,ibuprofenSql),
-  json = c(Capr::as.json(celcoxibCohort), Capr::as.json(giBleedEvents), Capr::as.json(ibuprofenCohort))
-)
+cohortDefinitionSet |> 
+  dplyr::select("cohortId", "cohortName") |> 
+  gt::gt()
 ```
 
 Next, we create our subset definition for

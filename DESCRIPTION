@@ -32,9 +32,9 @@ Imports:
   ResultModelManager,
   SqlRender (>= 1.11.1),
   stringi (>= 1.7.6),
-  tibble
-Remotes : 
-  OHDSI/Capr
+  tibble,
+  here
+
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
