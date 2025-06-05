@@ -6,6 +6,7 @@ highlight-style: github
 editor: 
   markdown: 
     wrap: 72
+
 vignette: >
   %\VignetteIndexEntry{Creating Cohort Subset Definitions}
   %\VignetteEncoding{UTF-8}
@@ -38,11 +39,12 @@ using the Atlas designer or `{Capr}` package are preffered.
 
 ## Setup
 
-```{r eval=FALSE, warning=FALSE}
+```{r setup = FALSE, eval=FALSE, warning=FALSE}
 install.packages("gt")
 install.packages("remotes")
 remotes::install_github("OHDSI/CohortGenerator", ref='develop')
 remotes::install_github("OHDSI/Capr")
+library(Capr)
 ```
 
 ## Terminology

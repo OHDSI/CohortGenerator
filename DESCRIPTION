@@ -33,6 +33,8 @@ Imports:
   SqlRender (>= 1.11.1),
   stringi (>= 1.7.6),
   tibble
+Remotes : 
+  OHDSI/Capr
 Suggests:
   CirceR (>= 1.1.1),
   Eunomia,
