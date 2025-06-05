@@ -71,7 +71,7 @@ library(Capr)
 ### Recipe for example terms
 
 
-The following cohorts are produced by a script called SubsetVignetteCohort
+The following cohorts are produced by a script called SubsetVignetteCohort.R
 found in the testdata folder in inst's folder.
 The script uses the `Capr` HADES package to define the initial targets.
 
