@@ -34,6 +34,7 @@ getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
 #' This is a function designed to make parameterization of study execution clear.
 #'
 #' Also attaches an attribute to the cohort definition set
+#'
 #' @export
 #' @template cohortDefinitionSet
 #' @param subsetDefinitionId            The ID if the resulting subset. Note, this must be uniquely applied to the cohort
@@ -200,5 +201,55 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 
   attr(cohortDefinitionSet, "restrictionSubsetDefinitions") <- c(getRestrictionSubsetDefinitionIds(cohortDefinitionSet),
                                                                 definitionId)
+  return(cohortDefinitionSet)
+}
+
+#' Add exclude on index subset definition
+#' @description
+#' The purpose of this subset recipie is to exclude all individuals if their index aligns with the specified
+#' exclusion cohort ids.This may be used in situations where an outcome cohort may contain individuals treated for a target medication,
+#' complicating calculation of incidence rates.
+#'
+#' @inheritParams addIndicationSubsetDefinition
+#' @param exclusionCohortIds                        cohort ids to exlcude members of target from
+#' @param cohortCombinationOperator                 if more than one cohort is used, combine them all with any or only
+#'                                                  exclude if they're in a single cohort definition
+#' @param exclusionWindow                           Days - Default is 0 (target index date). by changing this
+#'                                                  you can adjust the period around target index for which you would
+#'                                                  exclude members.
+#' @export
+addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
+                                              name,
+                                              subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
+                                              targetCohortIds,
+                                              exclusionCohortIds,
+                                              exclusionWindow = 0,
+                                              definitionId,
+                                              cohortCombinationOperator = "any") {
+  .cohortDefinitionSetHasRequiredColumns(cohortDefinitionSet)
+  checkmate::assertChoice(targetCohortIds, cohortDefinitionSet$cohortId)
+  checkmate::assertChoice(exclusionCohortIds, cohortDefinitionSet$cohortId)
+
+  def <- CohortGenerator::createCohortSubset(
+    cohortIds = exclusionCohortIds,
+    name = "exclusion",
+    negate = TRUE, # LOGIC -  NOT IN  any indication cohort on cohort start date
+    cohortCombinationOperator = cohortCombinationOperator,
+    windows = list(CohortGenerator::createSubsetCohortWindow(exclusionWindow, exclusionWindow, "cohortStart"))
+  )
+
+  CohortGenerator::createCohortSubsetDefinition(
+    name = name,
+    definitionId = definitionId,
+    subsetCohortNameTemplate = subsetCohortNameTemplate,
+    subsetOperators = list(def)
+  )
+
+  cohortDefinitionSet <- cohortDefinitionSet |>
+    addCohortSubsetDefinition(
+      cohortSubsetDefintion = def,
+      targetCohortIds = targetCohortIds
+    )
+
   return(cohortDefinitionSet)
 }
