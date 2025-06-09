@@ -538,8 +538,43 @@ test_that("Basic Negate logic check",{
   #What this test does is check if using a cohort celcoxib, 
   #create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
   
-  jsonFilePath <- system.file("testdata", "SaveCohorts.JSON", package = "CohortGenerator")
+  jsonFilePath <- system.file("testdata", "SubsetVignetteCohorts", package = "CohortGenerator")
   cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
+  
+  windows <- list(
+    CohortGenerator::createSubsetCohortWindow(
+      startDay = 1,
+      endDay = 365,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortStart"
+    ),
+    CohortGenerator::createSubsetCohortWindow(
+      startDay = 366,
+      endDay = 99999,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortStart",
+      negate = TRUE
+    )
+  )
+  
+  ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition(
+    name = "requiring",
+    definitionId = 6,
+    subsetOperators = list(
+      CohortGenerator::createLimitSubset(name = "first exposure", limitTo = "firstEver"),
+      CohortGenerator::createCohortSubset(
+        name = "with ibuprofen after a year",
+        cohortIds = 3,
+        cohortCombinationOperator = "any",
+        negate = FALSE,
+        windows = windows
+      )
+    )
+  )
+  
+  cohortDefinitionSet <- cohortDefinitionSet |>
+    CohortGenerator::addCohortSubsetDefinition(ibuprofenYearAfter, targetCohortIds = c(1))
+  
   sqlForCohort1006 <-  cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
   expect_true(grepl("AND NOT", sqlForCohort1006, ignore.case = TRUE))
   
