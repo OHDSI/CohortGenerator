@@ -85,8 +85,7 @@ In addition we will define ibuprofen exposures:
 We then add these to a cohort definition set, in which we pull from here.
 
 ```{r}
-jsonFilePath <- here::here("inst","testdata","VignetteCohorts.JSON")
-
+jsonFilePath <- system.file("testdata", "SubsetVignetteCohorts.JSON", package = "CohortGenerator")
 cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
 
 cohortDefinitionSet |> 

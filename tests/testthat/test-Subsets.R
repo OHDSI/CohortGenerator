@@ -538,7 +538,7 @@ test_that("Basic Negate logic check",{
   #What this test does is check if using a cohort celcoxib, 
   #create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
   
-  jsonFilePath <- system.file("testdata", "SubsetVignetteCohorts", package = "CohortGenerator")
+  jsonFilePath <- system.file("testdata", "SubsetVignetteCohorts.JSON", package = "CohortGenerator")
   cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
   
   windows <- list(

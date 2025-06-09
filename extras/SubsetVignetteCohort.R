@@ -72,7 +72,7 @@ cohortList <- lapply(1:length(cohortDefinitionSet$cohortId), function(i) {
 jsonFormatted <- toJSON(cohortList, pretty = TRUE, auto_unbox = TRUE)
 
 # Save the JSON to a file
-jsonFilePath <- here::here("inst","testdata","VignetteCohorts.JSON")
+jsonFilePath <- "CohortGenerator/inst/testdata/SubsetVignetteCohorts.JSON"
 write(jsonFormatted, file = jsonFilePath)
 
 
