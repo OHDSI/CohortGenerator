@@ -1,12 +1,16 @@
 ---
 title: "Advanced Cohort Subsets Tutorial"
 author: "Freddy A. Cruz and James Gilbert"
-output: html_document
 highlight-style: github
 editor: 
   markdown: 
     wrap: 72
-
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+  pdf_document:
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{Creating Cohort Subset Definitions}
   %\VignetteEncoding{UTF-8}
@@ -40,13 +44,11 @@ using the Atlas designer or `{Capr}` package are preffered.
 ## Setup
 
 ```{r setup = FALSE, eval=FALSE, warning=FALSE}
-install.packages("gt")
 install.packages("remotes")
 remotes::install_github("OHDSI/CohortGenerator", ref='develop')
-library(Capr)
 ```
 
-## Terminology
+# Terminology
 
 -   **Target cohort** in all examples the target cohort is the cohort
     for which you are creating a subset population off of for example
@@ -68,7 +70,7 @@ library(Capr)
     `no prior history of GI Bleeding`. We could then apply this to a
     cohort definition set containing dozens of RxNorm ingredients.
 
-### Recipe for example terms
+## Recipe for example terms
 
 
 The following cohorts are produced by a script called SubsetVignetteCohort.R
@@ -90,7 +92,8 @@ cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
 
 cohortDefinitionSet |> 
   dplyr::select("cohortId", "cohortName") |> 
-  gt::gt()
+  knitr::kable()
+
 ```
 
 Next, we create our subset definition for
@@ -134,7 +137,7 @@ cohortDefinitionSet <- cohortDefinitionSet |>
 
 cohortDefinitionSet |> 
   dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
-  gt::gt()
+  knitr::kable()
 ```
 
 ### During target window functions
@@ -211,7 +214,7 @@ cohortDefinitionSet <- cohortDefinitionSet |>
 # View both subset cohorts
 cohortDefinitionSet |>
   dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
-  gt::gt()
+  knitr::kable()
 
 ```
 
@@ -322,7 +325,7 @@ cohortDefinitionSet <- cohortDefinitionSet |>
 cohortDefinitionSet |>
   dplyr::filter(subsetDefinitionId == 3) |>
   dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
-  gt::gt()
+  knitr::kable()
 ```
 
 Another example window function may be patients exposed ibuprofen,
@@ -372,7 +375,7 @@ cohortDefinitionSet <- cohortDefinitionSet |>
 cohortDefinitionSet |>
   dplyr::filter(subsetDefinitionId == 4) |>
   dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
-  gt::gt()
+  knitr::kable()
 ```
 
 In both the above cases we note that the index dates for the resuling
@@ -413,7 +416,7 @@ cohortDefinitionSet <- cohortDefinitionSet |>
 cohortDefinitionSet |>
   dplyr::filter(subsetDefinitionId == 5) |>
   dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
-  gt::gt()
+  knitr::kable()
 ```
 We can make this scenario slightly more complex: to only include patients who start ibuprofen a year after their celcoxib exposure end date and exclude patients who start ibuprofen exposure within 1 to 365 days after their celcoxib exposure end date. 
 ```{r}
@@ -464,7 +467,7 @@ cohortDefinitionSet <- cohortDefinitionSet |>
 cohortDefinitionSet |>
   dplyr::filter(subsetDefinitionId == 6) |>
   dplyr::select("cohortId", "cohortName", "subsetParent", "isSubset") |> 
-  gt::gt()
+  knitr::kable()
 
 
 
@@ -502,7 +505,7 @@ counts <- getCohortCounts(connectionDetails = connectionDetails,
 cohortDefinitionSet |>
   dplyr::left_join(counts, by = "cohortId") |>
   dplyr::select("cohortId", "cohortName", "cohortEntries","cohortSubjects") |>
-  gt::gt()
+  knitr::kable()
 ```
 
 # Conclusion
