@@ -12,7 +12,7 @@ output:
   pdf_document:
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Creating Cohort Subset Definitions}
+  %\VignetteIndexEntry{Advanced Cohort Subset Creation Tutorial}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 
