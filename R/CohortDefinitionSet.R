@@ -302,7 +302,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   }
 
   cohortDefinitionSet <- cbind(settings, fileData)
-  loadTemplateDefinitionsFolder(cohortDefinitionSet, templateFolder)
+  cohortDefinitionSet <- loadTemplateDefinitionsFolder(cohortDefinitionSet, templateFolder)
 
   # Loading cohort subset definitions with their associated targets
   if (loadSubsets & nrow(subsetsToLoad) > 0) {
