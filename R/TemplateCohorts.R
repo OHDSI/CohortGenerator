@@ -134,7 +134,7 @@ CohortTemplateDefinition <- R6::R6Class(
 
     sqlArgs = function(sqlArgs) {
       if (missing(sqlArgs))
-        return(sqlArgs)
+        return(private$.sqlArgs)
       # Check if eecuteFun are functions
       checkmate::assertList(sqlArgs)
 
