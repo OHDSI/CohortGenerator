@@ -300,7 +300,7 @@ CohortTemplateDefinition <- R6::R6Class(
     #' @param filePath      File path to save json serialized from
     saveTemplate = function(filePath) {
       checkmate::assertPathForOutput(filePath, overwrite = TRUE)
-      ParallelLogger::saveSettingsToJson(filePath, self$toList())
+      ParallelLogger::saveSettingsToJson(self$toList(), filePath)
     }
   )
 )
