@@ -63,7 +63,7 @@ CohortTemplateDefinition <- R6::R6Class(
                                                    checksum = self$getChecksum(),
                                                    reportOverallTime = FALSE,
                                                    progressBar = FALSE)
-      batchSize <- 1000
+      batchSize <- 500
       startTime <- as.numeric(Sys.time()) * 1000
       # NOTE: Batch insert ids - fails with bigints on spark - crossplatform workaround
       # Modifying DatabaseConnector here is not striaghtforward, this code largely copies its functionality
@@ -494,6 +494,7 @@ generateTemplateCohorts <- function(connection,
                   template$getChecksum() %in% computedChecksums$checksum)
     if (skipit) {
       status <- list(startTime = startTime, endTime = startTime, generationStatus = "SKIPPED")
+      ParallelLogger::logInfo("Skipping Template Cohort: ", template$getName())
     } else {
       status <- tryCatch({
         ParallelLogger::logInfo("Generating Template Cohort: ", template$getName())
