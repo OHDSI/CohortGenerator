@@ -1,6 +1,6 @@
 ---
 title: "Creating Cohort Subset Definitions"
-author: "James P. Gilbert and Anthony G. Sena"
+author: "James P. Gilbert, Anthony G. Sena and Freddy Avila Cruz"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -14,6 +14,8 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   chunk_output_type: console
+  markdown: 
+    wrap: sentence
 ---
 
 ```{r setup, include=FALSE}
@@ -27,193 +29,333 @@ someFolder <- tempdir()
 packageRoot <- tempdir()
 library(CohortGenerator)
 ```
-# Introduction
-This guide aims to describe the process of cohort subsetting using `CohortGenerator`.
-The purpose of Cohort subsetting operations is to allow the creation of common operations that can be applied to
-generated cohorts in order to subset to different operations in a consistent manner.
 
+# Introduction
+
+This guide aims to describe the process of cohort subsetting using `CohortGenerator`.
+The purpose of Cohort subsetting operations is to refine or filter cohorts by applying standardized rules like limiting to certain events, specific time windows, combination of cohorts, etc.
+As a result, new cohorts are generated to assist in specific analytics or study requirements.
+To effictively demonstrate the process of Cohort Subsetting, a dummy OMOP data model will be used for testing.
+
+# Testing Data
+
+The purpose of this test data is to demonstrate how Cohort Generator is applied by using it's functionality to create subsets based on existing cohorts.
+We will begin by creating a dummy OMOP data model and populating the dummy OMOP data model with subjects and drug exposure, which will be recognized as ibuprofen exposure.
+
+```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE}
+databaseFile <- tempfile(fileext = ".duckdb")
+duckdbConnectionDetails <- DatabaseConnector::createConnectionDetails(
+  dbms = "duckdb",
+  server = databaseFile
+)
+resultsSchema <- "main"
+connection <- DatabaseConnector::connect(duckdbConnectionDetails)
+
+# Create dummy OMOP data for testing ------------------
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = resultsSchema,
+  tableName = "person",
+  data = data.frame(
+    person_id = 1:12,  # Only 12 patients
+    gender_concept_id = c(8507, 8507, 8532, 8532, 
+                          8507, 8532, 8507, 8532, 
+                          8507, 8532, 8507, 8532),  # Alternating Male (8507) and Female (8532)
+    year_of_birth = c(1985, 1981, 1990, 1975, 
+                      1995, 1982, 1988, 1979, 
+                      1992, 1980, 1987, 1983),  # Updated years of birth for 12 people
+    race_concept_id = rep(0, 12),  # Race not specified for all
+    ethnicity_concept_id = rep(0, 12) # Ethnicity not specified for all
+  )
+)
+
+# Prepare drug exposure data for specific subjects
+drug_exposure_data <- data.frame(
+  drug_exposure_id = 1:8,  # Unique IDs for drug exposures
+  person_id = c(2, 4, 4, 6, 8, 10, 12, 12),  # Mapping exposures to specified subjects
+  drug_concept_id = rep(2, 8),  # All exposures are Ibuprofen
+  drug_exposure_start_date = c(
+    as.Date("2003-01-10"),  # Subject 2: 1 exposure
+    as.Date("2003-02-01"),  # Subject 4: First exposure (before celecoxib)
+    as.Date("2003-11-01"),  # Subject 4: Second exposure (after celecoxib)
+    as.Date("2004-01-15"),  # Subject 6: Single exposure
+    as.Date("2004-02-01"),  # Subject 8: Single exposure
+    as.Date("2002-03-01"),  # Subject 10: Single exposure
+    as.Date("2002-05-15"),  # Subject 12: First exposure (before celecoxib)
+    as.Date("2004-01-01")   # Subject 12: Second exposure (after celecoxib)
+  ),
+  drug_exposure_end_date = c(
+    as.Date("2003-02-25"),  # Subject 2
+    as.Date("2003-03-01"),  # Subject 4 (First exposure ends)
+    as.Date("2004-01-15"),  # Subject 4 (Second exposure ends)
+    as.Date("2004-01-30"),  # Subject 6
+    as.Date("2004-03-15"),  # Subject 8
+    as.Date("2002-04-15"),  # Subject 10
+    as.Date("2002-07-30"),  # Subject 12 (First exposure ends)
+    as.Date("2004-02-28")   # Subject 12 (Second exposure ends)
+  )
+)
+
+# Insert updated data into the 'drug_exposure' table
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = resultsSchema,
+  tableName = "drug_exposure",
+  data = drug_exposure_data
+)
+```
+
+After creating the dummy OMOP data model, we will look into the subsetting function of Cohort Generator.
 
 # Subset definitions
+
 Subset definitions are named sets of operations that can be applied to a set of one or more cohorts.
 The current operations that you can apply to cohorts are:
 
-* Limit subsets
-* Demographic subsets
-* Cohort subsetting
+-   Demographic subsets
+-   Limit subsets
+-   Cohort subsetting
 
-Operations can be sequentially chained within _subset definitions_ and all outputs are considered full cohorts that
-can be passed into to other packages as if they are cohorts designed in packages
+Operations can be sequentially chained within *subset definitions* and all outputs are considered full cohorts that can be passed into to other packages as if they are cohorts designed in packages.
 
 ## Demographic subset operations
+
 This subsetting process allows you to capture the age, race/ethnicity gender within a cohort as subgroups.
-For example, "subset cohorts to subjects that are male between the ages 1 and 5 years old".
+For example, "subset cohorts to subjects that are between the ages 20 and 50 years old".
 
-## Subsetting to other cohorts
-This type of operation allows you to subset a cohort to only those subjects included in one or more other cohorts
+```{r}
 
-
-# Creating cohort subset definitions
-
-## Defining a subset definition
-First get a Cohort definition set:
-```{r echo=TRUE, results='hide', error=FALSE, warning=FALSE, message=FALSE}
-cohortDefinitionSet <- getCohortDefinitionSet(
-  settingsFileName = "testdata/name/Cohorts.csv",
-  jsonFolder = "testdata/name/cohorts",
-  sqlFolder = "testdata/name/sql/sql_server",
-  cohortFileNameFormat = "%s",
-  cohortFileNameValue = c("cohortName"),
-  packageName = "CohortGenerator",
-  verbose = FALSE
+ageCriteria <- CohortGenerator::createDemographicSubset(
+  ageMin = 20,
+  ageMax = 50
 )
 
-cohortDefinitionSet$cohortId <- cohortDefinitionSet$cohortId + 1778210 # Match the cohort Ids taken from Atlas
-cohortIds <- cohortDefinitionSet$cohortId
-cohortDefinitionSet$atlasId <- cohortDefinitionSet$cohortId
-cohortDefinitionSet$logicDescription <- ""
 ```
 
-A definition can include different subset operations - these are applied strictly in order:
+## Subsetting to other cohorts
 
-```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
-# Example, we want to have a HTN cohort that starts any time prior to the index start
-# and the HTN cohort ends any time after the index start
-subsetDef <- createCohortSubsetDefinition(
-  name = "Patients in cohort cohort 1778213 with 365 days prior observation",
-  definitionId = 1,
-  subsetOperators = list(
-    # here we are saying 'first subset to only those patients in cohort 1778213'
-    createCohortSubset(
-      name = "Subset to patients in cohort 1778213",
-      # Note that this can be set to any id - if the
-      # cohort is empty or doesn't exist this will not error
-      cohortIds = 1778213,
-      cohortCombinationOperator = "any",
-      negate = FALSE,
-      startWindow = createSubsetCohortWindow(
-        startDay = -9999,
-        endDay = 0,
-        targetAnchor = "cohortStart"
-      ),
-      endWindow = createSubsetCohortWindow(
-        startDay = 0,
-        endDay = 9999,
-        targetAnchor = "cohortStart"
-      )
+This type of operation allows you to subset a cohort to only those subjects included in one or more other cohorts, ensuring the results focus on a shared or overlapping population.
+The basic of creating a subset is given.
+To learn more about subset windowing, review Advanced Cohort Subset Tutorial vignette.
+
+As an example, to identify subjects exposed to celcoxib who also had an exposure to ibuprofen within any time, the subset would be defined as:
+
+```{r}
+ibuprofenSubset <- CohortGenerator::createCohortSubset(
+  name = "ibuprofen exposure",
+  cohortIds = 2,  # Ibuprofen cohort
+  cohortCombinationOperator = "any",  # Look for any Ibuprofen exposure
+  negate = FALSE,  # We want to include (not exclude) participants exposed to Ibuprofen,
+  windows = list(
+    CohortGenerator::createSubsetCohortWindow(
+        startDay = -99999,
+        endDay = 99999,
+        targetAnchor = "cohortStart",
+        subsetAnchor = "cohortStart"
     ),
-
-    # Next, subset to only those with 365 days of prior observation
-    createLimitSubset(
-      name = "Observation of at least 365 days prior",
-      priorTime = 365,
-      followUpTime = 0,
-      limitTo = "all"
+    CohortGenerator::createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortStart",
+      subsetAnchor = "cohortEnd"
     )
   )
 )
 ```
-## Reusing subset operators in multiple definitions
-Next we create a similar definition that also subsetOperators the specified cohorts to require patients with specific
-demographic criteria.
-We can do that by copying the subset operations from our first definition and modifying them.
-```{r results='hide', error=FALSE, warning=FALSE, message=FALSE}
-subsetOperations2 <- subsetDef$subsetOperators
 
-# subset to those between aged 18 an 64
-subsetOperations2[[3]] <-
-  createDemographicSubset(
-    name = "18 - 65",
-    ageMin = 18,
-    ageMax = 64
-  )
+In this subset, we use **cohortId = 2** to extract all the subjects exposed to ibuprofen.
+After that, we set the **combinationOperation = all**, meaning we are looking for exposure in both cohorts.
+We then set the **negate = false** to include all subjects.
+After that, we define our window, meaning that we define the time of interest we want to look for subjects with celcoxib exposed to ibuprofen.
+In this case, we look for all possible time window of a subjects exposed to ibuprofen with celcoxib.
 
-subsetDef2 <- createCohortSubsetDefinition(
-  name = "Patients in cohort 1778213 with 365 days prior obs, aged 18 - 64",
-  definitionId = 2,
-  subsetOperators = subsetOperations2
+## Limit Subset
+
+Limit subsets are designed to apply restrictions or filters to cohorts/subsets based on limit criteria.
+There are several ways we can do this through the various parameters provided.
+As an example, we will create a limit subset that is focused on extracting the LAST ibuprofen exposure of a patient.
+
+```{r}
+
+ibuprofenLimitSubset <- CohortGenerator::createLimitSubset(
+  name = "Last Ibuprofen Exposure",
+  priorTime = 0,  
+  followUpTime = 0,  
+  limitTo = "lastEver",  # Only the first Ibuprofen exposure per patient
+  calendarStartDate = as.Date("2000-01-01"),  # Start date of observation period
+  calendarEndDate = as.Date("2008-12-31")  # End date of observation period
 )
-```
-## Applying subset definitions to a cohort definition set
 
-Next we need to add the subset definitions to the base cohort set.
-This will automatically add identifiers and OHDSI SQL for the subset cohorts as well as storing references
-for saving definition sets for re-use.
-```{r error=FALSE, warning=FALSE, message=FALSE}
+```
+
+In the subset above, there is no observation period required.
+The most important part is setting the limitTo parameter to lastEver, such that we can capture the last event in the patient's history.
+If we wanted to know the first event in the patient's history, we would then set **limitTo = firstEver**.
+If we also wanted the first event after applying a prior time, we would set**limitTo = earliestRemaining**.
+The last option we have is if we wanted the last event within the observation window after applying a follow up time, we would have to set **limitTo = latestRemaining**.
+
+# Combining all the Subsets
+
+After creating all the necessary subsets to target patients exposed to ibuprofen and celcoxib, combining them is necessary to produce the filtered subjects of interest.
+
+```{r}
+
+ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
+  name = "Celecoxib and Ibuprofen Exposures",
+  definitionId = 11,  # Unique ID for this subset
+  subsetOperators = list(
+    ageCriteria,
+    ibuprofenSubset,
+    ibuprofenLimitSubset
+  ),
+  subsetCohortNameTemplate = "Celcoxib with Ibuprofen Exposure - Last Exposure for Subject Aged 20 - 50"
+)
+
+```
+
+# Creating cohort subset definitions
+
+Given the fact that this is sampled data, celcoxib and ibuprofen will be defined below with the defined SQL statement.
+After creating those cohorts, we can finally reference the ibuprofen subset to celcoxib by setting the target id to the cohort id of celcoxib.
+
+```{r}
+cohortDefinitionSet <- data.frame(
+  cohortId = 1,
+  cohortName = "Celcoxib",
+  sql = "
+      INSERT INTO @results_database_schema.@target_cohort_table (
+          cohort_definition_id,
+          subject_id,
+          cohort_start_date,
+          cohort_end_date
+      )
+      SELECT 
+          @target_cohort_id,
+          p.person_id,
+          d.start_date,
+          d.end_date
+      FROM 
+          @cdm_database_schema.PERSON p
+      CROSS JOIN (
+          VALUES 
+              (DATEFROMPARTS(2003, 01, 01), DATEFROMPARTS(2003, 04, 25))
+      ) AS d(start_date, end_date)
+     ;",  # Ensures query only produces results for person_id 1-5
+  json = ""
+)
+
+cohortDefinitionSet <- rbind(
+  cohortDefinitionSet,
+  data.frame(
+    cohortId = 2,
+    cohortName = "Ibuprofen",
+    sql = "
+      INSERT INTO @results_database_schema.@target_cohort_table (
+          cohort_definition_id,
+          subject_id,
+          cohort_start_date,
+          cohort_end_date
+      )
+      SELECT 
+          @target_cohort_id,
+          de.person_id,
+          de.drug_exposure_start_date,
+          de.drug_exposure_end_date
+      FROM 
+          @cdm_database_schema.drug_exposure de
+      JOIN @cdm_database_schema.PERSON p ON de.person_id = p.person_id
+      WHERE de.drug_exposure_start_date BETWEEN '2000-01-01' AND '2008-12-31'
+      and p.person_id %2 =0;
+    ",
+    json = ""
+  )
+)
+
 cohortDefinitionSet <- cohortDefinitionSet |>
-  addCohortSubsetDefinition(subsetDef)
-
-knitr::kable(cohortDefinitionSet[, names(cohortDefinitionSet)[which(!names(cohortDefinitionSet) %in% c("json", "sql"))]])
-```
-We can also apply a subset definition to only a limited number of target cohorts as follows
-
-```{r error=FALSE, warning=FALSE, message=FALSE}
-cohortDefinitionSet <- cohortDefinitionSet |>
-  addCohortSubsetDefinition(subsetDef2, targetCohortIds = 1778212)
-
-knitr::kable(cohortDefinitionSet[, names(cohortDefinitionSet)[which(!names(cohortDefinitionSet) %in% c("json", "sql"))]])
-```
-
-The `cohortDefinitionSet` data.frame now has some additional columns:
+  CohortGenerator::addCohortSubsetDefinition(ibuprofenWCelcoxib,targetCohortIds = c(1))
 
 ```
-subsetParent, isSubset, subsetDefinitionId
-```
-
-`subsetParent` indicates the parent cohort.
-For standard cohorts this will be their own ID.
-For out newly defined subsets, this will be the base cohort.
-
-`subsetDefinitionId` displays the id of the subset applied to the cohort.
-
-In addition, the name of the cohort displayed in this table is automatically generated from the base cohort name, the subset name and the names defined for the subset operations applied in the subset definition. As the number of resulting subsets can become very large, it is crucial to choose human interpretable naming conventions. For example, see the name of our first cohort and the resulting name of a child subset:
-
-```{r error=FALSE, warning=FALSE, message=FALSE}
-writeLines(c(
-  paste("Cohort Id:", cohortDefinitionSet$cohortId[1]),
-  paste("Name", cohortDefinitionSet$cohortName[1])
-))
-```
-
-```{r error=FALSE, warning=FALSE, message=FALSE}
-writeLines(c(
-  paste("Cohort Id:", cohortDefinitionSet$cohortId[4]),
-  paste("Subset Parent Id:", cohortDefinitionSet$subsetParent[4]),
-  paste("Name", cohortDefinitionSet$cohortName[4])
-))
-```
-
-Note that when adding a subset definition to a cohort definition set, the target cohort ids e.g (1778211, 1778212) must
-exist in the `cohortDefinitionSet` and the output ids (`1778211002`, `1778212003`) must be unique.
-As with all cohorts, any cohorts with these ids will be deleted prior to execution to prevent collisions.
-Note that the default expression for output cohort ids is `targetId * 1000 + definitionId` this may cause collisions
-that will cause `addCohortSubsetDefinition` to error.
-This can be modified by changing the `identifierExpression` parameter to `createSubsetDefinition`.
-This expression should be defined to guarantee uniqueness or adding the definition to a cohort definition set will fail.
 
 # Generating subsets
+
 Executing CohortGenerator, we can now include the subset operations when our cohorts are generated:
 
-```{r results='hide', error=FALSE, warning=FALSE, message=FALSE, eval = FALSE}
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-createCohortTables(
-  connectionDetails = connectionDetails,
+```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE,results= 'hide'}
+cohortTableNames <- CohortGenerator::getCohortTableNames()
+CohortGenerator::createCohortTables(
+  connection = connection,
   cohortDatabaseSchema = "main",
-  cohortTableNames = getCohortTableNames("my_cohort")
+  cohortTableNames = cohortTableNames
 )
 # ### As subsets are a big side effect we need to be clear what was generated and have good naming conventions
-generatedCohorts <- generateCohortSet(
-  connectionDetails = connectionDetails,
+
+CohortGenerator::generateCohortSet(
+  connection = connection,
   cdmDatabaseSchema = "main",
   cohortDatabaseSchema = "main",
-  cohortTableNames = getCohortTableNames("my_cohort"),
-  cohortDefinitionSet = cohortDefinitionSet,
-  incremental = TRUE,
-  incrementalFolder = file.path(someFolder, "RecordKeeping")
+  cohortTableNames = CohortGenerator::getCohortTableNames(),
+  cohortDefinitionSet = cohortDefinitionSet
 )
+
+
 ```
+
 Cohort subset definitions can be run incrementally.
-In fact, if the base cohort definition changes for any reason, any subsets will automatically be re-executed when calling
-`generateCohortSet`.
+In fact, if the base cohort definition changes for any reason, any subsets will automatically be re-executed when calling `generateCohortSet`.
+
+# Output of Dummy Test Data
+
+In the graph below, there are 12 subjects. Each of these subjects are exposed to celcoxib once while some of these subjects are exposed to ibuprofen, sometimes two ibuprofen exposure.The age of each subjects is also provided. Based on this information, the subset ibuprofen with celcoxib is generated for a few selected individuals if they met the defined criteria above (celcoxib and ibuprofen, age, and extracting last ibuprofen exposure).
+
+```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE, results = 'hide', fig.width = 10, fig.height = 6}
+library(dplyr)
+library(ggplot2)
+cohorts <- DatabaseConnector::querySql(
+  connection = connection,
+  sql = "
+    SELECT c.*, p.gender_concept_id, YEAR(c.cohort_start_date) - p.year_of_birth AS age
+    FROM main.cohort c
+    INNER JOIN main.person p ON c.subject_id = p.person_id
+    ORDER BY c.COHORT_DEFINITION_ID, c.SUBJECT_ID, c.COHORT_START_DATE;"
+)
+names(cohorts) <- tolower(names(cohorts))
+cohort_data <- cohorts %>%
+  inner_join(cohortDefinitionSet[,c("cohortId", "cohortName")], by = c("cohort_definition_id" = "cohortId")) %>%
+  mutate(cohort_legend = paste(cohort_definition_id, "-", cohortName)) %>%
+  mutate(gender = ifelse(gender_concept_id == 8532, "Female", "Male"), 
+         facet_label = paste("Subject:", subject_id, "- Gender:", gender)) 
+
+# Order factor levels for facets by subject_id
+cohort_data$facet_label <- factor(cohort_data$facet_label, 
+                                  levels = unique(cohort_data$facet_label[order(cohort_data$subject_id)]))
+
+# Order factor levels for legend by cohort_definition_id
+cohort_data$cohort_legend <- factor(cohort_data$cohort_legend, 
+                                    levels = unique(cohort_data$cohort_legend[order(cohort_data$cohort_definition_id)]))
+
+# Create the plot with annotations for age when cohort_definition_id == 1
+ggplot(cohort_data, aes(x = cohort_start_date, xend = cohort_end_date, 
+                        y = as.factor(cohort_definition_id), 
+                        group = interaction(cohort_definition_id, subject_id), 
+                        color = cohort_legend)) +
+  geom_segment(aes(xend = cohort_end_date, yend = as.factor(cohort_definition_id)), size = 2) +  # Thicker lines (size = 2)
+  geom_point(aes(x = cohort_start_date, y = as.factor(cohort_definition_id)), size = 4, shape = 21, fill = "black") +  # Adding bullet points
+  geom_text(data = cohort_data[cohort_data$cohort_definition_id == 1, ], 
+            aes(label = age, 
+                x = as.Date((as.numeric(cohort_start_date) + as.numeric(cohort_end_date)) / 2, origin = "1970-01-01"),  # Midpoint calculation
+                y = as.factor(cohort_definition_id)), 
+            vjust = -0.5, size = 4, color = "black") +  # Adding age label in the center
+  labs(title = "Cohort Duration by Cohort Definition ID Faceted by Subject ID and Gender",
+       x = "Date",
+       y = "Cohort Definition ID",
+       color = "Cohort Definition") +  
+  scale_x_date(limits = as.Date(c("2002-01-01", "2004-06-31")), date_breaks = "1 year", date_labels = "%Y") +  
+  scale_color_brewer(palette = "Paired") +  
+  theme_minimal() +
+  theme(legend.position = "bottom") +  
+  facet_wrap(~ facet_label)  # Correct facet wrapping
+
+```
 
 # Saving and loading subset definitions
 
@@ -226,6 +368,7 @@ saveCohortDefinitionSet(cohortDefinitionSet,
   subsetJsonFolder = "<path_to_my_subset_definition>"
 )
 ```
+
 loading is also achieved with `getCohortDefinitionSet`
 
 ```{r eval=FALSE}
@@ -233,16 +376,19 @@ cohortDefinitionSet <- getCohortDefinitionSet(
   subsetJsonFolder = "<path_to_my_subset_definition>"
 )
 ```
+
 Any subset definitions should automatically be loaded and applied to the cohort definition set.
 
-
 ## Writing json objects
+
 Subset definitions can be converted to JSON objects as follows:
+
 ```{r results='hide', eval=FALSE}
 jsonDefinition <- subsetDef$toJSON()
 ```
 
 For the purpose of writing to disk we recommend the use of `ParallelLogger` for consistency.
+
 ```{r results='hide', eval=FALSE}
 # Save to a file
 ParallelLogger::saveSettingsToJson(subsetDef$toList(), "subsetDefinition1.json")
@@ -251,3 +397,6 @@ ParallelLogger::saveSettingsToJson(subsetDef$toList(), "subsetDefinition1.json")
 ```{r results='hide'}
 options(old)
 ```
+
+# Conclusion
+In this tutorial, we have demonstrated how to create a subset based on a cohort using several of Cohort Generator's functionality. 
