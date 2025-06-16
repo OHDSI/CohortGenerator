@@ -37,10 +37,20 @@ The purpose of Cohort subsetting operations is to refine or filter cohorts by ap
 As a result, new cohorts are generated to assist in specific analytics or study requirements.
 To effictively demonstrate the process of Cohort Subsetting, a dummy OMOP data model will be used for testing.
 
+# Required Package
+
+DuckDB is required to further demonstrate the use case of Cohort Generator for this specific vignette.
+
+```{r}
+install.packages("duckdb")
+```
+
 # Testing Data
 
 The purpose of this test data is to demonstrate how Cohort Generator is applied by using it's functionality to create subsets based on existing cohorts.
-We will begin by creating a dummy OMOP data model and populating the dummy OMOP data model with subjects and drug exposure. The drug exposure itself will be recognized as ibuprofen exposure. The sample data itself is found in SaveVignetteCohortToDuckDB.R found in inst/testdata folder if interested in analyzing it.
+We will begin by creating a dummy OMOP data model and populating the dummy OMOP data model with subjects and drug exposure.
+The drug exposure itself will be recognized as ibuprofen exposure.
+The sample data itself is found in SaveVignetteCohortToDuckDB.R found in inst/testdata folder if interested in analyzing it.
 
 ```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE}
 databaseFile <- tempfile(fileext = ".duckdb")
@@ -182,8 +192,9 @@ ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
 
 # Creating cohort subset definitions
 
-Down below, we are extracting sampled cohorts that mimic what the actual cohort would be like, produced by a script called SaveVignetteCohortToDuckDB.R found in inst/testdata folder. 
-After extracting those cohorts from the csv file(celcoxib and ibuprofen), we can finally reference the ibuprofen subset to celcoxib by setting the target id to the cohort id of celcoxib. That directly translates to ibuprofen subsetting off of celcoxib. 
+Down below, we are extracting sampled cohorts that mimic what the actual cohort would be like, produced by a script called SaveVignetteCohortToDuckDB.R found in inst/testdata folder.
+After extracting those cohorts from the csv file(celcoxib and ibuprofen), we can finally reference the ibuprofen subset to celcoxib by setting the target id to the cohort id of celcoxib.
+That directly translates to ibuprofen subsetting off of celcoxib.
 
 ```{r}
 jsonFilePath <- system.file("testdata", "CohortsToSubset.JSON", package = "CohortGenerator")
@@ -226,7 +237,9 @@ In fact, if the base cohort definition changes for any reason, any subsets will 
 
 # Output of Dummy Test Data
 
-In the graph below, there are 12 subjects. Each of these subjects are exposed to celcoxib once while some of these subjects are exposed to ibuprofen, sometimes two ibuprofen exposure.The age of each subjects is also provided. Based on this information, the subset ibuprofen with celcoxib is generated for a few selected individuals if they met the defined criteria above (celcoxib and ibuprofen, age, and extracting last ibuprofen exposure).
+In the graph below, there are 12 subjects.
+Each of these subjects are exposed to celcoxib once while some of these subjects are exposed to ibuprofen, sometimes two ibuprofen exposure.The age of each subjects is also provided.
+Based on this information, the subset ibuprofen with celcoxib is generated for a few selected individuals if they met the defined criteria above (celcoxib and ibuprofen, age, and extracting last ibuprofen exposure).
 
 ```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE, results = 'hide', fig.width = 10, fig.height = 6}
 library(dplyr)
@@ -320,4 +333,5 @@ options(old)
 ```
 
 # Conclusion
-In this tutorial, we have demonstrated how to create a subset based on a cohort using several of Cohort Generator's functionality. 
+
+In this tutorial, we have demonstrated how to create a subset based on a cohort using several of Cohort Generator's functionality.
