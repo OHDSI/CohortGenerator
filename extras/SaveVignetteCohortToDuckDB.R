@@ -1,3 +1,47 @@
+# Define the person data--------------
+person_data <- data.frame(
+  person_id = 1:12,  # Only 12 patients
+  gender_concept_id = c(8507, 8507, 8532, 8532, 
+                        8507, 8532, 8507, 8532, 
+                        8507, 8532, 8507, 8532),  # Alternating Male (8507) and Female (8532)
+  year_of_birth = c(1985, 1981, 1990, 1975, 
+                    1995, 1982, 1988, 1979, 
+                    1992, 1980, 1987, 1983),  # Updated years of birth for 12 patients
+  race_concept_id = rep(0, 12),  # Race not specified for all
+  ethnicity_concept_id = rep(0, 12) # Ethnicity not specified for all
+)
+
+# Step 2: Save the `person_data` object into `person.RData`
+save(person_data, file = "E:/Freddy/git/CohortGenerator/inst/testdata/person_data.RData")
+
+# Define the drug exposure data---------
+drug_exposure_data <- data.frame(
+  drug_exposure_id = 1:8,  # Unique IDs for drug exposures
+  person_id = c(2, 4, 4, 6, 8, 10, 12, 12),  # Mapping exposures to specified subjects
+  drug_concept_id = rep(2, 8),  # All exposures are Ibuprofen
+  drug_exposure_start_date = c(
+    as.Date("2003-01-10"),  # Subject 2: 1 exposure
+    as.Date("2003-02-01"),  # Subject 4: First exposure (before celecoxib)
+    as.Date("2003-11-01"),  # Subject 4: Second exposure (after celecoxib)
+    as.Date("2004-01-15"),  # Subject 6: Single exposure
+    as.Date("2004-02-01"),  # Subject 8: Single exposure
+    as.Date("2002-03-01"),  # Subject 10: Single exposure
+    as.Date("2002-05-15"),  # Subject 12: First exposure (before celecoxib)
+    as.Date("2004-01-01")   # Subject 12: Second exposure (after celecoxib)
+  ),
+  drug_exposure_end_date = c(
+    as.Date("2003-02-25"),  # Subject 2
+    as.Date("2003-03-01"),  # Subject 4 (First exposure ends)
+    as.Date("2004-01-15"),  # Subject 4 (Second exposure ends)
+    as.Date("2004-01-30"),  # Subject 6
+    as.Date("2004-03-15"),  # Subject 8
+    as.Date("2002-04-15"),  # Subject 10
+    as.Date("2002-07-30"),  # Subject 12 (First exposure ends)
+    as.Date("2004-02-28")   # Subject 12 (Second exposure ends)
+  )
+)
+save(drug_exposure_data,file = "E:/Freddy/git/CohortGenerator/inst/testdata/drug_exposure_data.RData")
+
 # Define the Cohorts Sample Data----------------------
 cohortDefinitionSet <- data.frame(
   cohort_definition_id = 1,  # Match the column name in DuckDB
