@@ -23,6 +23,7 @@ Imports:
   checkmate,
   digest,
   dplyr,
+  duckdb,
   lubridate,
   methods,
   ParallelLogger (>= 3.0.0),
