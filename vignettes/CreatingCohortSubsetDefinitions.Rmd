@@ -39,9 +39,9 @@ To effictively demonstrate the process of Cohort Subsetting, a dummy OMOP data m
 
 # Required Package
 
-DuckDB is required to further demonstrate the use case of Cohort Generator for this specific vignette.
+DuckDB is required to further demonstrate the use case of Cohort Generator for this specific vignette. To install the `duckdb` package run:
 
-```{r}
+```{r eval=FALSE}
 install.packages("duckdb")
 ```
 
@@ -61,24 +61,18 @@ duckdbConnectionDetails <- DatabaseConnector::createConnectionDetails(
 resultsSchema <- "main"
 connection <- DatabaseConnector::connect(duckdbConnectionDetails)
 
-person_data_path <- system.file("testdata", "person_data.RData", package = "CohortGenerator")
-load(person_data_path)
-
-drug_exposure_data_path <- system.file("testdata", "drug_exposure_data.RData", package = "CohortGenerator")
-load(drug_exposure_data_path)
-
 DatabaseConnector::insertTable(
   connection = connection,
   databaseSchema = resultsSchema,
   tableName = "person",
-  data = person_data
+  data = omopCdmPerson
 )
 # Insert updated data into the 'drug_exposure' table
 DatabaseConnector::insertTable(
   connection = connection,
   databaseSchema = resultsSchema,
   tableName = "drug_exposure",
-  data = drug_exposure_data
+  data = omopCdmDrugExposure
 )
 ```
 

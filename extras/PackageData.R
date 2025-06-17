@@ -1,5 +1,5 @@
 # Define the person data--------------
-person_data <- data.frame(
+omopCdmPerson <- data.frame(
   person_id = 1:12,  # Only 12 patients
   gender_concept_id = c(8507, 8507, 8532, 8532, 
                         8507, 8532, 8507, 8532, 
@@ -11,11 +11,11 @@ person_data <- data.frame(
   ethnicity_concept_id = rep(0, 12) # Ethnicity not specified for all
 )
 
-# Step 2: Save the `person_data` object into `person.RData`
-save(person_data, file = "E:/Freddy/git/CohortGenerator/inst/testdata/person_data.RData")
+# Step 2: Save the `omopCdmPerson` object into the package
+usethis::use_data(omopCdmPerson)
 
 # Define the drug exposure data---------
-drug_exposure_data <- data.frame(
+omopCdmDrugExposure <- data.frame(
   drug_exposure_id = 1:8,  # Unique IDs for drug exposures
   person_id = c(2, 4, 4, 6, 8, 10, 12, 12),  # Mapping exposures to specified subjects
   drug_concept_id = rep(2, 8),  # All exposures are Ibuprofen
@@ -40,7 +40,7 @@ drug_exposure_data <- data.frame(
     as.Date("2004-02-28")   # Subject 12 (Second exposure ends)
   )
 )
-save(drug_exposure_data,file = "E:/Freddy/git/CohortGenerator/inst/testdata/drug_exposure_data.RData")
+usethis::use_data(omopCdmDrugExposure)
 
 # Define the Cohorts Sample Data----------------------
 cohortDefinitionSet <- data.frame(
