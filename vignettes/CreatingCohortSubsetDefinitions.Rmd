@@ -39,7 +39,8 @@ To effictively demonstrate the process of Cohort Subsetting, a dummy OMOP data m
 
 # Required Package
 
-DuckDB is required to further demonstrate the use case of Cohort Generator for this specific vignette. To install the `duckdb` package run:
+DuckDB is required to further demonstrate the use case of Cohort Generator for this specific vignette.
+To install the `duckdb` package run:
 
 ```{r eval=FALSE}
 install.packages("duckdb")
@@ -49,8 +50,8 @@ install.packages("duckdb")
 
 The purpose of this test data is to demonstrate how Cohort Generator is applied by using it's functionality to create subsets based on existing cohorts.
 We will begin by creating a dummy OMOP data model and populating the dummy OMOP data model with subjects and drug exposure.
-The drug exposure itself will be recognized as ibuprofen exposure.
-The sample data itself is found in SaveVignetteCohortToDuckDB.R found in inst/testdata folder if interested in analyzing it.
+The drug exposure used in the dummy OMOP data model itself will be recognized as ibuprofen exposure.
+The sample data itself is found in PackageMaintenance.R found in extras folder if interested in analyzing it.
 
 ```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE}
 databaseFile <- tempfile(fileext = ".duckdb")
@@ -78,9 +79,13 @@ DatabaseConnector::insertTable(
 
 After creating the dummy OMOP data model, we will look into the subsetting function of Cohort Generator.
 
-# Subset definitions
+# Subset Operators & Subset definitions
 
-Subset definitions are named sets of operations that can be applied to a set of one or more cohorts.
+**Subset Operator**: A subset operator is a single, specific operation—such as filtering based on demographics or limiting events to a certain time window—that is applied to a cohort.
+It represents an individual filtering step, like "include only patients exposed to ibuprofen during the study period."
+
+**Subset Definition**: Subset definition as stated before, is a named SET of operations that can be applied to a set of one or more cohorts.
+It encapsulates the overall logic for creating a derived cohort and is designed for reuse and clarity when performing broader analytic tasks.
 The current operations that you can apply to cohorts are:
 
 -   Demographic subsets
@@ -92,24 +97,46 @@ Operations can be sequentially chained within *subset definitions* and all outpu
 ## Demographic subset operations
 
 This subsetting process allows you to capture the age, race/ethnicity gender within a cohort as subgroups.
-For example, "subset cohorts to subjects that are between the ages 20 and 50 years old".
-
-```{r}
-
-ageCriteria <- CohortGenerator::createDemographicSubset(
-  ageMin = 20,
-  ageMax = 50
-)
-
-```
+You may be interested in using this specific operation if the population is too broad and should be narrowed down to a smaller population by limiting it to demographic subgroups.
 
 ## Subsetting to other cohorts
 
 This type of operation allows you to subset a cohort to only those subjects included in one or more other cohorts, ensuring the results focus on a shared or overlapping population.
-The basic of creating a subset is given.
-To learn more about subset windowing, review Advanced Cohort Subset Tutorial vignette.
+You may want to subset a cohort if your analysis is intended to focus on individuals who are part of a shared population with overlapping characteristics, events, or exposures.
 
-As an example, to identify subjects exposed to celcoxib who also had an exposure to ibuprofen within any time, the subset would be defined as:
+## Limit Subset
+
+Limit subsets are designed to apply restrictions or filters to cohorts/subsets based on limit criteria.
+You may want to use limit subsets if you needed to restrict or filter down a cohort based on the first or last exposure for a subject.
+It may also be useful to narrow down the subset to a given time frame for a more precise analysis.
+There are several ways we can do this through the various parameters provided.
+
+# Creating Subsets
+
+For this specific test, we want to create a subset that has the logic:
+
+-   Patients exposed to Celcoxib(cohort id 1) and exposed to ibuprofen(cohort id 2)
+
+-   Patients are between the age 20 to 50
+
+-   The ibuprofen exposure happens during any time(before, during, or after celcoxib)
+
+-   If there are multiple ibuprofen exposure, extract the last ibuprofen exposure
+
+## Demographic Logic
+
+To create a demographic subset that extracts subjects between the ages 20 - 50 years old, the subset would be defined as:
+
+```{r}
+ageCriteria <- CohortGenerator::createDemographicSubset(
+  ageMin = 20,
+  ageMax = 50
+)
+```
+
+## Cohort Subsetting Logic
+
+To identify subjects exposed to celcoxib who also had an exposure to ibuprofen within any time, the subset would be defined as:
 
 ```{r}
 ibuprofenSubset <- CohortGenerator::createCohortSubset(
@@ -137,17 +164,24 @@ ibuprofenSubset <- CohortGenerator::createCohortSubset(
 In this subset, we use **cohortId = 2** to extract all the subjects exposed to ibuprofen.
 After that, we set the **combinationOperation = all**, meaning we are looking for exposure in both cohorts.
 We then set the **negate = false** to include all subjects.
+
 After that, we define our window, meaning that we define the time of interest we want to look for subjects with celcoxib exposed to ibuprofen.
 In this case, we look for all possible time window of a subjects exposed to ibuprofen with celcoxib.
+The window is defined as:
 
-## Limit Subset
+**The OBJECT must start on, after, or before the target's period**
 
-Limit subsets are designed to apply restrictions or filters to cohorts/subsets based on limit criteria.
-There are several ways we can do this through the various parameters provided.
-As an example, we will create a limit subset that is focused on extracting the LAST ibuprofen exposure of a patient.
+**AND**
+
+**the object must end on, after, or before the target's period**
+
+To learn more about subset windowing, review Advanced Cohort Subset Tutorial vignette.
+
+## Limit Subsetting Logic
+
+We will create a limit subset that is focused on extracting the LAST ibuprofen exposure of a patient.
 
 ```{r}
-
 ibuprofenLimitSubset <- CohortGenerator::createLimitSubset(
   name = "Last Ibuprofen Exposure",
   priorTime = 0,  
@@ -156,7 +190,6 @@ ibuprofenLimitSubset <- CohortGenerator::createLimitSubset(
   calendarStartDate = as.Date("2000-01-01"),  # Start date of observation period
   calendarEndDate = as.Date("2008-12-31")  # End date of observation period
 )
-
 ```
 
 In the subset above, there is no observation period required.
@@ -186,7 +219,7 @@ ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
 
 # Creating cohort subset definitions
 
-Down below, we are extracting sampled cohorts that mimic what the actual cohort would be like, produced by a script called SaveVignetteCohortToDuckDB.R found in inst/testdata folder.
+Down below, we are extracting sampled cohorts that mimic what the actual cohort would be like, produced by a script called PackageData.R found in extras.
 After extracting those cohorts from the csv file(celcoxib and ibuprofen), we can finally reference the ibuprofen subset to celcoxib by setting the target id to the cohort id of celcoxib.
 That directly translates to ibuprofen subsetting off of celcoxib.
 
