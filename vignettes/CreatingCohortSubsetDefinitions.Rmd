@@ -35,85 +35,82 @@ library(CohortGenerator)
 This guide aims to describe the process of cohort subsetting using `CohortGenerator`.
 The purpose of Cohort subsetting operations is to refine or filter cohorts by applying standardized rules like limiting to certain events, specific time windows, combination of cohorts, etc.
 As a result, new cohorts are generated to assist in specific analytics or study requirements.
-To effictively demonstrate the process of Cohort Subsetting, a dummy OMOP data model will be used for testing.
 
-# Required Package
+To understand how to subset...
+there must be some preliminary knowledge established:
 
-DuckDB is required to further demonstrate the use case of Cohort Generator for this specific vignette.
-To install the `duckdb` package run:
+## Cohort Definition Set
 
-```{r eval=FALSE}
-install.packages("duckdb")
+A cohort definition set is the starting point for any kind of work regarding the creation of subset.
+A cohort definition set is what it sounds to be, a structured collection of established cohort definitions that specify rules or conditions for identifying cohorts.
+
+Typically, a cohort definition set has the following information:
+
+-   cohortId/ atlasId
+
+-   cohortName
+
+-   json
+
+    -   The circe compliant JSON representation of the cohort definition
+
+-   sql
+
+    -   Description of the cohort from ATLAS
+
+To understand more about a cohort definition set, please review **GeneratingCohorts.pdf.**
+
+As an example, we will use a sample cohort definition set as an example for future reference.This sample cohort definition set can be found in PackageData.R in the extras folder if interested in analyzing.
+It's essentially just two cohorts with the name and its id.
+
+```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE,}
+library(dplyr)
+jsonFilePath <- system.file("testdata", "CohortsToSubset.JSON", package = "CohortGenerator")
+cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
+cohortDefinitionSet <- cohortDefinitionSet %>%
+  filter(cohortId %in% c(1, 2))
+
+cohortDefinitionSet |> 
+  dplyr::select("cohortId", "cohortName") |> 
+  knitr::kable()
+
 ```
 
-# Testing Data
+## Subset Operator
 
-The purpose of this test data is to demonstrate how Cohort Generator is applied by using it's functionality to create subsets based on existing cohorts.
-We will begin by creating a dummy OMOP data model and populating the dummy OMOP data model with subjects and drug exposure.
-The drug exposure used in the dummy OMOP data model itself will be recognized as ibuprofen exposure.
-The sample data itself is found in PackageMaintenance.R found in extras folder if interested in analyzing it.
+A subset operator is used in the creation of a subset.
+A subset operator starts off by defining or refining the logic of a cohort to meet the expectations of a new subset.
+It's essentially just a rule to filter a cohort...
+and we can use several methods/functions in CohortGenerator to filter a cohort:
 
-```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE}
-databaseFile <- tempfile(fileext = ".duckdb")
-duckdbConnectionDetails <- DatabaseConnector::createConnectionDetails(
-  dbms = "duckdb",
-  server = databaseFile
-)
-resultsSchema <- "main"
-connection <- DatabaseConnector::connect(duckdbConnectionDetails)
+### Demographic subset operations
 
-DatabaseConnector::insertTable(
-  connection = connection,
-  databaseSchema = resultsSchema,
-  tableName = "person",
-  data = omopCdmPerson
-)
-# Insert updated data into the 'drug_exposure' table
-DatabaseConnector::insertTable(
-  connection = connection,
-  databaseSchema = resultsSchema,
-  tableName = "drug_exposure",
-  data = omopCdmDrugExposure
-)
-```
-
-After creating the dummy OMOP data model, we will look into the subsetting function of Cohort Generator.
-
-# Subset Operators & Subset definitions
-
-**Subset Operator**: A subset operator is a single, specific operation—such as filtering based on demographics or limiting events to a certain time window—that is applied to a cohort.
-It represents an individual filtering step, like "include only patients exposed to ibuprofen during the study period."
-
-**Subset Definition**: Subset definition as stated before, is a named SET of operations that can be applied to a set of one or more cohorts.
-It encapsulates the overall logic for creating a derived cohort and is designed for reuse and clarity when performing broader analytic tasks.
-The current operations that you can apply to cohorts are:
-
--   Demographic subsets
--   Limit subsets
--   Cohort subsetting
-
-Operations can be sequentially chained within *subset definitions* and all outputs are considered full cohorts that can be passed into to other packages as if they are cohorts designed in packages.
-
-## Demographic subset operations
-
-This subsetting process allows you to capture the age, race/ethnicity gender within a cohort as subgroups.
+This subsetting operationallows you to capture the age, race/ethnicity gender within a cohort as subgroups.
 You may be interested in using this specific operation if the population is too broad and should be narrowed down to a smaller population by limiting it to demographic subgroups.
 
-## Subsetting to other cohorts
+### Subsetting to other cohorts
 
 This type of operation allows you to subset a cohort to only those subjects included in one or more other cohorts, ensuring the results focus on a shared or overlapping population.
 You may want to subset a cohort if your analysis is intended to focus on individuals who are part of a shared population with overlapping characteristics, events, or exposures.
 
-## Limit Subset
+### Limit Subset
 
 Limit subsets are designed to apply restrictions or filters to cohorts/subsets based on limit criteria.
 You may want to use limit subsets if you needed to restrict or filter down a cohort based on the first or last exposure for a subject.
 It may also be useful to narrow down the subset to a given time frame for a more precise analysis.
 There are several ways we can do this through the various parameters provided.
 
-# Creating Subsets
+## Subset Definition
 
-For this specific test, we want to create a subset that has the logic:
+A subset definition specifies what rules (subset operator) to apply to the original cohort.
+It specifies which cohort to refine, and how that refinement process should look like.
+The subset definition is what brings the cohort AND the subset operators to create a new subset.
+
+# Example of Creating a Subset
+
+Viewing our current cohort definition set that has the cohorts celcoxib and ibuprofen...
+we can create a few subsets that focus on ibuprofen being the indication cohort and celcoxib being the target cohort we want to subset.
+For this test, we want to create a subset/subsets that has the logic:
 
 -   Patients exposed to Celcoxib(cohort id 1) and exposed to ibuprofen(cohort id 2)
 
@@ -198,12 +195,34 @@ If we wanted to know the first event in the patient's history, we would then set
 If we also wanted the first event after applying a prior time, we would set**limitTo = earliestRemaining**.
 The last option we have is if we wanted the last event within the observation window after applying a follow up time, we would have to set **limitTo = latestRemaining**.
 
-# Combining all the Subsets
+# Combining all the Subset Operators
 
-After creating all the necessary subsets to target patients exposed to ibuprofen and celcoxib, combining them is necessary to produce the filtered subjects of interest.
+## Basic Example
+
+Let's say we wanted to create a subset definition for patients aged between 20 to 50 that are also exposed to celcoxib.
+The subset definition would be defined as:
 
 ```{r}
+ageRequirementSubset <- CohortGenerator::createCohortSubsetDefinition(
+  name = "Celcoxib - 20 to 50 years old ",
+  definitionId = 10,
+  subsetOperators = list(
+    ageCriteria
+  ),
+  subsetCohortNameTemplate = "Celcoxib - Subjects Aged 20-50"
+)
+```
 
+What this does is give the subset a unique id that it will be recognized as AND use subset operators to use the operators we want to use.
+In this case, we only have to use 1 operator.
+However, in the next case, we will use multiple operators.
+
+**Advanced Example**
+
+Let's say we wanted a more advanced subset that used the age criteria (20-50 year olds), exposed to ibuprofen within any time and if there are multiple ibuprofen exposures, extract the last ibuprofen exposure.
+In order to do that, we would simply expand the number of operators being used such that we can combine an AND clause for each operator being used to produce the subset of interest.
+
+```{r}
 ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
   name = "Celecoxib and Ibuprofen Exposures",
   definitionId = 11,  # Unique ID for this subset
@@ -214,26 +233,63 @@ ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
   ),
   subsetCohortNameTemplate = "Celcoxib with Ibuprofen Exposure - Last Exposure for Subject Aged 20 - 50"
 )
-
 ```
 
-# Creating cohort subset definitions
+# Adding subsets to Cohort Definition Set
 
-Down below, we are extracting sampled cohorts that mimic what the actual cohort would be like, produced by a script called PackageData.R found in extras.
-After extracting those cohorts from the csv file(celcoxib and ibuprofen), we can finally reference the ibuprofen subset to celcoxib by setting the target id to the cohort id of celcoxib.
-That directly translates to ibuprofen subsetting off of celcoxib.
+Down below, we are using the addCohortSubsetDefinition function to add the new subset to the cohort definition set.
+**NOTE**: we set the target id to the cohort we would specifically like to subset to.
 
 ```{r}
-jsonFilePath <- system.file("testdata", "CohortsToSubset.JSON", package = "CohortGenerator")
-cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
-
 cohortDefinitionSet <- cohortDefinitionSet |>
+  CohortGenerator::addCohortSubsetDefinition(ageRequirementSubset, targetCohortIds = c(1)) |>
   CohortGenerator::addCohortSubsetDefinition(ibuprofenWCelcoxib,targetCohortIds = c(1))
 cohortDefinitionSet |> 
   dplyr::select("cohortId", "cohortName") |> 
   knitr::kable()
-
 ```
+
+# Required Package
+
+DuckDB is required to further demonstrate the use case of Cohort Generator for this specific vignette.
+To install the `duckdb` package run:
+
+```{r eval=FALSE}
+install.packages("duckdb")
+```
+
+# Testing Data
+
+The purpose of this test data is to demonstrate how Cohort Generator is applied by using it's functionality to create subsets based on existing cohorts.
+We will begin by creating a dummy OMOP data model and populating the dummy OMOP data model with subjects and drug exposure.
+The drug exposure used in the dummy OMOP data model itself will be recognized as ibuprofen exposure.
+The sample data itself is found in PackageMaintenance.R found in extras folder if interested in analyzing it.
+
+```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE}
+databaseFile <- tempfile(fileext = ".duckdb")
+duckdbConnectionDetails <- DatabaseConnector::createConnectionDetails(
+  dbms = "duckdb",
+  server = databaseFile
+)
+resultsSchema <- "main"
+connection <- DatabaseConnector::connect(duckdbConnectionDetails)
+
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = resultsSchema,
+  tableName = "person",
+  data = omopCdmPerson
+)
+# Insert updated data into the 'drug_exposure' table
+DatabaseConnector::insertTable(
+  connection = connection,
+  databaseSchema = resultsSchema,
+  tableName = "drug_exposure",
+  data = omopCdmDrugExposure
+)
+```
+
+After creating the dummy OMOP data model, we will look into generating all the cohorts into the OMOP data model.
 
 # Generating subsets
 
@@ -269,7 +325,6 @@ Each of these subjects are exposed to celcoxib once while some of these subjects
 Based on this information, the subset ibuprofen with celcoxib is generated for a few selected individuals if they met the defined criteria above (celcoxib and ibuprofen, age, and extracting last ibuprofen exposure).
 
 ```{r, echo = TRUE, warning = FALSE, message = FALSE, error = FALSE, results = 'hide', fig.width = 10, fig.height = 6}
-library(dplyr)
 library(ggplot2)
 cohorts <- DatabaseConnector::querySql(
   connection = connection,
@@ -299,21 +354,28 @@ ggplot(cohort_data, aes(x = cohort_start_date, xend = cohort_end_date,
                         y = as.factor(cohort_definition_id), 
                         group = interaction(cohort_definition_id, subject_id), 
                         color = cohort_legend)) +
-  geom_segment(aes(xend = cohort_end_date, yend = as.factor(cohort_definition_id)), size = 2) +  # Thicker lines (size = 2)
-  geom_point(aes(x = cohort_start_date, y = as.factor(cohort_definition_id)), size = 4, shape = 21, fill = "black") +  # Adding bullet points
+  geom_segment(aes(xend = cohort_end_date, yend = as.factor(cohort_definition_id)), size = 2) +  
+  geom_point(aes(x = cohort_start_date, y = as.factor(cohort_definition_id)), size = 4, shape = 21, fill = "black") +  
   geom_text(data = cohort_data[cohort_data$cohort_definition_id == 1, ], 
             aes(label = age, 
-                x = as.Date((as.numeric(cohort_start_date) + as.numeric(cohort_end_date)) / 2, origin = "1970-01-01"),  # Midpoint calculation
+                x = as.Date((as.numeric(cohort_start_date) + as.numeric(cohort_end_date)) / 2, origin = "1970-01-01"),  
                 y = as.factor(cohort_definition_id)), 
-            vjust = -0.5, size = 4, color = "black") +  # Adding age label in the center
+            vjust = -0.5, size = 4, color = "black") +  
   labs(title = "Cohort Duration by Cohort Definition ID Faceted by Subject ID and Gender",
        x = "Date",
        y = "Cohort Definition ID",
-       color = "Cohort Definition") +  
+       color = "Cohort Definition") +
   scale_x_date(limits = as.Date(c("2002-01-01", "2004-06-31")), date_breaks = "1 year", date_labels = "%Y") +  
   scale_color_brewer(palette = "Paired") +  
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +  # Wrap legend into 2 rows
   theme_minimal() +
-  theme(legend.position = "bottom") +  
+  theme(
+    legend.position = "bottom",  # Position the legend at the bottom
+    legend.box = "vertical",     # Stack the legend vertically if it overflows
+    legend.text = element_text(size = 10),  # Adjust font size for readability
+    legend.spacing.x = unit(0.5, 'cm'),     # Add spacing between legend items
+    plot.margin = margin(10, 10, 50, 10)   # Increase bottom margin to accommodate the legend
+  ) +
   facet_wrap(~ facet_label)  # Correct facet wrapping
 
 ```
