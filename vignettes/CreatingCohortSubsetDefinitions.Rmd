@@ -213,11 +213,11 @@ ageRequirementSubset <- CohortGenerator::createCohortSubsetDefinition(
 )
 ```
 
-What this does is give the subset a unique id that it will be recognized as AND use subset operators to use the operators we want to use.
+What this does is give the subset a unique id that it will be recognized as and use **subset operators** to use the operators we want to use.
 In this case, we only have to use 1 operator.
 However, in the next case, we will use multiple operators.
 
-**Advanced Example**
+## **Advanced Example**
 
 Let's say we wanted a more advanced subset that used the age criteria (20-50 year olds), exposed to ibuprofen within any time and if there are multiple ibuprofen exposures, extract the last ibuprofen exposure.
 In order to do that, we would simply expand the number of operators being used such that we can combine an AND clause for each operator being used to produce the subset of interest.
@@ -239,6 +239,7 @@ ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
 
 Down below, we are using the addCohortSubsetDefinition function to add the new subset to the cohort definition set.
 **NOTE**: we set the target id to the cohort we would specifically like to subset to.
+In this case, we want to target celcoxib, so the target id is set to 1.
 
 ```{r}
 cohortDefinitionSet <- cohortDefinitionSet |>
