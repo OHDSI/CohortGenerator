@@ -12,9 +12,9 @@ omopCdmPerson <- data.frame(
 )
 
 # Step 2: Save the `omopCdmPerson` object into the package
-usethis::use_data(omopCdmPerson)
+usethis::use_data(omopCdmPerson,overwrite = TRUE)
 
-# Define the drug exposure data---------
+# Define the drug exposure data/ Ibuprofen exposure---------
 omopCdmDrugExposure <- data.frame(
   drug_exposure_id = 1:8,  # Unique IDs for drug exposures
   person_id = c(2, 4, 4, 6, 8, 10, 12, 12),  # Mapping exposures to specified subjects
@@ -40,7 +40,28 @@ omopCdmDrugExposure <- data.frame(
     as.Date("2004-02-28")   # Subject 12 (Second exposure ends)
   )
 )
-usethis::use_data(omopCdmDrugExposure)
+usethis::use_data(omopCdmDrugExposure,overwrite = TRUE)
+
+omopCdmGIBleed <- data.frame(
+  gi_bleed_id = 1:5,  # Unique IDs for GI bleed events
+  person_id = c(4, 6, 8, 12, 12),  # Patients experiencing GI bleeds
+  gi_bleed_start_date = c(
+    as.Date("2003-02-10"),  # Subject 4: Updated to occur within 1st Ibuprofen exposure window
+    as.Date("2004-01-20"),  # Subject 6: Updated to occur within Ibuprofen exposure window
+    as.Date("2004-04-01"),  # Subject 8: Occurs after Ibuprofen exposure (unchanged)
+    as.Date("2002-06-03"),  # Subject 12: Occurs during first Ibuprofen exposure (unchanged)
+    as.Date("2004-01-10")   # Subject 12: Updated to occur within second Ibuprofen exposure window
+  ),
+  gi_bleed_end_date = c(
+    as.Date("2003-03-01"),  # Subject 4: Updated to end within 1st Ibuprofen exposure window
+    as.Date("2004-01-25"),  # Subject 6: Updated to end within Ibuprofen exposure window
+    as.Date("2004-05-15"),  # Subject 8: Ends shortly after Ibuprofen exposure (unchanged)
+    as.Date("2002-06-15"),  # Subject 12: Ends during first Ibuprofen exposure (unchanged)
+    as.Date("2004-02-20")   # Subject 12: Updated to end within second Ibuprofen exposure window
+  )
+)
+
+usethis::use_data(omopCdmGIBleed,overwrite = TRUE)
 
 # Define the Cohorts Sample Data----------------------
 cohortDefinitionSet <- data.frame(
@@ -90,6 +111,36 @@ cohortDefinitionSet <- rbind(
       JOIN @cdm_database_schema.PERSON p ON de.person_id = p.person_id
       WHERE de.drug_exposure_start_date BETWEEN '2000-01-01' AND '2008-12-31'
       and p.person_id %2 =0;
+    ",
+    json = ""
+  )
+)
+
+cohortDefinitionSet <- rbind(
+  cohortDefinitionSet,
+  data.frame(
+    cohort_definition_id = 3,  
+    cohort_name = "GI Bleed", 
+    sql = "
+      INSERT INTO @results_database_schema.@target_cohort_table (
+          cohort_definition_id,
+          subject_id,
+          cohort_start_date,
+          cohort_end_date
+      )
+      SELECT 
+          @target_cohort_id AS cohort_definition_id,
+          gb.person_id AS subject_id,
+          gb.gi_bleed_start_date AS cohort_start_date,
+          gb.gi_bleed_end_date AS cohort_end_date
+      FROM 
+          @cdm_database_schema.gi_bleed gb
+      JOIN 
+          @cdm_database_schema.person p 
+      ON 
+          gb.person_id = p.person_id
+      WHERE 
+          gb.gi_bleed_start_date BETWEEN '2000-01-01' AND '2008-12-31';
     ",
     json = ""
   )
