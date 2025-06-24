@@ -32,7 +32,8 @@ Imports:
   ResultModelManager,
   SqlRender (>= 1.11.1),
   stringi (>= 1.7.6),
-  tibble
+  tibble,
+  ggplot2
 Suggests:
   CirceR (>= 1.1.1),
   duckdb,
