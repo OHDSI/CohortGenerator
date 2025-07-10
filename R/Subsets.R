@@ -744,6 +744,7 @@ LimitSubsetOperator <- R6::R6Class(
     suffixStr = "Limit to",
     .priorTime = 0,
     .followUpTime = 0,
+    .minimumCohortDuration = 0,
     .limitTo = character(0),
     .calendarStartDate = NULL,
     .calendarEndDate = NULL
@@ -821,6 +822,17 @@ LimitSubsetOperator <- R6::R6Class(
       private$.followUpTime <- followUpTime
       self
     },
+    #' @field minimumCohortDuration            minimum cohort duration time in days
+    minimumCohortDuration = function(duration) {
+      if (missing(duration)) {
+        return(private$.minimumCohortDuration)
+      }
+
+      checkmate::assertInt(duration, lower = 0, upper = 99999)
+      private$.minimumCohortDuration <- duration
+      self
+    },
+
     #' @field limitTo     character one of:
     #'                              "firstEver" - only first entry in patient history
     #'                              "earliestRemaining" - only first entry after washout set by priorTime
@@ -888,9 +900,10 @@ LimitSubsetOperator <- R6::R6Class(
 #' @description
 #' Subset cohorts using specified limit criteria
 #' @export
-#' @param name              Name of operation
-#' @param priorTime         Required prior observation window (specified as a positive integer)
-#' @param followUpTime      Required post observation window (specified as a positive integer)
+#' @param name                  Name of operation
+#' @param priorTime             Required prior observation window (specified as a positive integer)
+#' @param followUpTime          Required post observation window (specified as a positive integer)
+#' @param minimumCohortDuration Required cohort duration length (specified as a positive integer)
 #' @param limitTo           character one of:
 #'                              "firstEver" - only first entry in patient history
 #'                              "earliestRemaining" - only first entry after washout set by priorTime
@@ -906,6 +919,7 @@ LimitSubsetOperator <- R6::R6Class(
 createLimitSubset <- function(name = NULL,
                               priorTime = 0,
                               followUpTime = 0,
+                              minimumCohortDuration = 0,
                               limitTo = "all",
                               calendarStartDate = NULL,
                               calendarEndDate = NULL) {
@@ -921,6 +935,7 @@ createLimitSubset <- function(name = NULL,
   subset$name <- name
   subset$priorTime <- priorTime
   subset$followUpTime <- followUpTime
+  subset$minimumCohortDuration <- minimumCohortDuration
   subset$limitTo <- limitTo
   subset$calendarStartDate <- calendarStartDate
   subset$calendarEndDate <- calendarEndDate
