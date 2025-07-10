@@ -335,6 +335,7 @@ createCohortTemplateDefintion <- function(name,
                    sqlArgs = sqlArgs,
                    references = references,
                    templateSql = templateSql,
+                   tempEmulationSchema = tempEmulationSchema,
                    translateSql = translateSql)
 
   def <- CohortTemplateDefinition$new(settings)
