@@ -787,6 +787,10 @@ LimitSubsetOperator <- R6::R6Class(
         nameString <- paste(nameString, "before", self$calendarEndDate)
       }
 
+      if (self$minimumCohortDuration > 0) {
+        nameString <- paste(nameString, "lasting at least", self$minimumCohortDuration, "days")
+      }
+
       return(nameString)
     },
     #' To List
@@ -795,6 +799,7 @@ LimitSubsetOperator <- R6::R6Class(
       objRef <- super$toList()
       objRef$priorTime <- jsonlite::unbox(private$.priorTime)
       objRef$followUpTime <- jsonlite::unbox(private$.followUpTime)
+      objRef$minimumCohortDuration <- jsonlite::unbox(private$.minimumCohortDuration)
       objRef$limitTo <- jsonlite::unbox(private$.limitTo)
       objRef$calendarStartDate <- jsonlite::unbox(private$.calendarStartDate)
       objRef$calendarEndDate <- jsonlite::unbox(private$.calendarEndDate)
