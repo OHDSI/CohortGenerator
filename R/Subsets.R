@@ -927,7 +927,7 @@ createLimitSubset <- function(name = NULL,
     limitTo <- "all"
   }
 
-  if (priorTime == 0 & followUpTime == 0 & limitTo == "all" & is.null(calendarStartDate) & is.null(calendarEndDate)) {
+  if (minimumCohortDuration == 0 && priorTime == 0 & followUpTime == 0 & limitTo == "all" & is.null(calendarStartDate) & is.null(calendarEndDate)) {
     stop("No limit criteria specified")
   }
 
