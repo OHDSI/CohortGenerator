@@ -98,6 +98,8 @@ LimitSubsetQb <- R6::R6Class(
         calendar_start_date_month = ifelse(is.null(private$operator$calendarStartDate), yes = "", no = lubridate::month(private$operator$calendarStartDate)),
         calendar_start_date_year = ifelse(is.null(private$operator$calendarStartDate), yes = "", no = lubridate::year(private$operator$calendarStartDate)),
         follow_up_time = private$operator$followUpTime,
+        use_min_cohort_duration = private$operator$minimumCohortDuration > 0,
+        min_cohort_duration = private$operator$minimumCohortDuration,
         limit_to = private$operator$limitTo,
         prior_time = private$operator$priorTime,
         use_prior_fu_time = private$operator$followUpTime > 0 || private$operator$priorTime > 0,
