@@ -38,8 +38,8 @@ test_that("limit subset naming and instantitation", {
   expectedName <- "first ever occurence with at least 365 days prior observation and 2 days follow up observation"
   expect_equal(expectedName, limitSubsetNamed$name)
 
-  limitSubsetNamed <- createLimitSubset(priorTime = 0, followUpTime = 200, limitTo = "lastEver")
-  expectedName <- "last ever occurence with at least 200 days follow up observation"
+  limitSubsetNamed <- createLimitSubset(priorTime = 0, followUpTime = 200, limitTo = "lastEver", minimumCohortDuration = 2)
+  expectedName <- "last ever occurence with at least 200 days follow up observation lasting at least 2 days"
   expect_equal(expectedName, limitSubsetNamed$name)
 
   limitSubsetNamed <- createLimitSubset(priorTime = 0, followUpTime = 200, limitTo = "earliestRemaining")
