@@ -41,5 +41,5 @@ FROM (
   AND c.cohort_start_date <= DATEFROMPARTS(@calendar_end_date_year,@calendar_end_date_month,@calendar_end_date_day)
 }
 {@use_min_cohort_duration} ? {
-  AND DATEDIFF(day, c.cohort_end_date, c.cohort_start_date) >= @min_cohort_duration
+   AND ABS(DATEDIFF(day, c.cohort_start_date, c.cohort_end_date)) >= @min_cohort_duration
 }
