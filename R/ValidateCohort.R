@@ -26,43 +26,43 @@
 #' @export
 #' @inheritParams generateCohortSet
 #' @param cohortId Id of cohort to validate
-validateCohort <- function(connectionDetails = NULL,
-                            connection = NULL,
-                            cdmDatabaseSchema,
-                            tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-                            cohortDatabaseSchema = cdmDatabaseSchema,
-                            cohortTableNames = getCohortTableNames(),
-                            cohortId) {
-  sql <- "
+getCohortValidationCounts <- function(connectionDetails = NULL,
+                                      connection = NULL,
+                                      cdmDatabaseSchema,
+                                      tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+                                      cohortDatabaseSchema = cdmDatabaseSchema,
+                                      cohortTableNames = getCohortTableNames(),
+                                      cohortIds = NULL) {
 
-  SELECT
-    c.cohort_definition_id
-    -- NUMBER OF OVERLAPPING ERAS
-    sum(c2.person_id) over c2 HAVING not NULL as overlapping_eras,
-    -- NUMBER OF INDIVIUDALS WITH COHORTS OUTSIDE OBSERVATION
-    sum(op.person_id) as outside_observation,
-    -- NUMBER OF INDIVIDUALS THEAT HAVE START DATES THAT OCCUR AFTER END DATES
-    -- DUPLICATE ENTRIES FOR A COHORT
-   FROM @cohort_database_schema.@cohort_table c
+  if (is.null(connection) && is.null(connectionDetails)) {
+    stop("You must provide either a database connection or the connection details.")
+  }
 
-   LEFT JOIN @cdm_database_schema.observaton_period op ON (
-      op.person_id = c.subject_id
-      AND op.observation_period_start_date > c.cohort_start_date
-      OR op.observation_period_end_date < c.cohort_end_date
-   )
-   LEFT JOIN @cohort_database_schema.@cohort_table c2 ON (
-      c.subject_id = c2.subject_id AND c.cohort_definition_id = c2.cohort_definition_id
-      AND c2.cohort_start_date > c.cohort_start_date
-      AND c2.cohort_end_date <= c.cohort_end_date
+  if (is.null(connection)) {
+    connection <- DatabaseConnector::connect(connectionDetails)
+    on.exit(DatabaseConnector::disconnect(connection))
+  }
+
+  sql <- SqlRender::loadRenderTranslateSql("ValidateCohorts.sql",
+                                           tempEmulationSchema = tempEmulationSchema,
+                                           cdm_database_schema = cdmDatabaseSchema,
+                                           cohort_table = cohortTableNames$cohortTable,
+                                           cohort_database_schema = cohortDatabaseSchema,
+                                           cohort_ids = cohortIds,
+                                           packageName = utils::packageName())
+
+  result <- DatabaseConnector::renderTranslateQuerySql(connection, sql, snakeCaseToCamelCase = TRUE)
+
+  result <- result |> dplyr::mutate(
+    invalid = any(
+      c(.data$overlappingErasCount > 0,
+        .data$invalidDateCount > 0,
+        .data$duplicateCount > 0,
+        .data$outsideObservationCount > 0)
     )
+  )
 
-    LEFT JOIN @cohort_database_schema.@cohort_table c3 ON (
-      c.subject_id = c3.subject_id AND c.cohort_definition_id = c3.cohort_definition_id
-      AND c3.cohort_start_date > c3.cohort_end_date
-    )
-   GROUP BY c.cohort_definition_id
-
-  "
+  return(result)
 }
 
 
