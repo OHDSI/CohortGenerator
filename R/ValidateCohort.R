@@ -54,13 +54,11 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
   result <- DatabaseConnector::renderTranslateQuerySql(connection, sql, snakeCaseToCamelCase = TRUE)
 
   result <- result |> dplyr::mutate(
-    invalid = any(
-      c(.data$overlappingErasCount > 0,
-        .data$invalidDateCount > 0,
-        .data$duplicateCount > 0,
-        .data$outsideObservationCount > 0)
-    )
-  )
+    invalid = .data$overlappingErasCount > 0 |
+      .data$invalidDateCount > 0 |
+      .data$duplicateCount > 0 |
+      .data$outsideObservationCount > 0)
+
 
   return(result)
 }
