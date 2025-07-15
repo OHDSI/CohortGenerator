@@ -23,6 +23,16 @@
 #' * Cohorts that lie outside the observation period for individuals
 #' * Cohorts that have start dates that occur after their end dates
 #' * Cohorts with duplicate entries for the same subject.
+#'
+#' Note - this code cannot formally verify the validity of a cohort. There may be situations where the logic of a
+#' cohort definition only causes errors in certain circumstances. Furthermore, if cohort counts are 0 this check is
+#' unable to evaluate validity at all.
+#'
+#' The returned data.frame counts the number of errors found for each cohort. In addition a boolean "valid"
+#' field is applied that is TRUE only in the case where all counts are 0.
+#'
+#' @return a data.frame with the fields cohortId, overlappingErasCount, invalidDateCount, duplicateCount, outsideObservationCount
+#'
 #' @export
 #' @inheritParams generateCohortSet
 #' @param cohortId Id of cohort to validate
@@ -54,10 +64,10 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
   result <- DatabaseConnector::renderTranslateQuerySql(connection, sql, snakeCaseToCamelCase = TRUE)
 
   result <- result |> dplyr::mutate(
-    invalid = .data$overlappingErasCount > 0 |
-      .data$invalidDateCount > 0 |
-      .data$duplicateCount > 0 |
-      .data$outsideObservationCount > 0)
+    valid = .data$overlappingErasCount == 0 &
+      .data$invalidDateCount == 0 &
+      .data$duplicateCount == 0 &
+      .data$outsideObservationCount == 0)
 
 
   return(result)

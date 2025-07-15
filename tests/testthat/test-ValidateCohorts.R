@@ -31,7 +31,7 @@ VALUES
 INSERT INTO cohort (cohort_definition_id, subject_id, cohort_start_date, cohort_end_date)
 VALUES
 (2, 201, '2025-03-01', '2025-02-28'), -- Start date is after end date
-(2, 201, NULL, '2025-02-28'); -- NULL start date
+(2, 202, NULL, '2025-02-28'); -- NULL start date
 
 -- 3. Duplicate entries
 INSERT INTO cohort (cohort_definition_id, subject_id, cohort_start_date, cohort_end_date)
@@ -81,5 +81,11 @@ VALUES
     validationCounts |> dplyr::filter(.data$cohortDefinitionId == 4) |> dplyr::pull("outsideObservationCount"), 1
   )
   
-  browser()
+  expect_false(
+    all(validationCounts |> dplyr::filter(.data$cohortDefinitionId != 5) |> dplyr::pull("valid"))
+  )
+
+  expect_true(
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 5) |> dplyr::pull("valid")
+  )
 })
