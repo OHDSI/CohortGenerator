@@ -158,9 +158,6 @@ CohortTemplateDefinition <- R6::R6Class(
       if (missing(references))
         return(private$.references)
 
-      if (is.list(references) & !is.data.frame(references))
-        references <- as.data.frame(references)
-
       checkmate::assertDataFrame(references, min.rows = 1)
       checkmate::assertNames(colnames(references), must.include = c("cohortId", "cohortName"))
       if (!"json" %in% colnames(references)) {
@@ -279,12 +276,11 @@ CohortTemplateDefinition <- R6::R6Class(
     #' to list
     #' @description
     #' Used for seralizing the definition
-    #' @param forStrategus      Used inside strategus shared object creation
-    toList = function(forStrategus = FALSE) {
+    toList = function() {
       def <- list(
         name = self$name,
         # Strategus uses an odd serialization strategy
-        references =  if(forStrategus) as.list(self$references) else self$references,
+        references =  self$references,
         templateSql = self$templateSql,
         sqlArgs = self$sqlArgs,
         translateSql = self$translateSql
@@ -295,9 +291,8 @@ CohortTemplateDefinition <- R6::R6Class(
     #' to json
     #' @description
     #' json seraalized form of the template definition
-    #' @param forStrategus      Used inside strategus shared object creation
-    toJson = function(forStrategus = FALSE) {
-      .toJSON(self$toList(forStrategus = forStrategus))
+    toJson = function() {
+      .toJSON(self$toList())
     },
 
     #' save to disk
