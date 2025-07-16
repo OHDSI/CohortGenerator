@@ -344,6 +344,7 @@ createCohortTemplateDefintion <- function(name,
 #' Extract template definitions from a cohort definition set
 #' @template cohortDefinitionSet
 #' @family templateCohorts
+#' @export
 getTemplateDefinitions <- function(cohortDefinitionSet) {
   checkmate::assertDataFrame(cohortDefinitionSet, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
