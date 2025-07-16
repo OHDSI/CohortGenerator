@@ -298,7 +298,7 @@ CohortTemplateDefinition <- R6::R6Class(
     #' @param forStrategus      Used inside strategus shared object creation
     toJson = function(forStrategus = FALSE) {
       .toJSON(self$toList(forStrategus = forStrategus))
-    },K
+    },
 
     #' save to disk
     #' @description
