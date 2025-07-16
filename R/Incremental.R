@@ -151,20 +151,10 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
   if (length(list(...)) == 0) {
     return()
   }
-  if (file.exists(recordKeepingFile)) {
-    recordKeeping <- .readCsv(file = recordKeepingFile)
-    idx <- getKeyIndex(list(...), recordKeeping)
-    if (length(idx) > 0) {
-      recordKeeping <- recordKeeping[-idx, ]
-    }
-  } else {
-    recordKeeping <- dplyr::tibble()
-  }
   newRow <- dplyr::as_tibble(list(...))
   newRow$checksum <- checksum
   newRow$timeStamp <- Sys.time()
-  recordKeeping <- dplyr::bind_rows(recordKeeping, newRow)
-  .writeCsv(x = recordKeeping, file = recordKeepingFile)
+  .writeCsv(x = newRow, file = recordKeepingFile, append = file.exists(recordKeepingFile))
 }
 
 #' Used in incremental mode to save values to a file
