@@ -200,6 +200,7 @@ test_that("Saving and loading definitions via attributes", {
     createLimitSubset(
       priorTime = 365,
       followUpTime = 0,
+      minimumCohortDuration = 1,
       limitTo = "firstEver"
     ),
     createDemographicSubset(
