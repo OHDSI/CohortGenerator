@@ -194,7 +194,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
             )
           )
         ) %>%
-        dplyr::filter(.data$cohortId == cohortDefinitionSet$cohortId)
+        dplyr::filter(.data$cohortId %in% cohortDefinitionSet$cohortId)
       cohortDefinitionSet <- cdsCopy
     }
     # Massage and save the cohort definition set
