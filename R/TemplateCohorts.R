@@ -45,7 +45,7 @@ CohortTemplateDefinition <- R6::R6Class(
     .translateSql = NULL,
     .sqlArgs = NULL,
     generateId = function() {
-      private$.checksum <- digest::digest(list(private$.references, private$.templateSql, private$.sqlArgs))
+      private$.checksum <- digest::digest(list(sort(private$.references$cohortId), private$.templateSql, private$.sqlArgs))
       private$.id <- paste0("CohortTemplate_", private$.checksum)
     },
 
