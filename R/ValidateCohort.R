@@ -72,27 +72,3 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
 
   return(result)
 }
-
-
-#' Validate cohorts within a cohort definition set
-#' @description
-#' Utility function that allows poping a cohort definition set
-validateCohortDefinitionSet <- function(cohortDefinitionSet, cohortIds = NULL) {
-  checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "sql"
-                         )
-  )
-  assertLargeInteger(cohortDefinitionSet$cohortId)
-  assertLargeInteger(cohortIds, null.ok = TRUE)
-  if (is.null(cohortIds))
-    cohortIds <- cohortDefinitionSet$cohortId
-
-  if (is.null(cohortDefinitionSet$validated)) {
-    cohortDefinitionSet$validated <- FALSE
-  }
-
-
-}

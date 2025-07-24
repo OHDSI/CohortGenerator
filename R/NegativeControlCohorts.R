@@ -55,6 +55,8 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #'
 #' @template CohortDatabaseSchema
 #'
+#' @template CohortTableNames
+#'
 #' @param cohortTable                  Name of the cohort table.
 #'
 #' @template negativeControlOutcomeCohortSet
@@ -79,8 +81,8 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
                                                   cdmDatabaseSchema,
                                                   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                   cohortDatabaseSchema = cdmDatabaseSchema,
-                                                  cohortTable = getCohortTableNames()$cohortTable,
-                                                  cohortChecksumTable = getCohortTableNames()$cohortChecksumTable,
+                                                  cohortTableNames = getCohortTableNames(),
+                                                  cohortTable = cohortTableNames$cohortTable,
                                                   negativeControlOutcomeCohortSet,
                                                   occurrenceType = "all",
                                                   incremental = FALSE,
@@ -156,7 +158,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   recordNcCohorts(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortChecksumTable = cohortChecksumTable,
+    cohortChecksumTable = cohortTableNames$cohortChecksumTable,
     negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet,
     checksum = checksum,
     start = as.numeric(start) * 1000
@@ -182,7 +184,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   recordNcCohorts(
     connection = connection,
     cohortDatabaseSchema = cohortDatabaseSchema,
-    cohortChecksumTable = cohortChecksumTable,
+    cohortChecksumTable = cohortTableNames$cohortChecksumTable,
     negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet,
     checksum = checksum,
     start = as.numeric(start) * 1000,
@@ -279,7 +281,7 @@ recordNcCohorts <- function(connection,
                                                  start_time = start,
                                                  target_cohort_id = negativeControlOutcomeCohortSet$cohortId[i],
                                                  end_time = endTime,
-                                                 results_database_schema = resultsDatabaseSchema,
+                                                 results_database_schema = cohortDatabaseSchema,
                                                  cohort_checksum_table = cohortChecksumTable,
                                                  warnOnMissingParameters = FALSE))
   }
