@@ -164,7 +164,7 @@ exportCohortStatsTables <- function(connectionDetails,
 
 
 addSubsetColumns <- function(cohortDefinitionSet) {
-  if (nrow(cohortDefinitionSet) & !hasSubsetDefinitions(cohortDefinitionSet)) {
+  if (nrow(cohortDefinitionSet) > 0 & !hasSubsetDefinitions(cohortDefinitionSet)) {
     cohortDefinitionSet$isSubset <- FALSE
     cohortDefinitionSet$subsetDefinitionId <- NA
     cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
@@ -189,7 +189,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
         )
       }
     } else {
-      cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns(cohortDefinitionSet)
+      cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns()
     }
     # Massage and save the cohort definition set
     colsToRename <- c("cohortId", "cohortName", "sql", "json")
