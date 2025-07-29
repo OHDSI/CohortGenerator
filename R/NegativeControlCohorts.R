@@ -274,7 +274,6 @@ recordNcCohorts <- function(connection,
   VALUES (@target_cohort_id, '@checksum', @start_time, @end_time);
 
   "
-  browser()
   for (i in 1:nrow(negativeControlOutcomeCohortSet)) {
     endSql <- paste(endSql, SqlRender::renderSql(endSql,
                                                  checksum = checksum,
