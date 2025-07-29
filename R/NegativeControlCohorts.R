@@ -51,6 +51,8 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #'
 #' @template CdmDatabaseSchema
 #'
+#' @template CohortTableNames
+
 #' @template TempEmulationSchema
 #'
 #' @template CohortDatabaseSchema
@@ -274,9 +276,8 @@ recordNcCohorts <- function(connection,
   VALUES (@target_cohort_id, '@checksum', @start_time, @end_time);
 
   "
-
   for (i in 1:nrow(negativeControlOutcomeCohortSet)) {
-    endSql <- paste(endSql, SqlRender::renderSql(checksumStartQuery,
+    endSql <- paste(endSql, SqlRender::renderSql(endSql,
                                                  checksum = checksum,
                                                  start_time = start,
                                                  target_cohort_id = negativeControlOutcomeCohortSet$cohortId[i],
