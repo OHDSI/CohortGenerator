@@ -47,6 +47,3 @@ rmarkdown::render("vignettes/SamplingCohorts.Rmd",
                                           toc = TRUE,
                                           number_sections = TRUE))
 
-unloadNamespace("CohortGenerator")
-pkgdown::build_site()
-OhdsiRTools::fixHadesLogo()
