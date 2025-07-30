@@ -4,6 +4,8 @@ template:
   bootstrap: 5
   bslib:
     bootswatch: cosmo
+  includes:
+    in_header: <link rel="stylesheet" type="text/css" href="extra.css" />    
 
 home:
   links:
