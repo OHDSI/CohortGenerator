@@ -42,26 +42,26 @@ omopCdmDrugExposure <- data.frame(
 )
 usethis::use_data(omopCdmDrugExposure,overwrite = TRUE)
 
-omopCdmGIBleed <- data.frame(
-  gi_bleed_id = 1:5,  # Unique IDs for GI bleed events
-  person_id = c(4, 6, 8, 12, 12),  # Patients experiencing GI bleeds
-  gi_bleed_start_date = c(
-    as.Date("2003-02-10"),  # Subject 4: Updated to occur within 1st Ibuprofen exposure window
-    as.Date("2004-01-20"),  # Subject 6: Updated to occur within Ibuprofen exposure window
-    as.Date("2004-04-01"),  # Subject 8: Occurs after Ibuprofen exposure (unchanged)
-    as.Date("2002-06-03"),  # Subject 12: Occurs during first Ibuprofen exposure (unchanged)
-    as.Date("2004-01-10")   # Subject 12: Updated to occur within second Ibuprofen exposure window
-  ),
-  gi_bleed_end_date = c(
-    as.Date("2003-03-01"),  # Subject 4: Updated to end within 1st Ibuprofen exposure window
-    as.Date("2004-01-25"),  # Subject 6: Updated to end within Ibuprofen exposure window
-    as.Date("2004-05-15"),  # Subject 8: Ends shortly after Ibuprofen exposure (unchanged)
-    as.Date("2002-06-15"),  # Subject 12: Ends during first Ibuprofen exposure (unchanged)
-    as.Date("2004-02-20")   # Subject 12: Updated to end within second Ibuprofen exposure window
-  )
-)
-
-usethis::use_data(omopCdmGIBleed,overwrite = TRUE)
+# omopCdmGIBleed <- data.frame(
+#   gi_bleed_id = 1:5,  # Unique IDs for GI bleed events
+#   person_id = c(4, 6, 8, 12, 12),  # Patients experiencing GI bleeds
+#   gi_bleed_start_date = c(
+#     as.Date("2003-02-10"),  # Subject 4: Updated to occur within 1st Ibuprofen exposure window
+#     as.Date("2004-01-20"),  # Subject 6: Updated to occur within Ibuprofen exposure window
+#     as.Date("2004-04-01"),  # Subject 8: Occurs after Ibuprofen exposure (unchanged)
+#     as.Date("2002-06-03"),  # Subject 12: Occurs during first Ibuprofen exposure (unchanged)
+#     as.Date("2004-01-10")   # Subject 12: Updated to occur within second Ibuprofen exposure window
+#   ),
+#   gi_bleed_end_date = c(
+#     as.Date("2003-03-01"),  # Subject 4: Updated to end within 1st Ibuprofen exposure window
+#     as.Date("2004-01-25"),  # Subject 6: Updated to end within Ibuprofen exposure window
+#     as.Date("2004-05-15"),  # Subject 8: Ends shortly after Ibuprofen exposure (unchanged)
+#     as.Date("2002-06-15"),  # Subject 12: Ends during first Ibuprofen exposure (unchanged)
+#     as.Date("2004-02-20")   # Subject 12: Updated to end within second Ibuprofen exposure window
+#   )
+# )
+# 
+# usethis::use_data(omopCdmGIBleed,overwrite = TRUE)
 
 # Define the Cohorts Sample Data----------------------
 cohortDefinitionSet <- data.frame(
