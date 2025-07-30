@@ -52,7 +52,7 @@ This type of operation allows you to subset a cohort to subjects included in one
 
 ## Subset Definition
 
-Subset definitions are named sets of one or more operators (from above) that can be applied to a set of one or more cohorts. Operatiors can be sequentially chained within subset definitions and all outputs are full cohorts that can be passed into to other analytical tasks.
+Subset definitions are named sets of one or more operators (from above) that can be applied to a set of one or more cohorts. Operators can be sequentially chained within subset definitions and all outputs are full cohorts that can be passed into to other analytical tasks.
 
 # Creating cohort subset definitions
 
@@ -173,7 +173,7 @@ ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
 
 ## Adding subsets to Cohort Definition Set
 
-Cohort subset definitions must be added to a cohort definition set to generate these subsets using CohortGenerator. To do this, we use the `addCohortSubsetDefinition` function to add the subset definition to the cohort definition set. This function allows us to specify the `targetCohortIds` that should receive the subset definition and operators. Here we will apply the subset definitions to the target cohort celcoxib (cohortId == 1).
+Cohort subset definitions must be added to a cohort definition set to generate these subsets using CohortGenerator. To do this, we use the `addCohortSubsetDefinition` function to add the subset definition to the cohort definition set. This function allows us to specify the `targetCohortIds` that should receive the subset definition and operators. Here we will apply the subset definitions to the target cohort celecoxib (cohortId == 1).
 
 ```{r}
 cohortDefinitionSet <- cohortDefinitionSet |>
