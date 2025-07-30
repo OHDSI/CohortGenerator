@@ -4,7 +4,13 @@
 \alias{createSubsetCohortWindow}
 \title{Create a relative time window for cohort subset operations}
 \usage{
-createSubsetCohortWindow(startDay, endDay, targetAnchor, subsetAnchor = NULL)
+createSubsetCohortWindow(
+  startDay,
+  endDay,
+  targetAnchor,
+  subsetAnchor = NULL,
+  negate = FALSE
+)
 }
 \arguments{
 \item{startDay}{The start day for the time window}
@@ -16,6 +22,8 @@ The parameter is specified as 'cohortStart' or 'cohortEnd'.}
 
 \item{subsetAnchor}{To anchor using the subset cohort's start date or end date.
 The parameter is specified as 'cohortStart' or 'cohortEnd'.}
+
+\item{negate}{To turn each window function into an AND clause in SQL}
 }
 \value{
 a SubsetCohortWindow instance

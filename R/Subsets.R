@@ -45,7 +45,9 @@ SubsetCohortWindow <- R6::R6Class(
     .startDay = as.integer(0),
     .endDay = as.integer(0),
     .targetAnchor = "cohortStart",
-    .subsetAnchor = "cohortStart"
+    .subsetAnchor = "cohortStart",
+    .negate = FALSE
+    
   ),
   public = list(
     #' @description List representation of object
@@ -63,8 +65,10 @@ SubsetCohortWindow <- R6::R6Class(
 
        if (length(private$.subsetAnchor)) {
         objRepr$subsetAnchor <- jsonlite::unbox(private$.subsetAnchor)
+       }
+      if(length(private$.negate)){
+        objRepr$negate <- jsonlite::unbox(private$.negate)
       }
-
       objRepr
     },
     #' To JSON
@@ -82,7 +86,8 @@ SubsetCohortWindow <- R6::R6Class(
         self$startDay == criteria$startDay,
         self$endDay == criteria$endDay,
         self$targetAnchor == criteria$targetAnchor,
-        self$subsetAnchor == criteria$subsetAnchor
+        self$subsetAnchor == criteria$subsetAnchor,
+        self$negate == criteria$negate
       ))
     }
   ),
@@ -122,6 +127,15 @@ SubsetCohortWindow <- R6::R6Class(
       checkmate::assertChoice(x = subsetAnchor, choices = c("cohortStart", "cohortEnd"))
       private$.subsetAnchor <- subsetAnchor
       return(self)
+    },
+    #' @field negate Boolean
+    negate = function(negate){
+      if(missing(negate)){
+        return(private$.negate)
+      }
+      checkmate::assertChoice(x = negate, choices = c(TRUE,FALSE))
+      private$.negate <- negate
+      return(self)
     }
   )
 )
@@ -140,8 +154,9 @@ SubsetCohortWindow <- R6::R6Class(
 #'                     The parameter is specified as 'cohortStart' or 'cohortEnd'.
 #' @param subsetAnchor To anchor using the subset cohort's start date or end date.
 #'                     The parameter is specified as 'cohortStart' or 'cohortEnd'.
+#' @param negate  To turn each window function into an AND clause in SQL
 #' @returns a SubsetCohortWindow instance
-createSubsetCohortWindow <- function(startDay, endDay, targetAnchor, subsetAnchor = NULL) {
+createSubsetCohortWindow <- function(startDay, endDay, targetAnchor, subsetAnchor = NULL, negate = FALSE) {
   if (is.null(subsetAnchor))
     subsetAnchor <- "cohortStart"
 
@@ -150,6 +165,7 @@ createSubsetCohortWindow <- function(startDay, endDay, targetAnchor, subsetAncho
   window$endDay <- endDay
   window$targetAnchor <- targetAnchor
   window$subsetAnchor <- subsetAnchor
+  window$negate <- negate
   window
 }
 

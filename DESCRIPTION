@@ -35,7 +35,9 @@ Imports:
   tibble
 Suggests:
   CirceR (>= 1.1.1),
+  duckdb,
   Eunomia,
+  ggplot2,
   knitr,
   rmarkdown,
   testthat,
@@ -48,3 +50,4 @@ BugReports: https://github.com/OHDSI/CohortGenerator/issues
 RoxygenNote: 7.3.2
 Encoding: UTF-8
 Language: en-US
+LazyData: true
