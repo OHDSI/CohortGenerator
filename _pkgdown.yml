@@ -132,6 +132,13 @@ reference:
       software development purposes and NOT for running studies.
     contents:
       - sampleCohortDefinitionSet
+      
+  - title: "Sample Data"
+    desc: >
+      Sample data used in vignettes to showcase how to perform cohort subsets.
+    contents:
+      - omopCdmDrugExposure
+      - omopCdmPerson
 
 navbar:
   bg: dark
