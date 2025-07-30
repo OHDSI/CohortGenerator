@@ -101,7 +101,7 @@ test_that("Subset definition", {
   )
 
   expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
-  
+
   ccsWindow <- list(
     createSubsetCohortWindow(
       startDay = -99999,
@@ -518,9 +518,8 @@ test_that("Subset name templates function", {
   expect_true(attr(cds2, "hasSubsetDefinitions"))
 })
 
-test_that("Basic Negate logic check",{
-  
-  #Testing if Negate is found in json structure
+test_that("Basic Negate logic check", {
+  # Testing if Negate is found in json structure
   window1 <- createSubsetCohortWindow(
     startDay = 1,
     endDay = 10,
@@ -529,19 +528,19 @@ test_that("Basic Negate logic check",{
     negate = TRUE
   )
   expect_true(window1$negate)
-  
-  jsonOutput <- window1$toJSON()
-  expect_true(grepl('"negate": true', jsonOutput)) 
-  
-  
 
-  #Testing if Negate (AND NOT) IS FOUND IN SQL QUERY
-  #What this test does is check if using a cohort celcoxib, 
-  #create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
-  
+  jsonOutput <- window1$toJSON()
+  expect_true(grepl('"negate": true', jsonOutput))
+
+
+
+  # Testing if Negate (AND NOT) IS FOUND IN SQL QUERY
+  # What this test does is check if using a cohort celcoxib,
+  # create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
+
   jsonFilePath <- system.file("testdata", "SubsetVignetteCohorts.JSON", package = "CohortGenerator")
   cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
-  
+
   windows <- list(
     CohortGenerator::createSubsetCohortWindow(
       startDay = 1,
@@ -557,7 +556,7 @@ test_that("Basic Negate logic check",{
       negate = TRUE
     )
   )
-  
+
   ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition(
     name = "requiring",
     definitionId = 6,
@@ -572,13 +571,12 @@ test_that("Basic Negate logic check",{
       )
     )
   )
-  
+
   cohortDefinitionSet <- cohortDefinitionSet |>
     CohortGenerator::addCohortSubsetDefinition(ibuprofenYearAfter, targetCohortIds = c(1))
-  
-  sqlForCohort1006 <-  cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
+
+  sqlForCohort1006 <- cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
   expect_true(grepl("AND NOT", sqlForCohort1006, ignore.case = TRUE))
-  
 })
 
 
@@ -759,22 +757,22 @@ test_that("Subset logic checks", {
   )
 
   # Define cohort subsets for tests -------------
-  
+
   cs1Window <- list(
     createSubsetCohortWindow(
-      startDay = -99999, 
-      endDay = 0, 
-      targetAnchor = "cohortStart", 
+      startDay = -99999,
+      endDay = 0,
+      targetAnchor = "cohortStart",
       subsetAnchor = "cohortStart"
     ),
     createSubsetCohortWindow(
-      startDay = 0, 
-      endDay = 99999, 
-      targetAnchor = "cohortStart", 
+      startDay = 0,
+      endDay = 99999,
+      targetAnchor = "cohortStart",
       subsetAnchor = "cohortEnd"
     )
   )
-  
+
   cs1 <- createCohortSubsetDefinition(
     name = "Subset overlaps cohort start",
     definition = 301,
@@ -788,11 +786,11 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs2Window <- list(
     createSubsetCohortWindow(
-      startDay = -99999, 
-      endDay = -1, 
+      startDay = -99999,
+      endDay = -1,
       targetAnchor = "cohortStart",
       subsetAnchor = "cohortStart"
     ),
@@ -802,7 +800,6 @@ test_that("Subset logic checks", {
       targetAnchor = "cohortEnd",
       subsetAnchor = "cohortEnd"
     )
-    
   )
   cs2 <- createCohortSubsetDefinition(
     name = "Subset overlaps entire target cohort period",
@@ -817,7 +814,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs3Windows <- list(
     createSubsetCohortWindow(
       startDay = 1,
@@ -874,7 +871,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs5Windows <- list(
     createSubsetCohortWindow(
       startDay = -99999,
@@ -902,7 +899,7 @@ test_that("Subset logic checks", {
       )
     )
   )
-  
+
   cs6Windows <- list(
     createSubsetCohortWindow(
       startDay = -99999,
