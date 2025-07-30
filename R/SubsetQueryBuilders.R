@@ -1,4 +1,4 @@
-# Copyright 2024 Observational Health Data Sciences and Informatics
+# Copyright 2025 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -49,23 +49,32 @@ CohortSubsetQb <- R6::R6Class(
   inherit = QueryBuilder,
   private = list(
     innerQuery = function(targetTable) {
+      cohortWindowLogic <- lapply(private$operator$windows, function(window) {
+        # WHEN negate = TRUE: AND NOT
+        lsql <- "AND {@negate} ? {NOT} (S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))"
+        SqlRender::render(lsql,
+          negate = window$negate,
+          window_anchor = ifelse(window$targetAnchor == "cohortStart",
+            yes = "cohort_start_date",
+            no = "cohort_end_date"
+          ),
+          s_cohort_anchor = ifelse(window$subsetAnchor == "cohortStart",
+            yes = "cohort_start_date",
+            no = "cohort_end_date"
+          ),
+          window_end_day = window$endDay,
+          window_start_day = window$startDay
+        )
+      })
+
+      cohortWindowLogic <- paste(cohortWindowLogic, collapse = "\n   ")
+
       sql <- SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetOperator.sql", package = "CohortGenerator"))
       sql <- SqlRender::render(sql,
         target_table = targetTable,
         output_table = self$getTableObjectId(),
-        end_window_anchor = ifelse(private$operator$endWindow$targetAnchor == "cohortStart",
-          yes = "cohort_start_date",
-          no = "cohort_end_date"
-        ),
-        end_window_end_day = private$operator$endWindow$endDay,
-        end_window_start_day = private$operator$endWindow$startDay,
-        negate = ifelse(private$operator$negate == TRUE, yes = "1", no = "0"),
-        start_window_anchor = ifelse(private$operator$startWindow$targetAnchor == "cohortStart",
-          yes = "cohort_start_date",
-          no = "cohort_end_date"
-        ),
-        start_window_end_day = private$operator$startWindow$endDay,
-        start_window_start_day = private$operator$startWindow$startDay,
+        negate = private$operator$negate,
+        cohort_window_logic = cohortWindowLogic,
         cohort_ids = private$operator$cohortIds,
         subset_length = ifelse(private$operator$cohortCombinationOperator == "any",
           yes = 1,
@@ -94,6 +103,8 @@ LimitSubsetQb <- R6::R6Class(
         calendar_start_date_month = ifelse(is.null(private$operator$calendarStartDate), yes = "", no = lubridate::month(private$operator$calendarStartDate)),
         calendar_start_date_year = ifelse(is.null(private$operator$calendarStartDate), yes = "", no = lubridate::year(private$operator$calendarStartDate)),
         follow_up_time = private$operator$followUpTime,
+        use_min_cohort_duration = private$operator$minimumCohortDuration > 0,
+        min_cohort_duration = private$operator$minimumCohortDuration,
         limit_to = private$operator$limitTo,
         prior_time = private$operator$priorTime,
         use_prior_fu_time = private$operator$followUpTime > 0 || private$operator$priorTime > 0,

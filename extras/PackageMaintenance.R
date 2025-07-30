@@ -1,6 +1,6 @@
 # @file PackageMaintenance
 #
-# Copyright 2024 Observational Health Data Sciences and Informatics
+# Copyright 2025 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 # 
@@ -47,6 +47,3 @@ rmarkdown::render("vignettes/SamplingCohorts.Rmd",
                                           toc = TRUE,
                                           number_sections = TRUE))
 
-unloadNamespace("CohortGenerator")
-pkgdown::build_site()
-OhdsiRTools::fixHadesLogo()

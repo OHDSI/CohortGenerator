@@ -2,20 +2,35 @@
 % Please edit documentation in R/Subsets.R
 \name{createSubsetCohortWindow}
 \alias{createSubsetCohortWindow}
-\title{A definition of subset functions to be applied to a set of cohorts}
+\title{Create a relative time window for cohort subset operations}
 \usage{
-createSubsetCohortWindow(startDay, endDay, targetAnchor)
+createSubsetCohortWindow(
+  startDay,
+  endDay,
+  targetAnchor,
+  subsetAnchor = NULL,
+  negate = FALSE
+)
 }
 \arguments{
-\item{startDay}{The start day for the window}
+\item{startDay}{The start day for the time window}
 
-\item{endDay}{The end day for the window}
+\item{endDay}{The end day for the time window}
 
-\item{targetAnchor}{To anchor using the target cohort's start date or end date}
+\item{targetAnchor}{To anchor using the target cohort's start date or end date.
+The parameter is specified as 'cohortStart' or 'cohortEnd'.}
+
+\item{subsetAnchor}{To anchor using the subset cohort's start date or end date.
+The parameter is specified as 'cohortStart' or 'cohortEnd'.}
+
+\item{negate}{Allows for negating a window, a way to detect that a subset does not occur relative to a target}
 }
 \value{
 a SubsetCohortWindow instance
 }
 \description{
-A definition of subset functions to be applied to a set of cohorts
+This function is used to create a relative time window for
+cohort subset operations. The cohort window allows you to define an interval
+of time relative to the target cohort's start/end date and the
+subset cohort's start/end date.
 }

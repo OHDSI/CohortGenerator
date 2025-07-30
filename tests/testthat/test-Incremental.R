@@ -338,6 +338,28 @@ test_that("Incremental save with empty key", {
   unlink(tmpFile)
 })
 
+test_that("Incremental save with empty data produces a file", {
+  data <- CohortGenerator::createEmptyCohortDefinitionSet()
+  tmpFile <- tempfile(pattern = ".csv")
+  CohortGenerator::saveIncremental(
+    data = data,
+    fileName = tmpFile,
+    cohortId = data$cohortId
+  )
+  testthat::expect_true(file.exists(tmpFile))
+  on.exit(file.remove(tmpFile))
+})
+
+test_that("Incremental save with no key produces a warning", {
+  data <- CohortGenerator::createEmptyCohortDefinitionSet()
+  tmpFile <- tempfile(pattern = ".csv")
+  testthat::expect_warning(
+    CohortGenerator::saveIncremental(
+      data = data,
+      fileName = tmpFile
+    )
+  )
+})
 
 test_that("isTaskRequired stops if duplicates detected", {
   rkf <- tempfile()
