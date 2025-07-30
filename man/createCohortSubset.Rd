@@ -24,7 +24,7 @@ or require that they are in all cohorts in specified windows}
 
 \item{negate}{The opposite of this definition - include patients who do NOT meet the specified criteria}
 
-\item{windows}{A list of time windows to use to evaluate subset cohorts in relation to the 
+\item{windows}{A list of time windows to use to evaluate subset cohorts in relation to the
 target  cohorts. The logic is to always apply these windows with logical AND conditions.
 See [@seealso [createSubsetCohortWindow()]] for more details on how to create
 these windows.}
