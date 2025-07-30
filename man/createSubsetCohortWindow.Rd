@@ -23,7 +23,7 @@ The parameter is specified as 'cohortStart' or 'cohortEnd'.}
 \item{subsetAnchor}{To anchor using the subset cohort's start date or end date.
 The parameter is specified as 'cohortStart' or 'cohortEnd'.}
 
-\item{negate}{To turn each window function into an AND clause in SQL}
+\item{negate}{Allows for negating a window, a way to detect that a subset does not occur relative to a target}
 }
 \value{
 a SubsetCohortWindow instance

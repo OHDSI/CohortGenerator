@@ -154,7 +154,7 @@ SubsetCohortWindow <- R6::R6Class(
 #'                     The parameter is specified as 'cohortStart' or 'cohortEnd'.
 #' @param subsetAnchor To anchor using the subset cohort's start date or end date.
 #'                     The parameter is specified as 'cohortStart' or 'cohortEnd'.
-#' @param negate  To turn each window function into an AND clause in SQL
+#' @param negate  Allows for negating a window, a way to detect that a subset does not occur relative to a target
 #' @returns a SubsetCohortWindow instance
 createSubsetCohortWindow <- function(startDay, endDay, targetAnchor, subsetAnchor = NULL, negate = FALSE) {
   if (is.null(subsetAnchor))
