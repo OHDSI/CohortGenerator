@@ -52,7 +52,7 @@ This type of operation allows you to subset a cohort to subjects included in one
 
 ## Subset Definition
 
-Subset definitions are named sets of one or more operators (from above) that can be applied to a set of one or more cohorts. Operatiors can be sequentially chained within subset definitions and all outputs are full cohorts that can be passed into to other analytical tasks.
+Subset definitions are named sets of one or more operators (from above) that can be applied to a set of one or more cohorts. Operators can be sequentially chained within subset definitions and all outputs are full cohorts that can be passed into to other analytical tasks.
 
 # Creating cohort subset definitions
 
@@ -68,10 +68,9 @@ cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
 cohortDefinitionSet <- cohortDefinitionSet |>
   dplyr::filter(cohortId %in% c(1, 2))
 
-cohortDefinitionSet |> 
-  dplyr::select("cohortId", "cohortName") |> 
+cohortDefinitionSet |>
+  dplyr::select("cohortId", "cohortName") |>
   knitr::kable()
-
 ```
 
 We will use these two cohorts in the subsequent examples.
@@ -98,11 +97,11 @@ This is an example of how we can create a limit subset operator called `limitToL
 ```{r}
 limitToLastEver <- CohortGenerator::createLimitSubset(
   name = "Last event during 1 January 2000 and 31 December 2008",
-  priorTime = 0,  
-  followUpTime = 0,  
+  priorTime = 0,
+  followUpTime = 0,
   limitTo = "lastEver",
-  calendarStartDate = as.Date("2000-01-01"),  
-  calendarEndDate = as.Date("2008-12-31")  
+  calendarStartDate = as.Date("2000-01-01"),
+  calendarEndDate = as.Date("2008-12-31")
 )
 ```
 
@@ -113,15 +112,15 @@ The following example shows how we can identify patients that have an ibuprofen 
 ```{r}
 ibuprofenSubset <- CohortGenerator::createCohortSubset(
   name = "ibuprofen exposure",
-  cohortIds = 2,  # Ibuprofen cohort
-  cohortCombinationOperator = "any",  # Look for any Ibuprofen exposure
-  negate = FALSE,  # We want to include (not exclude) participants exposed to Ibuprofen,
+  cohortIds = 2, # Ibuprofen cohort
+  cohortCombinationOperator = "any", # Look for any Ibuprofen exposure
+  negate = FALSE, # We want to include (not exclude) participants exposed to Ibuprofen,
   windows = list(
     CohortGenerator::createSubsetCohortWindow(
-        startDay = 0,
-        endDay = 9999,
-        targetAnchor = "cohortStart",
-        subsetAnchor = "cohortStart"
+      startDay = 0,
+      endDay = 9999,
+      targetAnchor = "cohortStart",
+      subsetAnchor = "cohortStart"
     ),
     CohortGenerator::createSubsetCohortWindow(
       startDay = -9999,
@@ -161,7 +160,7 @@ We can combine multiple subset operators in a single subset definition. Here is 
 ```{r}
 ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
   name = "Aged 20-50 yrs, last ibuprofen exposure from 2000-2008",
-  definitionId = 11,  # Unique ID for this subset
+  definitionId = 11, # Unique ID for this subset
   subsetOperators = list(
     ageCriteria,
     ibuprofenSubset,
@@ -173,14 +172,14 @@ ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
 
 ## Adding subsets to Cohort Definition Set
 
-Cohort subset definitions must be added to a cohort definition set to generate these subsets using CohortGenerator. To do this, we use the `addCohortSubsetDefinition` function to add the subset definition to the cohort definition set. This function allows us to specify the `targetCohortIds` that should receive the subset definition and operators. Here we will apply the subset definitions to the target cohort celcoxib (cohortId == 1).
+Cohort subset definitions must be added to a cohort definition set to generate these subsets using CohortGenerator. To do this, we use the `addCohortSubsetDefinition` function to add the subset definition to the cohort definition set. This function allows us to specify the `targetCohortIds` that should receive the subset definition and operators. Here we will apply the subset definitions to the target cohort celecoxib (cohortId == 1).
 
 ```{r}
 cohortDefinitionSet <- cohortDefinitionSet |>
   CohortGenerator::addCohortSubsetDefinition(ageRequirementSubset, targetCohortIds = c(1)) |>
-  CohortGenerator::addCohortSubsetDefinition(ibuprofenWCelcoxib,targetCohortIds = c(1))
-cohortDefinitionSet |> 
-  dplyr::select("cohortId", "cohortName") |> 
+  CohortGenerator::addCohortSubsetDefinition(ibuprofenWCelcoxib, targetCohortIds = c(1))
+cohortDefinitionSet |>
+  dplyr::select("cohortId", "cohortName") |>
   knitr::kable()
 ```
 
@@ -231,8 +230,6 @@ CohortGenerator::generateCohortSet(
   cohortTableNames = CohortGenerator::getCohortTableNames(),
   cohortDefinitionSet = cohortDefinitionSet
 )
-
-
 ```
 
 Cohort subset definitions can be run incrementally. In fact, if the base cohort definition changes for any reason, any subsets will automatically be re-executed when calling `generateCohortSet`.
@@ -253,10 +250,12 @@ cohorts <- DatabaseConnector::querySql(
 )
 names(cohorts) <- tolower(names(cohorts))
 cohort_data <- cohorts |>
-  dplyr::inner_join(cohortDefinitionSet[,c("cohortId", "cohortName")], by = c("cohort_definition_id" = "cohortId")) |>
+  dplyr::inner_join(cohortDefinitionSet[, c("cohortId", "cohortName")], by = c("cohort_definition_id" = "cohortId")) |>
   dplyr::mutate(cohort_legend = paste(cohort_definition_id, "-", cohortName)) |>
-  dplyr::mutate(gender = ifelse(gender_concept_id == 8532, "Female", "Male"), 
-         facet_label = paste("Subject:", subject_id, "- Gender:", gender)) |>
+  dplyr::mutate(
+    gender = ifelse(gender_concept_id == 8532, "Female", "Male"),
+    facet_label = paste("Subject:", subject_id, "- Gender:", gender)
+  ) |>
   dplyr::mutate(
     cohort_definition_id_factor = factor(
       cohort_definition_id,
@@ -265,43 +264,52 @@ cohort_data <- cohorts |>
   )
 
 # Order factor levels for facets by subject_id
-cohort_data$facet_label <- factor(cohort_data$facet_label, 
-                                  levels = unique(cohort_data$facet_label[order(cohort_data$subject_id)]))
+cohort_data$facet_label <- factor(cohort_data$facet_label,
+  levels = unique(cohort_data$facet_label[order(cohort_data$subject_id)])
+)
 
 # Order factor levels for legend by cohort_definition_id
-cohort_data$cohort_legend <- factor(cohort_data$cohort_legend, 
-                                    levels = unique(cohort_data$cohort_legend[order(cohort_data$cohort_definition_id)]))
+cohort_data$cohort_legend <- factor(cohort_data$cohort_legend,
+  levels = unique(cohort_data$cohort_legend[order(cohort_data$cohort_definition_id)])
+)
 
 # Create the plot with annotations for age when cohort_definition_id == 1
-ggplot(cohort_data, aes(x = cohort_start_date, xend = cohort_end_date, 
-                        y = cohort_definition_id_factor, 
-                        group = interaction(cohort_definition_id, subject_id), 
-                        color = cohort_legend)) +
-  geom_segment(aes(xend = cohort_end_date, yend = cohort_definition_id_factor), size = 2) +  
-  geom_point(aes(x = cohort_start_date, y = cohort_definition_id_factor), size = 4, shape = 21, fill = "black") +  
-  geom_text(data = cohort_data[cohort_data$cohort_definition_id == 1, ], 
-            aes(label = age, 
-                x = as.Date((as.numeric(cohort_start_date) + as.numeric(cohort_end_date)) / 2, origin = "1970-01-01"),  
-                y = cohort_definition_id_factor), 
-            nudge_y = -0.5, size = 4, color = "black") +  
+ggplot(cohort_data, aes(
+  x = cohort_start_date, xend = cohort_end_date,
+  y = cohort_definition_id_factor,
+  group = interaction(cohort_definition_id, subject_id),
+  color = cohort_legend
+)) +
+  geom_segment(aes(xend = cohort_end_date, yend = cohort_definition_id_factor), size = 2) +
+  geom_point(aes(x = cohort_start_date, y = cohort_definition_id_factor), size = 4, shape = 21, fill = "black") +
+  geom_text(
+    data = cohort_data[cohort_data$cohort_definition_id == 1, ],
+    aes(
+      label = age,
+      x = as.Date((as.numeric(cohort_start_date) + as.numeric(cohort_end_date)) / 2, origin = "1970-01-01"),
+      y = cohort_definition_id_factor
+    ),
+    nudge_y = -0.5, size = 4, color = "black"
+  ) +
   scale_y_discrete(limits = levels(cohort_data$cohort_definition_id_factor)) +
-  labs(title = "Cohort subset membership by subject",
-       x = "Date",
-       y = "Cohort Definition ID",
-       color = "Cohort Definition") +
-  scale_x_date(limits = as.Date(c("2002-01-01", "2004-06-31")), date_breaks = "1 year", date_labels = "%Y") +  
-  scale_color_brewer(palette = "Paired") +  
-  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +  # Wrap legend into 2 rows
+  labs(
+    title = "Cohort subset membership by subject",
+    x = "Date",
+    y = "Cohort Definition ID",
+    color = "Cohort Definition"
+  ) +
+  scale_x_date(limits = as.Date(c("2002-01-01", "2004-06-31")), date_breaks = "1 year", date_labels = "%Y") +
+  scale_color_brewer(palette = "Paired") +
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) + # Wrap legend into 2 rows
   theme_minimal() +
   theme(
-    legend.position = "bottom",  # Position the legend at the bottom
-    legend.box = "vertical",     # Stack the legend vertically if it overflows
-    legend.text = element_text(size = 10),  # Adjust font size for readability
-    legend.spacing.x = unit(0.5, 'cm'),     # Add spacing between legend items
-    plot.margin = margin(10, 10, 50, 10)   # Increase bottom margin to accommodate the legend
+    legend.position = "bottom", # Position the legend at the bottom
+    legend.box = "vertical", # Stack the legend vertically if it overflows
+    legend.text = element_text(size = 10), # Adjust font size for readability
+    legend.spacing.x = unit(0.5, "cm"), # Add spacing between legend items
+    plot.margin = margin(10, 10, 50, 10) # Increase bottom margin to accommodate the legend
   ) +
-  facet_wrap(~ facet_label)  # Correct facet wrapping
-
+  facet_wrap(~facet_label) # Correct facet wrapping
 ```
 
 A subject may have 0 or more ibuprofen (cohort ID = 2) exposures. When a subject is a member of one of the two subsets in our example, they will have an era for the cohort ID on that row. For example, subject 6 qualifies for cohort ID 1010 which identifies patients aged 20-50 years at the start of the celecoxib exposure. Similarly, subject ID 2 qualifies for all subsets since they are aged 22 and also have an ibuprofen exposure during their expsoure to celecoxib.

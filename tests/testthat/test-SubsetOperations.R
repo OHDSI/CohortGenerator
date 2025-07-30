@@ -1,5 +1,4 @@
 test_that("Cohort subset naming and instantitation", {
-  
   cohortSubsetNamed <- createCohortSubset(
     cohortIds = c(11, 22),
     cohortCombinationOperator = "all",

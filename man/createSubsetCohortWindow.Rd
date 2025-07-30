@@ -17,7 +17,7 @@ createSubsetCohortWindow(
 
 \item{endDay}{The end day for the time window}
 
-\item{targetAnchor}{To anchor using the target cohort's start date or end date. 
+\item{targetAnchor}{To anchor using the target cohort's start date or end date.
 The parameter is specified as 'cohortStart' or 'cohortEnd'.}
 
 \item{subsetAnchor}{To anchor using the subset cohort's start date or end date.
@@ -29,8 +29,8 @@ The parameter is specified as 'cohortStart' or 'cohortEnd'.}
 a SubsetCohortWindow instance
 }
 \description{
-This function is used to create a relative time window for 
+This function is used to create a relative time window for
 cohort subset operations. The cohort window allows you to define an interval
-of time relative to the target cohort's start/end date and the 
+of time relative to the target cohort's start/end date and the
 subset cohort's start/end date.
 }
