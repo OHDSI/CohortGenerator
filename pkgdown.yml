@@ -5,7 +5,7 @@ articles:
   CreatingCohortSubsetDefinitions: CreatingCohortSubsetDefinitions.html
   GeneratingCohorts: GeneratingCohorts.html
   SamplingCohorts: SamplingCohorts.html
-last_built: 2025-07-30T21:40Z
+last_built: 2025-07-30T23:08Z
 urls:
   reference: https://ohdsi.github.io/CohortGenerator/reference
   article: https://ohdsi.github.io/CohortGenerator/articles
