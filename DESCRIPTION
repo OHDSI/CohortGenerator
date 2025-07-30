@@ -32,12 +32,12 @@ Imports:
   ResultModelManager,
   SqlRender (>= 1.11.1),
   stringi (>= 1.7.6),
-  tibble,
-  ggplot2
+  tibble
 Suggests:
   CirceR (>= 1.1.1),
   duckdb,
   Eunomia,
+  ggplot2,
   knitr,
   rmarkdown,
   testthat,
