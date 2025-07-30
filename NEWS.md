@@ -14,6 +14,7 @@ Bug Fixes
 - Upgrade GitHub Actions to use Ubuntu 22.04 (#204)
 - Add missing `database_id` as primary key of `cg_cohort_censor_stats` (#215)
 - saveIncremental prevents saving empty files (#212)
+- Subset identifier expressions are not deserialized (#225)
 
 CohortGenerator 0.11.2
 =======================
