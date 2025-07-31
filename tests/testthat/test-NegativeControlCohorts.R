@@ -205,7 +205,6 @@ test_that("Call generateNegativeControlOutcomeCohorts with custom cohort ids", {
   cohortCounts <- getCohortCounts(
     connection = connection,
     cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
     cohortTable = cohortTableNames$cohortTable
   )
   expect_equal(cohortCounts$cohortId, ncSet$cohortId)

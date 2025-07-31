@@ -95,7 +95,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   checkmate::assert_choice(x = tolower(occurrenceType), choices = c("all", "first"))
   checkmate::assert_logical(detectOnDescendants)
   checkmate::assertNames(colnames(negativeControlOutcomeCohortSet),
-    must.include = names(createEmptyNegativeControlOutcomeCohortSet())
+                         must.include = names(createEmptyNegativeControlOutcomeCohortSet())
   )
   checkmate::assert_data_frame(
     x = negativeControlOutcomeCohortSet,
@@ -111,6 +111,14 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     stop("Cannot generate! Duplicate cohort IDs found in your negativeControlOutcomeCohortSet: ", paste(duplicatedCohortIds, sep = ","), ". Please fix your negativeControlOutcomeCohortSet and try again.")
   }
 
+  checksum <- computeChecksum(jsonlite::toJSON(
+    list(
+      negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet,
+      occurrenceType = occurrenceType,
+      detectOnDescendants = detectOnDescendants
+    )
+  ))[[1]]
+
   if (incremental) {
     if (is.null(incrementalFolder)) {
       stop("Must specify incrementalFolder when incremental = TRUE")
@@ -120,20 +128,11 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     }
 
     recordKeepingFile <- file.path(incrementalFolder, "GeneratedNegativeControls.csv")
-    checksum <- computeChecksum(jsonlite::toJSON(
-      list(
-        negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet,
-        occurrenceType = occurrenceType,
-        detectOnDescendants = detectOnDescendants
-      )
-    ))[[1]]
-
     computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
                                                          cohortDatabaseSchema = cohortDatabaseSchema,
                                                          cohortTableNames = cohortTableNames)
-
-    if (checksum %in% computedChecksums$lastChecksum) {
-      writeLines("Negative control set skipped")
+    if (checksum %in% computedChecksums$checksum) {
+      ParallelLogger::logInfo("Negative control set generation skipped")
       return(invisible("SKIPPED"))
     }
   }
@@ -274,17 +273,19 @@ recordNcCohorts <- function(connection,
   VALUES (@target_cohort_id, '@checksum', @start_time, @end_time);
 
   "
+
+  sql <- ""
   for (i in 1:nrow(negativeControlOutcomeCohortSet)) {
-    endSql <- paste(endSql, SqlRender::renderSql(endSql,
-                                                 checksum = checksum,
-                                                 start_time = start,
-                                                 target_cohort_id = negativeControlOutcomeCohortSet$cohortId[i],
-                                                 end_time = endTime,
-                                                 results_database_schema = cohortDatabaseSchema,
-                                                 cohort_checksum_table = cohortChecksumTable,
-                                                 warnOnMissingParameters = FALSE))
+    sql <- paste(sql, SqlRender::render(endSql,
+                                        checksum = checksum,
+                                        start_time = start,
+                                        target_cohort_id = negativeControlOutcomeCohortSet$cohortId[i],
+                                        end_time = endTime,
+                                        results_database_schema = cohortDatabaseSchema,
+                                        cohort_checksum_table = cohortChecksumTable,
+                                        warnOnMissingParameters = FALSE))
   }
 
 
-  DatabaseConnector::renderTranslateExecuteSql(connection, endSql)
+  DatabaseConnector::renderTranslateExecuteSql(connection, sql)
 }
