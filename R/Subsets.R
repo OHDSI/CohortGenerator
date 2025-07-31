@@ -1,4 +1,4 @@
-# Copyright 2024 Observational Health Data Sciences and Informatics
+# Copyright 2025 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -45,7 +45,8 @@ SubsetCohortWindow <- R6::R6Class(
     .startDay = as.integer(0),
     .endDay = as.integer(0),
     .targetAnchor = "cohortStart",
-    .subsetAnchor = "cohortStart"
+    .subsetAnchor = "cohortStart",
+    .negate = FALSE
   ),
   public = list(
     #' @description List representation of object
@@ -61,10 +62,12 @@ SubsetCohortWindow <- R6::R6Class(
         objRepr$targetAnchor <- jsonlite::unbox(private$.targetAnchor)
       }
 
-       if (length(private$.subsetAnchor)) {
+      if (length(private$.subsetAnchor)) {
         objRepr$subsetAnchor <- jsonlite::unbox(private$.subsetAnchor)
       }
-
+      if (length(private$.negate)) {
+        objRepr$negate <- jsonlite::unbox(private$.negate)
+      }
       objRepr
     },
     #' To JSON
@@ -82,7 +85,8 @@ SubsetCohortWindow <- R6::R6Class(
         self$startDay == criteria$startDay,
         self$endDay == criteria$endDay,
         self$targetAnchor == criteria$targetAnchor,
-        self$subsetAnchor == criteria$subsetAnchor
+        self$subsetAnchor == criteria$subsetAnchor,
+        self$negate == criteria$negate
       ))
     }
   ),
@@ -122,6 +126,15 @@ SubsetCohortWindow <- R6::R6Class(
       checkmate::assertChoice(x = subsetAnchor, choices = c("cohortStart", "cohortEnd"))
       private$.subsetAnchor <- subsetAnchor
       return(self)
+    },
+    #' @field negate Boolean
+    negate = function(negate) {
+      if (missing(negate)) {
+        return(private$.negate)
+      }
+      checkmate::assertChoice(x = negate, choices = c(TRUE, FALSE))
+      private$.negate <- negate
+      return(self)
     }
   )
 )
@@ -129,27 +142,30 @@ SubsetCohortWindow <- R6::R6Class(
 # createSubsetCohortWindow ------------------------------
 #' @title Create a relative time window for cohort subset operations
 #' @description
-#' This function is used to create a relative time window for 
+#' This function is used to create a relative time window for
 #' cohort subset operations. The cohort window allows you to define an interval
-#' of time relative to the target cohort's start/end date and the 
+#' of time relative to the target cohort's start/end date and the
 #' subset cohort's start/end date.
 #' @export
 #' @param startDay  The start day for the time window
 #' @param endDay The end day for the time window
-#' @param targetAnchor To anchor using the target cohort's start date or end date. 
+#' @param targetAnchor To anchor using the target cohort's start date or end date.
 #'                     The parameter is specified as 'cohortStart' or 'cohortEnd'.
 #' @param subsetAnchor To anchor using the subset cohort's start date or end date.
 #'                     The parameter is specified as 'cohortStart' or 'cohortEnd'.
+#' @param negate  Allows for negating a window, a way to detect that a subset does not occur relative to a target
 #' @returns a SubsetCohortWindow instance
-createSubsetCohortWindow <- function(startDay, endDay, targetAnchor, subsetAnchor = NULL) {
-  if (is.null(subsetAnchor))
+createSubsetCohortWindow <- function(startDay, endDay, targetAnchor, subsetAnchor = NULL, negate = FALSE) {
+  if (is.null(subsetAnchor)) {
     subsetAnchor <- "cohortStart"
+  }
 
   window <- SubsetCohortWindow$new()
   window$startDay <- startDay
   window$endDay <- endDay
   window$targetAnchor <- targetAnchor
   window$subsetAnchor <- subsetAnchor
+  window$negate <- negate
   window
 }
 
@@ -326,7 +342,9 @@ CohortSubsetOperator <- R6::R6Class(
       objRepr$cohortIds <- private$.cohortIds
       objRepr$cohortCombinationOperator <- jsonlite::unbox(private$.cohortCombinationOperator)
       objRepr$negate <- jsonlite::unbox(private$.negate)
-      objRepr$windows <- lapply(private$.windows, function(x) { x$toList() })
+      objRepr$windows <- lapply(private$.windows, function(x) {
+        x$toList()
+      })
 
       objRepr
     },
@@ -404,7 +422,7 @@ CohortSubsetOperator <- R6::R6Class(
       private$.negate <- negate
       self
     },
-    #' @field windows list of time windows to use when evaluating the subset 
+    #' @field windows list of time windows to use when evaluating the subset
     #' cohort relative to the target cohort
     windows = function(windows) {
       if (missing(windows)) {
@@ -412,8 +430,9 @@ CohortSubsetOperator <- R6::R6Class(
       }
       realWindows <- list()
       for (window in windows) {
-        if (is.list(window))
+        if (is.list(window)) {
           window <- do.call(createSubsetCohortWindow, window)
+        }
         realWindows[[length(realWindows) + 1]] <- window
       }
 
@@ -435,7 +454,7 @@ CohortSubsetOperator <- R6::R6Class(
 #'
 #' @param startWindow               DEPRECATED: Use `windows` instead.
 #' @param endWindow                 DEPRECATED: Use `windows` instead.
-#' @param windows                   A list of time windows to use to evaluate subset cohorts in relation to the 
+#' @param windows                   A list of time windows to use to evaluate subset cohorts in relation to the
 #'                                  target  cohorts. The logic is to always apply these windows with logical AND conditions.
 #'                                  See [@seealso [createSubsetCohortWindow()]] for more details on how to create
 #'                                  these windows.
@@ -452,8 +471,8 @@ createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator
   if (!is.null(startWindow) || !is.null(endWindow)) {
     warning("Arguments 'startWindow' and 'endWindow' is deprecated. Use 'windows' instead.")
   }
-  
-  if (!is.null(startWindow)){
+
+  if (!is.null(startWindow)) {
     startWindow$subsetAnchor <- "cohortStart"
     windows[[length(windows) + 1]] <- startWindow
   }
@@ -744,6 +763,7 @@ LimitSubsetOperator <- R6::R6Class(
     suffixStr = "Limit to",
     .priorTime = 0,
     .followUpTime = 0,
+    .minimumCohortDuration = 0,
     .limitTo = character(0),
     .calendarStartDate = NULL,
     .calendarEndDate = NULL
@@ -786,6 +806,10 @@ LimitSubsetOperator <- R6::R6Class(
         nameString <- paste(nameString, "before", self$calendarEndDate)
       }
 
+      if (self$minimumCohortDuration > 0) {
+        nameString <- paste(nameString, "lasting at least", self$minimumCohortDuration, "days")
+      }
+
       return(nameString)
     },
     #' To List
@@ -794,6 +818,7 @@ LimitSubsetOperator <- R6::R6Class(
       objRef <- super$toList()
       objRef$priorTime <- jsonlite::unbox(private$.priorTime)
       objRef$followUpTime <- jsonlite::unbox(private$.followUpTime)
+      objRef$minimumCohortDuration <- jsonlite::unbox(private$.minimumCohortDuration)
       objRef$limitTo <- jsonlite::unbox(private$.limitTo)
       objRef$calendarStartDate <- jsonlite::unbox(private$.calendarStartDate)
       objRef$calendarEndDate <- jsonlite::unbox(private$.calendarEndDate)
@@ -821,6 +846,17 @@ LimitSubsetOperator <- R6::R6Class(
       private$.followUpTime <- followUpTime
       self
     },
+    #' @field minimumCohortDuration            minimum cohort duration time in days
+    minimumCohortDuration = function(duration) {
+      if (missing(duration)) {
+        return(private$.minimumCohortDuration)
+      }
+
+      checkmate::assertInt(duration, lower = 0, upper = 99999)
+      private$.minimumCohortDuration <- duration
+      self
+    },
+
     #' @field limitTo     character one of:
     #'                              "firstEver" - only first entry in patient history
     #'                              "earliestRemaining" - only first entry after washout set by priorTime
@@ -888,9 +924,10 @@ LimitSubsetOperator <- R6::R6Class(
 #' @description
 #' Subset cohorts using specified limit criteria
 #' @export
-#' @param name              Name of operation
-#' @param priorTime         Required prior observation window (specified as a positive integer)
-#' @param followUpTime      Required post observation window (specified as a positive integer)
+#' @param name                  Name of operation
+#' @param priorTime             Required prior observation window (specified as a positive integer)
+#' @param followUpTime          Required post observation window (specified as a positive integer)
+#' @param minimumCohortDuration Required cohort duration length (specified as a positive integer)
 #' @param limitTo           character one of:
 #'                              "firstEver" - only first entry in patient history
 #'                              "earliestRemaining" - only first entry after washout set by priorTime
@@ -906,6 +943,7 @@ LimitSubsetOperator <- R6::R6Class(
 createLimitSubset <- function(name = NULL,
                               priorTime = 0,
                               followUpTime = 0,
+                              minimumCohortDuration = 0,
                               limitTo = "all",
                               calendarStartDate = NULL,
                               calendarEndDate = NULL) {
@@ -913,7 +951,7 @@ createLimitSubset <- function(name = NULL,
     limitTo <- "all"
   }
 
-  if (priorTime == 0 & followUpTime == 0 & limitTo == "all" & is.null(calendarStartDate) & is.null(calendarEndDate)) {
+  if (minimumCohortDuration == 0 && priorTime == 0 & followUpTime == 0 & limitTo == "all" & is.null(calendarStartDate) & is.null(calendarEndDate)) {
     stop("No limit criteria specified")
   }
 
@@ -921,6 +959,7 @@ createLimitSubset <- function(name = NULL,
   subset$name <- name
   subset$priorTime <- priorTime
   subset$followUpTime <- followUpTime
+  subset$minimumCohortDuration <- minimumCohortDuration
   subset$limitTo <- limitTo
   subset$calendarStartDate <- calendarStartDate
   subset$calendarEndDate <- calendarEndDate
