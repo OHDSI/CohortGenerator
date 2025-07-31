@@ -221,19 +221,19 @@ test_that("Saving and loading definitions via attributes", {
   expect_true(hasSubsetDefinitions(cohortDefinitionSet))
 
   checkmate::expect_list(attr(cohortDefinitionSet, "cohortSubsetDefinitions"),
-                         types = "CohortSubsetDefinition",
-                         len = 1
+    types = "CohortSubsetDefinition",
+    len = 1
   )
 
   savePath <- tempfile()
   unlink(savePath, recursive = T)
   on.exit(unlink(savePath, recursive = T), add = TRUE)
   saveCohortDefinitionSet(cohortDefinitionSet,
-                          cohortFileNameFormat = "%s",
-                          settingsFileName = file.path(savePath, "Cohorts.csv"),
-                          jsonFolder = file.path(savePath, "cohorts"),
-                          sqlFolder = file.path(savePath, "sql/sql_server"),
-                          subsetJsonFolder = file.path(savePath, "subsetDefs")
+    cohortFileNameFormat = "%s",
+    settingsFileName = file.path(savePath, "Cohorts.csv"),
+    jsonFolder = file.path(savePath, "cohorts"),
+    sqlFolder = file.path(savePath, "sql/sql_server"),
+    subsetJsonFolder = file.path(savePath, "subsetDefs")
   )
   checkmate::expect_directory_exists(file.path(savePath, "subsetDefs"))
   checkmate::expect_file_exists(file.path(savePath, "subsetDefs", paste0(subsetDef$definitionId, ".json")))
@@ -590,10 +590,10 @@ test_that("Subset logic checks", {
   sqliteResultsDatabaseSchema <- "main"
   connection <- DatabaseConnector::connect(sqliteConnectionDetails)
   withr::defer(
-  {
-    DatabaseConnector::disconnect(connection)
-    unlink(databaseFile, force = TRUE)
-  },
+    {
+      DatabaseConnector::disconnect(connection)
+      unlink(databaseFile, force = TRUE)
+    },
     testthat::teardown_env()
   )
 
@@ -1087,25 +1087,26 @@ test_that("Subset logic checks", {
   # cohorts # <------ USE TO SEE THE COHORTS TO VERIFY THE INFO BELOW
 
   # Limit subsets cohort definition 1100 range ------
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1101,]$COHORT_START_DATE[[1]], lubridate::date("2001-01-01")) # 1101 - First Ever
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1102,]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1102 - Earliest Remaining
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1103,]$COHORT_START_DATE[[1]], lubridate::date("2005-01-01")) # 1103 - Latest Remaining
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1104,]$COHORT_START_DATE[[1]], lubridate::date("2007-01-01")) # 1104 - Last Ever
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1105,]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1105 - Calendar #1
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1105,]$COHORT_START_DATE[[2]], lubridate::date("2005-01-01")) # 1105 - Calendar #2
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1106,]), 0) # 1106 - First ever + calendar time that restricts to no one
-  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1107,]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1107 - Earliest remaining+calendar restriction
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1101, ]$COHORT_START_DATE[[1]], lubridate::date("2001-01-01")) # 1101 - First Ever
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1102, ]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1102 - Earliest Remaining
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1103, ]$COHORT_START_DATE[[1]], lubridate::date("2005-01-01")) # 1103 - Latest Remaining
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1104, ]$COHORT_START_DATE[[1]], lubridate::date("2007-01-01")) # 1104 - Last Ever
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1105, ]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1105 - Calendar #1
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1105, ]$COHORT_START_DATE[[2]], lubridate::date("2005-01-01")) # 1105 - Calendar #2
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1106, ]), 0) # 1106 - First ever + calendar time that restricts to no one
+  expect_equal(cohorts[cohorts$COHORT_DEFINITION_ID == 1107, ]$COHORT_START_DATE[[1]], lubridate::date("2003-01-01")) # 1107 - Earliest remaining+calendar restriction
 
   # Demographic subsets cohort definition 1200 range ------
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1201,]), 2) # 1201 - Age 2-5
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1202,]), 4) # 1202 - Gender
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1203,]), 4) # 1203 - Race
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1204,]), 4) # 1204 - Ethnicity
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1201, ]), 2) # 1201 - Age 2-5
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1202, ]), 4) # 1202 - Gender
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1203, ]), 4) # 1203 - Race
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1204, ]), 4) # 1204 - Ethnicity
+
   # Cohort subsets cohort definition 1300 range ------
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1301,]), 2) # 1301 - Subset overlaps cohort start
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1302,]), 2) # 1302 - Subset overlaps entire target cohort period
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1303,]), 2) # 1303 - Subset subsumed by entire target cohort period
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1304,]), 2) # 1304 - Subset overlaps cohort end
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1305,]), 2) # 1305 - Subset does NOT overlap cohort end - negate
-  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1306,]), 2) # 1306 - Subset overlaps target start - tests combo == all
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1301, ]), 2) # 1301 - Subset overlaps cohort start
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1302, ]), 2) # 1302 - Subset overlaps entire target cohort period
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1303, ]), 2) # 1303 - Subset subsumed by entire target cohort period
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1304, ]), 2) # 1304 - Subset overlaps cohort end
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1305, ]), 2) # 1305 - Subset does NOT overlap cohort end - negate
+  expect_equal(nrow(cohorts[cohorts$COHORT_DEFINITION_ID == 1306, ]), 2) # 1306 - Subset overlaps target start - tests combo == all
 })
