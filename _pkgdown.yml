@@ -4,6 +4,8 @@ template:
   bootstrap: 5
   bslib:
     bootswatch: cosmo
+  includes:
+    in_header: <link rel="stylesheet" type="text/css" href="extra.css" />    
 
 home:
   links:
@@ -130,6 +132,13 @@ reference:
       software development purposes and NOT for running studies.
     contents:
       - sampleCohortDefinitionSet
+      
+  - title: "Sample Data"
+    desc: >
+      Sample data used in vignettes to showcase how to perform cohort subsets.
+    contents:
+      - omopCdmDrugExposure
+      - omopCdmPerson
 
 navbar:
   bg: dark

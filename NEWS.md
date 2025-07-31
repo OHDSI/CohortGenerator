@@ -1,12 +1,28 @@
+CohortGenerator 1.0.0
+=====================
+
+New Features
+- creation of cohort_checksum tables that enable verifcation of generated cohorts and incremental execution in distributed
+environments
+- Use of SQL cohort templates with SQL template R6 class and associated template functions
+
 CohortGenerator 0.12.0
 ======================
 
-- creation of cohort_checksum tables that enable verifcation of generated cohorts and incremental execution in distributed
-environments
+New Features
 
 - Backwards compatable extension to CohortSubsetOperators and cohortSubsetWindows to allow windowing to be logic of any
 length
+- Include observation table when creating negative control cohorts (#198)
+- Improvements to cohort subset documentation (#199)
+- Add `negate` parameter to createSubsetCohortWindow function (#217)
 
+Bug Fixes
+- Remove RJSONIO from dependency list (#202)
+- Upgrade GitHub Actions to use Ubuntu 22.04 (#204)
+- Add missing `database_id` as primary key of `cg_cohort_censor_stats` (#215)
+- saveIncremental prevents saving empty files (#212)
+- Subset identifier expressions are not deserialized (#225)
 
 CohortGenerator 0.11.2
 =======================

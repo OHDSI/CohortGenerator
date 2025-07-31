@@ -18,7 +18,7 @@ A subset of type cohort - subset a population to only those contained within def
 
 \item{\code{negate}}{Inverse the subset rule? TRUE will take the patients NOT in the subset}
 
-\item{\code{windows}}{list of time windows to use when evaluating the subset 
+\item{\code{windows}}{list of time windows to use when evaluating the subset
 cohort relative to the target cohort}
 }
 \if{html}{\out{</div>}}

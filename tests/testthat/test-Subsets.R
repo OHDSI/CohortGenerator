@@ -8,14 +8,25 @@ test_that("Subset definition", {
     packageName = "CohortGenerator",
     verbose = FALSE
   )
+  windowSubsetOperation <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortEnd"
+    )
+  )
   subsetOperations <- list(
     createCohortSubset(
       name = "Cohort Subset",
       cohortIds = 11,
       cohortCombinationOperator = "all",
       negate = FALSE,
-      windows = list(createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-                     createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
+      windows = windowSubsetOperation
     ),
     createLimitSubset(
       name = "Observation Criteria",
@@ -91,12 +102,23 @@ test_that("Subset definition", {
 
   expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
 
+  ccsWindow <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortEnd"
+    )
+  )
   ccs <- createCohortSubset(
     cohortIds = 11,
     cohortCombinationOperator = "all",
     negate = FALSE,
-    windows = list(createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-                   createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
+    windows = ccsWindow
   )
   expect_false(testDemoSubset2$isEqualTo(testDemoSubset))
 
@@ -109,13 +131,24 @@ test_that("Subset definition", {
 
   # Create a cohort subset operator that does not reference a cohort ID
   # in the cohort definition set
+  invalidCohortWindow <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortEnd"
+    )
+  )
   invalidCohortSubsetOperator <- createCohortSubset(
     name = "Invalid Cohort Subset",
     cohortIds = 0,
     cohortCombinationOperator = "all",
     negate = FALSE,
-    windows = list(createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-                   createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
+    windows = invalidCohortWindow
   )
   invalidCohortSubsetDefintion <- createCohortSubsetDefinition(
     name = "Invalid cohort subset definition",
@@ -144,14 +177,25 @@ test_that("Saving and loading definitions via attributes", {
     packageName = "CohortGenerator",
     verbose = FALSE
   )
+  subsetOperationsWindow <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortEnd"
+    )
+  )
   subsetOperations <- list(
     createCohortSubset(
       name = "Cohort Subset",
       cohortIds = 11,
       cohortCombinationOperator = "all",
       negate = FALSE,
-      windows = list(createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-                     createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
+      windows = subsetOperationsWindow
     ),
     createLimitSubset(
       priorTime = 365,
@@ -217,14 +261,25 @@ test_that("subset generation", {
   )
   checkmate::expect_list(getSubsetDefinitions(cohortDefinitionSet), len = 0)
 
+  subsetOperationsWindowLogic <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortEnd"
+    )
+  )
   subsetOperations <- list(
     createCohortSubset(
       name = "Cohort Subset",
       cohortIds = 11,
       cohortCombinationOperator = "all",
       negate = FALSE,
-      windows = list(createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-                     createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
+      windows = subsetOperationsWindowLogic
     ),
     createDemographicSubset(
       name = "Demographic Criteria",
@@ -463,6 +518,69 @@ test_that("Subset name templates function", {
   expect_true(attr(cds2, "hasSubsetDefinitions"))
 })
 
+test_that("Basic Negate logic check", {
+  # Testing if Negate is found in json structure
+  window1 <- createSubsetCohortWindow(
+    startDay = 1,
+    endDay = 10,
+    targetAnchor = "cohortStart",
+    subsetAnchor = "cohortStart",
+    negate = TRUE
+  )
+  expect_true(window1$negate)
+
+  jsonOutput <- window1$toJSON()
+  expect_true(grepl('"negate": true', jsonOutput))
+
+
+
+  # Testing if Negate (AND NOT) IS FOUND IN SQL QUERY
+  # What this test does is check if using a cohort celcoxib,
+  # create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
+
+  jsonFilePath <- system.file("testdata", "SubsetVignetteCohorts.JSON", package = "CohortGenerator")
+  cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
+
+  windows <- list(
+    CohortGenerator::createSubsetCohortWindow(
+      startDay = 1,
+      endDay = 365,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortStart"
+    ),
+    CohortGenerator::createSubsetCohortWindow(
+      startDay = 366,
+      endDay = 99999,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortStart",
+      negate = TRUE
+    )
+  )
+
+  ibuprofenYearAfter <- CohortGenerator::createCohortSubsetDefinition(
+    name = "requiring",
+    definitionId = 6,
+    subsetOperators = list(
+      CohortGenerator::createLimitSubset(name = "first exposure", limitTo = "firstEver"),
+      CohortGenerator::createCohortSubset(
+        name = "with ibuprofen after a year",
+        cohortIds = 3,
+        cohortCombinationOperator = "any",
+        negate = FALSE,
+        windows = windows
+      )
+    )
+  )
+
+  cohortDefinitionSet <- cohortDefinitionSet |>
+    CohortGenerator::addCohortSubsetDefinition(ibuprofenYearAfter, targetCohortIds = c(1))
+
+  sqlForCohort1006 <- cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
+  expect_true(grepl("AND NOT", sqlForCohort1006, ignore.case = TRUE))
+})
+
+
+
 test_that("Subset logic checks", {
   databaseFile <- tempfile(fileext = ".sqlite")
   sqliteConnectionDetails <- DatabaseConnector::createConnectionDetails(
@@ -639,6 +757,22 @@ test_that("Subset logic checks", {
   )
 
   # Define cohort subsets for tests -------------
+
+  cs1Window <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 0,
+      targetAnchor = "cohortStart",
+      subsetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = 0,
+      endDay = 99999,
+      targetAnchor = "cohortStart",
+      subsetAnchor = "cohortEnd"
+    )
+  )
+
   cs1 <- createCohortSubsetDefinition(
     name = "Subset overlaps cohort start",
     definition = 301,
@@ -647,13 +781,26 @@ test_that("Subset logic checks", {
         name = "subsetOverlapTargetStart",
         cohortIds = c(2),
         negate = F,
-        cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(-99999, 0, "cohortStart", "cohortStart"),
-                       createSubsetCohortWindow(0, 99999, "cohortStart", "cohortEnd"))
+        cohortCombinationOperator = "all",
+        windows = cs1Window
       )
     )
   )
 
+  cs2Window <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = -1,
+      targetAnchor = "cohortStart",
+      subsetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = 1,
+      endDay = 99999,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortEnd"
+    )
+  )
   cs2 <- createCohortSubsetDefinition(
     name = "Subset overlaps entire target cohort period",
     definition = 302,
@@ -663,9 +810,23 @@ test_that("Subset logic checks", {
         cohortIds = c(3),
         negate = F,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(-99999, -1, "cohortStart", "cohortStart"),
-                       createSubsetCohortWindow(1, 99999, "cohortEnd", "cohortEnd"))
+        windows = cs2Window
       )
+    )
+  )
+
+  cs3Windows <- list(
+    createSubsetCohortWindow(
+      startDay = 1,
+      endDay = 99999,
+      targetAnchor = "cohortStart",
+      subsetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 1,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortEnd"
     )
   )
 
@@ -678,12 +839,25 @@ test_that("Subset logic checks", {
         cohortIds = c(4),
         negate = F,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(1, 99999, "cohortStart", "cohortStart"),
-                       createSubsetCohortWindow(-99999, 1, "cohortEnd", "cohortEnd"))
+        windows = cs3Windows
       )
     )
   )
 
+  cs4Windows <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 0,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = 0,
+      endDay = 99999,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortEnd"
+    )
+  )
   cs4 <- createCohortSubsetDefinition(
     name = "Subset overlaps cohort end",
     definition = 304,
@@ -693,12 +867,25 @@ test_that("Subset logic checks", {
         cohortIds = c(5),
         negate = F,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(-99999, 0, "cohortEnd", "cohortStart"),
-                       createSubsetCohortWindow(0, 99999, "cohortEnd", "cohortEnd"))
+        windows = cs4Windows
       )
     )
   )
 
+  cs5Windows <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 0,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = 0,
+      endDay = 99999,
+      targetAnchor = "cohortEnd",
+      subsetAnchor = "cohortEnd"
+    )
+  )
   cs5 <- createCohortSubsetDefinition(
     name = "Subset does NOT overlap cohort end - negate",
     definition = 305,
@@ -708,12 +895,25 @@ test_that("Subset logic checks", {
         cohortIds = c(5),
         negate = T,
         cohortCombinationOperator = "any",
-        windows = list(createSubsetCohortWindow(-99999, 0, "cohortEnd", "cohortStart"),
-                       createSubsetCohortWindow(0, 99999, "cohortEnd", "cohortEnd"))
+        windows = cs5Windows
       )
     )
   )
 
+  cs6Windows <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 0,
+      targetAnchor = "cohortStart",
+      subsetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = 0,
+      endDay = 99999,
+      targetAnchor = "cohortStart",
+      subsetAnchor = "cohortEnd"
+    )
+  )
   cs6 <- createCohortSubsetDefinition(
     name = "Subset overlaps target start - tests combo == all",
     definition = 306,
@@ -723,8 +923,7 @@ test_that("Subset logic checks", {
         cohortIds = c(2, 3),
         negate = F,
         cohortCombinationOperator = "all",
-        windows = list(createSubsetCohortWindow(-99999, 0, "cohortStart", "cohortStart"),
-                       createSubsetCohortWindow(0, 99999, "cohortStart", "cohortEnd"))
+        windows = cs6Windows
       )
     )
   )

@@ -1,0 +1,20 @@
+[
+  {
+    "cohortId": 1,
+    "cohortName": "Celcoxib",
+    "sql": "\n      INSERT INTO @results_database_schema.@target_cohort_table (\n          cohort_definition_id,\n          subject_id,\n          cohort_start_date,\n          cohort_end_date\n      )\n      SELECT \n          @target_cohort_id,\n          p.person_id,\n          d.start_date,\n          d.end_date\n      FROM \n          @cdm_database_schema.PERSON p\n      CROSS JOIN (\n          VALUES \n              (DATEFROMPARTS(2003, 01, 01), DATEFROMPARTS(2003, 04, 25))\n      ) AS d(start_date, end_date)\n     ;",
+    "json": ""
+  },
+  {
+    "cohortId": 2,
+    "cohortName": "Ibuprofen",
+    "sql": "\n      INSERT INTO @results_database_schema.@target_cohort_table (\n          cohort_definition_id,\n          subject_id,\n          cohort_start_date,\n          cohort_end_date\n      )\n      SELECT \n          @target_cohort_id,\n          de.person_id,\n          de.drug_exposure_start_date,\n          de.drug_exposure_end_date\n      FROM \n          @cdm_database_schema.drug_exposure de\n      JOIN @cdm_database_schema.PERSON p ON de.person_id = p.person_id\n      WHERE de.drug_exposure_start_date BETWEEN '2000-01-01' AND '2008-12-31'\n      and p.person_id %2 =0;\n    ",
+    "json": ""
+  },
+  {
+    "cohortId": 3,
+    "cohortName": "GI Bleed",
+    "sql": "\n      INSERT INTO @results_database_schema.@target_cohort_table (\n          cohort_definition_id,\n          subject_id,\n          cohort_start_date,\n          cohort_end_date\n      )\n      SELECT \n          @target_cohort_id AS cohort_definition_id,\n          gb.person_id AS subject_id,\n          gb.gi_bleed_start_date AS cohort_start_date,\n          gb.gi_bleed_end_date AS cohort_end_date\n      FROM \n          @cdm_database_schema.gi_bleed gb\n      JOIN \n          @cdm_database_schema.person p \n      ON \n          gb.person_id = p.person_id\n      WHERE \n          gb.gi_bleed_start_date BETWEEN '2000-01-01' AND '2008-12-31';\n    ",
+    "json": ""
+  }
+]
