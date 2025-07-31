@@ -138,13 +138,15 @@ createAtcCohortTemplateDefinition <- function(connection,
 #' 
 #'   '%finding', 'disorder of%', 'finding of%', 'disease of%' 'injury of%' '%by site' '%by body site' '%by mechanism'
 #'    '%of body region' '%of anatomical site' '%of specific body structure%'
-#' 
+#'
+#' Cohorts are first event.
+#'
 #' @param connection Database connection object
 #' @param identifierExpression An expression for setting the cohort id for the resulting cohort. Must produce unique ids
 #' @param cdmDatabaseSchema CDM database schema
 #' @param tempEmulationSchema Temporary emulation schema
-#' @param cohortDatabaseSchema Cohort database schema
 #' @param priorObservationPeriod (optional) Required prior observation period for individuals
+#' @param requireSecondDiagnosis (optional) Require more than one diagnosis code
 #' @param vocabularyDatabaseSchema Vocabulary database schema
 #' @param nameSuffix    A name suffix to use to add to the cohort names - this is useful if you're using multiple
 #'                      paramaterized versions of this definition
@@ -154,7 +156,6 @@ createSnomedCohortTemplateDefinition <- function(connection,
                                                  identifierExpression = "concept_id * 1000",
                                                  cdmDatabaseSchema,
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-                                                 cohortDatabaseSchema,
                                                  priorObservationPeriod = 365,
                                                  requireSecondDiagnosis = FALSE,
                                                  nameSuffix = '',

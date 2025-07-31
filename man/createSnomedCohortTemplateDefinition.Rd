@@ -9,7 +9,6 @@ createSnomedCohortTemplateDefinition(
   identifierExpression = "concept_id * 1000",
   cdmDatabaseSchema,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
-  cohortDatabaseSchema,
   priorObservationPeriod = 365,
   requireSecondDiagnosis = FALSE,
   nameSuffix = "",
@@ -25,9 +24,9 @@ createSnomedCohortTemplateDefinition(
 
 \item{tempEmulationSchema}{Temporary emulation schema}
 
-\item{cohortDatabaseSchema}{Cohort database schema}
-
 \item{priorObservationPeriod}{(optional) Required prior observation period for individuals}
+
+\item{requireSecondDiagnosis}{(optional) Require more than one diagnosis code}
 
 \item{nameSuffix}{A name suffix to use to add to the cohort names - this is useful if you're using multiple
 paramaterized versions of this definition}
@@ -46,4 +45,6 @@ Excluded terms include word patterns:
 
   '%finding', 'disorder of%', 'finding of%', 'disease of%' 'injury of%' '%by site' '%by body site' '%by mechanism'
    '%of body region' '%of anatomical site' '%of specific body structure%'
+
+Cohorts are first event.
 }

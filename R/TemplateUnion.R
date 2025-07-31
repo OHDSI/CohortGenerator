@@ -34,11 +34,9 @@
 #'
 #'
 #'
-#' @param cohortDatabaseSchema Schema where cohort tables are stored.
-#' @param cohortTable Name of the cohort table.
 #' @param cohortIds A vector of `cohort_definition_id` values for the input cohorts.
 #' @param unionCohortId The `cohort_definition_id` for the resulting union cohort.
-#' @param cohortName    The Name of the resulting cohort
+#' @param cohortName  The Name of the resulting cohort
 #' @export
 createUnionCohortTemplate <- function(cohortIds,
                                       cohortName,
@@ -108,7 +106,7 @@ createUnionCohortTemplate <- function(cohortIds,
 #' This utility function adds the union of any two or more cohort ids to the cohort definition set with a new id and name.
 #'
 #' If a name parameter is not provideded this will be auto generated as the union of the provided cohort id
-#' @param cohortDefinitionSet
+#' @param cohortDefinitionSet   cohort definition set
 #' @inheritParams createUnionCohortTemplate
 addUnionCohortDefinition <- function(cohortDefinitionSet,
                                      cohortIds,

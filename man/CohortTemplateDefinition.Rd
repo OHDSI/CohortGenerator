@@ -182,7 +182,7 @@ to list
 \if{html}{\out{<a id="method-CohortTemplateDefinition-toList"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-toList}{}}}
 \subsection{Method \code{toList()}}{
-For seralizing the definition
+Used for seralizing the definition
 to json
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$toList()}\if{html}{\out{</div>}}

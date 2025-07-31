@@ -4,22 +4,29 @@
 \alias{createUnionCohortTemplate}
 \title{Create cohort template to union multiple cohorts}
 \usage{
-createUnionCohortTemplate(
-  cohortDatabaseSchema,
-  cohortTable,
-  cohortIds,
-  unionCohortId
-)
+createUnionCohortTemplate(cohortIds, cohortName, unionCohortId)
 }
 \arguments{
-\item{cohortDatabaseSchema}{Schema where cohort tables are stored.}
-
-\item{cohortTable}{Name of the cohort table.}
-
 \item{cohortIds}{A vector of `cohort_definition_id` values for the input cohorts.}
+
+\item{cohortName}{The Name of the resulting cohort}
 
 \item{unionCohortId}{The `cohort_definition_id` for the resulting union cohort.}
 }
 \description{
-Create cohort template to union multiple cohorts
+This is a union between all cohorts within a specified set of ids.
+If an individual has multiple overlapping eras, they will be merged into a single time window.
+
+For example:
+
+```
+A:    [--------]
+B:        [-------]
+C:            [-------]
+```
+Becomes:
+```
+AUBUC: [--------------]
+```
+It is never allowed to have multiple overlapping eras for the same indiviudal within a cohort
 }
