@@ -47,6 +47,7 @@
 #' @param unionCohortId The `cohort_definition_id` for the resulting union cohort.
 #' @param cohortName  The Name of the resulting cohort
 #' @export
+#' @family templates
 createUnionCohortTemplate <- function(cohortIds,
                                       cohortName,
                                       unionCohortId) {
@@ -114,6 +115,8 @@ createUnionCohortTemplate <- function(cohortIds,
 #' If a name parameter is not provideded this will be auto generated as the union of the provided cohort id
 #' @param cohortDefinitionSet   cohort definition set
 #' @inheritParams createUnionCohortTemplate
+#' @export
+#' @family templates
 addUnionCohortDefinition <- function(cohortDefinitionSet,
                                      cohortIds,
                                      cohortName,
