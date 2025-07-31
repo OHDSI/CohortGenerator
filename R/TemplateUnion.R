@@ -89,7 +89,7 @@ createUnionCohortTemplate <- function(cohortIds,
   # Create references for the resulting union cohort
   references <- data.frame(
     cohortId = unionCohortId,
-    cohortName = paste0("Union of Cohorts: ", paste(cohortIds, collapse = ", ")),
+    cohortName = cohortName,
     sql = unionSqlTemplate
   )
 
