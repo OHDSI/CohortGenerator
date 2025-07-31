@@ -1,4 +1,4 @@
-# Copyright 2024 Observational Health Data Sciences and Informatics
+# Copyright 2025 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -50,16 +50,21 @@ CohortSubsetQb <- R6::R6Class(
   private = list(
     innerQuery = function(targetTable) {
       cohortWindowLogic <- lapply(private$operator$windows, function(window) {
-        lsql <- " AND (S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))"
+        # WHEN negate = TRUE: AND NOT
+        lsql <- "AND {@negate} ? {NOT} (S.@s_cohort_anchor >= DATEADD(d, @window_start_day, T.@window_anchor) AND S.@s_cohort_anchor <= DATEADD(d, @window_end_day, T.@window_anchor))"
         SqlRender::render(lsql,
-                          window_anchor = ifelse(window$targetAnchor == "cohortStart",
-                                                 yes = "cohort_start_date",
-                                                 no = "cohort_end_date"),
-                          s_cohort_anchor = ifelse(window$subsetAnchor == "cohortStart",
-                                                 yes = "cohort_start_date",
-                                                 no = "cohort_end_date"),
-                          window_end_day = window$endDay,
-                          window_start_day = window$startDay)
+          negate = window$negate,
+          window_anchor = ifelse(window$targetAnchor == "cohortStart",
+            yes = "cohort_start_date",
+            no = "cohort_end_date"
+          ),
+          s_cohort_anchor = ifelse(window$subsetAnchor == "cohortStart",
+            yes = "cohort_start_date",
+            no = "cohort_end_date"
+          ),
+          window_end_day = window$endDay,
+          window_start_day = window$startDay
+        )
       })
 
       cohortWindowLogic <- paste(cohortWindowLogic, collapse = "\n   ")
@@ -68,7 +73,7 @@ CohortSubsetQb <- R6::R6Class(
       sql <- SqlRender::render(sql,
         target_table = targetTable,
         output_table = self$getTableObjectId(),
-        negate = ifelse(private$operator$negate == TRUE, yes = "1", no = "0"),
+        negate = private$operator$negate,
         cohort_window_logic = cohortWindowLogic,
         cohort_ids = private$operator$cohortIds,
         subset_length = ifelse(private$operator$cohortCombinationOperator == "any",

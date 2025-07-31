@@ -28,8 +28,20 @@ testPlatform <- function(dbmsDetails) {
       cohortIds = 2,
       cohortCombinationOperator = "all",
       negate = FALSE,
-      windows = list(createSubsetCohortWindow(-99999, 99999, "cohortStart"),
-                     createSubsetCohortWindow(-99999, 99999, "cohortEnd"))
+      windows = list(
+        createSubsetCohortWindow(
+          startDay = -99999,
+          endDay = 99999,
+          targetAnchor = "cohortStart",
+          subsetAnchor = "cohortStart"
+        ),
+        createSubsetCohortWindow(
+          startDay = -99999,
+          endDay = 99999,
+          targetAnchor = "cohortEnd",
+          subsetAnchor = "cohortEnd"
+        )
+      )
     ),
     createLimitSubset(
       priorTime = 365,
@@ -52,6 +64,7 @@ testPlatform <- function(dbmsDetails) {
   cohortsWithSubsets <- addCohortSubsetDefinition(cohortsWithStats, subsetDef)
 
   ncSet <- getNegativeControlOutcomeCohortsForTest()
+
   runCohortGeneration(
     connectionDetails = dbmsDetails$connectionDetails,
     cdmDatabaseSchema = dbmsDetails$cdmDatabaseSchema,

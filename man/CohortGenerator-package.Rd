@@ -24,6 +24,7 @@ Authors:
 \itemize{
   \item Jamie Gilbert
   \item Gowtham Rao \email{gowthamrao@gmail.com}
+  \item Freddy Avila Cruz
   \item Martijn Schuemie \email{schuemie@ohdsi.org}
 }
 

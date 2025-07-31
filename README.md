@@ -7,12 +7,13 @@ CohortGenerator is part of [HADES](https://ohdsi.github.io/Hades/).
 
 # Introduction
 
-This R package contains functions for generating cohorts using data in the CDM.
+This R package contains functions for generating cohorts and cohort subsets using data in the CDM.
 
 # Features
 
 -   Create a cohort table and generate [cohorts](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html) against an OMOP CDM.
 -   Get the count of subjects and events in a cohort.
+-   Define subsets of cohorts using different criteria or other cohorts.
 -   Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully generated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.
 
 # Example

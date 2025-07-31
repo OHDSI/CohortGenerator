@@ -16,6 +16,8 @@ Representation of a time window to use when subsetting a target cohort with a su
 \item{\code{targetAnchor}}{Boolean}
 
 \item{\code{subsetAnchor}}{Boolean}
+
+\item{\code{negate}}{Boolean}
 }
 \if{html}{\out{</div>}}
 }
