@@ -35,7 +35,6 @@ getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
 #'
 #' Also attaches an attribute to the cohort definition set
 #'
-#' @export
 #' @template cohortDefinitionSet
 #' @param subsetDefinitionId            The ID if the resulting subset. Note, this must be uniquely applied to the cohort
 #'                                      definition set.
@@ -60,7 +59,7 @@ getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
 #' @param requiredPriorObservationTime  Observation time in data source required prior to index (a.k.a washout perioid)
 #'                                      Deafults to 365 days.
 #' @param requiredFollowUpTime          Observation time after target index required (typically at least 1 day, default)
-#'
+#' @export
 addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           targetCohortIds,
                                           indicationCohortIds,
@@ -134,6 +133,7 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
 #' @description
 #' Get the indication subset definition ids from a cohort definition set (if any have been added)
 #' Useful if keeping track in a script with complex business logic around what a cohort definition is for
+#'
 #' @export
 #' @template cohortDefinitionSet
 getRestrictionSubsetDefinitionIds <- function(cohortDefinitionSet) {
