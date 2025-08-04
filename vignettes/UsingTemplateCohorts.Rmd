@@ -70,6 +70,25 @@ Note - in this definition we do not ever reference the bound variables `@cohort_
 `@cdm_database_schema` or `@vocabulary_database_schema`. This is for two reasons, firstly these are already knownk
 
 
+### Validating custom sql cohorts
+
+To be valid, a cohort definition must:
+
+* Include a cohort id, subject id, start date and end date
+* The start date must always be on or before the end date
+* There must be no overalpping or duplicate eras for the same subject within a cohort
+* In general, cohorts should be only inside observation periods within the CDM
+
+With Circe based cohorts, it is guaranteed that definitions meet this criteria.
+However, this is not necessarily true when generating custom SQL definitions.
+Consequently, we use the `getCohortValidationCounts` function within the `CohortGenerator` package.
+
+```{r}
+getCohortValidationCounts(connection = connection,
+                          cdmDatabaseSchema = "main",
+                          cohortDatabaseSchema = "main")
+```
+
 # Built in large scale definitions
 There are currently 3 large scale cohort generation methods included within the package that use vocabulary tables to
 bulk generate thousands of cohorts in a time that would be infieasible if using Circe standard cohorts from ATLAS or
