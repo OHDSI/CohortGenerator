@@ -16,6 +16,8 @@ test_that("sampleCohortDefinitionSet", {
   )
 
   cds <- getCohortsForTest(cohorts = cohorts)
+
+  
   generateCohortSet(
     cohortDefinitionSet = cds,
     connection = conn,
@@ -49,7 +51,8 @@ test_that("sampleCohortDefinitionSet", {
                                                     "
   )
   expect_true(all(res$ct == 10))
-  expect_true(all(sampledCohorts$status == "generated"))
+  expect_true(all(sampledCohorts$status == "COMPLETE"))
+
   # Test incrmental logic works
   sampledCohorts2 <- sampleCohortDefinitionSet(
     cohortDefinitionSet = cds,
@@ -75,7 +78,7 @@ test_that("sampleCohortDefinitionSet", {
     incremental = FALSE
   )
 
-  expect_true(all(sampledCohorts3$status == "generated"))
+  expect_true(all(sampledCohorts3$status == "COMPLETE"))
 })
 
 # Testing the creation of randomly sampled without replacement row ids
@@ -194,8 +197,14 @@ test_that(".sampleCohort", {
     camelCaseToSnakeCase = TRUE,
     data = tData
   )
+  
+  createCohortTables(connection = connection, 
+                     incremental = TRUE, 
+                     cohortDatabaseSchema = "main")
+  
   sampleTable <- data.frame(rand_id = c(7, 8, 9, 10, 33, 198))
-  .sampleCohort(connection,
+  .sampleCohort(
+    connection,
     targetCohortId = 1,
     targetTable = "cohort",
     outputCohortId = 999,
@@ -203,8 +212,11 @@ test_that(".sampleCohort", {
     cohortDatabaseSchema = "main",
     outputDatabaseSchema = "main",
     sampleTable = sampleTable,
+    checksumTable = "cohort_checksum",
     seed = 1,
-    tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
+    tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
+    checksum = "some_random_value",
+    incremental = FALSE
   )
 
   resCohort <- DatabaseConnector::renderTranslateQuerySql(connection,
