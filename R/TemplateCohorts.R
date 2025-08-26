@@ -33,7 +33,7 @@
 #'    cohort across different databases. Furthermore, saving information within the CDM schema in a shared OHDSI study
 #'    is not desirable.
 #' @export
-#' @family templateCohorts
+#' #@family templateCohorts
 CohortTemplateDefinition <- R6::R6Class(
   "CohortTemplateDefinition",
   private = list(
@@ -326,7 +326,7 @@ CohortTemplateDefinition <- R6::R6Class(
 #'                                form, translatable to other db platforms.
 #' @param translateSql            to translate the sql or not.
 #' @export
-#' @family templateCohorts
+#' #@family templateCohorts
 createCohortTemplateDefintion <- function(name,
                                           templateSql,
                                           references,
@@ -344,7 +344,7 @@ createCohortTemplateDefintion <- function(name,
 
 #' Extract template definitions from a cohort definition set
 #' @template cohortDefinitionSet
-#' @family templateCohorts
+#' #@family templateCohorts
 #' @export
 getTemplateDefinitions <- function(cohortDefinitionSet) {
   checkmate::assertDataFrame(cohortDefinitionSet, col.names = "named")
@@ -370,7 +370,7 @@ getTemplateDefinitions <- function(cohortDefinitionSet) {
 #' @export
 #' @param cohortTemplateDefintion   An instance of CohortTemplateDefinition (or subclass).
 #'                                  See [@seealso [createCohortTemplateDefinition()]].
-#' @family templateCohorts
+#' #@family templateCohorts
 addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDefinitionSet(),
                                        cohortTemplateDefintion) {
   checkmate::assertTRUE(isCohortDefinitionSet(cohortDefinitionSet))
@@ -434,7 +434,7 @@ addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDe
 #'                        cohort_database_schema, cdm_database_schema or vocabulary_database_schema
 #' @param tanslateSql     perfom translation on the sql. This is ignored if the sql has already been translated
 #'                        with the sql render function.
-#' @family templateCohorts
+#' #@family templateCohorts
 #' @export
 #' @examples
 #'
