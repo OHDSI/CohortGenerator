@@ -52,7 +52,7 @@ sql <- "INSERT INTO @cohort_database_schema.@cohort_table
          INNER JOIN @vocabulary_database_schema.concept c on de.drug_concept_id = c.concept_id
          -- Find any matches of drugs named 'asprin' in the drug concept table
          WHERE lower(c.concept_name) like '%asprin%'; "
-cohortDefinitionSet = cohortDefinitionSet |>
+cohortDefinitionSet <- cohortDefinitionSet |>
   addSqlCohortDefinition(sql = sql,
                          cohortId = 1,
                          cohortName = "my asprin cohort")
@@ -114,7 +114,6 @@ library(DatabaseConnector)
 rxNormDefinition <- createRxNormCohortTemplateDefinition(
   connection = connection,  # Replace with your DatabaseConnector connection
   cdmDatabaseSchema = "main",
-  cohortDatabaseSchema = "main",
   priorObservationPeriod = 365
 )
 
@@ -134,7 +133,6 @@ head(rxNormReferences)
 atcDefinition <- createAtcCohortTemplateDefinition(
   connection = connection,  # Replace with your DatabaseConnector connection
   cdmDatabaseSchema = "main",
-  cohortDatabaseSchema = "main",
   mergeIngredientEras = TRUE,
   priorObservationPeriod = 365
 )
@@ -153,7 +151,6 @@ head(atcReferences)
 snomedDefinition <- createSnomedCohortTemplateDefinition(
   connection = connection,  # Replace with your DatabaseConnector connection
   cdmDatabaseSchema = "main",
-  cohortDatabaseSchema = "main",
   priorObservationPeriod = 180  # Require 180 days prior observation
 )
 

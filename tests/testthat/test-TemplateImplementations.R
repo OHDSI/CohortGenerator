@@ -10,7 +10,6 @@ test_that("createSnomedCohortTemplateDefinition", {
   def <- createSnomedCohortTemplateDefinition(
     connection = connection,
     cdmDatabaseSchema = "main",
-    cohortDatabaseSchema = "main",
     requireSecondDiagnosis = FALSE,
     nameSuffix = nameSuffix
   )
@@ -54,8 +53,7 @@ test_that("createSnomedCohortTemplateDefinition", {
 test_that("createRxNormCohortTemplateDefinition", {
   def <- createRxNormCohortTemplateDefinition(
     connection = connection,
-    cdmDatabaseSchema = "main",
-    cohortDatabaseSchema = "main"
+    cdmDatabaseSchema = "main"
   )
 
   checkmate::expect_r6(def, "CohortTemplateDefinition")
@@ -114,14 +112,12 @@ test_that("createAtcCohortTemplateDefinition", {
   def <- createAtcCohortTemplateDefinition(
     connection = connection,
     cdmDatabaseSchema = "main",
-    cohortDatabaseSchema = "main",
     nameSuffix = " (merged eras)"
   )
 
   def2 <- createAtcCohortTemplateDefinition(
     connection = connection,
     cdmDatabaseSchema = "main",
-    cohortDatabaseSchema = "main",
     identifierExpression = "concept_id * 1000 + 5",
     mergeIngredientEras = FALSE,
     nameSuffix = ""
