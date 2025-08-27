@@ -74,7 +74,7 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
 
   results$startTime <- as.POSIXct(results$startTime / 1000, origin = "1970-01-01", tz = "UTC")
   results$endTime <- as.POSIXct(results$endTime / 1000, origin = "1970-01-01", tz = "UTC")
-
+  results$cohortDefinitionId <- as.numeric(results$cohortDefinitionId)
   return(results)
 }
 
