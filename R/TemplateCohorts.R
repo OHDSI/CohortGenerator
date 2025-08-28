@@ -33,7 +33,6 @@
 #'    cohort across different databases. Furthermore, saving information within the CDM schema in a shared OHDSI study
 #'    is not desirable.
 #' @export
-#' #@family templateCohorts
 CohortTemplateDefinition <- R6::R6Class(
   "CohortTemplateDefinition",
   private = list(
@@ -326,7 +325,6 @@ CohortTemplateDefinition <- R6::R6Class(
 #'                                form, translatable to other db platforms.
 #' @param translateSql            to translate the sql or not.
 #' @export
-#' #@family templateCohorts
 createCohortTemplateDefintion <- function(name,
                                           templateSql,
                                           references,
@@ -369,7 +367,7 @@ getTemplateDefinitions <- function(cohortDefinitionSet) {
 #' @export
 #' @param cohortTemplateDefintion   An instance of CohortTemplateDefinition (or subclass).
 #'                                  See [@seealso [createCohortTemplateDefinition()]].
-#' #@family templateCohorts
+#'
 addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDefinitionSet(),
                                        cohortTemplateDefintion) {
   checkmate::assertTRUE(isCohortDefinitionSet(cohortDefinitionSet))
@@ -433,7 +431,7 @@ addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDe
 #'                        cohort_database_schema, cdm_database_schema or vocabulary_database_schema
 #' @param tanslateSql     perfom translation on the sql. This is ignored if the sql has already been translated
 #'                        with the sql render function.
-#' #@family templateCohorts
+#'
 #' @export
 #' @examples
 #'

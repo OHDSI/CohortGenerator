@@ -30,8 +30,7 @@ Optionally, this data frame may contain: \describe{
 \item{cohortName}{Name of the cohort to add}
 
 \item{tanslateSql}{perfom translation on the sql. This is ignored if the sql has already been translated
-                       with the sql render function.
-#@family templateCohorts}
+with the sql render function.}
 
 \item{json}{optional json parameters}
 
