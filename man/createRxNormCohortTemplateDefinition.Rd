@@ -32,8 +32,6 @@ createRxNormCohortTemplateDefinition(
 paramaterized versions of this definition}
 
 \item{vocabularyDatabaseSchema}{Vocabulary database schema}
-
-\item{requireSecondDiagnosis}{(optional) Logical - require a second diagnosis code for this definition?}
 }
 \value{
 A CohortTemplateDefinition instance

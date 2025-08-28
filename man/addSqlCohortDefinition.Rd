@@ -30,7 +30,8 @@ Optionally, this data frame may contain: \describe{
 \item{cohortName}{Name of the cohort to add}
 
 \item{tanslateSql}{perfom translation on the sql. This is ignored if the sql has already been translated
-with the sql render function.}
+                       with the sql render function.
+#@family templateCohorts}
 
 \item{json}{optional json parameters}
 
@@ -76,11 +77,3 @@ cohortDefinitionSet = createEmptyCohortDefinitionSet() |>
 
 
 }
-\seealso{
-Other templateCohorts: 
-\code{\link{CohortTemplateDefinition}},
-\code{\link{addCohortTemplateDefintion}()},
-\code{\link{createCohortTemplateDefintion}()},
-\code{\link{getTemplateDefinitions}()}
-}
-\concept{templateCohorts}

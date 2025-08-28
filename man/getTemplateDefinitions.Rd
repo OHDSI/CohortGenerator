@@ -18,11 +18,3 @@ Optionally, this data frame may contain: \describe{
 \description{
 Extract template definitions from a cohort definition set
 }
-\seealso{
-Other templateCohorts: 
-\code{\link{CohortTemplateDefinition}},
-\code{\link{addCohortTemplateDefintion}()},
-\code{\link{addSqlCohortDefinition}()},
-\code{\link{createCohortTemplateDefintion}()}
-}
-\concept{templateCohorts}

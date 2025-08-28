@@ -25,7 +25,6 @@
 #' @param tempEmulationSchema Temporary emulation schema
 #' @param cohortDatabaseSchema Cohort database schema
 #' @param priorObservationPeriod (optional) Required prior observation period for individuals
-#' @param requireSecondDiagnosis (optional) Logical - require a second diagnosis code for this definition?
 #' @param vocabularyDatabaseSchema Vocabulary database schema
 #' @param nameSuffix    A name suffix to use to add to the cohort names - this is useful if you're using multiple
 #'                      paramaterized versions of this definition

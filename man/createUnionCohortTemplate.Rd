@@ -41,8 +41,3 @@ A U B:  [--------]     [-------]
 ```
 It is never allowed to have multiple overlapping eras for the same indiviudal within a cohort
 }
-\seealso{
-Other templates: 
-\code{\link{addUnionCohortDefinition}()}
-}
-\concept{templates}

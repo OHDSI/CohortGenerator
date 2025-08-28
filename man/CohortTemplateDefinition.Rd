@@ -26,14 +26,6 @@ CURRENTLY NOT SUPPORTED:
    cohort across different databases. Furthermore, saving information within the CDM schema in a shared OHDSI study
    is not desirable.
 }
-\seealso{
-Other templateCohorts: 
-\code{\link{addCohortTemplateDefintion}()},
-\code{\link{addSqlCohortDefinition}()},
-\code{\link{createCohortTemplateDefintion}()},
-\code{\link{getTemplateDefinitions}()}
-}
-\concept{templateCohorts}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{

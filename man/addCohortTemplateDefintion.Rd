@@ -19,16 +19,9 @@ Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
 
 \item{cohortTemplateDefintion}{An instance of CohortTemplateDefinition (or subclass).
-See [@seealso [createCohortTemplateDefinition()]].}
+                                 See [@seealso [createCohortTemplateDefinition()]].
+#@family templateCohorts}
 }
 \description{
 Adds a cohort template definition to an existing cohort definition set or creates one if none provided
 }
-\seealso{
-Other templateCohorts: 
-\code{\link{CohortTemplateDefinition}},
-\code{\link{addSqlCohortDefinition}()},
-\code{\link{createCohortTemplateDefintion}()},
-\code{\link{getTemplateDefinitions}()}
-}
-\concept{templateCohorts}
