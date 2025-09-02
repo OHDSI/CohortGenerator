@@ -35,7 +35,7 @@
 #'
 #' @export
 #' @inheritParams generateCohortSet
-#' @param cohortId Id of cohort to validate
+#' @param cohortIds Ids of cohorts to validate
 getCohortValidationCounts <- function(connectionDetails = NULL,
                                       connection = NULL,
                                       cdmDatabaseSchema,

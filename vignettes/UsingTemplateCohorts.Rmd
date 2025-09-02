@@ -7,7 +7,7 @@ output:
     number_sections: yes
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Generating Cohorts}
+  %\VignetteIndexEntry{Using Template Cohorts}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:

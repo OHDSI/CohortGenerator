@@ -41,7 +41,7 @@ this should include both the database and schema name, for example
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
 
-\item{cohortId}{Id of cohort to validate}
+\item{cohortIds}{Ids of cohorts to validate}
 }
 \value{
 a data.frame with the fields cohortId, overlappingErasCount, invalidDateCount, duplicateCount, outsideObservationCount

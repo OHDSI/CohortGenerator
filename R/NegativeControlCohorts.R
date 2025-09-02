@@ -265,7 +265,7 @@ recordNcCohorts <- function(connection,
                             negativeControlOutcomeCohortSet,
                             checksum,
                             start,
-                            endTime = "NULL") {
+                            end = "NULL") {
   # Use delete instead of update to improve performance on MPP platforms
   endSql <- "
   DELETE FROM @results_database_schema.@cohort_checksum_table
@@ -282,7 +282,7 @@ recordNcCohorts <- function(connection,
                                         checksum = checksum,
                                         start_time = start,
                                         target_cohort_id = negativeControlOutcomeCohortSet$cohortId[i],
-                                        end_time = endTime,
+                                        end_time = end,
                                         results_database_schema = cohortDatabaseSchema,
                                         cohort_checksum_table = cohortChecksumTable,
                                         warnOnMissingParameters = FALSE))
