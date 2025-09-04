@@ -2,33 +2,14 @@
 % Please edit documentation in R/Subsets.R
 \name{createDemographicSubset}
 \alias{createDemographicSubset}
-\title{Create createDemographicSubset Subset}
+\title{Create Demographic Subset Operator}
 \usage{
-createDemographicSubset(
-  name = NULL,
-  ageMin = 0,
-  ageMax = 99999,
-  gender = NULL,
-  race = NULL,
-  ethnicity = NULL
-)
+createDemographicSubset(...)
 }
 \arguments{
-\item{name}{Optional char name}
-
-\item{ageMin}{The minimum age}
-
-\item{ageMax}{The maximum age}
-
-\item{gender}{Gender demographics - concepts - 0, 8532, 8507, 0, "female", "male".
-Any string that is not "male" or "female" (case insensitive) is converted to gender concept 0.
-https://athena.ohdsi.org/search-terms/terms?standardConcept=Standard&domain=Gender&page=1&pageSize=15&query=
-Specific concept ids not in this set can be used but are not explicitly validated}
-
-\item{race}{Race demographics - concept ID list}
-
-\item{ethnicity}{Ethnicity demographics - concept ID list}
+\item{...}{Arguments passed to the underlying operator.}
 }
 \description{
-Create createDemographicSubset Subset
+Subset cohorts using specified limit criteria.
+deprecated This function is deprecated. Please use `createDemographicSubsetOperator()` instead.
 }

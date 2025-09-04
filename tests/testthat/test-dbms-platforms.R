@@ -24,7 +24,7 @@ testPlatform <- function(dbmsDetails) {
     verbose = FALSE
   )
   subsetOperations <- list(
-    createCohortSubset(
+    createCohortSubsetOperator(
       cohortIds = 2,
       cohortCombinationOperator = "all",
       negate = FALSE,
@@ -43,14 +43,14 @@ testPlatform <- function(dbmsDetails) {
         )
       )
     ),
-    createLimitSubset(
+    createLimitSubsetOperator(
       priorTime = 365,
       followUpTime = 0,
       calendarStartDate = lubridate::date("2001/1/1"),
       calendarEndDate = lubridate::date("2019/1/31"),
       limitTo = "earliestRemaining"
     ),
-    createDemographicSubset(
+    createDemographicSubsetOperator(
       name = "Demographic Criteria",
       ageMin = 18,
       ageMax = 64
