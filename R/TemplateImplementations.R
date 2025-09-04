@@ -31,7 +31,7 @@
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createRxNormCohortTemplateDefinition <- function(connection,
-                                                 identifierExpression = "concept_id * 1000",
+                                                 identifierExpression = "CAST(concept_id as bigint) * 1000",
                                                  cdmDatabaseSchema,
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  cohortDatabaseSchema,
@@ -84,7 +84,7 @@ createRxNormCohortTemplateDefinition <- function(connection,
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createAtcCohortTemplateDefinition <- function(connection,
-                                              identifierExpression = "concept_id * 1000",
+                                              identifierExpression = "CAST(concept_id as bigint) * 1000",
                                               cdmDatabaseSchema,
                                               tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                               cohortDatabaseSchema,
@@ -152,7 +152,7 @@ createAtcCohortTemplateDefinition <- function(connection,
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createSnomedCohortTemplateDefinition <- function(connection,
-                                                 identifierExpression = "concept_id * 1000",
+                                                 identifierExpression = "CAST(concept_id as bigint) * 1000",
                                                  cdmDatabaseSchema,
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  priorObservationPeriod = 365,

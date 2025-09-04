@@ -118,7 +118,7 @@ test_that("createAtcCohortTemplateDefinition", {
   def2 <- createAtcCohortTemplateDefinition(
     connection = connection,
     cdmDatabaseSchema = "main",
-    identifierExpression = "concept_id * 1000 + 5",
+    identifierExpression = "CAST(concept_id as bigint) * 1000 + 5",
     mergeIngredientEras = FALSE,
     nameSuffix = ""
   )
