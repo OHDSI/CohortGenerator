@@ -190,7 +190,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
             definitionId = 1,
             name = "empty",
             subsetOperators = list(
-              createDemographicSubset()
+              createDemographicSubsetOperator()
             )
           )
         ) %>%

@@ -32,12 +32,12 @@ for (i in 1:length(cohortJsonFiles)) {
 }
 
 subsetOperations <- list(
-  createDemographicSubset(
+  createDemographicSubsetOperator(
     name = "Demographic Criteria 1",
     ageMin = 18,
     ageMax = 64
   ),
-  createDemographicSubset(
+  createDemographicSubsetOperator(
     name = "Demographic Criteria 2",
     ageMin = 32,
     ageMax = 48
