@@ -52,7 +52,7 @@ CohortSubsetDefinition <- R6::R6Class(
       cat("\n")
       cat("\n")
       for (so in self$subsetOperators) {
-        print(so, includeSql = includeSql)
+        print(so)
         cat("\n")
       }
       cat("\n\n")
