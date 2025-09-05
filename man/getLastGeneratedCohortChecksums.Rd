@@ -45,3 +45,4 @@ modifications are made to the cohort table itself).
 
 This can be used downstream of CohortGeneratro to evaluate if cohorts are consistent with passed definitions.
 }
+\keyword{internal}

@@ -30,6 +30,7 @@
 #' 
 #' @param cohortId cohortId to check. If NULL, all cohorts will be returned.
 #' @param .checkTables used internally
+#' @keywords internal
 getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
                                             connection = NULL,
                                             cohortId = NULL,
