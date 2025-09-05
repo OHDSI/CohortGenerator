@@ -40,6 +40,13 @@ QueryBuilder <- R6::R6Class(
         inner_query = private$innerQuery(targetTable)
       )
       return(sql)
+    },
+
+    print = function(...) {
+      cat(class(self)[1])
+      cat("\n")
+      cat(self$getQuery("@target_table"))
+      cat("\n")
     }
   )
 )
