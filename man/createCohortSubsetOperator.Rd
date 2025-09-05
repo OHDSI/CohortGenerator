@@ -39,3 +39,9 @@ a CohortSubsetOperator instance
 \description{
 A definition of subset functions to be applied to a set of cohorts
 }
+\seealso{
+Other subsets: 
+\code{\link{createDemographicSubsetOperator}()},
+\code{\link{createLimitSubsetOperator}()}
+}
+\concept{subsets}

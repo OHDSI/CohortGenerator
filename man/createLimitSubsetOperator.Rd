@@ -41,3 +41,9 @@ createLimitSubsetOperator(
 \description{
 Subset cohorts using specified limit criteria
 }
+\seealso{
+Other subsets: 
+\code{\link{createCohortSubsetOperator}()},
+\code{\link{createDemographicSubsetOperator}()}
+}
+\concept{subsets}

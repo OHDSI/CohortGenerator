@@ -446,7 +446,7 @@ CohortSubsetOperator <- R6::R6Class(
 # createCohortSubset ------------------------------
 #' A definition of subset functions to be applied to a set of cohorts
 #' @export
-#'
+#' @family subsets
 #' @param name  optional name of operator
 #' @param cohortIds integer - set of cohort ids to subset to
 #' @param cohortCombinationOperator "any" or "all" if using more than one cohort id allow a subject to be in any cohort
@@ -704,6 +704,7 @@ DemographicSubsetOperator <- R6::R6Class(
 # createDemographicSubset ------------------------------
 #' Create createDemographicSubset Subset operator
 #' @export
+#' @family subsets
 #' @param name         Optional char name
 #' @param ageMin       The minimum age
 #' @param ageMax       The maximum age
@@ -924,6 +925,7 @@ LimitSubsetOperator <- R6::R6Class(
 #' @description
 #' Subset cohorts using specified limit criteria
 #' @export
+#' @family subsets
 #' @param name                  Name of operation
 #' @param priorTime             Required prior observation window (specified as a positive integer)
 #' @param followUpTime          Required post observation window (specified as a positive integer)
