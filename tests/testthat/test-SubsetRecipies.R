@@ -1,6 +1,14 @@
 test_that("addIndicationSubsetDefinition adds subset correctly for basic case", {
   # Setup initial cohortDefinitionSet
-  cohortSet <- getCohortDefinitionSet(...)  # your actual loader
+  cohortSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
   
   # Call function
   result <- addIndicationSubsetDefinition(
@@ -23,7 +31,15 @@ test_that("addIndicationSubsetDefinition adds subset correctly for basic case", 
 })
 
 test_that("addIndicationSubsetDefinition handles multiple cohort IDs and operator", {
-  initialSet <- getCohortDefinitionSet(...)
+  initialSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
   
   res <- addIndicationSubsetDefinition(
     cohortDefinitionSet = initialSet,
@@ -36,7 +52,15 @@ test_that("addIndicationSubsetDefinition handles multiple cohort IDs and operato
 })
 
 test_that("addRestrictionSubsetDefinition adds restriction correctly", {
-  initialSet <- getCohortDefinitionSet(...)
+  initialSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
   
   res <- addRestrictionSubsetDefinition(
     cohortDefinitionSet = initialSet,
@@ -49,7 +73,15 @@ test_that("addRestrictionSubsetDefinition adds restriction correctly", {
 })
 
 test_that("addExcludeOnIndexSubsetDefinition correctly adds exclusion", {
-  initialSet <- getCohortDefinitionSet(...)
+  initialSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
   
   res <- addExcludeOnIndexSubsetDefinition(
     cohortDefinitionSet = initialSet,
@@ -59,17 +91,21 @@ test_that("addExcludeOnIndexSubsetDefinition correctly adds exclusion", {
     exclusionWindow = 7,
     definitionId = 3000
   )
-  
-  # Verify attribute
-  expect_true(3000 %in% attr(res, "exclusionSubsetDefinitions"))
-  
-  # Test if the subset operator has been correctly added
-  # You could extract it and check properties or class
+
+  expect_true(4000 %in% res$cohortId)
 })
 
 # Additional edge case tests:
 test_that("addIndicationSubsetDefinition errors on invalid IDs", {
-  cohortSet <- getCohortDefinitionSet(...)
+  cohortSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
   expect_error(
     addIndicationSubsetDefinition(
       cohortDefinitionSet = cohortSet,

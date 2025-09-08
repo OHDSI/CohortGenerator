@@ -61,12 +61,12 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           requiredFollowUpTime = 1) {
 
   .cohortDefinitionSetHasRequiredColumns(cohortDefinitionSet)
-  checkmate::assertChoice(targetCohortIds, cohortDefinitionSet$cohortId)
-  checkmate::assertChoice(indicationCohortIds, cohortDefinitionSet$cohortId)
+  checkmate::assertTRUE(all(targetCohortIds %in% cohortDefinitionSet$cohortId))
+  checkmate::assertTRUE(all(indicationCohortIds %in% cohortDefinitionSet$cohortId))
 
   subsetOperators <- list()
   subsetOperators[[length(subsetOperators) + 1]] <- createCohortSubset(
-    cohortIds = uniqueSubsetCriteria$indicationId,
+    cohortIds = indicationCohortIds,
     negate = FALSE,
     cohortCombinationOperator = cohortCombinationOperator,
     windows = list(
@@ -199,10 +199,10 @@ addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
                                               definitionId,
                                               cohortCombinationOperator = "any") {
   .cohortDefinitionSetHasRequiredColumns(cohortDefinitionSet)
-  checkmate::assertChoice(targetCohortIds, cohortDefinitionSet$cohortId)
-  checkmate::assertChoice(exclusionCohortIds, cohortDefinitionSet$cohortId)
+  checkmate::assertTRUE(all(targetCohortIds %in% cohortDefinitionSet$cohortId))
+  checkmate::assertTRUE(all(exclusionCohortIds %in% cohortDefinitionSet$cohortId))
 
-  def <- CohortGenerator::createCohortSubset(
+  op <- CohortGenerator::createCohortSubset(
     cohortIds = exclusionCohortIds,
     name = "exclusion",
     negate = TRUE, # LOGIC -  NOT IN  any indication cohort on cohort start date
@@ -210,11 +210,11 @@ addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
     windows = list(CohortGenerator::createSubsetCohortWindow(exclusionWindow, exclusionWindow, "cohortStart"))
   )
 
-  CohortGenerator::createCohortSubsetDefinition(
+  def <- CohortGenerator::createCohortSubsetDefinition(
     name = name,
     definitionId = definitionId,
     subsetCohortNameTemplate = subsetCohortNameTemplate,
-    subsetOperators = list(def)
+    subsetOperators = list(op)
   )
 
   cohortDefinitionSet <- cohortDefinitionSet |>
