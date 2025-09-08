@@ -93,7 +93,8 @@ CohortSubsetDefinition <- R6::R6Class(
     #' Returns vector of join, logic, having statements returned by subset operations
     #' @param targetOutputPair              Target output pair
     getSubsetQuery = function(targetOutputPair) {
-      checkmate::assertIntegerish(targetOutputPair, len = 2)
+      checkmate::assertNumeric(targetOutputPair, len = 2)
+      checkmate::assertTRUE(all(targetOutputPair %% 1 == 0))
       checkmate::assertFALSE(targetOutputPair[[1]] == targetOutputPair[[2]])
 
       targetTable <- "#cohort_sub_base"
@@ -134,7 +135,8 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @param cohortDefinitionSet           Cohort definition set containing base names
     #' @param targetOutputPair              Target output pair
     getSubsetCohortName = function(cohortDefinitionSet, targetOutputPair) {
-      checkmate::assertIntegerish(targetOutputPair, len = 2)
+      checkmate::assertNumeric(targetOutputPair, len = 2)
+      checkmate::assertTRUE(all(targetOutputPair %% 1 == 0))
       checkmate::assertFALSE(targetOutputPair[[1]] == targetOutputPair[[2]])
       checkmate::assertTRUE(targetOutputPair[[1]] %in% cohortDefinitionSet$cohortId)
       checkmate::assertTRUE(isCohortDefinitionSet(cohortDefinitionSet))
@@ -157,7 +159,9 @@ CohortSubsetDefinition <- R6::R6Class(
     #' Set the targetOutputPairs to be added to a cohort definition set
     #' @param targetIds   list of cohort ids to apply subsetting operations to
     setTargetOutputPairs = function(targetIds) {
-      checkmate::assertIntegerish(targetIds, min.len = 1, upper = 10e11)
+      checkmate::assertNumeric(targetIds, min.len = 1)
+      checkmate::assertTRUE(all(targetIds %% 1 == 0))
+      
       definitionId <- self$definitionId
       targetOutputPairs <- list()
 
@@ -191,7 +195,8 @@ CohortSubsetDefinition <- R6::R6Class(
         targetOutputPairs,
         function(targetOutputPair) {
           targetOutputPair <- as.numeric(targetOutputPair)
-          checkmate::assertIntegerish(targetOutputPair, len = 2, upper = 10e11)
+          checkmate::assertNumeric(targetOutputPair, len = 2)
+          checkmate::assertTRUE(all(targetOutputPair %% 1 == 0))
           checkmate::assertFALSE(targetOutputPair[[1]] == targetOutputPair[[2]])
           targetOutputPair
         }

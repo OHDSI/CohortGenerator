@@ -27,10 +27,10 @@
 #' This can be used downstream of CohortGeneratro to evaluate if cohorts are consistent with passed definitions.
 #'
 #' @inheritParams generateCohortSet
-#' 
+#'
 #' @param cohortId cohortId to check. If NULL, all cohorts will be returned.
 #' @param .checkTables used internally
-#' @keywords internal
+#' @export
 getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
                                             connection = NULL,
                                             cohortId = NULL,
@@ -60,8 +60,8 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
      WHERE end_time IS NOT NULL
   )
 
-  SELECT cohort_definition_id, checksum, start_time, end_time 
-  FROM ranked_times 
+  SELECT cohort_definition_id, checksum, start_time, end_time
+  FROM ranked_times
   WHERE rank = 1;
   {@cohort_id != ''} ? {AND cohort_definition_id IN (@cohort_id)}
   "
@@ -73,9 +73,9 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
                                                         cohort_checksum_table = cohortTableNames$cohortChecksumTable,
                                                         snakeCaseToCamelCase = TRUE)
 
-  results$startTime <- as.POSIXct(results$startTime/1000, origin = "1970-01-01", tz = "UTC")
-  results$endTime <- as.POSIXct(results$endTime/1000, origin = "1970-01-01", tz = "UTC")
-
+  results$startTime <- as.POSIXct(results$startTime / 1000, origin = "1970-01-01", tz = "UTC")
+  results$endTime <- as.POSIXct(results$endTime / 1000, origin = "1970-01-01", tz = "UTC")
+  results$cohortDefinitionId <- as.numeric(results$cohortDefinitionId)
   return(results)
 }
 
@@ -168,6 +168,26 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
+  recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
+  if ("isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
+    cohortDefinitionSet <- cohortDefinitionSet |> dplyr::filter(!.data$isTemplatedCohort)
+
+
+    if (nrow(cohortDefinitionSet) == 0) {
+      generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
+                                                          cohortDefinitionSet = cohortDefinitionSet,
+                                                          cdmDatabaseSchema = cdmDatabaseSchema,
+                                                          tempEmulationSchema = tempEmulationSchema,
+                                                          cohortDatabaseSchema = cohortDatabaseSchema,
+                                                          cohortTableNames = cohortTableNames,
+                                                          stopOnError = stopOnError,
+                                                          incremental = incremental,
+                                                          recordKeepingFile = recordKeepingFile)
+      return(generatedTemplateCohorts)
+    }
+  } else {
+    cohortDefinitionSet$isTemplatedCohort <- FALSE
+  }
 
   if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
     cohortDefinitionSet$checksum <- ""
@@ -188,7 +208,6 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   if (incremental) {
-    recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
     computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
                                                          cohortDatabaseSchema = cohortDatabaseSchema,
                                                          cohortTableNames = cohortTableNames) |>
@@ -206,7 +225,7 @@ generateCohortSet <- function(connectionDetails = NULL,
       dplyr::mutate(generationStatus = "SKIPPED")
 
     computedStr <- paste(computedCohorts$cohortId, collapse = ', ')
-      ParallelLogger::logInfo(paste("Skipping cohorts already generated: ", computedStr))
+    ParallelLogger::logInfo(paste("Skipping cohorts already generated: ", computedStr))
   } else {
     uncomputedCohorts <- cohortDefinitionSet
     computedCohorts <- data.frame()
@@ -253,7 +272,18 @@ generateCohortSet <- function(connectionDetails = NULL,
     stopOnError = stopOnError,
     progressBar = TRUE
   )
-  subsetsGenerated <- c()
+
+  generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
+                                                      cohortDefinitionSet = cohortDefinitionSet,
+                                                      cdmDatabaseSchema = cdmDatabaseSchema,
+                                                      tempEmulationSchema = tempEmulationSchema,
+                                                      cohortDatabaseSchema = cohortDatabaseSchema,
+                                                      cohortTableNames = cohortTableNames,
+                                                      stopOnError = stopOnError,
+                                                      incremental = incremental,
+                                                      recordKeepingFile = recordKeepingFile)
+
+  subsetsGenerated <- list()
   if (length(subsetsToGenerate)) {
     subsetsGenerated <- ParallelLogger::clusterApply(
       cluster,
@@ -275,7 +305,7 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   # Convert the list to a data frame
-  cohortsGenerated <- dplyr::bind_rows(cohortsGenerated, subsetsGenerated, computedCohorts)
+  cohortsGenerated <- dplyr::bind_rows(cohortsGenerated, subsetsGenerated, generatedTemplateCohorts, computedCohorts)
 
   delta <- Sys.time() - start
   writeLines(paste("Generating cohort set took", round(delta, 2), attr(delta, "units")))
@@ -385,7 +415,7 @@ generateCohort <- function(cohortId = NULL,
     isSubset <- cohortDefinitionSet$isSubset[i]
   }
 
-  
+
   if (is.null(connection)) {
     # Establish the connection and ensure the cleanup is performed
     connection <- DatabaseConnector::connect(connectionDetails)
@@ -458,7 +488,7 @@ generateCohort <- function(cohortId = NULL,
       endTime = endTime
     ))
   })
-  
+
 
   summary <- data.frame(
     cohortId = cohortId,
