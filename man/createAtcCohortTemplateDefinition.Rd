@@ -6,7 +6,7 @@
 \usage{
 createAtcCohortTemplateDefinition(
   connection,
-  identifierExpression = "concept_id * 1000",
+  identifierExpression = "CAST(concept_id as bigint) * 1000",
   cdmDatabaseSchema,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   cohortDatabaseSchema,
