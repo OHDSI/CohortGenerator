@@ -15,43 +15,32 @@
 # limitations under the License.
 
 
-#' Get Indication Subset Definition Ids
-#' @description
-#' Get the indication subset definition ids from a cohort definition set (if any have been added)
-#' Useful if keeping track in a script with complex business logic around what a cohort definition is for
-#' @export
-#' @template cohortDefinitionSet
-getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
-  attr(cohortDefinitionSet, "indicationSubsetDefinitions", exact = TRUE)
-}
 
 #' Add Indication Subset Definition
-#'
+#' @export
 #' @description
-#' Utility pattern for creating cohort subset definitions, following a standard approach for indicating drugs.
+#' Utility pattern for creating cohort subset definitions, following a standard approach for indicated drugs.
 #' The approach applies this definition to an exposure or set of exposures, requiring individuals to have
 #' a prior history of a condition before receiving treatment.
 #' This function aims to make parameterization of study execution explicit.
 #' Additionally, it attaches an attribute to the cohort definition set.
 #'
-#' @param subsetDefinitionId            The ID for the resulting subset. Must be unique within the cohort definition set.
-#' @param indicationCohortIds           Set of integer cohort IDs. Must be within the cohort definition set.
-#' @param cohortCombinationOperator     Defines the logic for multiple indication cohort IDs:
-#'                                      - `'any'` (default): individual must meet any indication.
-#'                                      - `'all'`: individual must have all indications within the specified window.
-#'                                      Useful for severe conditions requiring multiple prior diagnoses or treatments.
-#' @param lookbackWindowStart           Start of the lookback period for valid inclusion. Measures how long prior to index an individual can have a condition.
-#' @param lookbackWindowEnd             End of the lookback period. Typically day 0 (index), but can specify a gap if needed.
-#' @param lookForwardWindowStart        The earliest time relative to the target index when the indication condition can end. Default is day 0.
-#' @param lookForwardWindowEnd          The latest time relative to the target index when the indication condition can end. Default is 9999.
-#' @param studyStartDate                Exclude patients with index prior to this date. Format: "%Y%m%d" (e.g., 20011225).
-#' @param studyEndDate                  Exclude patients with index after this date. Format: "%Y%m%d" (e.g., 20011225).
-#' @param ageMin                        Minimum age at target index required for inclusion.
-#' @param ageMax                        Maximum age at target index required for inclusion.
-#' @param requiredPriorObservationTime  Observation time needed prior to index (washing out period). Defaults to 365 days.
-#' @param requiredFollowUpTime          Observation time after index, typically at least 1 day.
-#' @template cohortDefinitionSet
-#' @export
+#' @param cohortDefinitionSet Data frame with columns: cohortId, cohortName, sql, and optionally json.
+#' @param indicationCohortIds Set of integer cohort IDs. Must be within the cohort definition set.
+#' @param cohortCombinationOperator Logic for multiple indication cohort IDs: any (default) or all.
+#' @param lookbackWindowStart Start of lookback period.
+#' @param lookbackWindowEnd End of lookback period.
+#' @param lookForwardWindowStart When the indication can end relative to index; default is 0.
+#' @param lookForwardWindowEnd When the indication can end relative to index; default is 9999.
+#' @param studyStartDate Exclude patients with index prior to this date (format "%Y%m%d").
+#' @param studyEndDate Exclude patients with index after this date (format "%Y%m%d").
+#' @param ageMin Minimum age at target index.
+#' @param ageMax Maximum age at target index.
+#' @param requiredPriorObservationTime Observation time prior to index; default 365.
+#' @param requiredFollowUpTime Observation time after index; default 1.
+#' @param subsetDefinitionId Unique ID for the subset.
+#'
+
 addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           targetCohortIds,
                                           indicationCohortIds,
@@ -121,29 +110,20 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
   return(cohortDefinitionSet)
 }
 
-#' Get Indication Subset Definition Ids
-#' @description
-#' Get the indication subset definition ids from a cohort definition set (if any have been added)
-#' Useful if keeping track in a script with complex business logic around what a cohort definition is for
-#'
-#' @export
-#' @template cohortDefinitionSet
-getRestrictionSubsetDefinitionIds <- function(cohortDefinitionSet) {
-  attr(cohortDefinitionSet, "restrictionSubsetDefinitions", exact = TRUE)
-}
+
 
 #' Add Restriction Subset Definition
+#' @export
 #' @description
-#' Utility pattern for creating cohort subset definitions as a standaridzed approach for indicated drugs.
+#' Utility pattern for creating cohort subset definitions as a standard approach for indicated drugs.
 #' Restriction subset definitions are twins of indication definitions. They should apply the same core properites
 #' to a base exposure cohort (i.e. study dates,  required prior observation time, ages, gender) as indications but,
-#' crucially, they do not require history of any prior conidtion(s).
+#' crucially, they do not require history of any prior condition(s).
 #'
 #' This is useful in the context of comparing drug exposure + indication population, to population as a whole.
 #'
 #' The prefered use of this function is to create this in conjunction with the target population.
 #'
-#' @export
 #' @inheritParams addIndicationSubsetDefinition
 addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
                                           targetCohortIds,
@@ -205,7 +185,7 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #' @inheritParams addIndicationSubsetDefinition
 #' @param exclusionCohortIds                        cohort ids to exlcude members of target from
 #' @param cohortCombinationOperator                 if more than one cohort is used, combine them all with any or only
-#'                                                  exclude if they're in a single cohort definition
+#'                                                  exclude if they are in a single cohort definition
 #' @param exclusionWindow                           Days Default is 0 (target index date). by changing this
 #'                                                  you can adjust the period around target index for which you would
 #'                                                  exclude members.
@@ -244,4 +224,26 @@ addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
     )
 
   return(cohortDefinitionSet)
+}
+
+#' Get Indication Subset Definition Ids
+#' @description
+#' Get the indication subset definition ids from a cohort definition set (if any have been added)
+#' Useful if keeping track in a script with complex business logic around what a cohort definition is for
+#' @export
+#' @template cohortDefinitionSet
+getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
+  attr(cohortDefinitionSet, "indicationSubsetDefinitions", exact = TRUE)
+}
+
+
+#' Get Indication Subset Definition Ids
+#' @description
+#' Get the indication subset definition ids from a cohort definition set (if any have been added)
+#' Useful if keeping track in a script with complex business logic around what a cohort definition is for
+#'
+#' @export
+#' @template cohortDefinitionSet
+getRestrictionSubsetDefinitionIds <- function(cohortDefinitionSet) {
+  attr(cohortDefinitionSet, "restrictionSubsetDefinitions", exact = TRUE)
 }
