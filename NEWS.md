@@ -1,3 +1,9 @@
+CohortGenerator 0.12.1
+======================
+
+Bug Fixes
+- Fix logical issue with null minimum cohort duration
+
 CohortGenerator 0.12.0
 ======================
 

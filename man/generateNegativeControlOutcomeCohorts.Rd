@@ -10,7 +10,8 @@ generateNegativeControlOutcomeCohorts(
   cdmDatabaseSchema,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
   cohortDatabaseSchema = cdmDatabaseSchema,
-  cohortTable = getCohortTableNames()$cohortTable,
+  cohortTableNames = getCohortTableNames(),
+  cohortTable = cohortTableNames$cohortTable,
   negativeControlOutcomeCohortSet,
   occurrenceType = "all",
   incremental = FALSE,
@@ -41,6 +42,9 @@ privileges where temp tables can be created.}
 \item{cohortDatabaseSchema}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
+
+\item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
+for more details.}
 
 \item{cohortTable}{Name of the cohort table.}
 
