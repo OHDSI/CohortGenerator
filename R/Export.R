@@ -220,7 +220,7 @@ createEmptyResult <- function(tableName) {
   result <- vector(length = length(columns))
   names(result) <- columns
   result <- tibble::as_tibble(t(result), name_repair = "check_unique")
-  result <- result[FALSE,]
+  result <- result[FALSE, ]
   return(result)
 }
 

@@ -5,7 +5,7 @@ template:
   bslib:
     bootswatch: cosmo
   includes:
-    in_header: <link rel="stylesheet" type="text/css" href="extra.css" />    
+    in_header: <link rel="stylesheet" type="text/css" href="extra.css" />
 
 home:
   links:
@@ -148,3 +148,5 @@ navbar:
     hades:
       text: hadesLogo
       href: https://ohdsi.github.io/Hades
+      aria-label: hadesLogo
+
