@@ -56,7 +56,7 @@ reference:
       - createSubsetCohortWindow
       - getSubsetDefinitions
       - saveCohortSubsetDefinition
-      -
+
   - title: "Cohort Subset Recipies"
     desc: >
       Standard functions for creating subsets that wrap more complex operations
@@ -66,7 +66,6 @@ reference:
       - addRestrictionSubsetDefinition
       - getIndicationSubsetDefinitionIds
       - getRestrictionSubsetDefinitionIds
-      -
   - title: "Cohort Subset Classes"
     desc: >
       R6 classes for cohort subset definitions and subset operators.

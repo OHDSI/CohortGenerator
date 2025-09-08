@@ -25,22 +25,20 @@
 #' This function aims to make parameterization of study execution explicit.
 #' Additionally, it attaches an attribute to the cohort definition set.
 #'
-#' @param cohortDefinitionSet Data frame with columns: cohortId, cohortName, sql, and optionally json.
-#' @param indicationCohortIds Set of integer cohort IDs. Must be within the cohort definition set.
-#' @param cohortCombinationOperator Logic for multiple indication cohort IDs: any (default) or all.
-#' @param lookbackWindowStart Start of lookback period.
-#' @param lookbackWindowEnd End of lookback period.
-#' @param lookForwardWindowStart When the indication can end relative to index; default is 0.
-#' @param lookForwardWindowEnd When the indication can end relative to index; default is 9999.
-#' @param studyStartDate Exclude patients with index prior to this date (format "%Y%m%d").
-#' @param studyEndDate Exclude patients with index after this date (format "%Y%m%d").
-#' @param ageMin Minimum age at target index.
-#' @param ageMax Maximum age at target index.
-#' @param requiredPriorObservationTime Observation time prior to index; default 365.
-#' @param requiredFollowUpTime Observation time after index; default 1.
-#' @param subsetDefinitionId Unique ID for the subset.
-#'
-
+#' @param cohortDefinitionSet           Data frame with columns: cohortId, cohortName, sql, and optionally json.
+#' @param indicationCohortIds           Set of integer cohort IDs. Must be within the cohort definition set.
+#' @param cohortCombinationOperator     Logic for multiple indication cohort IDs: any (default) or all.
+#' @param lookbackWindowStart           Start of lookback period.
+#' @param lookbackWindowEnd             End of lookback period.
+#' @param lookForwardWindowStart        When the indication can end relative to index; default is 0.
+#' @param lookForwardWindowEnd          When the indication can end relative to index; default is 9999.
+#' @param studyStartDate                Exclude patients with index prior to this date (format "\%Y\%m\%d").
+#' @param studyEndDate                  Exclude patients with index after this date (format "\%Y\%m\%d").
+#' @param ageMin                        Minimum age at target index.
+#' @param ageMax                        Maximum age at target index.
+#' @param requiredPriorObservationTime  Observation time prior to index; default 365.
+#' @param requiredFollowUpTime          Observation time after index; default 1.
+#' @param subsetDefinitionId            Unique ID for the subset
 addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           targetCohortIds,
                                           indicationCohortIds,
@@ -123,7 +121,6 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
 #' This is useful in the context of comparing drug exposure + indication population, to population as a whole.
 #'
 #' The prefered use of this function is to create this in conjunction with the target population.
-#'
 #' @inheritParams addIndicationSubsetDefinition
 addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
                                           targetCohortIds,
@@ -182,6 +179,8 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #' exclusion cohort ids.This may be used in situations where an outcome cohort may contain individuals treated for a target medication,
 #' complicating calculation of incidence rates.
 #'
+#' @export
+#'
 #' @inheritParams addIndicationSubsetDefinition
 #' @param exclusionCohortIds                        cohort ids to exlcude members of target from
 #' @param cohortCombinationOperator                 if more than one cohort is used, combine them all with any or only
@@ -189,7 +188,6 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #' @param exclusionWindow                           Days Default is 0 (target index date). by changing this
 #'                                                  you can adjust the period around target index for which you would
 #'                                                  exclude members.
-#' @export
 addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
                                               name,
                                               subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
