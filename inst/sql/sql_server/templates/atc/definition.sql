@@ -81,7 +81,6 @@ from (
 								on de.drug_concept_id = c2.concept_id
 							where c.vocabulary_id = 'ATC' and c.concept_class_id = '@atc_level'
 						) de
-					    order by person_id, drug_concept_id, start_date
 				    ) raw_data
 				) starts
 			) grp
