@@ -57,6 +57,12 @@ reference:
       - getSubsetDefinitions
       - saveCohortSubsetDefinition
 
+  title: "Cohort Subset Recipies"
+  desc: >
+    Utility functions to consistently create cohort subset definitions
+  contents:
+    - addCohortSubsetDefinition
+
   - title: "Cohort Subset Classes"
     desc: >
       R6 classes for cohort subset definitions and subset operators.

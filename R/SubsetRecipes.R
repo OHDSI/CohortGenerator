@@ -26,39 +26,31 @@ getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
 }
 
 #' Add Indication Subset Definition
+#'
 #' @description
-#' Utility pattern for creating cohort subset definitions as a standaridzed approach for indicated drugs.
-#' The general approach is to apply this definition to an exposure or set of exposures such that an individual must
-#' show prior history of some condition prior to recieving treatment.
+#' Utility pattern for creating cohort subset definitions, following a standard approach for indicating drugs.
+#' The approach applies this definition to an exposure or set of exposures, requiring individuals to have
+#' a prior history of a condition before receiving treatment.
+#' This function aims to make parameterization of study execution explicit.
+#' Additionally, it attaches an attribute to the cohort definition set.
 #'
-#' This is a function designed to make parameterization of study execution clear.
-#'
-#' Also attaches an attribute to the cohort definition set
-#'
+#' @param subsetDefinitionId            The ID for the resulting subset. Must be unique within the cohort definition set.
+#' @param indicationCohortIds           Set of integer cohort IDs. Must be within the cohort definition set.
+#' @param cohortCombinationOperator     Defines the logic for multiple indication cohort IDs:
+#'                                      - `'any'` (default): individual must meet any indication.
+#'                                      - `'all'`: individual must have all indications within the specified window.
+#'                                      Useful for severe conditions requiring multiple prior diagnoses or treatments.
+#' @param lookbackWindowStart           Start of the lookback period for valid inclusion. Measures how long prior to index an individual can have a condition.
+#' @param lookbackWindowEnd             End of the lookback period. Typically day 0 (index), but can specify a gap if needed.
+#' @param lookForwardWindowStart        The earliest time relative to the target index when the indication condition can end. Default is day 0.
+#' @param lookForwardWindowEnd          The latest time relative to the target index when the indication condition can end. Default is 9999.
+#' @param studyStartDate                Exclude patients with index prior to this date. Format: "%Y%m%d" (e.g., 20011225).
+#' @param studyEndDate                  Exclude patients with index after this date. Format: "%Y%m%d" (e.g., 20011225).
+#' @param ageMin                        Minimum age at target index required for inclusion.
+#' @param ageMax                        Maximum age at target index required for inclusion.
+#' @param requiredPriorObservationTime  Observation time needed prior to index (washing out period). Defaults to 365 days.
+#' @param requiredFollowUpTime          Observation time after index, typically at least 1 day.
 #' @template cohortDefinitionSet
-#' @param subsetDefinitionId            The ID if the resulting subset. Note, this must be uniquely applied to the cohort
-#'                                      definition set.
-#' @param indicationCohortIds           set of intger cohort ids. Must be within the cohort definition set
-#' @param cohortCombinationOperator     If there is more than one cohort id as an indication condition, what logic should
-#'                                      be required for inclusion - default is any. Alternatively, all prior diseases
-#'                                      can be required in the specified window.
-#'                                      Specifying 'all' can be useful in the case of severe conditions (e.g. individuals with
-#'                                      prior disease that also require prior exposure to a previous drug for which the
-#'                                      targetExposureId is a second line treatment)
-#' @param lookbackWindowStart           start of the lookback period for valid inclusion within. How long prior can
-#'                                      an individual have a condition
-#' @param lookbackWindowEnd             end of the lookback period for valid inclusion within. This is normally day 0,
-#'                                      index. However, there may be situations where there must be a gap between diagnosis
-#'                                      and indication start.
-#' @param lookForwardWindowStart        When can the indicated condition end relative to the target Default - day 0
-#' @param lookForwardWindowEnd          When can the indicated condition end relative to the target Default 9999
-#' @param studyStartDate                Exclude patients index prior to this date. Must be in date format - "%Y%m%d" (e.g. 2001/12/25)
-#' @param studyEndDate                  Exclude patients with index after this date. Must be in date format - "%Y%m%d" (e.g. 2001/12/25)
-#' @param ageMin                        Does this population require a minimum age (at target index)?
-#' @param ageMax                        Does this population require a maximum age (at target index)?
-#' @param requiredPriorObservationTime  Observation time in data source required prior to index (a.k.a washout perioid)
-#'                                      Deafults to 365 days.
-#' @param requiredFollowUpTime          Observation time after target index required (typically at least 1 day, default)
 #' @export
 addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           targetCohortIds,
@@ -137,7 +129,7 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
 #' @export
 #' @template cohortDefinitionSet
 getRestrictionSubsetDefinitionIds <- function(cohortDefinitionSet) {
-  attr(cohortDefinitionSet, "indicationSubsetDefinitions", exact = TRUE)
+  attr(cohortDefinitionSet, "restrictionSubsetDefinitions", exact = TRUE)
 }
 
 #' Add Restriction Subset Definition
@@ -214,7 +206,7 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #' @param exclusionCohortIds                        cohort ids to exlcude members of target from
 #' @param cohortCombinationOperator                 if more than one cohort is used, combine them all with any or only
 #'                                                  exclude if they're in a single cohort definition
-#' @param exclusionWindow                           Days - Default is 0 (target index date). by changing this
+#' @param exclusionWindow                           Days Default is 0 (target index date). by changing this
 #'                                                  you can adjust the period around target index for which you would
 #'                                                  exclude members.
 #' @export
