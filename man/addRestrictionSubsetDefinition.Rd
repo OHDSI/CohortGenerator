@@ -20,7 +20,23 @@ addRestrictionSubsetDefinition(
 )
 }
 \arguments{
-\item{cohortDefinitionSet}{Data frame with columns: cohortId, cohortName, sql, and optionally json.}
+\item{cohortDefinitionSet}{The \code{cohortDefinitionSet} argument must be a data frame with 
+the following columns: \describe{
+\item{cohortId}{The unique integer identifier of the cohort} 
+\item{cohortName}{The cohort's name}
+\item{sql}{The OHDSI-SQL used to generate the cohort}}
+Optionally, this data frame may contain: \describe{
+\item{json}{The Circe JSON representation of the cohort}}}
+
+\item{targetCohortIds}{Set of integer cohort IDs. Must be within the cohort definition set.}
+
+\item{definitionId}{Unique integer Id of the subset definition}
+
+\item{name}{name of the subset definition (used in resulting cohort definitions)}
+
+\item{subsetCohortNameTemplate}{template string format for naming resulting cohorts}
+
+\item{genderConceptIds}{Gender concepts to require}
 
 \item{ageMin}{Minimum age at target index.}
 

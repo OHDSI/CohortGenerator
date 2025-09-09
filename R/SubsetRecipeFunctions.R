@@ -25,8 +25,12 @@
 #' This function aims to make parameterization of study execution explicit.
 #' Additionally, it attaches an attribute to the cohort definition set.
 #'
-#' @param cohortDefinitionSet           Data frame with columns: cohortId, cohortName, sql, and optionally json.
+#' @template cohortDefinitionSet
+#' @param targetCohortIds               Set of integer cohort IDs. Must be within the cohort definition set.
 #' @param indicationCohortIds           Set of integer cohort IDs. Must be within the cohort definition set.
+#' @param definitionId                  Unique integer Id of the subset definition
+#' @param name                          name of the subset definition (used in resulting cohort definitions)
+#' @param subsetCohortNameTemplate      template string format for naming resulting cohorts
 #' @param cohortCombinationOperator     Logic for multiple indication cohort IDs: any (default) or all.
 #' @param lookbackWindowStart           Start of lookback period.
 #' @param lookbackWindowEnd             End of lookback period.
@@ -34,11 +38,11 @@
 #' @param lookForwardWindowEnd          When the indication can end relative to index; default is 9999.
 #' @param studyStartDate                Exclude patients with index prior to this date (format "\%Y\%m\%d").
 #' @param studyEndDate                  Exclude patients with index after this date (format "\%Y\%m\%d").
+#' @param genderConceptIds              Gender concepts to require
 #' @param ageMin                        Minimum age at target index.
 #' @param ageMax                        Maximum age at target index.
 #' @param requiredPriorObservationTime  Observation time prior to index; default 365.
 #' @param requiredFollowUpTime          Observation time after index; default 1.
-#' @param subsetDefinitionId            Unique ID for the subset
 addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           targetCohortIds,
                                           indicationCohortIds,
@@ -47,7 +51,7 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
                                           cohortCombinationOperator = "any",
                                           lookbackWindowStart = -99999,
-                                          loockbackWindowEnd = 0,
+                                          lookbackWindowEnd = 0,
                                           lookForwardWindowStart = 0,
                                           lookForwardWindowEnd = 99999,
                                           genderConceptIds = NULL,
@@ -68,7 +72,7 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
     negate = FALSE,
     cohortCombinationOperator = cohortCombinationOperator,
     windows = list(
-      createSubsetCohortWindow(lookbackWindowStart, loockbackWindowEnd, "cohortStart"),
+      createSubsetCohortWindow(lookbackWindowStart, lookbackWindowEnd, "cohortStart"),
       createSubsetCohortWindow(lookForwardWindowStart, lookForwardWindowEnd, "cohortStart")
     )
   )
@@ -183,8 +187,6 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #'
 #' @inheritParams addIndicationSubsetDefinition
 #' @param exclusionCohortIds                        cohort ids to exlcude members of target from
-#' @param cohortCombinationOperator                 if more than one cohort is used, combine them all with any or only
-#'                                                  exclude if they are in a single cohort definition
 #' @param exclusionWindow                           Days Default is 0 (target index date). by changing this
 #'                                                  you can adjust the period around target index for which you would
 #'                                                  exclude members.
