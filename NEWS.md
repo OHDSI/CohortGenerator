@@ -1,3 +1,8 @@
+CohortGenerator 0.12.2
+======================
+
+- Updates unit tests to use lowercase field names (#237)
+
 CohortGenerator 0.12.1
 ======================
 
