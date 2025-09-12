@@ -43,3 +43,7 @@ errorReportSql.txt
 
 .idea/
 docs
+
+.Rprofile
+renv/
+/renv.lock
