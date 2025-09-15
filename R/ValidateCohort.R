@@ -20,9 +20,12 @@
 #' Invalid cohorts include the following:
 #'
 #' * Cohorts where indiviudals have multiple, overlapping eras
-#' * Cohorts that lie outside the observation period for individuals
 #' * Cohorts that have start dates that occur after their end dates
 #' * Cohorts with duplicate entries for the same subject.
+#'
+#' Additionally the count for cohorts that lie outside the observation period for individuals is added. However,
+#' due to valid reasons in cohort definitions (e.g. fixed cohort duration, data source context) this cannot be directly
+#' conisdered a pass/fail diagnostic in all contexts.
 #'
 #' Note - this code cannot formally verify the validity of a cohort. There may be situations where the logic of a
 #' cohort definition only causes errors in certain circumstances. Furthermore, if cohort counts are 0 this check is
@@ -66,8 +69,7 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
   result <- result |> dplyr::mutate(
     valid = .data$overlappingErasCount == 0 &
       .data$invalidDateCount == 0 &
-      .data$duplicateCount == 0 &
-      .data$outsideObservationCount == 0)
+      .data$duplicateCount == 0)
 
 
   return(result)
