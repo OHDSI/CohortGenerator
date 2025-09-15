@@ -65,7 +65,6 @@ VALUES
   validationCounts <- getCohortValidationCounts(connection = tconnection, cdmDatabaseSchema = "main", cohortDatabaseSchema = "main")
   checkmate::expect_data_frame(validationCounts)
 
-  browser()
   expect_equal(
     validationCounts |> dplyr::filter(.data$cohortDefinitionId == 1) |> dplyr::pull("overlappingErasCount"), 1
   )
