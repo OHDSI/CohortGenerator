@@ -24,6 +24,9 @@ test_that("Test Basic Template", {
 
 
   cohortDefinitionSet <- addCohortTemplateDefintion(cohortTemplateDefintion = tplDef)
+
+  expect_error(cohortDefinitionSet <- addCohortTemplateDefintion(cohortDefinitionSet, cohortTemplateDefintion = tplDef))
+
   testOutputFolder <- file.path(outputFolder, "tpl_tests")
   cohortTableNames <- CohortGenerator::getCohortTableNames("cohort_tpl")
 

@@ -43,7 +43,6 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
                                       cohortDatabaseSchema = cdmDatabaseSchema,
                                       cohortTableNames = getCohortTableNames(),
                                       cohortIds = NULL) {
-
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
   }
@@ -53,6 +52,7 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
     on.exit(DatabaseConnector::disconnect(connection))
   }
 
+  start <- Sys.time()
   sql <- SqlRender::loadRenderTranslateSql("ValidateCohorts.sql",
                                            tempEmulationSchema = tempEmulationSchema,
                                            cdm_database_schema = cdmDatabaseSchema,
@@ -61,7 +61,9 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
                                            cohort_ids = cohortIds,
                                            packageName = utils::packageName())
 
+  ParallelLogger::logInfo("Computing cohort validation checks")
   result <- DatabaseConnector::renderTranslateQuerySql(connection, sql, snakeCaseToCamelCase = TRUE)
+  ParallelLogger::logInfo(paste("Computed validation checks for", nrow(result), "cohorts"))
 
   result <- result |> dplyr::mutate(
     valid = .data$overlappingErasCount == 0 &
@@ -69,6 +71,7 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
       .data$duplicateCount == 0 &
       .data$outsideObservationCount == 0)
 
-
+  delta <- Sys.time() - start
+  writeLines(paste("Generating validation check set took", round(delta, 2), attr(delta, "units")))
   return(result)
 }
