@@ -139,7 +139,8 @@ CohortTemplateDefinition <- R6::R6Class(
 
       warnFields <- c("cohort_database_schema", "cdm_database_schema", "vocabulary_database_schema", "cohort_table")
       if (any(warnFields %in% names(sqlArgs)))
-        warning(paste("Fields", paste(warnFields, collapse = ", "), "should not be included in template definitions"))
+        warning(paste("Fields", paste(warnFields, collapse = ", "),
+                      "should not be included in template definitions, this prevents reproducability and leaks source information"))
 
       private$.sqlArgs <- sqlArgs
       private$generateId()

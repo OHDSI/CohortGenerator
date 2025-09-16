@@ -49,9 +49,10 @@ sql <- "INSERT INTO @cohort_database_schema.@cohort_table
                 drug_era_start_date as cohort_start_date,
                 drug_era_end_date as cohort_end_date
          FROM @cdm_database_schema.drug_era de
-         INNER JOIN @vocabulary_database_schema.concept c on de.drug_concept_id = c.concept_id
+         INNER JOIN @cdm_database_schema.concept c on de.drug_concept_id = c.concept_id
          -- Find any matches of drugs named 'asprin' in the drug concept table
          WHERE lower(c.concept_name) like '%asprin%'; "
+
 cohortDefinitionSet <- cohortDefinitionSet |>
   addSqlCohortDefinition(sql = sql,
                          cohortId = 1,
@@ -67,7 +68,10 @@ status <- generateCohortSet(connection = connection,
                             incrementalFolder = tempfile())
 ```
 Note - in this definition we do not ever reference the bound variables `@cohort_table`, `@cohort_database_schema`,
-`@cdm_database_schema` or `@vocabulary_database_schema`. This is for two reasons, firstly these are already knownk
+`@cdm_database_schema` or `@vocabulary_database_schema`. This is for two reasons, firstly these are already known at
+the time of cohort generation, secondly they will make the cohort definition not generalizable to other data sources
+(i.e. the phenotype algorithm will not be transportable to other data sets).
+This may also leak information about your CDM and should be checked before inclusion within network studies.
 
 
 ### Validating custom sql cohorts
@@ -76,7 +80,7 @@ To be valid, a cohort definition must:
 
 * Include a cohort id, subject id, start date and end date
 * The start date must always be on or before the end date
-* There must be no overalpping or duplicate eras for the same subject within a cohort
+* There must be no overlapping or duplicate eras for the same subject within a cohort
 * In general, cohorts should be only inside observation periods within the CDM
 
 With Circe based cohorts, it is guaranteed that definitions meet this criteria.
@@ -178,7 +182,7 @@ The SQL for generating template cohorts has a few restrictive properties:
 * It must result in inserts into the cohort table with column names `cohort_definition_id`, `cohort_start_date`,
 `cohort_end_date`, `subject_id`
 * It should use the SqlRender standard bindings `@cohort_table`, `@cdm_database_schema`, `@cohort_database_schema` and
-`@vocabulary_database_schema`.
+`@vocabulary_database_schema` (in general vocabulary tables should be stored within the cdm).
 
 
 ## Generating the cohorts
