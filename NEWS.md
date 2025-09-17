@@ -1,3 +1,11 @@
+CohortGenerator 1.0.0
+=====================
+
+New Features
+- creation of cohort_checksum tables that enable verification of generated cohorts and incremental execution in distributed
+environments
+- Use of SQL cohort templates with SQL template R6 class and associated template functions
+
 CohortGenerator 0.12.2
 ======================
 

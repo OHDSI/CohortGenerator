@@ -150,8 +150,8 @@ exportCohortStatsTables <- function(connectionDetails,
 
   for (i in 1:nrow(tablesToExport)) {
     fileName <- ifelse(test = fileNamesInSnakeCase,
-      yes = tablesToExport$fileName[i],
-      no = SqlRender::snakeCaseToCamelCase(tablesToExport$fileName[i])
+                       yes = tablesToExport$fileName[i],
+                       no = SqlRender::snakeCaseToCamelCase(tablesToExport$fileName[i])
     )
     exportStats(
       data = cohortStats[[tablesToExport$tableName[i]]],
@@ -160,6 +160,17 @@ exportCohortStatsTables <- function(connectionDetails,
       tablePrefix = tablePrefix
     )
   }
+}
+
+
+addSubsetColumns <- function(cohortDefinitionSet) {
+  if (nrow(cohortDefinitionSet) > 0 & !hasSubsetDefinitions(cohortDefinitionSet)) {
+    cohortDefinitionSet$isSubset <- FALSE
+    cohortDefinitionSet$subsetDefinitionId <- NA
+    cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
+  }
+
+  return(cohortDefinitionSet)
 }
 
 exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) {
@@ -178,24 +189,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
         )
       }
     } else {
-      # NOTE: In this case the cohortDefinitionSet has no subsets defined
-      # and so we need to add the additional columns that are defined
-      # in the function: addCohortSubsetDefinition. To do this,
-      # we'll construct a copy of the cohortDefinitionSet with a single
-      # subset to get the proper structure and filter it to the
-      # cohorts of interest.
-      cdsCopy <- cohortDefinitionSet %>%
-        addCohortSubsetDefinition(
-          cohortSubsetDefintion = createCohortSubsetDefinition(
-            definitionId = 1,
-            name = "empty",
-            subsetOperators = list(
-              createDemographicSubset()
-            )
-          )
-        ) %>%
-        dplyr::filter(.data$cohortId %in% cohortDefinitionSet$cohortId)
-      cohortDefinitionSet <- cdsCopy
+      cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns()
     }
     # Massage and save the cohort definition set
     colsToRename <- c("cohortId", "cohortName", "sql", "json")
@@ -251,7 +245,9 @@ getColumnsToCensor <- function(tableName) {
 }
 
 enforceMinCellValue <- function(data, fieldName, minValues, silent = FALSE) {
-  toCensor <- !is.na(pull(data, fieldName)) & pull(data, fieldName) < minValues & pull(data, fieldName) != 0
+  toCensor <- !is.na(pull(data, fieldName)) &
+    pull(data, fieldName) < minValues &
+    pull(data, fieldName) != 0
   if (!silent) {
     percent <- round(100 * sum(toCensor) / nrow(data), 1)
     message(
