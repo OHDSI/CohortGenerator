@@ -65,7 +65,6 @@ VALUES
   validationCounts <- getCohortValidationCounts(connection = tconnection, cdmDatabaseSchema = "main", cohortDatabaseSchema = "main")
   checkmate::expect_data_frame(validationCounts)
 
-
   expect_equal(
     validationCounts |> dplyr::filter(.data$cohortDefinitionId == 1) |> dplyr::pull("overlappingErasCount"), 1
   )
@@ -78,9 +77,13 @@ VALUES
   )
 
   expect_equal(
-    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 4) |> dplyr::pull("outsideObservationCount"), 1
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 4) |> dplyr::pull("outsideObservationStartCount"), 1
   )
-  
+
+  expect_equal(
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 4) |> dplyr::pull("outsideObservationEndCount"), 1
+  )
+
   expect_false(
     all(validationCounts |> dplyr::filter(.data$cohortDefinitionId != 5) |> dplyr::pull("valid"))
   )
