@@ -364,6 +364,10 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
     cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
   }
 
+  if (nrow(cohortTemplates) == 0) {
+    cohortDefinitions$isTemplatedCohort <- FALSE
+  }
+
   writeCsv(
     x = cohortDefinitions,
     file = file.path(outputFolder, "cg_cohort_definition.csv")
