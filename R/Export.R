@@ -353,6 +353,17 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
     }
     cohortDefinitions <- cohortDefinitionSet[, intersect(names(cohortDefinitions), names(cohortDefinitionSet))]
   }
+
+  templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
+  cohortTemplates <- data.frame()
+  for (template in templateDefinitions) {
+    row <- data.frame(
+      template_definition_id = template$id,
+      json = template$toJson() |> as.character()
+    )
+    cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
+  }
+
   writeCsv(
     x = cohortDefinitions,
     file = file.path(outputFolder, "cg_cohort_definition.csv")
@@ -360,6 +371,11 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   writeCsv(
     x = cohortSubsets,
     file = file.path(outputFolder, "cg_cohort_subset_definition.csv")
+  )
+
+  writeCsv(
+    x = cohortTemplates,
+    file = file.path(outputFolder, "cg_cohort_template_definition.csv")
   )
 
   exportConceptSets(cohortDefinitionSet, outputFolder)

@@ -62,3 +62,5 @@ cg_concept_set_name,concept_set_id,varchar,Yes,Yes,No,Hash identifier for the co
 cg_concept_set_name,concept_set_name,varchar,Yes,Yes,No,A name for the concept set (may be non-unqiue)
 cg_cohort_concept_set,concept_set_id,varchar,Yes,Yes,No,Hash identifier for the concept set
 cg_cohort_concept_set,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_template_definition,template_definition_id,bigint,Yes,Yes,No,cohort template definition identifier
+cg_cohort_template_definition,json,text,No,No,No,The template JSON expression including references and sql
