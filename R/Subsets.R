@@ -764,6 +764,7 @@ LimitSubsetOperator <- R6::R6Class(
     .priorTime = 0,
     .followUpTime = 0,
     .minimumCohortDuration = 0,
+    .maximumCohortDuration = NULL,
     .limitTo = character(0),
     .calendarStartDate = NULL,
     .calendarEndDate = NULL
@@ -810,6 +811,10 @@ LimitSubsetOperator <- R6::R6Class(
         nameString <- paste(nameString, "lasting at least", self$minimumCohortDuration, "days")
       }
 
+      if (!is.null(self$maximumCohortDuration)) {
+        nameString <- paste(nameString, "lasting at most", self$maximumCohortDuration, "days")
+      }
+
       return(nameString)
     },
     #' To List
@@ -819,6 +824,7 @@ LimitSubsetOperator <- R6::R6Class(
       objRef$priorTime <- jsonlite::unbox(private$.priorTime)
       objRef$followUpTime <- jsonlite::unbox(private$.followUpTime)
       objRef$minimumCohortDuration <- jsonlite::unbox(private$.minimumCohortDuration)
+      objRef$maximumCohortDuration <- jsonlite::unbox(private$.maximumCohortDuration)
       objRef$limitTo <- jsonlite::unbox(private$.limitTo)
       objRef$calendarStartDate <- jsonlite::unbox(private$.calendarStartDate)
       objRef$calendarEndDate <- jsonlite::unbox(private$.calendarEndDate)
@@ -856,7 +862,20 @@ LimitSubsetOperator <- R6::R6Class(
       private$.minimumCohortDuration <- duration
       self
     },
-
+    #' @field maximumCohortDuration            maximum cohort duration time in days
+    maximumCohortDuration = function(duration) {
+      if (missing(duration)) {
+        return(private$.maximumCohortDuration)
+      }
+      if (is.null(duration)) {
+        private$.maximumCohortDuration <- NULL
+        return(self);
+      } else {
+        checkmate::assertInt(duration, lower = 0, upper = 99999)
+        private$.maximumCohortDuration <- duration
+        self
+      }
+    },
     #' @field limitTo     character one of:
     #'                              "firstEver" - only first entry in patient history
     #'                              "earliestRemaining" - only first entry after washout set by priorTime
