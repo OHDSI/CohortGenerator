@@ -9,6 +9,7 @@ createLimitSubset(
   priorTime = 0,
   followUpTime = 0,
   minimumCohortDuration = 0,
+  maximumCohortDuration = NULL,
   limitTo = "all",
   calendarStartDate = NULL,
   calendarEndDate = NULL
@@ -22,6 +23,8 @@ createLimitSubset(
 \item{followUpTime}{Required post observation window (specified as a positive integer)}
 
 \item{minimumCohortDuration}{Required cohort duration length (specified as a positive integer)}
+
+\item{maximumCohortDuration}{Optional: maximum cohort duration length (specified as a positive integer), defaults to NULL}
 
 \item{limitTo}{character one of:
                              "firstEver" - only first entry in patient history

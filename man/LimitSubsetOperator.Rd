@@ -20,6 +20,8 @@ Get auto generated name
 
 \item{\code{minimumCohortDuration}}{minimum cohort duration time in days}
 
+\item{\code{maximumCohortDuration}}{maximum cohort duration time in days}
+
 \item{\code{limitTo}}{character one of:
                              "firstEver" - only first entry in patient history
                              "earliestRemaining" - only first entry after washout set by priorTime
