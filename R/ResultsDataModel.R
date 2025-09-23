@@ -121,7 +121,7 @@ migrateDataModel <- function(connectionDetails, databaseSchema, tablePrefix = ""
     tablePrefix = tablePrefix
   )
   migrator$executeMigrations()
-  migrator$finalize()
+  migrator$closeConnection()
 }
 
 #' Get database migrations instance

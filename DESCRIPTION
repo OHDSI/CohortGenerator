@@ -30,7 +30,7 @@ Imports:
   readr (>= 2.1.0),
   rlang,
   jsonlite,
-  ResultModelManager,
+  ResultModelManager (>= 0.6.0),
   SqlRender (>= 1.11.1),
   stringi (>= 1.7.6),
   tibble
