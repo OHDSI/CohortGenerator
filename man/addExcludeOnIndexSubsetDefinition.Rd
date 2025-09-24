@@ -31,8 +31,44 @@ Optionally, this data frame may contain: \describe{
 \item{exclusionCohortIds}{cohort ids to exlcude members of target from}
 
 \item{exclusionWindow}{Days Default is 0 (target index date). by changing this
-you can adjust the period around target index for which you would
-exclude members.}
+                                                 you can adjust the period around target index for which you would
+                                                 exclude members.
+
+#' @examples
+\dontrun{
+library(CohortGenerator)
+
+initialSet <- getCohortDefinitionSet(
+  settingsFileName = "testdata/name/Cohorts.csv",
+  jsonFolder = "testdata/name/cohorts",
+  sqlFolder = "testdata/name/sql/sql_server",
+  cohortFileNameFormat = "%s",
+  cohortFileNameValue = c("cohortName"),
+  packageName = "CohortGenerator",
+  verbose = FALSE
+)
+
+print(initialSet[, c("cohortId", "cohortName")])
+
+# Subset cohorts 1 & 2 by an "indication" cohort 3:
+res <- addExcludeOnIndexSubsetDefinition(
+  cohortDefinitionSet = initialSet,
+  targetCohortIds = c(1, 2),
+  exclusionCohortIds = c(3),
+  subsetDefinitionId = 20
+)
+
+print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
+
+# Get all subset definitions that were created using the addExcludeOnIndexSubsetDefinition:
+subsetDefinitionId <- getExclusionSubsetDefinitionIds(res)
+
+# Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+newCohorts <- res |>
+  dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
+  dplyr::select(cohortId, cohortName, subsetParent, isSubset)
+print(newCohorts)
+}}
 
 \item{cohortCombinationOperator}{Logic for multiple indication cohort IDs: any (default) or all.}
 }
