@@ -15,21 +15,60 @@
 # limitations under the License.
 
 
-
 #' Add Indication Subset Definition
 #' @export
 #' @description
-#' Utility pattern for creating cohort subset definitions, following a standard approach for indicated drugs.
+#' Utility pattern for creating an indidication subset from a set of target cohorts.
 #' The approach applies this definition to an exposure or set of exposures, requiring individuals to have
-#' a prior history of a condition before receiving treatment.
-#' This function aims to make parameterization of study execution explicit.
-#' Additionally, it attaches an attribute to the cohort definition set.
+#' a prior history of a condition before receiving treatment. By default, this creats new cohorts that have evidence
+#' of the indication cohort at any point in their history.
+#' For many situations it may be preffered to look back within a specific window of drug exposure and the look window
+#' period should be accordingly.
+#' Additionally, the R attribuite of "indicationSubsetDefinitions" is attached to the cohort definition set.
+#' This can be obtained by calling `getIndicationSubsetDefinitionIds`, which should return the set of subset definition
+#' ids that are assicated with indications.
+#'
+#' @examples
+#' \dontrun{
+#' library(CohortGenerator)
+#'
+#' initialSet <- getCohortDefinitionSet(
+#'   settingsFileName = "testdata/name/Cohorts.csv",
+#'   jsonFolder = "testdata/name/cohorts",
+#'   sqlFolder = "testdata/name/sql/sql_server",
+#'   cohortFileNameFormat = "%s",
+#'   cohortFileNameValue = c("cohortName"),
+#'   packageName = "CohortGenerator",
+#'   verbose = FALSE
+#' )
+#'
+#' print(initialSet[, c("cohortId", "cohortName")])
+#'
+#' # Subset cohorts 1 & 2 by an "indication" cohort 3:
+#' res <- addIndicationSubsetDefinition(
+#'   cohortDefinitionSet = initialSet,
+#'   targetCohortIds = c(1, 2),
+#'   indicationCohortIds = c(3),
+#'   subsetDefinitionId = 10
+#' )
+#'
+#' print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
+#'
+#' # Get all subset definitions that were created using the addIndicationSubsetDefinition:
+#' subsetDefinitionId <- getIndicationSubsetDefinitionIds(res)
+#'
+#' # Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+#' newCohorts <- res |>
+#'   dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
+#'   dplyr::select(cohortId, cohortName, subsetParent, isSubset)
+#' print(newCohorts)
+#' }
 #'
 #' @template cohortDefinitionSet
 #' @param targetCohortIds               Set of integer cohort IDs. Must be within the cohort definition set.
 #' @param indicationCohortIds           Set of integer cohort IDs. Must be within the cohort definition set.
-#' @param definitionId                  Unique integer Id of the subset definition
-#' @param name                          name of the subset definition (used in resulting cohort definitions)
+#' @param subsetDefinitionId            Unique integer Id of the subset definition
+#' @param subsetDefinitionName          name of the subset definition (used in resulting cohort definitions)
 #' @param subsetCohortNameTemplate      template string format for naming resulting cohorts
 #' @param cohortCombinationOperator     Logic for multiple indication cohort IDs: any (default) or all.
 #' @param lookbackWindowStart           Start of lookback period.
@@ -46,8 +85,8 @@
 addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           targetCohortIds,
                                           indicationCohortIds,
-                                          definitionId,
-                                          name = "study population + first",
+                                          subsetDefinitionId,
+                                          subsetDefinitionName = "target population + prior indidcation",
                                           subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
                                           cohortCombinationOperator = "any",
                                           lookbackWindowStart = -99999,
@@ -94,9 +133,9 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
   }
 
   subsetDef <- createCohortSubsetDefinition(
-    name = name,
+    name = subsetDefinitionName,
     subsetCohortNameTemplate = subsetCohortNameTemplate,
-    definitionId = definitionId,
+    definitionId = subsetDefinitionId,
     subsetOperators = subsetOperators
   )
 
@@ -108,10 +147,9 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
 
 
   attr(cohortDefinitionSet, "indicationSubsetDefinitions") <- c(getIndicationSubsetDefinitionIds(cohortDefinitionSet),
-                                                                definitionId)
+                                                                subsetDefinitionId)
   return(cohortDefinitionSet)
 }
-
 
 
 #' Add Restriction Subset Definition
@@ -126,18 +164,53 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
 #'
 #' The prefered use of this function is to create this in conjunction with the target population.
 #' @inheritParams addIndicationSubsetDefinition
+#' @examples
+#' \dontrun{
+#' library(CohortGenerator)
+#'
+#' initialSet <- getCohortDefinitionSet(
+#'   settingsFileName = "testdata/name/Cohorts.csv",
+#'   jsonFolder = "testdata/name/cohorts",
+#'   sqlFolder = "testdata/name/sql/sql_server",
+#'   cohortFileNameFormat = "%s",
+#'   cohortFileNameValue = c("cohortName"),
+#'   packageName = "CohortGenerator",
+#'   verbose = FALSE
+#' )
+#'
+#' print(initialSet[, c("cohortId", "cohortName")])
+#'
+#' # Subset cohorts 1 & 2 by an "indication" cohort 3:
+#' res <- addRestrictionSubsetDefinition(
+#'   cohortDefinitionSet = initialSet,
+#'   targetCohortIds = c(1, 2),
+#'   indicationCohortIds = c(3),
+#'   subsetDefinitionId = 20
+#' )
+#'
+#' print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
+#'
+#' # Get all subset definitions that were created using the addIndicationSubsetDefinition:
+#' subsetDefinitionId <- getRestrictionSubsetDefinitionIds(res)
+#'
+#' # Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+#' newCohorts <- res |>
+#'   dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
+#'   dplyr::select(cohortId, cohortName, subsetParent, isSubset)
+#' print(newCohorts)
+#' }
 addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
-                                          targetCohortIds,
-                                          definitionId,
-                                          name = "study population + first",
-                                          subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
-                                          genderConceptIds = NULL,
-                                          ageMin = NULL,
-                                          ageMax = NULL,
-                                          studyStartDate = NULL,
-                                          studyEndDate = NULL,
-                                          requiredPriorObservationTime = 365,
-                                          requiredFollowUpTime = 1) {
+                                           targetCohortIds,
+                                           subsetDefinitionId,
+                                           subsetDefinitionName,
+                                           subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
+                                           genderConceptIds = NULL,
+                                           ageMin = NULL,
+                                           ageMax = NULL,
+                                           studyStartDate = NULL,
+                                           studyEndDate = NULL,
+                                           requiredPriorObservationTime = 365,
+                                           requiredFollowUpTime = 1) {
 
   .cohortDefinitionSetHasRequiredColumns(cohortDefinitionSet)
   checkmate::assertChoice(targetCohortIds, cohortDefinitionSet$cohortId)
@@ -160,9 +233,9 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
   }
 
   subsetDef <- createCohortSubsetDefinition(
-    name = name,
+    name = subsetDefinitionName,
     subsetCohortNameTemplate = subsetCohortNameTemplate,
-    definitionId = definitionId,
+    definitionId = subsetDefinitionId,
     subsetOperators = subsetOperators
   )
 
@@ -173,14 +246,18 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
     )
 
   attr(cohortDefinitionSet, "restrictionSubsetDefinitions") <- c(getRestrictionSubsetDefinitionIds(cohortDefinitionSet),
-                                                                definitionId)
+                                                                 subsetDefinitionId)
   return(cohortDefinitionSet)
 }
 
 #' Add exclude on index subset definition
 #' @description
 #' The purpose of this subset recipie is to exclude all individuals if their index aligns with the specified
-#' exclusion cohort ids.This may be used in situations where an outcome cohort may contain individuals treated for a target medication,
+#' exclusion cohort ids.
+#' If the index date of the exclusionCohortIds aligns with the targetCohortIds (or it lies within some relative window
+#' of the target cohort start date) then they will be excluded from the resulting sub population.
+#'
+#' This may be used in situations where an outcome cohort may contain individuals treated for a target medication,
 #' complicating calculation of incidence rates.
 #'
 #' @export
@@ -190,6 +267,42 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #' @param exclusionWindow                           Days Default is 0 (target index date). by changing this
 #'                                                  you can adjust the period around target index for which you would
 #'                                                  exclude members.
+#'
+#' #' @examples
+#' \dontrun{
+#' library(CohortGenerator)
+#'
+#' initialSet <- getCohortDefinitionSet(
+#'   settingsFileName = "testdata/name/Cohorts.csv",
+#'   jsonFolder = "testdata/name/cohorts",
+#'   sqlFolder = "testdata/name/sql/sql_server",
+#'   cohortFileNameFormat = "%s",
+#'   cohortFileNameValue = c("cohortName"),
+#'   packageName = "CohortGenerator",
+#'   verbose = FALSE
+#' )
+#'
+#' print(initialSet[, c("cohortId", "cohortName")])
+#'
+#' # Subset cohorts 1 & 2 by an "indication" cohort 3:
+#' res <- addExcludeOnIndexSubsetDefinition(
+#'   cohortDefinitionSet = initialSet,
+#'   targetCohortIds = c(1, 2),
+#'   exclusionCohortIds = c(3),
+#'   subsetDefinitionId = 20
+#' )
+#'
+#' print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
+#'
+#' # Get all subset definitions that were created using the addExcludeOnIndexSubsetDefinition:
+#' subsetDefinitionId <- getExclusionSubsetDefinitionIds(res)
+#'
+#' # Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+#' newCohorts <- res |>
+#'   dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
+#'   dplyr::select(cohortId, cohortName, subsetParent, isSubset)
+#' print(newCohorts)
+#' }
 addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
                                               name,
                                               subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
@@ -223,6 +336,9 @@ addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
       targetCohortIds = targetCohortIds
     )
 
+  attr(cohortDefinitionSet, "exclusionSubsetDefinitions") <- c(getExclusionSubsetDefinitionIds(cohortDefinitionSet),
+                                                                subsetDefinitionId)
+
   return(cohortDefinitionSet)
 }
 
@@ -237,7 +353,7 @@ getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
 }
 
 
-#' Get Indication Subset Definition Ids
+#' Get Restriction Subset Definition Ids
 #' @description
 #' Get the indication subset definition ids from a cohort definition set (if any have been added)
 #' Useful if keeping track in a script with complex business logic around what a cohort definition is for
@@ -246,4 +362,15 @@ getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
 #' @template cohortDefinitionSet
 getRestrictionSubsetDefinitionIds <- function(cohortDefinitionSet) {
   attr(cohortDefinitionSet, "restrictionSubsetDefinitions", exact = TRUE)
+}
+
+
+#' Get Exclusion Subset Definition Ids
+#' @description
+#' Get the indication subset definition ids from a cohort definition set (if any have been added)
+#' Useful if keeping track in a script with complex business logic around what a cohort definition is for
+#' @export
+#' @template cohortDefinitionSet
+getExclusionSubsetDefinitionIds <- function(cohortDefinitionSet) {
+  attr(cohortDefinitionSet, "exclusionSubsetDefinitions", exact = TRUE)
 }

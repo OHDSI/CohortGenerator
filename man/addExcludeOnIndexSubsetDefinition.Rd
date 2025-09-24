@@ -24,8 +24,6 @@ the following columns: \describe{
 Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
 
-\item{name}{name of the subset definition (used in resulting cohort definitions)}
-
 \item{subsetCohortNameTemplate}{template string format for naming resulting cohorts}
 
 \item{targetCohortIds}{Set of integer cohort IDs. Must be within the cohort definition set.}
@@ -36,12 +34,14 @@ Optionally, this data frame may contain: \describe{
 you can adjust the period around target index for which you would
 exclude members.}
 
-\item{definitionId}{Unique integer Id of the subset definition}
-
 \item{cohortCombinationOperator}{Logic for multiple indication cohort IDs: any (default) or all.}
 }
 \description{
 The purpose of this subset recipie is to exclude all individuals if their index aligns with the specified
-exclusion cohort ids.This may be used in situations where an outcome cohort may contain individuals treated for a target medication,
+exclusion cohort ids.
+If the index date of the exclusionCohortIds aligns with the targetCohortIds (or it lies within some relative window
+of the target cohort start date) then they will be excluded from the resulting sub population.
+
+This may be used in situations where an outcome cohort may contain individuals treated for a target medication,
 complicating calculation of incidence rates.
 }

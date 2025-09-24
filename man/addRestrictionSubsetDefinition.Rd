@@ -7,8 +7,8 @@
 addRestrictionSubsetDefinition(
   cohortDefinitionSet,
   targetCohortIds,
-  definitionId,
-  name = "study population + first",
+  subsetDefinitionId,
+  subsetDefinitionName,
   subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
   genderConceptIds = NULL,
   ageMin = NULL,
@@ -30,9 +30,9 @@ Optionally, this data frame may contain: \describe{
 
 \item{targetCohortIds}{Set of integer cohort IDs. Must be within the cohort definition set.}
 
-\item{definitionId}{Unique integer Id of the subset definition}
+\item{subsetDefinitionId}{Unique integer Id of the subset definition}
 
-\item{name}{name of the subset definition (used in resulting cohort definitions)}
+\item{subsetDefinitionName}{name of the subset definition (used in resulting cohort definitions)}
 
 \item{subsetCohortNameTemplate}{template string format for naming resulting cohorts}
 
@@ -59,4 +59,40 @@ crucially, they do not require history of any prior condition(s).
 This is useful in the context of comparing drug exposure + indication population, to population as a whole.
 
 The prefered use of this function is to create this in conjunction with the target population.
+}
+\examples{
+\dontrun{
+library(CohortGenerator)
+
+initialSet <- getCohortDefinitionSet(
+  settingsFileName = "testdata/name/Cohorts.csv",
+  jsonFolder = "testdata/name/cohorts",
+  sqlFolder = "testdata/name/sql/sql_server",
+  cohortFileNameFormat = "\%s",
+  cohortFileNameValue = c("cohortName"),
+  packageName = "CohortGenerator",
+  verbose = FALSE
+)
+
+print(initialSet[, c("cohortId", "cohortName")])
+
+# Subset cohorts 1 & 2 by an "indication" cohort 3:
+res <- addRestrictionSubsetDefinition(
+  cohortDefinitionSet = initialSet,
+  targetCohortIds = c(1, 2),
+  indicationCohortIds = c(3),
+  subsetDefinitionId = 20
+)
+
+print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
+
+# Get all subset definitions that were created using the addIndicationSubsetDefinition:
+subsetDefinitionId <- getRestrictionSubsetDefinitionIds(res)
+
+# Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+newCohorts <- res |>
+  dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
+  dplyr::select(cohortId, cohortName, subsetParent, isSubset)
+print(newCohorts)
+}
 }

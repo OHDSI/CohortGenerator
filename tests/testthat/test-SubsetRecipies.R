@@ -15,7 +15,7 @@ test_that("addIndicationSubsetDefinition adds subset correctly for basic case", 
     cohortDefinitionSet = cohortSet,
     targetCohortIds = c(1),
     indicationCohortIds = c(2),
-    definitionId = 999,
+    subsetDefinitionId = 999,
     name = "Test Indication"
   )
   
@@ -45,7 +45,7 @@ test_that("addIndicationSubsetDefinition handles multiple cohort IDs and operato
     cohortDefinitionSet = initialSet,
     targetCohortIds = c(1),
     indicationCohortIds = c(2,3),
-    definitionId = 1000,
+    subsetDefinitionId = 1000,
     cohortCombinationOperator = "all"
   )
   expect_true(1000 %in% getIndicationSubsetDefinitionIds(res))
@@ -65,7 +65,7 @@ test_that("addRestrictionSubsetDefinition adds restriction correctly", {
   res <- addRestrictionSubsetDefinition(
     cohortDefinitionSet = initialSet,
     targetCohortIds = c(1),
-    definitionId = 2000,
+    subsetDefinitionId = 2000,
     name = "Restriction Test"
   )
   
@@ -111,7 +111,7 @@ test_that("addIndicationSubsetDefinition errors on invalid IDs", {
       cohortDefinitionSet = cohortSet,
       targetCohortIds = c(9999),  # invalid
       indicationCohortIds = c(2),
-      definitionId = 123,
+      subsetDefinitionId = 123,
       name = "Invalid target"
     )
   )
@@ -121,7 +121,7 @@ test_that("addIndicationSubsetDefinition errors on invalid IDs", {
       cohortDefinitionSet = cohortSet,
       targetCohortIds = c(1),
       indicationCohortIds = c(9999),  # invalid
-      definitionId = 124,
+      subsetDefinitionId = 124,
       name = "Invalid indication"
     )
   )

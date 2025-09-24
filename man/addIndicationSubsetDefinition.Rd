@@ -8,8 +8,8 @@ addIndicationSubsetDefinition(
   cohortDefinitionSet,
   targetCohortIds,
   indicationCohortIds,
-  definitionId,
-  name = "study population + first",
+  subsetDefinitionId,
+  subsetDefinitionName = "target population + prior indidcation",
   subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
   cohortCombinationOperator = "any",
   lookbackWindowStart = -99999,
@@ -38,9 +38,9 @@ Optionally, this data frame may contain: \describe{
 
 \item{indicationCohortIds}{Set of integer cohort IDs. Must be within the cohort definition set.}
 
-\item{definitionId}{Unique integer Id of the subset definition}
+\item{subsetDefinitionId}{Unique integer Id of the subset definition}
 
-\item{name}{name of the subset definition (used in resulting cohort definitions)}
+\item{subsetDefinitionName}{name of the subset definition (used in resulting cohort definitions)}
 
 \item{subsetCohortNameTemplate}{template string format for naming resulting cohorts}
 
@@ -69,9 +69,50 @@ Optionally, this data frame may contain: \describe{
 \item{requiredFollowUpTime}{Observation time after index; default 1.}
 }
 \description{
-Utility pattern for creating cohort subset definitions, following a standard approach for indicated drugs.
+Utility pattern for creating an indidication subset from a set of target cohorts.
 The approach applies this definition to an exposure or set of exposures, requiring individuals to have
-a prior history of a condition before receiving treatment.
-This function aims to make parameterization of study execution explicit.
-Additionally, it attaches an attribute to the cohort definition set.
+a prior history of a condition before receiving treatment. By default, this creats new cohorts that have evidence
+of the indication cohort at any point in their history.
+For many situations it may be preffered to look back within a specific window of drug exposure and the look window
+period should be accordingly.
+Additionally, the R attribuite of "indicationSubsetDefinitions" is attached to the cohort definition set.
+This can be obtained by calling `getIndicationSubsetDefinitionIds`, which should return the set of subset definition
+ids that are assicated with indications.
+}
+\examples{
+\dontrun{
+library(CohortGenerator)
+
+initialSet <- getCohortDefinitionSet(
+  settingsFileName = "testdata/name/Cohorts.csv",
+  jsonFolder = "testdata/name/cohorts",
+  sqlFolder = "testdata/name/sql/sql_server",
+  cohortFileNameFormat = "\%s",
+  cohortFileNameValue = c("cohortName"),
+  packageName = "CohortGenerator",
+  verbose = FALSE
+)
+
+print(initialSet[, c("cohortId", "cohortName")])
+
+# Subset cohorts 1 & 2 by an "indication" cohort 3:
+res <- addIndicationSubsetDefinition(
+  cohortDefinitionSet = initialSet,
+  targetCohortIds = c(1, 2),
+  indicationCohortIds = c(3),
+  subsetDefinitionId = 10
+)
+
+print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
+
+# Get all subset definitions that were created using the addIndicationSubsetDefinition:
+subsetDefinitionId <- getIndicationSubsetDefinitionIds(res)
+
+# Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+newCohorts <- res |>
+  dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
+  dplyr::select(cohortId, cohortName, subsetParent, isSubset)
+print(newCohorts)
+}
+
 }
