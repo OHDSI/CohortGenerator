@@ -76,20 +76,19 @@ initialSet <- getCohortDefinitionSet(
 
 print(initialSet[, c("cohortId", "cohortName")])
 
-# Subset cohorts 1 & 2 by an "indication" cohort 3:
+# Restrinct to first occurrence of cohort
 res <- addRestrictionSubsetDefinition(
   cohortDefinitionSet = initialSet,
   targetCohortIds = c(1, 2),
-  indicationCohortIds = c(3),
   subsetDefinitionId = 20
 )
 
 print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
 
-# Get all subset definitions that were created using the addIndicationSubsetDefinition:
+# Get all subset definitions that were created using the addRestrictionSubsetDefinition:
 subsetDefinitionId <- getRestrictionSubsetDefinitionIds(res)
 
-# Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+# Filter the cohortDefinitionSet to those cohorts defined using an restriction subset definition:
 newCohorts <- res |>
   dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
   dplyr::select(cohortId, cohortName, subsetParent, isSubset)

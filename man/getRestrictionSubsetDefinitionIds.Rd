@@ -16,6 +16,6 @@ Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
 }
 \description{
-Get the indication subset definition ids from a cohort definition set (if any have been added)
+Get the restriction subset definition ids from a cohort definition set (if any have been added)
 Useful if keeping track in a script with complex business logic around what a cohort definition is for
 }

@@ -180,20 +180,19 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
 #'
 #' print(initialSet[, c("cohortId", "cohortName")])
 #'
-#' # Subset cohorts 1 & 2 by an "indication" cohort 3:
+#' # Restrinct to first occurrence of cohort
 #' res <- addRestrictionSubsetDefinition(
 #'   cohortDefinitionSet = initialSet,
 #'   targetCohortIds = c(1, 2),
-#'   indicationCohortIds = c(3),
 #'   subsetDefinitionId = 20
 #' )
 #'
 #' print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
 #'
-#' # Get all subset definitions that were created using the addIndicationSubsetDefinition:
+#' # Get all subset definitions that were created using the addRestrictionSubsetDefinition:
 #' subsetDefinitionId <- getRestrictionSubsetDefinitionIds(res)
 #'
-#' # Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+#' # Filter the cohortDefinitionSet to those cohorts defined using an restriction subset definition:
 #' newCohorts <- res |>
 #'   dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
 #'   dplyr::select(cohortId, cohortName, subsetParent, isSubset)
@@ -289,7 +288,8 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #'   cohortDefinitionSet = initialSet,
 #'   targetCohortIds = c(1, 2),
 #'   exclusionCohortIds = c(3),
-#'   subsetDefinitionId = 20
+#'   subsetDefinitionId = 20,
+#'   subsetDefinitioName = 'Exclude on index if in cohort 3'
 #' )
 #'
 #' print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
@@ -297,19 +297,19 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #' # Get all subset definitions that were created using the addExcludeOnIndexSubsetDefinition:
 #' subsetDefinitionId <- getExclusionSubsetDefinitionIds(res)
 #'
-#' # Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+#' # Filter the cohortDefinitionSet to those cohorts defined using an exclusion subset definition:
 #' newCohorts <- res |>
 #'   dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
 #'   dplyr::select(cohortId, cohortName, subsetParent, isSubset)
 #' print(newCohorts)
 #' }
 addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
-                                              name,
+                                              subsetDefinitionName,
                                               subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
                                               targetCohortIds,
                                               exclusionCohortIds,
                                               exclusionWindow = 0,
-                                              definitionId,
+                                              subsetDefinitionId,
                                               cohortCombinationOperator = "any") {
   .cohortDefinitionSetHasRequiredColumns(cohortDefinitionSet)
   checkmate::assertTRUE(all(targetCohortIds %in% cohortDefinitionSet$cohortId))
@@ -324,8 +324,8 @@ addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
   )
 
   def <- CohortGenerator::createCohortSubsetDefinition(
-    name = name,
-    definitionId = definitionId,
+    name = subsetDefinitionName,
+    definitionId = subsetDefinitionId,
     subsetCohortNameTemplate = subsetCohortNameTemplate,
     subsetOperators = list(op)
   )
@@ -355,7 +355,7 @@ getIndicationSubsetDefinitionIds <- function(cohortDefinitionSet) {
 
 #' Get Restriction Subset Definition Ids
 #' @description
-#' Get the indication subset definition ids from a cohort definition set (if any have been added)
+#' Get the restriction subset definition ids from a cohort definition set (if any have been added)
 #' Useful if keeping track in a script with complex business logic around what a cohort definition is for
 #'
 #' @export
@@ -367,7 +367,7 @@ getRestrictionSubsetDefinitionIds <- function(cohortDefinitionSet) {
 
 #' Get Exclusion Subset Definition Ids
 #' @description
-#' Get the indication subset definition ids from a cohort definition set (if any have been added)
+#' Get the exlcusion on index subset definition ids from a cohort definition set (if any have been added)
 #' Useful if keeping track in a script with complex business logic around what a cohort definition is for
 #' @export
 #' @template cohortDefinitionSet

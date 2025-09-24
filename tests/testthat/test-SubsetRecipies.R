@@ -16,7 +16,7 @@ test_that("addIndicationSubsetDefinition adds subset correctly for basic case", 
     targetCohortIds = c(1),
     indicationCohortIds = c(2),
     subsetDefinitionId = 999,
-    name = "Test Indication"
+    subsetDefinitionName = "Test Indication"
   )
   
   # Check that the attribute contains the new ID
@@ -66,7 +66,7 @@ test_that("addRestrictionSubsetDefinition adds restriction correctly", {
     cohortDefinitionSet = initialSet,
     targetCohortIds = c(1),
     subsetDefinitionId = 2000,
-    name = "Restriction Test"
+    subsetDefinitionName = "Restriction Test"
   )
   
   expect_true(2000 %in% getRestrictionSubsetDefinitionIds(res))
@@ -85,11 +85,11 @@ test_that("addExcludeOnIndexSubsetDefinition correctly adds exclusion", {
   
   res <- addExcludeOnIndexSubsetDefinition(
     cohortDefinitionSet = initialSet,
-    name = "Exclude Test",
+    subsetDefinitionName = "Exclude Test",
     targetCohortIds = c(1),
     exclusionCohortIds = c(2,3),
     exclusionWindow = 7,
-    definitionId = 3000
+    subsetDefinitionId = 3000
   )
 
   expect_true(4000 %in% res$cohortId)
@@ -112,7 +112,7 @@ test_that("addIndicationSubsetDefinition errors on invalid IDs", {
       targetCohortIds = c(9999),  # invalid
       indicationCohortIds = c(2),
       subsetDefinitionId = 123,
-      name = "Invalid target"
+      subsetDefinitionName = "Invalid target"
     )
   )
   
@@ -122,7 +122,7 @@ test_that("addIndicationSubsetDefinition errors on invalid IDs", {
       targetCohortIds = c(1),
       indicationCohortIds = c(9999),  # invalid
       subsetDefinitionId = 124,
-      name = "Invalid indication"
+      subsetDefinitionName = "Invalid indication"
     )
   )
 })

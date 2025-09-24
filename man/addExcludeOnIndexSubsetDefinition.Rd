@@ -6,7 +6,7 @@
 \usage{
 addExcludeOnIndexSubsetDefinition(
   cohortDefinitionSet,
-  name,
+  subsetDefinitionName,
   subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
   targetCohortIds,
   exclusionCohortIds,
@@ -23,6 +23,8 @@ the following columns: \describe{
 \item{sql}{The OHDSI-SQL used to generate the cohort}}
 Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
+
+\item{subsetDefinitionName}{name of the subset definition (used in resulting cohort definitions)}
 
 \item{subsetCohortNameTemplate}{template string format for naming resulting cohorts}
 
@@ -55,7 +57,8 @@ res <- addExcludeOnIndexSubsetDefinition(
   cohortDefinitionSet = initialSet,
   targetCohortIds = c(1, 2),
   exclusionCohortIds = c(3),
-  subsetDefinitionId = 20
+  subsetDefinitionId = 20,
+  subsetDefinitioName = 'Exclude on index if in cohort 3'
 )
 
 print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
@@ -63,7 +66,7 @@ print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "i
 # Get all subset definitions that were created using the addExcludeOnIndexSubsetDefinition:
 subsetDefinitionId <- getExclusionSubsetDefinitionIds(res)
 
-# Filter the cohortDefinitionSet to those cohorts defined using an indication subset definition:
+# Filter the cohortDefinitionSet to those cohorts defined using an exclusion subset definition:
 newCohorts <- res |>
   dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
   dplyr::select(cohortId, cohortName, subsetParent, isSubset)
