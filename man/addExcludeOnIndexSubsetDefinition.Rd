@@ -11,7 +11,7 @@ addExcludeOnIndexSubsetDefinition(
   targetCohortIds,
   exclusionCohortIds,
   exclusionWindow = 0,
-  definitionId,
+  subsetDefinitionId,
   cohortCombinationOperator = "any"
 )
 }
@@ -72,6 +72,8 @@ newCohorts <- res |>
   dplyr::select(cohortId, cohortName, subsetParent, isSubset)
 print(newCohorts)
 }}
+
+\item{subsetDefinitionId}{Unique integer Id of the subset definition}
 
 \item{cohortCombinationOperator}{Logic for multiple indication cohort IDs: any (default) or all.}
 }
