@@ -2,45 +2,14 @@
 % Please edit documentation in R/Subsets.R
 \name{createLimitSubset}
 \alias{createLimitSubset}
-\title{Create Limit Subset}
+\title{Create Limit Subset Operator}
 \usage{
-createLimitSubset(
-  name = NULL,
-  priorTime = 0,
-  followUpTime = 0,
-  minimumCohortDuration = 0,
-  maximumCohortDuration = NULL,
-  limitTo = "all",
-  calendarStartDate = NULL,
-  calendarEndDate = NULL
-)
+createLimitSubset(...)
 }
 \arguments{
-\item{name}{Name of operation}
-
-\item{priorTime}{Required prior observation window (specified as a positive integer)}
-
-\item{followUpTime}{Required post observation window (specified as a positive integer)}
-
-\item{minimumCohortDuration}{Required cohort duration length (specified as a positive integer)}
-
-\item{maximumCohortDuration}{Optional: maximum cohort duration length (specified as a positive integer), defaults to NULL}
-
-\item{limitTo}{character one of:
-                             "firstEver" - only first entry in patient history
-                             "earliestRemaining" - only first entry after washout set by priorTime
-                             "latestRemaining" -  the latest remaining after washout set by followUpTime
-                             "lastEver" - only last entry in patient history inside
-
-                         Note, when using firstEver and lastEver with follow up and washout, patients with events
-                         outside this will be censored. The "firstEver" and "lastEver" are applied first.
-                         The "earliestRemaining" and "latestRemaining" are applied after all other limit
-                         criteria are applied (i.e. after applying prior/post time and calendar time).}
-
-\item{calendarStartDate}{End date to allow periods (e.g. 2020/1/1/)}
-
-\item{calendarEndDate}{Start date to allow period (e.g. 2015/1/1)}
+\item{...}{Arguments passed to the underlying operator.}
 }
 \description{
-Subset cohorts using specified limit criteria
+Subset cohorts using specified limit criteria.
+deprecated This function is deprecated. Please use `createLimitSubsetOperator()` instead.
 }

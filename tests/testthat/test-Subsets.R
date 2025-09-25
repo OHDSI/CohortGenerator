@@ -21,20 +21,20 @@ test_that("Subset definition", {
     )
   )
   subsetOperations <- list(
-    createCohortSubset(
+    createCohortSubsetOperator(
       name = "Cohort Subset",
       cohortIds = 11,
       cohortCombinationOperator = "all",
       negate = FALSE,
       windows = windowSubsetOperation
     ),
-    createLimitSubset(
+    createLimitSubsetOperator(
       name = "Observation Criteria",
       priorTime = 365,
       followUpTime = 0,
       limitTo = "firstEver"
     ),
-    createDemographicSubset(
+    createDemographicSubsetOperator(
       name = "Demographic Criteria",
       ageMin = 18,
       ageMax = 64
@@ -87,14 +87,14 @@ test_that("Subset definition", {
     }
   }
 
-  testDemoSubset <- createDemographicSubset(
+  testDemoSubset <- createDemographicSubsetOperator(
     ageMin = 18,
     ageMax = 64
   )
 
   expect_true(testDemoSubset$isEqualTo(testDemoSubset))
 
-  testDemoSubset2 <- createDemographicSubset(
+  testDemoSubset2 <- createDemographicSubsetOperator(
     gender = "nb",
     ageMin = 18,
     ageMax = 64
@@ -114,7 +114,7 @@ test_that("Subset definition", {
       targetAnchor = "cohortEnd"
     )
   )
-  ccs <- createCohortSubset(
+  ccs <- createCohortSubsetOperator(
     cohortIds = 11,
     cohortCombinationOperator = "all",
     negate = FALSE,
@@ -143,7 +143,7 @@ test_that("Subset definition", {
       targetAnchor = "cohortEnd"
     )
   )
-  invalidCohortSubsetOperator <- createCohortSubset(
+  invalidCohortSubsetOperator <- createCohortSubsetOperator(
     name = "Invalid Cohort Subset",
     cohortIds = 0,
     cohortCombinationOperator = "all",
@@ -190,21 +190,21 @@ test_that("Saving and loading definitions via attributes", {
     )
   )
   subsetOperations <- list(
-    createCohortSubset(
+    createCohortSubsetOperator(
       name = "Cohort Subset",
       cohortIds = 11,
       cohortCombinationOperator = "all",
       negate = FALSE,
       windows = subsetOperationsWindow
     ),
-    createLimitSubset(
+    createLimitSubsetOperator(
       priorTime = 365,
       followUpTime = 0,
       minimumCohortDuration = 1,
       maximumCohortDuration = 365,
       limitTo = "firstEver"
     ),
-    createDemographicSubset(
+    createDemographicSubsetOperator(
       name = "Demographic Criteria",
       ageMin = 18,
       ageMax = 64
@@ -275,14 +275,14 @@ test_that("subset generation", {
     )
   )
   subsetOperations <- list(
-    createCohortSubset(
+    createCohortSubsetOperator(
       name = "Cohort Subset",
       cohortIds = 11,
       cohortCombinationOperator = "all",
       negate = FALSE,
       windows = subsetOperationsWindowLogic
     ),
-    createDemographicSubset(
+    createDemographicSubsetOperator(
       name = "Demographic Criteria",
       ageMin = 18,
       ageMax = 64
@@ -367,7 +367,7 @@ test_that("Subset definition creation and retrieval with definitionId != 1", {
     name = "Male Only",
     definitionId = 2,
     subsetOperators = list(
-      CohortGenerator::createDemographicSubset(
+      CohortGenerator::createDemographicSubsetOperator(
         name = "Male",
         gender = 8507
       )
@@ -392,7 +392,7 @@ test_that("Test overwriteExisting", {
     verbose = FALSE
   )
   subsetOperations <- list(
-    createDemographicSubset(
+    createDemographicSubsetOperator(
       name = "Demographic Criteria",
       ageMin = 18,
       ageMax = 64
@@ -435,7 +435,7 @@ test_that("Subset operator serialization tests", {
   so2 <- SubsetOperator$new()
   so2$name <- "SubsetOp2"
 
-  ds1 <- createDemographicSubset(
+  ds1 <- createDemographicSubsetOperator(
     name = "Demographic Criteria",
     ageMin = 18,
     ageMax = 64,
@@ -455,7 +455,7 @@ test_that("Subset operator serialization tests", {
   expect_equal(ds1$getRace(), 8527)
   expect_equal(ds1$getEthnicity(), 38003563)
 
-  ls1 <- createLimitSubset(
+  ls1 <- createLimitSubsetOperator(
     name = "Limit Subset 1",
     priorTime = 365,
     followUpTime = 0,
@@ -465,7 +465,7 @@ test_that("Subset operator serialization tests", {
   )
   expect_silent(ls1$toJSON())
 
-  ls2 <- createLimitSubset(
+  ls2 <- createLimitSubsetOperator(
     name = "Limit Subset 2",
     priorTime = 365,
     followUpTime = 0,
@@ -487,12 +487,12 @@ test_that("Subset name templates function", {
     verbose = FALSE
   )
   subsetOperations <- list(
-    createDemographicSubset(
+    createDemographicSubsetOperator(
       name = "Demographic Criteria 1",
       ageMin = 18,
       ageMax = 64
     ),
-    createDemographicSubset(
+    createDemographicSubsetOperator(
       name = "Demographic Criteria 2",
       ageMin = 32,
       ageMax = 48
@@ -562,8 +562,8 @@ test_that("Basic Negate logic check", {
     name = "requiring",
     definitionId = 6,
     subsetOperators = list(
-      CohortGenerator::createLimitSubset(name = "first exposure", limitTo = "firstEver"),
-      CohortGenerator::createCohortSubset(
+      CohortGenerator::createLimitSubsetOperator(name = "first exposure", limitTo = "firstEver"),
+      CohortGenerator::createCohortSubsetOperator(
         name = "with ibuprofen after a year",
         cohortIds = 3,
         cohortCombinationOperator = "any",
@@ -630,7 +630,7 @@ test_that("Subset logic checks", {
     name = "first ever",
     definitionId = 101,
     subsetOperators = list(
-      createLimitSubset(
+      createLimitSubsetOperator(
         name = "first ever",
         limitTo = "firstEver"
       )
@@ -641,7 +641,7 @@ test_that("Subset logic checks", {
     name = "earliestRemaining",
     definitionId = 102,
     subsetOperators = list(
-      createLimitSubset(
+      createLimitSubsetOperator(
         name = "earliestRemaining",
         limitTo = "earliestRemaining",
         priorTime = 500
@@ -653,7 +653,7 @@ test_that("Subset logic checks", {
     name = "latestRemaining",
     definitionId = 103,
     subsetOperators = list(
-      createLimitSubset(
+      createLimitSubsetOperator(
         name = "latestRemaining",
         limitTo = "latestRemaining",
         followUpTime = 800
@@ -665,7 +665,7 @@ test_that("Subset logic checks", {
     name = "lastEver",
     definitionId = 104,
     subsetOperators = list(
-      createLimitSubset(
+      createLimitSubsetOperator(
         name = "lastEver",
         limitTo = "lastEver"
       )
@@ -676,7 +676,7 @@ test_that("Subset logic checks", {
     name = "calendar",
     definitionId = 105,
     subsetOperators = list(
-      createLimitSubset(
+      createLimitSubsetOperator(
         name = "2003 - 2006",
         calendarStartDate = "2003-01-01",
         calendarEndDate = "2006-12-31",
@@ -688,7 +688,7 @@ test_that("Subset logic checks", {
     name = "firstEver + calendar",
     definitionId = 106,
     subsetOperators = list(
-      createLimitSubset(
+      createLimitSubsetOperator(
         limitTo = "firstEver",
         name = "2003 - 2006",
         calendarStartDate = "2003-01-01",
@@ -701,7 +701,7 @@ test_that("Subset logic checks", {
     name = "earliestRemaining + calendar",
     definitionId = 107,
     subsetOperators = list(
-      createLimitSubset(
+      createLimitSubsetOperator(
         limitTo = "earliestRemaining",
         name = "2003 - 2006",
         priorTime = 500,
@@ -716,7 +716,7 @@ test_that("Subset logic checks", {
     name = "Age subset",
     definition = 201,
     subsetOperators = list(
-      createDemographicSubset(
+      createDemographicSubsetOperator(
         name = "Age 2-5",
         ageMin = 2,
         ageMax = 5
@@ -728,7 +728,7 @@ test_that("Subset logic checks", {
     name = "Gender subset",
     definition = 202,
     subsetOperators = list(
-      createDemographicSubset(
+      createDemographicSubsetOperator(
         name = "Gender = 8532",
         gender = 8532
       )
@@ -739,7 +739,7 @@ test_that("Subset logic checks", {
     name = "Race subset",
     definition = 203,
     subsetOperators = list(
-      createDemographicSubset(
+      createDemographicSubsetOperator(
         name = "Race = 0",
         race = 0
       )
@@ -750,7 +750,7 @@ test_that("Subset logic checks", {
     name = "Race subset",
     definition = 204,
     subsetOperators = list(
-      createDemographicSubset(
+      createDemographicSubsetOperator(
         name = "Ethnicity = 0",
         ethnicity = 0
       )
@@ -778,7 +778,7 @@ test_that("Subset logic checks", {
     name = "Subset overlaps cohort start",
     definition = 301,
     subsetOperators = list(
-      createCohortSubset(
+      createCohortSubsetOperator(
         name = "subsetOverlapTargetStart",
         cohortIds = c(2),
         negate = F,
@@ -806,7 +806,7 @@ test_that("Subset logic checks", {
     name = "Subset overlaps entire target cohort period",
     definition = 302,
     subsetOperators = list(
-      createCohortSubset(
+      createCohortSubsetOperator(
         name = "subsetSubsumesTarget",
         cohortIds = c(3),
         negate = F,
@@ -835,7 +835,7 @@ test_that("Subset logic checks", {
     name = "Subset subsumed by entire target cohort period",
     definition = 303,
     subsetOperators = list(
-      createCohortSubset(
+      createCohortSubsetOperator(
         name = "targetSubsumesSubset",
         cohortIds = c(4),
         negate = F,
@@ -863,7 +863,7 @@ test_that("Subset logic checks", {
     name = "Subset overlaps cohort end",
     definition = 304,
     subsetOperators = list(
-      createCohortSubset(
+      createCohortSubsetOperator(
         name = "subsetOverlapTargetEnd",
         cohortIds = c(5),
         negate = F,
@@ -891,7 +891,7 @@ test_that("Subset logic checks", {
     name = "Subset does NOT overlap cohort end - negate",
     definition = 305,
     subsetOperators = list(
-      createCohortSubset(
+      createCohortSubsetOperator(
         name = "subsetOverlapTargetEndNegate",
         cohortIds = c(5),
         negate = T,
@@ -919,7 +919,7 @@ test_that("Subset logic checks", {
     name = "Subset overlaps target start - tests combo == all",
     definition = 306,
     subsetOperators = list(
-      createCohortSubset(
+      createCohortSubsetOperator(
         name = "subsetOverlapTargetStartComboAll",
         cohortIds = c(2, 3),
         negate = F,
