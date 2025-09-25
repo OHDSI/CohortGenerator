@@ -16,7 +16,8 @@ test_that("addIndicationSubsetDefinition adds subset correctly for basic case", 
     targetCohortIds = c(1),
     indicationCohortIds = c(2),
     subsetDefinitionId = 999,
-    subsetDefinitionName = "Test Indication"
+    subsetDefinitionName = "Test Indication",
+    genderConceptIds = c(8532)
   )
   
   # Check that the attribute contains the new ID
@@ -66,7 +67,8 @@ test_that("addRestrictionSubsetDefinition adds restriction correctly", {
     cohortDefinitionSet = initialSet,
     targetCohortIds = c(1),
     subsetDefinitionId = 2000,
-    subsetDefinitionName = "Restriction Test"
+    subsetDefinitionName = "Restriction Test",
+    genderConceptIds = c(8532)
   )
   
   expect_true(2000 %in% getRestrictionSubsetDefinitionIds(res))
