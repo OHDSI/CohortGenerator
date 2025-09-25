@@ -33,7 +33,9 @@ Imports:
   ResultModelManager (>= 0.6.0),
   SqlRender (>= 1.11.1),
   stringi (>= 1.7.6),
-  tibble
+  tibble,
+  purrr,
+  fastmap
 Suggests:
   CirceR (>= 1.1.1),
   duckdb,

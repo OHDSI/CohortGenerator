@@ -53,3 +53,14 @@ cg_cohort_definition_neg_ctrl,outcome_concept_id,bigint,Yes,No,No,The concept ID
 cg_cohort_definition_neg_ctrl,cohort_name,varchar,Yes,No,No,The concept name for the negative control outcome
 cg_cohort_definition_neg_ctrl,occurrence_type,varchar,Yes,No,No,The occurrenceType will detect either: the first time an outcomeConceptId occurs or all times the outcome_concept_id occurs for a person. Values accepted: 'all' or 'first'
 cg_cohort_definition_neg_ctrl,detect_on_descendants,int,Yes,No,No,When set to 1 detect_on_descendants used the vocabulary to find negative control outcomes using the outcome_concept_id and all descendants via the concept_ancestor table. When set to 0 only the exact outcome_concept_id was used to detect the outcome
+cg_concept_set,concept_set_id,varchar,Yes,Yes,No,Hash identifier for the concept set
+cg_concept_set,concept_id,bigint,Yes,Yes,No,OHDSI standard concept id for concept
+cg_concept_set,include_descendants,int,Yes,Yes,No,Inclusion of descendants or not when applying concept set code mapping
+cg_concept_set,is_excluded,int,Yes,Yes,No,Is this concept excluded from the mapping?
+cg_concept_set,include_mapped,int,Yes,Yes,No,Includded mapped source concepts in the concept set?
+cg_concept_set_name,concept_set_id,varchar,Yes,Yes,No,Hash identifier for the concept set
+cg_concept_set_name,concept_set_name,varchar,Yes,Yes,No,A name for the concept set (may be non-unqiue)
+cg_cohort_concept_set,concept_set_id,varchar,Yes,Yes,No,Hash identifier for the concept set
+cg_cohort_concept_set,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_template_definition,template_definition_id,bigint,Yes,Yes,No,cohort template definition identifier
+cg_cohort_template_definition,json,text,No,No,No,The template JSON expression including references and sql
