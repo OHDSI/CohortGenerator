@@ -126,8 +126,8 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
 
   if (any(!is.null(c(genderConceptIds, ageMin, ageMax)))) {
     subsetOperators[[length(subsetOperators) + 1]] <- createDemographicSubset(
-      ageMin = ageMin,
-      ageMax = ageMax,
+      ageMin = ifelse(is.null(ageMin), 0, ageMin),
+      ageMax = ifelse(is.null(ageMax), 99999, ageMax),
       gender = genderConceptIds
     )
   }
@@ -225,8 +225,8 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 
   if (any(!is.null(c(genderConceptIds, ageMin, ageMax)))) {
     subsetOperators[[length(subsetOperators) + 1]] <- createDemographicSubset(
-      ageMin = ageMin,
-      ageMax = ageMax,
+      ageMin = ifelse(is.null(ageMin), 0, ageMin),
+      ageMax = ifelse(is.null(ageMax), 99999, ageMax),
       gender = genderConceptIds
     )
   }
