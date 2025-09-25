@@ -14,26 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.loadJson <- function(definition, simplifyVector = FALSE, simplifyDataFrame = FALSE, ...) {
-  if (is.character(definition)) {
-    definition <- jsonlite::fromJSON(definition,
-      simplifyVector = simplifyVector,
-      simplifyDataFrame = simplifyDataFrame,
-      ...
-    )
-  }
-
-  if (!is.list(definition)) {
-    stop("Cannot instanitate object invalid type ", class(definition))
-  }
-  definition
-}
-
-.toJSON <- function(obj) {
-  jsonlite::toJSON(obj, pretty = TRUE)
-}
-
-
 # SubsetCohortWindow -------------
 #' @title Time Window For Cohort Subset Operator
 #' @export
