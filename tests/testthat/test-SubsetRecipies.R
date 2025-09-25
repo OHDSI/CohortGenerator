@@ -47,6 +47,7 @@ test_that("addIndicationSubsetDefinition handles multiple cohort IDs and operato
     targetCohortIds = c(1),
     indicationCohortIds = c(2,3),
     subsetDefinitionId = 1000,
+    subsetDefinitionName = "test subset definition",
     cohortCombinationOperator = "all"
   )
   expect_true(1000 %in% getIndicationSubsetDefinitionIds(res))

@@ -9,7 +9,7 @@ addIndicationSubsetDefinition(
   targetCohortIds,
   indicationCohortIds,
   subsetDefinitionId,
-  subsetDefinitionName = "target population + prior indidcation",
+  subsetDefinitionName,
   subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName",
   cohortCombinationOperator = "any",
   lookbackWindowStart = -99999,
