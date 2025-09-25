@@ -295,7 +295,7 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #' print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
 #'
 #' # Get all subset definitions that were created using the addExcludeOnIndexSubsetDefinition:
-#' subsetDefinitionId <- getExclusionSubsetDefinitionIds(res)
+#' subsetDefinitionId <- getExcludeOnIndexSubsetDefinitionIds(res)
 #'
 #' # Filter the cohortDefinitionSet to those cohorts defined using an exclusion subset definition:
 #' newCohorts <- res |>
@@ -336,8 +336,8 @@ addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
       targetCohortIds = targetCohortIds
     )
 
-  attr(cohortDefinitionSet, "exclusionSubsetDefinitions") <- c(getExclusionSubsetDefinitionIds(cohortDefinitionSet),
-                                                                subsetDefinitionId)
+  attr(cohortDefinitionSet, "excludeOnIndexSubsetDefinitions") <- c(getExcludeOnIndexSubsetDefinitionIds(cohortDefinitionSet),
+                                                                    subsetDefinitionId)
 
   return(cohortDefinitionSet)
 }
@@ -365,12 +365,12 @@ getRestrictionSubsetDefinitionIds <- function(cohortDefinitionSet) {
 }
 
 
-#' Get Exclusion Subset Definition Ids
+#' Get Exclude On Index Subset Definition Ids
 #' @description
-#' Get the exlcusion on index subset definition ids from a cohort definition set (if any have been added)
+#' Get the exclusion on index subset definition ids from a cohort definition set (if any have been added)
 #' Useful if keeping track in a script with complex business logic around what a cohort definition is for
 #' @export
 #' @template cohortDefinitionSet
-getExclusionSubsetDefinitionIds <- function(cohortDefinitionSet) {
-  attr(cohortDefinitionSet, "exclusionSubsetDefinitions", exact = TRUE)
+getExcludeOnIndexSubsetDefinitionIds <- function(cohortDefinitionSet) {
+  attr(cohortDefinitionSet, "excludeOnIndexSubsetDefinitions", exact = TRUE)
 }

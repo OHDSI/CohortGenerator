@@ -77,7 +77,7 @@ res <- addExcludeOnIndexSubsetDefinition(
 print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
 
 # Get all subset definitions that were created using the addExcludeOnIndexSubsetDefinition:
-subsetDefinitionId <- getExclusionSubsetDefinitionIds(res)
+subsetDefinitionId <- getExcludeOnIndexSubsetDefinitionIds(res)
 
 # Filter the cohortDefinitionSet to those cohorts defined using an exclusion subset definition:
 newCohorts <- res |>
