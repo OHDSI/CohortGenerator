@@ -57,6 +57,17 @@ reference:
       - getSubsetDefinitions
       - saveCohortSubsetDefinition
 
+  - title: "Cohort Subset Recipies"
+    desc: >
+      Standard functions for creating subsets that wrap more complex operations
+    contents:
+      - addExcludeOnIndexSubsetDefinition
+      - addIndicationSubsetDefinition
+      - addRestrictionSubsetDefinition
+      - getExcludeOnIndexSubsetDefinitionIds
+      - getIndicationSubsetDefinitionIds
+      - getRestrictionSubsetDefinitionIds
+
   - title: "Cohort Template Functions"
     desc: >
       Utilities for creating template cohort definitions from raw sql
@@ -73,7 +84,6 @@ reference:
       - createUnionCohortTemplate
       - getCohortValidationCounts
       - getTemplateDefinitions
-
   - title: "Cohort Subset Classes"
     desc: >
       R6 classes for cohort subset definitions and subset operators.
