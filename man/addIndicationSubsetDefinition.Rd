@@ -69,15 +69,15 @@ Optionally, this data frame may contain: \describe{
 \item{requiredFollowUpTime}{Observation time after index; default 1.}
 }
 \description{
-Utility pattern for creating an indidication subset from a set of target cohorts.
+Utility pattern for creating an indication subset from a set of target cohorts.
 The approach applies this definition to an exposure or set of exposures, requiring individuals to have
 a prior history of a condition before receiving treatment. By default, this creats new cohorts that have evidence
 of the indication cohort at any point in their history.
 For many situations it may be preffered to look back within a specific window of drug exposure and the look window
 period should be accordingly.
-Additionally, the R attribuite of "indicationSubsetDefinitions" is attached to the cohort definition set.
+Additionally, the R attribute of "indicationSubsetDefinitions" is attached to the cohort definition set.
 This can be obtained by calling `getIndicationSubsetDefinitionIds`, which should return the set of subset definition
-ids that are assicated with indications.
+ids that are associated with indications.
 }
 \examples{
 \dontrun{

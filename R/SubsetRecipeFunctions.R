@@ -1,4 +1,4 @@
-# Copyright 2024 Observational Health Data Sciences and Informatics
+# Copyright 2025 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -18,15 +18,15 @@
 #' Add Indication Subset Definition
 #' @export
 #' @description
-#' Utility pattern for creating an indidication subset from a set of target cohorts.
+#' Utility pattern for creating an indication subset from a set of target cohorts.
 #' The approach applies this definition to an exposure or set of exposures, requiring individuals to have
 #' a prior history of a condition before receiving treatment. By default, this creats new cohorts that have evidence
 #' of the indication cohort at any point in their history.
 #' For many situations it may be preffered to look back within a specific window of drug exposure and the look window
 #' period should be accordingly.
-#' Additionally, the R attribuite of "indicationSubsetDefinitions" is attached to the cohort definition set.
+#' Additionally, the R attribute of "indicationSubsetDefinitions" is attached to the cohort definition set.
 #' This can be obtained by calling `getIndicationSubsetDefinitionIds`, which should return the set of subset definition
-#' ids that are assicated with indications.
+#' ids that are associated with indications.
 #'
 #' @examples
 #' \dontrun{
@@ -251,7 +251,7 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 
 #' Add exclude on index subset definition
 #' @description
-#' The purpose of this subset recipie is to exclude all individuals if their index aligns with the specified
+#' The purpose of this subset recipe is to exclude all individuals if their index aligns with the specified
 #' exclusion cohort ids.
 #' If the index date of the exclusionCohortIds aligns with the targetCohortIds (or it lies within some relative window
 #' of the target cohort start date) then they will be excluded from the resulting sub population.
@@ -262,12 +262,12 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #' @export
 #'
 #' @inheritParams addIndicationSubsetDefinition
-#' @param exclusionCohortIds                        cohort ids to exlcude members of target from
+#' @param exclusionCohortIds                        cohort ids to exclude members of target from
 #' @param exclusionWindow                           Days Default is 0 (target index date). by changing this
 #'                                                  you can adjust the period around target index for which you would
 #'                                                  exclude members.
 #'
-#' #' @examples
+#' @examples
 #' \dontrun{
 #' library(CohortGenerator)
 #'

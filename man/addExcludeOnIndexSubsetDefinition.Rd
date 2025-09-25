@@ -30,13 +30,26 @@ Optionally, this data frame may contain: \describe{
 
 \item{targetCohortIds}{Set of integer cohort IDs. Must be within the cohort definition set.}
 
-\item{exclusionCohortIds}{cohort ids to exlcude members of target from}
+\item{exclusionCohortIds}{cohort ids to exclude members of target from}
 
 \item{exclusionWindow}{Days Default is 0 (target index date). by changing this
-                                                 you can adjust the period around target index for which you would
-                                                 exclude members.
+you can adjust the period around target index for which you would
+exclude members.}
 
-#' @examples
+\item{subsetDefinitionId}{Unique integer Id of the subset definition}
+
+\item{cohortCombinationOperator}{Logic for multiple indication cohort IDs: any (default) or all.}
+}
+\description{
+The purpose of this subset recipe is to exclude all individuals if their index aligns with the specified
+exclusion cohort ids.
+If the index date of the exclusionCohortIds aligns with the targetCohortIds (or it lies within some relative window
+of the target cohort start date) then they will be excluded from the resulting sub population.
+
+This may be used in situations where an outcome cohort may contain individuals treated for a target medication,
+complicating calculation of incidence rates.
+}
+\examples{
 \dontrun{
 library(CohortGenerator)
 
@@ -44,7 +57,7 @@ initialSet <- getCohortDefinitionSet(
   settingsFileName = "testdata/name/Cohorts.csv",
   jsonFolder = "testdata/name/cohorts",
   sqlFolder = "testdata/name/sql/sql_server",
-  cohortFileNameFormat = "%s",
+  cohortFileNameFormat = "\%s",
   cohortFileNameValue = c("cohortName"),
   packageName = "CohortGenerator",
   verbose = FALSE
@@ -71,18 +84,5 @@ newCohorts <- res |>
   dplyr::filter(subsetDefinitionId == subsetDefinitionId) |>
   dplyr::select(cohortId, cohortName, subsetParent, isSubset)
 print(newCohorts)
-}}
-
-\item{subsetDefinitionId}{Unique integer Id of the subset definition}
-
-\item{cohortCombinationOperator}{Logic for multiple indication cohort IDs: any (default) or all.}
 }
-\description{
-The purpose of this subset recipie is to exclude all individuals if their index aligns with the specified
-exclusion cohort ids.
-If the index date of the exclusionCohortIds aligns with the targetCohortIds (or it lies within some relative window
-of the target cohort start date) then they will be excluded from the resulting sub population.
-
-This may be used in situations where an outcome cohort may contain individuals treated for a target medication,
-complicating calculation of incidence rates.
 }
