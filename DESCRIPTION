@@ -1,8 +1,8 @@
 Package: CohortGenerator
 Type: Package
 Title: Cohort Generation for the OMOP Common Data Model
-Version: 0.12.0
-Date: 2025-07-30
+Version: 1.0.0.9000
+Date: 2025-09-12
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Jamie", "Gilbert", role = c("aut")),
@@ -30,7 +30,7 @@ Imports:
   readr (>= 2.1.0),
   rlang,
   jsonlite,
-  ResultModelManager,
+  ResultModelManager (>= 0.6.0),
   SqlRender (>= 1.11.1),
   stringi (>= 1.7.6),
   tibble
@@ -48,7 +48,7 @@ License: Apache License
 VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator
 BugReports: https://github.com/OHDSI/CohortGenerator/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Encoding: UTF-8
 Language: en-US
 LazyData: true

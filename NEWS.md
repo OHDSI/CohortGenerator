@@ -1,3 +1,22 @@
+CohortGenerator 1.0.0
+=====================
+
+New Features
+- creation of cohort_checksum tables that enable verification of generated cohorts and incremental execution in distributed
+environments
+- Use of SQL cohort templates with SQL template R6 class and associated template functions
+
+CohortGenerator 0.12.2
+======================
+
+- Updates unit tests to use lowercase field names (#237)
+
+CohortGenerator 0.12.1
+======================
+
+Bug Fixes
+- Fix logical issue with null minimum cohort duration
+
 CohortGenerator 0.12.0
 ======================
 

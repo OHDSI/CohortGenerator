@@ -150,8 +150,8 @@ exportCohortStatsTables <- function(connectionDetails,
 
   for (i in 1:nrow(tablesToExport)) {
     fileName <- ifelse(test = fileNamesInSnakeCase,
-      yes = tablesToExport$fileName[i],
-      no = SqlRender::snakeCaseToCamelCase(tablesToExport$fileName[i])
+                       yes = tablesToExport$fileName[i],
+                       no = SqlRender::snakeCaseToCamelCase(tablesToExport$fileName[i])
     )
     exportStats(
       data = cohortStats[[tablesToExport$tableName[i]]],
@@ -160,6 +160,17 @@ exportCohortStatsTables <- function(connectionDetails,
       tablePrefix = tablePrefix
     )
   }
+}
+
+
+addSubsetColumns <- function(cohortDefinitionSet) {
+  if (nrow(cohortDefinitionSet) > 0 & !hasSubsetDefinitions(cohortDefinitionSet)) {
+    cohortDefinitionSet$isSubset <- FALSE
+    cohortDefinitionSet$subsetDefinitionId <- NA
+    cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
+  }
+
+  return(cohortDefinitionSet)
 }
 
 exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) {
@@ -251,7 +262,9 @@ getColumnsToCensor <- function(tableName) {
 }
 
 enforceMinCellValue <- function(data, fieldName, minValues, silent = FALSE) {
-  toCensor <- !is.na(pull(data, fieldName)) & pull(data, fieldName) < minValues & pull(data, fieldName) != 0
+  toCensor <- !is.na(pull(data, fieldName)) &
+    pull(data, fieldName) < minValues &
+    pull(data, fieldName) != 0
   if (!silent) {
     percent <- round(100 * sum(toCensor) / nrow(data), 1)
     message(
