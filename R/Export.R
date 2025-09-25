@@ -189,24 +189,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
         )
       }
     } else {
-      # NOTE: In this case the cohortDefinitionSet has no subsets defined
-      # and so we need to add the additional columns that are defined
-      # in the function: addCohortSubsetDefinition. To do this,
-      # we'll construct a copy of the cohortDefinitionSet with a single
-      # subset to get the proper structure and filter it to the
-      # cohorts of interest.
-      cdsCopy <- cohortDefinitionSet %>%
-        addCohortSubsetDefinition(
-          cohortSubsetDefintion = createCohortSubsetDefinition(
-            definitionId = 1,
-            name = "empty",
-            subsetOperators = list(
-              createDemographicSubsetOperator()
-            )
-          )
-        ) %>%
-        dplyr::filter(.data$cohortId == cohortDefinitionSet$cohortId)
-      cohortDefinitionSet <- cdsCopy
+      cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns()
     }
     # Massage and save the cohort definition set
     colsToRename <- c("cohortId", "cohortName", "sql", "json")
