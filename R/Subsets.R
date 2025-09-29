@@ -446,7 +446,7 @@ CohortSubsetOperator <- R6::R6Class(
 # createCohortSubset ------------------------------
 #' A definition of subset functions to be applied to a set of cohorts
 #' @export
-#'
+#' @family subsets
 #' @param name  optional name of operator
 #' @param cohortIds integer - set of cohort ids to subset to
 #' @param cohortCombinationOperator "any" or "all" if using more than one cohort id allow a subject to be in any cohort
@@ -460,7 +460,7 @@ CohortSubsetOperator <- R6::R6Class(
 #'                                  these windows.
 #' @param negate                    The opposite of this definition - include patients who do NOT meet the specified criteria
 #' @returns a CohortSubsetOperator instance
-createCohortSubset <- function(name = NULL, cohortIds, cohortCombinationOperator, negate, windows = list(), startWindow = NULL, endWindow = NULL) {
+createCohortSubsetOperator <- function(name = NULL, cohortIds, cohortCombinationOperator, negate, windows = list(), startWindow = NULL, endWindow = NULL) {
   subset <- CohortSubsetOperator$new()
   subset$name <- name
   subset$cohortIds <- cohortIds
@@ -702,8 +702,9 @@ DemographicSubsetOperator <- R6::R6Class(
 )
 
 # createDemographicSubset ------------------------------
-#' Create createDemographicSubset Subset
+#' Create createDemographicSubset Subset operator
 #' @export
+#' @family subsets
 #' @param name         Optional char name
 #' @param ageMin       The minimum age
 #' @param ageMax       The maximum age
@@ -713,7 +714,7 @@ DemographicSubsetOperator <- R6::R6Class(
 #'                     Specific concept ids not in this set can be used but are not explicitly validated
 #' @param race         Race demographics - concept ID list
 #' @param ethnicity    Ethnicity demographics - concept ID list
-createDemographicSubset <- function(name = NULL, ageMin = 0, ageMax = 99999, gender = NULL, race = NULL, ethnicity = NULL) {
+createDemographicSubsetOperator <- function(name = NULL, ageMin = 0, ageMax = 99999, gender = NULL, race = NULL, ethnicity = NULL) {
   mapGenderCodes <- function(x) {
     if (length(x) > 1) {
       retValue <- c()
@@ -939,10 +940,11 @@ LimitSubsetOperator <- R6::R6Class(
 )
 
 # createLimitSubset ------------------------------
-#' Create Limit Subset
+#' Create Limit Subset Operator
 #' @description
 #' Subset cohorts using specified limit criteria
 #' @export
+#' @family subsets
 #' @param name                  Name of operation
 #' @param priorTime             Required prior observation window (specified as a positive integer)
 #' @param followUpTime          Required post observation window (specified as a positive integer)
@@ -960,15 +962,14 @@ LimitSubsetOperator <- R6::R6Class(
 #'                          criteria are applied (i.e. after applying prior/post time and calendar time).
 #' @param calendarEndDate       Start date to allow period (e.g. 2015/1/1)
 #' @param calendarStartDate     End date to allow periods (e.g. 2020/1/1/)
-createLimitSubset <- function(name = NULL,
-                              priorTime = 0,
-                              followUpTime = 0,
-                              minimumCohortDuration = 0,
-                              maximumCohortDuration = NULL,
-                              limitTo = "all",
-                              calendarStartDate = NULL,
-                              calendarEndDate = NULL) {
-  if (limitTo == "" || is.null(limitTo)) {
+createLimitSubsetOperator <- function(name = NULL,
+                                      priorTime = 0,
+                                      followUpTime = 0,
+                                      minimumCohortDuration = 0,
+                                      maximumCohortDuration = NULL,
+                                      limitTo = "all",
+                                      calendarStartDate = NULL,
+                                      calendarEndDate = NULL) {  if (limitTo == "" || is.null(limitTo)) {
     limitTo <- "all"
   }
 
@@ -988,4 +989,37 @@ createLimitSubset <- function(name = NULL,
   subset$calendarEndDate <- calendarEndDate
 
   subset
+}
+
+#' Create Limit Subset Operator
+#' @description
+#' Subset cohorts using specified limit criteria.
+#' deprecated This function is deprecated. Please use `createLimitSubsetOperator()` instead.
+#' @param ... Arguments passed to the underlying operator.
+#' @export
+createLimitSubset <- function(...) {
+  .Deprecated("createLimitSubsetOperator")
+  createLimitSubsetOperator(...)
+}
+
+#' Create Cohort Subset Operator
+#' @description
+#' Subset cohorts using specified limit criteria.
+#' deprecated This function is deprecated. Please use `createCohortSubsetOperator()` instead.
+#' @param ... Arguments passed to the underlying operator.
+#' @export
+createCohortSubset <- function(...) {
+  .Deprecated("createLimitSubsetOperator")
+  createCohortSubsetOperator(...)
+}
+
+#' Create Demographic Subset Operator
+#' @description
+#' Subset cohorts using specified limit criteria.
+#' deprecated This function is deprecated. Please use `createDemographicSubsetOperator()` instead.
+#' @param ... Arguments passed to the underlying operator.
+#' @export
+createDemographicSubset <- function(...) {
+  .Deprecated("createLimitSubsetOperator")
+  createDemographicSubsetOperator(...)
 }

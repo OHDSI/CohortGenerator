@@ -50,9 +50,12 @@ reference:
     contents:
       - addCohortSubsetDefinition
       - createCohortSubset
+      - createCohortSubsetOperator
       - createCohortSubsetDefinition
       - createDemographicSubset
+      - createDemographicSubsetOperator
       - createLimitSubset
+      - createLimitSubsetOperator
       - createSubsetCohortWindow
       - getSubsetDefinitions
       - saveCohortSubsetDefinition
