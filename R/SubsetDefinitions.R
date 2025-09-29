@@ -41,6 +41,23 @@ CohortSubsetDefinition <- R6::R6Class(
     }
   ),
   public = list(
+    #' pretty in print
+    #'
+    #' @param ... further arguments passed to or from other methods.
+    print = function(...) {
+      cat(glue::glue("<Cohort Subset Defintion [{self$definitionId}]:\t{self$name}> \n\n"))
+      cat(glue::glue("\tIdentifier expression: \"{self$identifierExpression}\"\n\n"))
+      cat(glue::glue("\tNaming template: \"{self$subsetCohortNameTemplate}\"\n\n"))
+      cat(glue::glue("Contains {length(self$subsetOperators)} operations:"))
+      cat("\n")
+      cat("\n")
+      for (so in self$subsetOperators) {
+        print(so)
+        cat("\n")
+      }
+      cat("\n\n")
+    },
+
     #' @param definition  json or list representation of object
     initialize = function(definition = NULL) {
       if (!is.null(definition)) {
