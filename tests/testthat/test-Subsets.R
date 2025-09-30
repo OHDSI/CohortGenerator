@@ -40,12 +40,8 @@ test_that("Subset definition", {
       ageMax = 64
     )
   )
-  subsetDef <- createCohortSubsetDefinition(
-    name = "test definition",
-    definitionId = 1,
-    subsetOperators = subsetOperations
-  )
-
+  subsetDef <- createCohortSubsetDefinition(name = "test definition", definitionId = 1, subsetOperators = subsetOperations)
+  print(subsetDef)
   for (s in subsetDef$subsetOperators) {
     checkmate::expect_class(s, "SubsetOperator")
   }
