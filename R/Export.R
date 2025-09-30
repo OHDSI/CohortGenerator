@@ -178,6 +178,21 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
   cohortTemplates <- createEmptyResult("cg_cohort_template_definition")
   if (!is.null(cohortDefinitionSet)) {
+
+    templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
+    cohortTemplates <- data.frame()
+    for (template in templateDefinitions) {
+      row <- data.frame(
+        template_definition_id = template$id,
+        json = template$toJson() |> as.character()
+      )
+      cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
+    }
+
+    if (nrow(cohortTemplates) == 0) {
+      cohortDefinitions$isTemplatedCohort <- FALSE
+    }
+
     cdsCohortSubsets <- getSubsetDefinitions(cohortDefinitionSet)
     if (length(cdsCohortSubsets) > 0) {
       for (i in seq_along(cdsCohortSubsets)) {
@@ -200,19 +215,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
       cohortDefinitionSet$description <- ""
     }
     cohortDefinitions <- cohortDefinitionSet[, intersect(names(cohortDefinitions), names(cohortDefinitionSet))]
-    templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
-    cohortTemplates <- data.frame()
-    for (template in templateDefinitions) {
-      row <- data.frame(
-        template_definition_id = template$id,
-        json = template$toJson() |> as.character()
-      )
-      cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
-    }
 
-    if (nrow(cohortTemplates) == 0) {
-      cohortDefinitions$isTemplatedCohort <- FALSE
-    }
   }
   writeCsv(
     x = cohortDefinitions,
