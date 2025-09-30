@@ -106,7 +106,7 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
   checkmate::assertTRUE(all(indicationCohortIds %in% cohortDefinitionSet$cohortId))
 
   subsetOperators <- list()
-  subsetOperators[[length(subsetOperators) + 1]] <- createCohortSubset(
+  subsetOperators[[length(subsetOperators) + 1]] <- createCohortSubsetOperator(
     cohortIds = indicationCohortIds,
     negate = FALSE,
     cohortCombinationOperator = cohortCombinationOperator,
@@ -116,7 +116,7 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
     )
   )
 
-  subsetOperators[[length(subsetOperators) + 1]] <- createLimitSubset(
+  subsetOperators[[length(subsetOperators) + 1]] <- createLimitSubsetOperator(
     priorTime = requiredPriorObservationTime,
     followUpTime = requiredFollowUpTime,
     limitTo = "firstEver",
@@ -125,7 +125,7 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
   )
 
   if (any(!is.null(c(genderConceptIds, ageMin, ageMax)))) {
-    subsetOperators[[length(subsetOperators) + 1]] <- createDemographicSubset(
+    subsetOperators[[length(subsetOperators) + 1]] <- createDemographicSubsetOperator(
       ageMin = ifelse(is.null(ageMin), 0, ageMin),
       ageMax = ifelse(is.null(ageMax), 99999, ageMax),
       gender = genderConceptIds
@@ -215,7 +215,7 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
   checkmate::assertChoice(targetCohortIds, cohortDefinitionSet$cohortId)
 
   subsetOperators <- list()
-  subsetOperators[[length(subsetOperators) + 1]] <- createLimitSubset(
+  subsetOperators[[length(subsetOperators) + 1]] <- createLimitSubsetOperator(
     priorTime = requiredPriorObservationTime,
     followUpTime = requiredFollowUpTime,
     limitTo = "firstEver",
@@ -224,7 +224,7 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
   )
 
   if (any(!is.null(c(genderConceptIds, ageMin, ageMax)))) {
-    subsetOperators[[length(subsetOperators) + 1]] <- createDemographicSubset(
+    subsetOperators[[length(subsetOperators) + 1]] <- createDemographicSubsetOperator(
       ageMin = ifelse(is.null(ageMin), 0, ageMin),
       ageMax = ifelse(is.null(ageMax), 99999, ageMax),
       gender = genderConceptIds
@@ -315,7 +315,7 @@ addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
   checkmate::assertTRUE(all(targetCohortIds %in% cohortDefinitionSet$cohortId))
   checkmate::assertTRUE(all(exclusionCohortIds %in% cohortDefinitionSet$cohortId))
 
-  op <- CohortGenerator::createCohortSubset(
+  op <- CohortGenerator::createCohortSubsetOperator(
     cohortIds = exclusionCohortIds,
     name = "exclusion",
     negate = TRUE, # LOGIC -  NOT IN  any indication cohort on cohort start date
