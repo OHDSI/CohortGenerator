@@ -9,7 +9,6 @@ createCohortSubsetDefinition(
   definitionId,
   subsetOperators,
   identifierExpression = NULL,
-  operatorNameConcatString = "",
   subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName"
 )
 }
@@ -23,11 +22,8 @@ createCohortSubsetDefinition(
 \item{identifierExpression}{Expression (or string that converts to expression) that returns an id for an output cohort
 the default is dplyr::expr(targetId * 1000 + definitionId)}
 
-\item{operatorNameConcatString}{(optional) String to concatenate operator names together when outputting resulting cohort
-name}
-
 \item{subsetCohortNameTemplate}{SqlRender string template for formatting names of resulting subset cohorts
-Can use the variables @baseCohortName, @subsetDefinitionName and @operatorNames.
+Can use the variables @baseCohortName and @subsetDefinitionName.
 This is applied when adding the subset definition to a cohort definition set.}
 }
 \description{
