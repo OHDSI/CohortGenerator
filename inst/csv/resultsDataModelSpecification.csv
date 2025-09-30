@@ -6,6 +6,7 @@ cg_cohort_definition,json,text,No,No,No,The circe-be compiliant JSON expression
 cg_cohort_definition,sql_command,text,No,No,No,The OHDSI-SQL command used to construct the cohort
 cg_cohort_definition,subset_parent,bigint,No,No,No,The parent cohort id if this cohort is a subset
 cg_cohort_definition,is_subset,int,No,No,No,This value is 1 when the cohort is a subset
+cg_cohort_definition,is_templated_cohort,int,No,No,No,This value is 1 when the cohort is based on an sql template
 cg_cohort_definition,subset_definition_id,bigint,No,No,No,The cohort subset definition
 cg_cohort_generation,cohort_id,bigint,Yes,Yes,No,The uniqe identifier for the cohort definition
 cg_cohort_generation,cohort_name,varchar,Yes,No,No,The name of the cohort generated
@@ -53,3 +54,5 @@ cg_cohort_definition_neg_ctrl,outcome_concept_id,bigint,Yes,No,No,The concept ID
 cg_cohort_definition_neg_ctrl,cohort_name,varchar,Yes,No,No,The concept name for the negative control outcome
 cg_cohort_definition_neg_ctrl,occurrence_type,varchar,Yes,No,No,The occurrenceType will detect either: the first time an outcomeConceptId occurs or all times the outcome_concept_id occurs for a person. Values accepted: 'all' or 'first'
 cg_cohort_definition_neg_ctrl,detect_on_descendants,int,Yes,No,No,When set to 1 detect_on_descendants used the vocabulary to find negative control outcomes using the outcome_concept_id and all descendants via the concept_ancestor table. When set to 0 only the exact outcome_concept_id was used to detect the outcome
+cg_cohort_template_definition,template_definition_id,bigint,Yes,Yes,No,cohort template definition identifier
+cg_cohort_template_definition,json,text,No,No,No,The template JSON expression including references and sql
