@@ -327,7 +327,7 @@ CohortSubsetDefinition <- R6::R6Class(
 #' @param subsetOperators           list of subsetOperator instances to apply
 #' @param identifierExpression      Expression (or string that converts to expression) that returns an id for an output cohort
 #'                                  the default is dplyr::expr(targetId * 1000 + definitionId)
-#' @param subsetCohortNameTemplate  (optional) SqlRender string template for formatting names of resulting subset cohorts
+#' @param subsetCohortNameTemplate  SqlRender string template for formatting names of resulting subset cohorts
 #'                                  Can use the variables @baseCohortName, @subsetDefinitionName and @operatorNames.
 #'                                  This is applied when adding the subset definition to a cohort definition set.
 #' @param operatorNameConcatString  (optional) String to concatenate operator names together when outputting resulting cohort
@@ -337,7 +337,8 @@ createCohortSubsetDefinition <- function(name,
                                          subsetOperators,
                                          identifierExpression = NULL,
                                          operatorNameConcatString = "",
-                                         subsetCohortNameTemplate = "") {
+                                         subsetCohortNameTemplate = "@baseCohortName - @subsetDefinitionName") {
+  checkmate::assertString(name, min.chars = 1)
   subsetDef <- CohortSubsetDefinition$new()
   subsetDef$name <- name
   subsetDef$definitionId <- definitionId

@@ -5,6 +5,7 @@
 \title{Cohort Subset Definition}
 \description{
 Set of subset definitions
+pretty in print
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -28,6 +29,7 @@ Set of subset definitions
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-CohortSubsetDefinition-print}{\code{CohortSubsetDefinition$print()}}
 \item \href{#method-CohortSubsetDefinition-new}{\code{CohortSubsetDefinition$new()}}
 \item \href{#method-CohortSubsetDefinition-toList}{\code{CohortSubsetDefinition$toList()}}
 \item \href{#method-CohortSubsetDefinition-toJSON}{\code{CohortSubsetDefinition$toJSON()}}
@@ -37,6 +39,22 @@ Set of subset definitions
 \item \href{#method-CohortSubsetDefinition-setTargetOutputPairs}{\code{CohortSubsetDefinition$setTargetOutputPairs()}}
 \item \href{#method-CohortSubsetDefinition-getJsonFileName}{\code{CohortSubsetDefinition$getJsonFileName()}}
 \item \href{#method-CohortSubsetDefinition-clone}{\code{CohortSubsetDefinition$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CohortSubsetDefinition-print"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-print}{}}}
+\subsection{Method \code{print()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$print(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{further arguments passed to or from other methods.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
