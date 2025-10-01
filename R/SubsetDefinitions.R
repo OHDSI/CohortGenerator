@@ -341,6 +341,7 @@ createCohortSubsetDefinition <- function(name,
   subsetDef$definitionId <- definitionId
   subsetDef$subsetOperators <- subsetOperators
   subsetDef$identifierExpression <- identifierExpression
+  # Set to default to support consistent json serialization with class
   subsetDef$operatorNameConcatString <- ""
   subsetDef$subsetCohortNameTemplate <- subsetCohortNameTemplate
   return(subsetDef)
