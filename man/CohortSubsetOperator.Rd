@@ -33,11 +33,12 @@ cohort relative to the target cohort}
 }
 }
 \if{html}{\out{
-<details open><summary>Inherited methods</summary>
+<details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="classname"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-classname'><code>CohortGenerator::SubsetOperator$classname()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="getQueryBuilder"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-getQueryBuilder'><code>CohortGenerator::SubsetOperator$getQueryBuilder()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="isEqualTo"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-isEqualTo'><code>CohortGenerator::SubsetOperator$isEqualTo()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="print"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-print'><code>CohortGenerator::SubsetOperator$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="publicFields"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-publicFields'><code>CohortGenerator::SubsetOperator$publicFields()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="CohortGenerator" data-topic="SubsetOperator" data-id="toJSON"><a href='../../CohortGenerator/html/SubsetOperator.html#method-SubsetOperator-toJSON'><code>CohortGenerator::SubsetOperator$toJSON()</code></a></span></li>
 </ul>

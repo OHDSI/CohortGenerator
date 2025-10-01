@@ -47,8 +47,7 @@ subsetDef <- createCohortSubsetDefinition(
   name = "test definition 123",
   definitionId = 1,
   subsetOperators = subsetOperations,
-  subsetCohortNameTemplate = "FOOO @baseCohortName @subsetDefinitionName @operatorNames",
-  operatorNameConcatString = "zzzz"
+  subsetCohortNameTemplate = "FOOO @baseCohortName @subsetDefinitionName"
 )
 
 cohortDefinitionSet <- cohortDefinitionSet |>
