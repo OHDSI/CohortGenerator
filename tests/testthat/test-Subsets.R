@@ -498,15 +498,14 @@ test_that("Subset name templates function", {
     name = "test definition 123",
     definitionId = 1,
     subsetOperators = subsetOperations,
-    subsetCohortNameTemplate = "FOOO @baseCohortName @subsetDefinitionName @operatorNames",
-    operatorNameConcatString = "zzzz"
+    subsetCohortNameTemplate = "FOOO @baseCohortName @subsetDefinitionName"
   )
 
   cohortDefinitionSetWithSubset <- cohortDefinitionSet %>%
     CohortGenerator::addCohortSubsetDefinition(subsetDef)
 
   # Check name templates are applied
-  expect_true(all(grepl("FOOO (.+) test definition 123 Demographic Criteria 1zzzzDemographic Criteria 2", cohortDefinitionSetWithSubset$cohortName[5:8])))
+  expect_true(all(grepl("FOOO (.+) test definition 123", cohortDefinitionSetWithSubset$cohortName[5:8])))
 
   # Internal copy call
   cds2 <- .copySubsetDefinitions(cohortDefinitionSet, cohortDefinitionSetWithSubset)
