@@ -31,6 +31,7 @@ LimitSubsetOperator
 \item \href{#method-SubsetOperator-isEqualTo}{\code{SubsetOperator$isEqualTo()}}
 \item \href{#method-SubsetOperator-toList}{\code{SubsetOperator$toList()}}
 \item \href{#method-SubsetOperator-toJSON}{\code{SubsetOperator$toJSON()}}
+\item \href{#method-SubsetOperator-print}{\code{SubsetOperator$print()}}
 \item \href{#method-SubsetOperator-clone}{\code{SubsetOperator$clone()}}
 }
 }
@@ -146,6 +147,23 @@ convert to json serialized representation
 
 \subsection{Returns}{
 list representation of object as json character
+Pretty print
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-SubsetOperator-print"></a>}}
+\if{latex}{\out{\hypertarget{method-SubsetOperator-print}{}}}
+\subsection{Method \code{print()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{SubsetOperator$print(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{further arguments passed to or from other methods.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

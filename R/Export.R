@@ -173,6 +173,14 @@ addSubsetColumns <- function(cohortDefinitionSet) {
   return(cohortDefinitionSet)
 }
 
+addTemplateColumns <- function(cohortDefinitionSet) {
+  if (nrow(cohortDefinitionSet) > 0 & !hasTemplateDefinitions(cohortDefinitionSet)) {
+    cohortDefinitionSet$isTemplatedCohort <- FALSE
+  }
+  
+  return(cohortDefinitionSet)
+}
+
 exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) {
   cohortDefinitions <- createEmptyResult("cg_cohort_definition")
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
@@ -180,17 +188,16 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   if (!is.null(cohortDefinitionSet)) {
 
     templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
-    cohortTemplates <- data.frame()
-    for (template in templateDefinitions) {
-      row <- data.frame(
-        template_definition_id = template$id,
-        json = template$toJson() |> as.character()
-      )
-      cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
-    }
-
-    if (nrow(cohortTemplates) == 0) {
-      cohortDefinitions$isTemplatedCohort <- FALSE
+    if (length(templateDefinitions) > 0) {
+      for (template in templateDefinitions) {
+        row <- data.frame(
+          templateDefinitionId = template$id,
+          json = template$toJson() |> as.character()
+        )
+        cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
+      }
+    } else {
+      cohortDefinitionSet <- cohortDefinitionSet |> addTemplateColumns()
     }
 
     cdsCohortSubsets <- getSubsetDefinitions(cohortDefinitionSet)

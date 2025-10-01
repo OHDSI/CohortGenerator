@@ -566,3 +566,26 @@ loadTemplateDefinitionsFolder <- function(cohortDefinitionSet, templateFolder) {
 
   return(cohortDefinitionSet)
 }
+
+hasTemplateDefinitions <- function(x) {
+  containsTemplateDefs <- length(attr(x, "templateCohortDefinitions")) > 0
+  
+  if (!containsTemplateDefs) {
+    warns <- checkmate::checkList(attr(x, "templateCohortDefinitions"),
+                                  min.len = 1,
+                                  types = "CohortTemplateDefinition"
+    )
+    if (length(warns)) {
+      containsTemplateDefs <- FALSE
+    }
+  }
+  
+  hasColumns <- all(c("isTemplatedCohort") %in% colnames(x))
+  
+  return(all(
+    hasColumns,
+    containsTemplateDefs,
+    isTRUE(attr(x, "hasTemplateDefinitions"))
+  ))
+}
+
