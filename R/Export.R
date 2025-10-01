@@ -173,10 +173,33 @@ addSubsetColumns <- function(cohortDefinitionSet) {
   return(cohortDefinitionSet)
 }
 
+addTemplateColumns <- function(cohortDefinitionSet) {
+  if (nrow(cohortDefinitionSet) > 0 & !hasTemplateDefinitions(cohortDefinitionSet)) {
+    cohortDefinitionSet$isTemplatedCohort <- FALSE
+  }
+  
+  return(cohortDefinitionSet)
+}
+
 exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) {
   cohortDefinitions <- createEmptyResult("cg_cohort_definition")
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
+  cohortTemplates <- createEmptyResult("cg_cohort_template_definition")
   if (!is.null(cohortDefinitionSet)) {
+
+    templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
+    if (length(templateDefinitions) > 0) {
+      for (template in templateDefinitions) {
+        row <- data.frame(
+          templateDefinitionId = template$id,
+          json = template$toJson() |> as.character()
+        )
+        cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
+      }
+    } else {
+      cohortDefinitionSet <- cohortDefinitionSet |> addTemplateColumns()
+    }
+
     cdsCohortSubsets <- getSubsetDefinitions(cohortDefinitionSet)
     if (length(cdsCohortSubsets) > 0) {
       for (i in seq_along(cdsCohortSubsets)) {
@@ -199,6 +222,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
       cohortDefinitionSet$description <- ""
     }
     cohortDefinitions <- cohortDefinitionSet[, intersect(names(cohortDefinitions), names(cohortDefinitionSet))]
+
   }
   writeCsv(
     x = cohortDefinitions,
@@ -207,6 +231,11 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   writeCsv(
     x = cohortSubsets,
     file = file.path(outputFolder, "cg_cohort_subset_definition.csv")
+  )
+
+  writeCsv(
+    x = cohortTemplates,
+    file = file.path(outputFolder, "cg_cohort_template_definition.csv")
   )
 }
 
@@ -220,7 +249,7 @@ createEmptyResult <- function(tableName) {
   result <- vector(length = length(columns))
   names(result) <- columns
   result <- tibble::as_tibble(t(result), name_repair = "check_unique")
-  result <- result[FALSE, ]
+  result <- result[FALSE,]
   return(result)
 }
 
