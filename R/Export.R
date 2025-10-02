@@ -185,16 +185,24 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   cohortDefinitions <- createEmptyResult("cg_cohort_definition")
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
   cohortTemplates <- createEmptyResult("cg_cohort_template_definition")
+  cohortTemplateLink <- createEmptyResult("cg_cohort_template_link")
   if (!is.null(cohortDefinitionSet)) {
 
     templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
     if (length(templateDefinitions) > 0) {
+      cohortTemplates <- data.frame()
+      cohortTemplateLink <- data.frame()
       for (template in templateDefinitions) {
         row <- data.frame(
-          templateDefinitionId = template$id,
-          json = template$toJson() |> as.character()
+          templateDefinitionId = template$getChecksum(),
+          json = template$toJson() |> as.character(),
+          templateName = template$name,
+          templateSql = template$templateSql
         )
         cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
+        linkRows <- data.frame(templateDefinitionId = template$getChecksum(),
+                               cohortDefinitionId = template$references$cohortId)
+        cohortTemplateLink <- dplyr::bind_rows(cohortTemplateLink, linkRows)
       }
     } else {
       cohortDefinitionSet <- cohortDefinitionSet |> addTemplateColumns()
@@ -236,6 +244,11 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   writeCsv(
     x = cohortTemplates,
     file = file.path(outputFolder, "cg_cohort_template_definition.csv")
+  )
+
+  writeCsv(
+    x = cohortTemplateLink,
+    file = file.path(outputFolder, "cg_cohort_template_link.csv")
   )
 }
 

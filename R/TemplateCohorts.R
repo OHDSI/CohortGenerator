@@ -533,6 +533,7 @@ generateTemplateCohorts <- function(connection,
   return(statusTbl)
 }
 
+
 loadTemplateFromJson <- function(filePath) {
   CohortTemplateDefinition$new(ParallelLogger::loadSettingsFromJson(filePath))
 }
