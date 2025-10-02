@@ -10,4 +10,4 @@ CREATE TABLE @database_schema.@table_prefix@cg_cohort_template_definition (
     PRIMARY KEY(template_definition_id)
 );
 
-UPDATE TABLE @database_schema.@table_prefix@cg_cohort_definition SET is_templated_cohort = 0;
+UPDATE @database_schema.@table_prefix@cg_cohort_definition SET is_templated_cohort = 0;
