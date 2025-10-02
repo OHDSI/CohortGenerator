@@ -460,3 +460,22 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
 
   unlink(cohortStatsFolder)
 })
+
+
+test_that("export template definitions functions", {
+  outputFolder <- tempfile()
+  dir.create(outputFolder)
+  on.exit(unlink(outputFolder, recursive = TRUE))
+  cds <- createEmptyCohortDefinitionSet() |> addSqlCohortDefinition("SELECT * FROM FOO", 1, "test sql")
+  exportCohortDefinitionSet(outputFolder, cohortDefinitionSet = cds)
+  checkmate::expect_file_exists(file.path(outputFolder, "cg_cohort_template_link.csv"))
+  checkmate::expect_file_exists(file.path(outputFolder, "cg_cohort_template_definition.csv"))
+  checkmate::expect_file_exists(file.path(outputFolder, "cg_cohort_definition.csv"))
+
+  cs <- read.csv(file.path(outputFolder, "cg_cohort_definition.csv"))
+  checkmate::expect_data_frame(cs, nrows = 1)
+  cs <- read.csv(file.path(outputFolder, "cg_cohort_template_definition.csv"))
+  checkmate::expect_data_frame(cs, nrows = 1)
+  cs <- read.csv(file.path(outputFolder, "cg_cohort_template_link.csv"))
+  checkmate::expect_data_frame(cs, nrows = 1)
+})
