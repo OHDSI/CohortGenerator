@@ -165,7 +165,7 @@ exportCohortStatsTables <- function(connectionDetails,
 
 addSubsetColumns <- function(cohortDefinitionSet) {
   if (nrow(cohortDefinitionSet) > 0 & !hasSubsetDefinitions(cohortDefinitionSet)) {
-    cohortDefinitionSet$isSubset <- FALSE
+    cohortDefinitionSet$isSubset <- 0
     cohortDefinitionSet$subsetDefinitionId <- NA
     cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
   }
@@ -175,7 +175,7 @@ addSubsetColumns <- function(cohortDefinitionSet) {
 
 addTemplateColumns <- function(cohortDefinitionSet) {
   if (nrow(cohortDefinitionSet) > 0 & !hasTemplateDefinitions(cohortDefinitionSet)) {
-    cohortDefinitionSet$isTemplatedCohort <- FALSE
+    cohortDefinitionSet$isTemplatedCohort <- 0
   }
   
   return(cohortDefinitionSet)
@@ -204,6 +204,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
                                cohortDefinitionId = template$references$cohortId)
         cohortTemplateLink <- dplyr::bind_rows(cohortTemplateLink, linkRows)
       }
+      cohortDefinitionSet$isTemplatedCohort <- as.integer(cohortDefinitionSet$isTemplatedCohort)
     } else {
       cohortDefinitionSet <- cohortDefinitionSet |> addTemplateColumns()
     }
@@ -219,6 +220,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
           )
         )
       }
+      cohortDefinitionSet$isSubset <- as.integer(cohortDefinitionSet$isSubset)
     } else {
       cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns()
     }
