@@ -165,7 +165,7 @@ exportCohortStatsTables <- function(connectionDetails,
 
 addSubsetColumns <- function(cohortDefinitionSet) {
   if (nrow(cohortDefinitionSet) > 0 & !hasSubsetDefinitions(cohortDefinitionSet)) {
-    cohortDefinitionSet$isSubset <- FALSE
+    cohortDefinitionSet$isSubset <- 0
     cohortDefinitionSet$subsetDefinitionId <- NA
     cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
   }
@@ -175,7 +175,7 @@ addSubsetColumns <- function(cohortDefinitionSet) {
 
 addTemplateColumns <- function(cohortDefinitionSet) {
   if (nrow(cohortDefinitionSet) > 0 & !hasTemplateDefinitions(cohortDefinitionSet)) {
-    cohortDefinitionSet$isTemplatedCohort <- FALSE
+    cohortDefinitionSet$isTemplatedCohort <- 0
   }
   
   return(cohortDefinitionSet)
@@ -185,17 +185,26 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   cohortDefinitions <- createEmptyResult("cg_cohort_definition")
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
   cohortTemplates <- createEmptyResult("cg_cohort_template_definition")
+  cohortTemplateLink <- createEmptyResult("cg_cohort_template_link")
   if (!is.null(cohortDefinitionSet)) {
 
     templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
     if (length(templateDefinitions) > 0) {
+      cohortTemplates <- data.frame()
+      cohortTemplateLink <- data.frame()
       for (template in templateDefinitions) {
         row <- data.frame(
-          templateDefinitionId = template$id,
-          json = template$toJson() |> as.character()
+          templateDefinitionId = template$getChecksum(),
+          json = template$toJson() |> as.character(),
+          templateName = template$name,
+          templateSql = template$templateSql
         )
         cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
+        linkRows <- data.frame(templateDefinitionId = template$getChecksum(),
+                               cohortDefinitionId = template$references$cohortId)
+        cohortTemplateLink <- dplyr::bind_rows(cohortTemplateLink, linkRows)
       }
+      cohortDefinitionSet$isTemplatedCohort <- as.integer(cohortDefinitionSet$isTemplatedCohort)
     } else {
       cohortDefinitionSet <- cohortDefinitionSet |> addTemplateColumns()
     }
@@ -211,6 +220,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
           )
         )
       }
+      cohortDefinitionSet$isSubset <- as.integer(cohortDefinitionSet$isSubset)
     } else {
       cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns()
     }
@@ -236,6 +246,11 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   writeCsv(
     x = cohortTemplates,
     file = file.path(outputFolder, "cg_cohort_template_definition.csv")
+  )
+
+  writeCsv(
+    x = cohortTemplateLink,
+    file = file.path(outputFolder, "cg_cohort_template_link.csv")
   )
 }
 
