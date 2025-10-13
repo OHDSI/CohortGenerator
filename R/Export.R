@@ -190,8 +190,6 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
 
     templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
     if (length(templateDefinitions) > 0) {
-      cohortTemplates <- data.frame()
-      cohortTemplateLink <- data.frame()
       for (template in templateDefinitions) {
         row <- data.frame(
           templateDefinitionId = template$getChecksum(),
@@ -212,7 +210,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
     cdsCohortSubsets <- getSubsetDefinitions(cohortDefinitionSet)
     if (length(cdsCohortSubsets) > 0) {
       for (i in seq_along(cdsCohortSubsets)) {
-        cohortSubsets <- rbind(
+        cohortSubsets <- dplyr::bind_rows(
           cohortSubsets,
           data.frame(
             subsetDefinitionId = cdsCohortSubsets[[i]]$definitionId,
@@ -257,14 +255,41 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
 createEmptyResult <- function(tableName) {
   columns <- readCsv(
     file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
-  ) %>%
-    dplyr::filter(.data$tableName == !!tableName) %>%
-    dplyr::pull(.data$columnName) %>%
-    SqlRender::snakeCaseToCamelCase()
-  result <- vector(length = length(columns))
-  names(result) <- columns
-  result <- tibble::as_tibble(t(result), name_repair = "check_unique")
+  ) |>
+    dplyr::filter(.data$tableName == !!tableName)
+
+  # Initialize an empty list to hold columns
+  resultList <- list()
+  
+  # Loop through each column info to create a strongly typed empty column
+  for (i in seq_len(nrow(columns))) {
+    colName <- SqlRender::snakeCaseToCamelCase(columns$columnName[i])
+    dataType <- columns$dataType[i]
+    
+    # Map data types to R types
+    colValue <- switch(tolower(dataType),
+                       "bigint" = as.numeric(NA),
+                       "varchar" = as.character(NA),
+                       "text" = as.character(NA),
+                       "int" = as.integer(NA),
+                       "timestamp" = as.POSIXct(NA))
+    
+    # Fallback when no data type is found
+    if (is.null(colValue)) {
+      warning(paste(colName, "has data type", tolower(dataType), "which was not converted."))
+      colValue <- as.character(NA)
+    }
+    
+    # Assign to list
+    resultList[[colName]] <- colValue
+  }  
+  
+  # Convert list to tibble
+  result <- tibble::as_tibble(resultList)
+  
+  # Ensure zero rows
   result <- result[FALSE,]
+  
   return(result)
 }
 
