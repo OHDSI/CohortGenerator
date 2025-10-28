@@ -934,7 +934,7 @@ LimitSubsetOperator <- R6::R6Class(
       }
       checkmate::assertDate(calendarStartDate, null.ok = TRUE)
 
-      if (is.na(calendarStartDate))
+      if (length(calendarStartDate) && is.na(calendarStartDate))
         stop("Must provide a valid date, not NA")
 
       private$.calendarStartDate <- calendarStartDate
@@ -955,7 +955,7 @@ LimitSubsetOperator <- R6::R6Class(
       }
       checkmate::assertDate(calendarEndDate, null.ok = TRUE)
 
-      if (is.na(calendarEndDate))
+      if (length(calendarEndDate) && is.na(calendarEndDate))
         stop("Must provide a valid date, not NA")
 
       private$.calendarEndDate <- calendarEndDate
