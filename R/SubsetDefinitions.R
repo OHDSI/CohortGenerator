@@ -378,6 +378,10 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
     cohortDefinitionSet$isSubset <- FALSE
   }
 
+  if (!"isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
+    cohortDefinitionSet$isTemplatedCohort <- FALSE
+  }
+
   if (!is.null(targetCohortIds)) {
     checkmate::assertSubset(targetCohortIds, cohortDefinitionSet$cohortId)
   } else {
@@ -455,6 +459,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
           cohortName = subsetCohortName,
           subsetParent = toPair[1],
           isSubset = TRUE,
+          isTemplatedCohort = FALSE,
           sql = subsetSql,
           json = as.character(.toJSON(repr)),
           subsetDefinitionId = subsetDefinitionCopy$definitionId
