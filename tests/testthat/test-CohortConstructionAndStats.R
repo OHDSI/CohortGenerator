@@ -99,17 +99,6 @@ test_that("Call instatiateCohortSet with vector as cohortDefinitionSet parameter
   )
 })
 
-test_that("Call instatiateCohortSet with incremental = TRUE and no folder specified", {
-  expect_error(
-    generateCohortSet(
-      connectionDetails = connectionDetails,
-      cohortDefinitionSet = getCohortsForTest(cohorts),
-      incremental = TRUE
-    ),
-    message = "Must specify incrementalFolder"
-  )
-})
-
 # getInclusionStatistics ------
 test_that("Call getInclusionStatistics without connection or connectionDetails", {
   expect_error(getInclusionStatistics(),
@@ -127,8 +116,7 @@ test_that("Generate cohorts before creating cohort tables errors out", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithStats,
-    incremental = FALSE,
-    incrementalFolder = file.path(outputFolder, "RecordKeeping")
+    incremental = FALSE
   ))
 })
 
@@ -146,8 +134,7 @@ test_that("Create cohorts with stats, Incremental = F, Gather Results", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithStats,
-    incremental = FALSE,
-    incrementalFolder = file.path(outputFolder, "RecordKeeping")
+    incremental = FALSE
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
   rm(cohortsWithStats)
@@ -169,8 +156,7 @@ test_that("Create cohorts with stats, Incremental = T", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithStats,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
   # 2nd run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
@@ -180,8 +166,7 @@ test_that("Create cohorts with stats, Incremental = T", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithStats,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
   
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
@@ -205,8 +190,7 @@ test_that("Create cohorts without stats, Incremental = F", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithoutStats,
-    incremental = FALSE,
-    incrementalFolder = file.path(outputFolder, "RecordKeeping")
+    incremental = FALSE
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   rm(cohortsWithoutStats)
@@ -228,8 +212,7 @@ test_that("Create cohorts without stats, Incremental = T", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithoutStats,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
   # Next run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
@@ -239,8 +222,7 @@ test_that("Create cohorts without stats, Incremental = T", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithoutStats,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   unlink(recordKeepingFolder, recursive = TRUE)
@@ -335,8 +317,7 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithoutStats,
     stopOnError = FALSE,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "FAILED", ]), 1)
@@ -357,8 +338,7 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithoutStats,
     stopOnError = FALSE,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 1)

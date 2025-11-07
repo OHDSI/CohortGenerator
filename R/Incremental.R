@@ -39,53 +39,6 @@ computeChecksum <- function(val) {
   return(hashes)
 }
 
-#' Is a task required when running in incremental mode
-#'
-#' @description
-#' This function will attempt to check the \code{recordKeepingFile}
-#' to determine if an individual operation has completed by comparing the
-#' keys passed into the function with the checksum supplied
-#'
-#' @param ...       Parameter values used to identify the key
-#'                  in the incremental record keeping file
-#'
-#' @param checksum  The checksum representing the operation to check
-#'
-#' @param recordKeepingFile    A file path to a CSV file containing the record
-#'                             keeping information.
-#'
-#' @param verbose   When TRUE, this function will output if a particular operation
-#'                  has completed based on inspecting the recordKeepingFile.
-#'
-#' @return
-#' Returns TRUE if the operation has completed according to the contents of
-#' the record keeping file.
-#'
-#' @export
-isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
-  if (file.exists(recordKeepingFile)) {
-    recordKeeping <- .readCsv(file = recordKeepingFile)
-    task <- recordKeeping[getKeyIndex(list(...), recordKeeping), ]
-    if (nrow(task) == 0) {
-      return(TRUE)
-    }
-    if (nrow(task) > 1) {
-      stop("Duplicate key ", as.character(list(...)), " found in recordkeeping table")
-    }
-    if (task$checksum == checksum) {
-      if (verbose) {
-        key <- list(...)
-        key <- paste(sprintf("%s = '%s'", names(key), key), collapse = ", ")
-        rlang::inform(paste0("Skipping ", key, " because it is unchanged from earlier run"))
-      }
-      return(FALSE)
-    } else {
-      return(TRUE)
-    }
-  } else {
-    return(TRUE)
-  }
-}
 
 #' Get a list of tasks required when running in incremental mode
 #'
@@ -108,6 +61,7 @@ isTaskRequired <- function(..., checksum, recordKeepingFile, verbose = TRUE) {
 #'
 #' @export
 getRequiredTasks <- function(..., checksum, recordKeepingFile) {
+  lifecycle::deprecate_warn("This function has been depricated and will be removed in a future verison  of CohortGenerator")
   tasks <- list(...)
   if (file.exists(recordKeepingFile) && length(tasks[[1]]) > 0) {
     recordKeeping <- .readCsv(file = recordKeepingFile)
@@ -145,6 +99,7 @@ getRequiredTasks <- function(..., checksum, recordKeepingFile) {
 #'
 #' @export
 recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE) {
+  lifecycle::deprecate_warn("This function has been depricated and will be removed in a future verison  of CohortGenerator")
   if (!incremental) {
     return()
   }
@@ -174,6 +129,7 @@ recordTasksDone <- function(..., checksum, recordKeepingFile, incremental = TRUE
 #'
 #' @export
 saveIncremental <- function(data, fileName, ...) {
+  lifecycle::deprecate_warn("This function has been depricated and will be removed in a future verison  of CohortGenerator")
   if (length(list(...)) == 0) {
     warning(paste0("saveIncremental missing key values arguments. Not saving any information to ", fileName))
     return()

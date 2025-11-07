@@ -203,32 +203,24 @@ generateAndExportCohorts <- function(connection,
     cohortCounts <- cohortCountsFromDb[names(cohortCounts)]
   }
 
-  # Save the generation information
-  rlang::inform("Saving cohort generation information")
-  if (!is.null(cohortsGenerated) && nrow(cohortsGenerated) > 0) {
-    cohortsGenerated$databaseId <- databaseId
-    # Remove any cohorts that were skipped
-    cohortsGenerated <- cohortsGenerated[toupper(cohortsGenerated$generationStatus) != "SKIPPED", ]
-    if (incremental) {
-      # Format the data for saving
-      names(cohortsGenerated) <- SqlRender::camelCaseToSnakeCase(names(cohortsGenerated))
-      saveIncremental(
-        data = cohortsGenerated,
-        fileName = cohortsGeneratedFileName,
-        cohort_id = cohortsGenerated$cohort_id
-      )
-    } else {
-      writeCsv(
-        x = cohortsGenerated,
-        file = cohortsGeneratedFileName
-      )
-    }
-  }
+  computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
+                                                       cohortDatabaseSchema = cohortDatabaseSchema,
+                                                       cohortTableNames = cohortTableNames) |>
+    dplyr::rename(lastChecksum = "checksum")
+
+  computedChecksums$databaseId <- databaseId
+  # Remove any cohorts that were skipped
+  computedChecksums <- computedChecksums$generationStatus <- "COMPLETE"
+  writeCsv(
+    x = computedChecksums,
+    file = cohortsGeneratedFileName
+  )
 
   rlang::inform("Saving cohort counts")
   cohortCounts <- cohortCounts %>%
     enforceMinCellValue("cohortEntries", minCellCount) %>%
     enforceMinCellValue("cohortSubjects", minCellCount)
+
   writeCsv(
     x = cohortCounts,
     file = cohortCountsFileName

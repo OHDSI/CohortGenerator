@@ -153,12 +153,10 @@ generateCohortSet <- function(connectionDetails = NULL,
     stop("You must provide either a database connection or the connection details.")
   }
   if (incremental) {
-    if (is.null(incrementalFolder)) {
-      stop("Must specify incrementalFolder when incremental = TRUE")
+    if (!is.null(incrementalFolder)) {
+      lifecycle::deprecate_warn("incrementalFolder parameter has been depricated and will be removed in a future verison  of CohortGenerator")
     }
-    if (!file.exists(incrementalFolder)) {
-      dir.create(incrementalFolder, recursive = TRUE)
-    }
+
   }
 
   start <- Sys.time()

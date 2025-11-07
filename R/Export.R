@@ -94,24 +94,7 @@ exportCohortStatsTables <- function(connectionDetails,
       }
     }
 
-    if (incremental) {
-      # Dynamically build the arguments to the saveIncremental
-      # to specify the primary key(s) for the file
-      args <- list(
-        data = data,
-        file = fullFileName
-      )
-      for (i in seq_along(primaryKeyColumns)) {
-        colName <- ifelse(isTRUE(snakeCaseToCamelCase), yes = primaryKeyColumns[i], no = SqlRender::camelCaseToSnakeCase(primaryKeyColumns[i]))
-        args[[colName]] <- data[[colName]]
-      }
-      do.call(
-        what = CohortGenerator::saveIncremental,
-        args = args
-      )
-    } else {
-      .writeCsv(x = data, file = fullFileName)
-    }
+    .writeCsv(x = data, file = fullFileName)
   }
 
   tablesToExport <- data.frame(
