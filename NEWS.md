@@ -31,7 +31,7 @@ CohortGenerator 0.12.0
 
 New Features
 
-- Backwards compatable extension to CohortSubsetOperators and cohortSubsetWindows to allow windowing to be logic of any
+- Backwards compatible extension to CohortSubsetOperators and cohortSubsetWindows to allow windowing to be logic of any
 length
 - Include observation table when creating negative control cohorts (#198)
 - Improvements to cohort subset documentation (#199)

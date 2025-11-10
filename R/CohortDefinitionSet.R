@@ -195,7 +195,7 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
 #' @param sqlFolder        The name of the folder that will hold the SQL representation
 #'                         of the cohort.
 #' @param templateFolder  Defines the folder to store sql template cohorts that can be loaded as part of the definition
-#'                        Json files are loaded into cohort definition set
+#'                        JSON files are loaded into cohort definition set
 #'
 #' @param cohortFileNameFormat  Defines the format string  for naming the cohort
 #'                              JSON and SQL files. The format string follows the

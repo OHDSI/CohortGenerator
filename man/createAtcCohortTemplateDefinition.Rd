@@ -28,7 +28,7 @@ createAtcCohortTemplateDefinition(
 \item{cohortDatabaseSchema}{Cohort database schema}
 
 \item{nameSuffix}{A name suffix to use to add to the cohort names - this is useful if you're using multiple
-paramaterized versions of this definition}
+parameterized versions of this definition}
 
 \item{mergeIngredientEras}{(optional) Boolean indicating if different ingredients under the same ATC code should be merged}
 

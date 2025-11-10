@@ -12,7 +12,7 @@ Class for automating the creation of bulk cohorts
 This class provides a framework for automating the creation of bulk cohorts
 by defining template SQL queries and associated callbacks to execute them.
 This is useful when defining lots of exposure or outcomes for cohorts that are very general in nature.
-For example, all rxNorm ingredient cohorts, all ATC ingredient cohorts or all SNOMED condition occurences with > x
+For example, all RxNorm ingredient cohorts, all ATC ingredient cohorts or all SNOMED condition occurrences with > x
 diagnosis codes.
 
 These cohorts can then be subsetted with common cohort subset operations such as limiting to specific age, gender,
@@ -174,7 +174,7 @@ to list
 \if{html}{\out{<a id="method-CohortTemplateDefinition-toList"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-toList}{}}}
 \subsection{Method \code{toList()}}{
-Used for seralizing the definition
+Used for serializing the definition
 to json
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$toList()}\if{html}{\out{</div>}}
@@ -185,7 +185,7 @@ to json
 \if{html}{\out{<a id="method-CohortTemplateDefinition-toJson"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-toJson}{}}}
 \subsection{Method \code{toJson()}}{
-json seraalized form of the template definition
+json serialized form of the template definition
 save to disk
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$toJson()}\if{html}{\out{</div>}}

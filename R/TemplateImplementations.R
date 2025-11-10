@@ -27,7 +27,7 @@
 #' @param priorObservationPeriod (optional) Required prior observation period for individuals
 #' @param vocabularyDatabaseSchema Vocabulary database schema
 #' @param nameSuffix    A name suffix to use to add to the cohort names - this is useful if you're using multiple
-#'                      paramaterized versions of this definition
+#'                      parameterized versions of this definition
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createRxNormCohortTemplateDefinition <- function(connection,
@@ -80,7 +80,7 @@ createRxNormCohortTemplateDefinition <- function(connection,
 #' @param priorObservationPeriod (optional) Required prior observation period for individuals
 #' @param vocabularyDatabaseSchema Vocabulary database schema
 #' @param nameSuffix    A name suffix to use to add to the cohort names - this is useful if you're using multiple
-#'                      paramaterized versions of this definition
+#'                      parameterized versions of this definition
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createAtcCohortTemplateDefinition <- function(connection,
@@ -131,7 +131,7 @@ createAtcCohortTemplateDefinition <- function(connection,
 #' @description
 #' Template cohort definition for all OHDSI standard conditions. The cohortId = conceptId * 1000.
 #' The "identifierExpression" can be customized for uniqueness.
-#' This definition uses any valid snomed condition code and all its descedants.
+#' This definition uses any valid SNOMED condition code and all its descendants.
 #' 
 #' Excluded terms include word patterns:
 #' 
@@ -148,7 +148,7 @@ createAtcCohortTemplateDefinition <- function(connection,
 #' @param requireSecondDiagnosis (optional) Require more than one diagnosis code
 #' @param vocabularyDatabaseSchema Vocabulary database schema
 #' @param nameSuffix    A name suffix to use to add to the cohort names - this is useful if you're using multiple
-#'                      paramaterized versions of this definition
+#'                      parameterized versions of this definition
 #' @returns A CohortTemplateDefinition instance
 #' @export
 createSnomedCohortTemplateDefinition <- function(connection,

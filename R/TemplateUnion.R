@@ -41,7 +41,7 @@
 #' ```
 #' A U B:  [--------]     [-------]
 #' ```
-#' It is never allowed to have multiple overlapping eras for the same indiviudal within a cohort
+#' It is never allowed to have multiple overlapping eras for the same individual within a cohort
 #'
 #' @param cohortIds A vector of `cohort_definition_id` values for the input cohorts.
 #' @param unionCohortId The `cohort_definition_id` for the resulting union cohort.
@@ -111,7 +111,7 @@ createUnionCohortTemplate <- function(cohortIds,
 #' @description
 #' This utility function adds the union of any two or more cohort ids to the cohort definition set with a new id and name.
 #'
-#' If a name parameter is not provideded this will be auto generated as the union of the provided cohort id
+#' If a name parameter is not provided this will be auto generated as the union of the provided cohort id
 #' @param cohortDefinitionSet   cohort definition set
 #' @inheritParams createUnionCohortTemplate
 #' @export

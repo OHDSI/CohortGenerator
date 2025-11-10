@@ -19,7 +19,7 @@
 #' This class provides a framework for automating the creation of bulk cohorts
 #' by defining template SQL queries and associated callbacks to execute them.
 #' This is useful when defining lots of exposure or outcomes for cohorts that are very general in nature.
-#' For example, all rxNorm ingredient cohorts, all ATC ingredient cohorts or all SNOMED condition occurences with > x
+#' For example, all RxNorm ingredient cohorts, all ATC ingredient cohorts or all SNOMED condition occurrences with > x
 #' diagnosis codes.
 #'
 #' These cohorts can then be subsetted with common cohort subset operations such as limiting to specific age, gender,
@@ -275,7 +275,7 @@ CohortTemplateDefinition <- R6::R6Class(
 
     #' to list
     #' @description
-    #' Used for seralizing the definition
+    #' Used for serializing the definition
     toList = function() {
       def <- list(
         name = self$name,
@@ -290,7 +290,7 @@ CohortTemplateDefinition <- R6::R6Class(
 
     #' to json
     #' @description
-    #' json seraalized form of the template definition
+    #' json serialized form of the template definition
     toJson = function() {
       .toJSON(self$toList())
     },
@@ -312,13 +312,13 @@ CohortTemplateDefinition <- R6::R6Class(
 #'
 #' @param sqlArgs                 Optional parameters for execution of the query - for example vocabulary schema
 #'                                These are arguments that should be passed to the sql. These are used in the checksum
-#'                                if using paramtaried sql for different definitions (e.g. a definition requiring
-#'                                varying observation lengths. This is used to distingish them)
+#'                                if using parameterized sql for different definitions (e.g. a definition requiring
+#'                                varying observation lengths. This is used to distinguish them)
 #'                                This should not include cdm/data source
-#'                                specfic parameters such as the cohort table names,
+#'                                specific parameters such as the cohort table names,
 #'                                cdm database schema or vocabulary database schema. If the definition requires
 #'                                runtime specific arguments (e.g. non standard tables) this presents a problem
-#'                                for seralizing and uniqiuely idenitifying template cohort definitions.
+#'                                for serializing and uniquely identifying template cohort definitions.
 #' @param references              This is a data frame that must contain cohortId and cohortName. Optionally, this
 #'                                can contain the columns sql and json as well. It must be bindable to a
 #'                                cohort definition set instance.
@@ -426,11 +426,11 @@ addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDe
 #' @template cohortDefinitionSet
 #' @param cohortId        Id of cohort to add. Must be unique in the cohort definition set
 #' @param cohortName      Name of the cohort to add
-#' @param sql             Ohdsi Stanaard sql
+#' @param sql             OHDSI SqlRender-compatible sql
 #' @param json            optional json parameters
 #' @param ...             arguments for the sql. Note that this does not need to include cohort_table,
 #'                        cohort_database_schema, cdm_database_schema or vocabulary_database_schema
-#' @param tanslateSql     perfom translation on the sql. This is ignored if the sql has already been translated
+#' @param tanslateSql     perform translation on the sql. This is ignored if the sql has already been translated
 #'                        with the sql render function.
 #'
 #' @export

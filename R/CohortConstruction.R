@@ -24,7 +24,7 @@
 #' end time in this table. The last end time will be the cohort that is in the cohort table (assuming no other manual
 #' modifications are made to the cohort table itself).
 #'
-#' This can be used downstream of CohortGeneratro to evaluate if cohorts are consistent with passed definitions.
+#' This can be used downstream of CohortGenerator to evaluate if cohorts are consistent with passed definitions.
 #'
 #' @inheritParams generateCohortSet
 #'
