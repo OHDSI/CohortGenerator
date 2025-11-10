@@ -71,7 +71,7 @@ cohortId and seed. Default is "cohortId * 1000 + seed", which is substituted and
 \item{incremental}{Create only cohorts that haven't been created before?}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
-kept of which definition has been executed.}
+kept of which definition has been executed. (deprceated)}
 }
 \value{
 sampledCohortDefinitionSet - a data.frame like object that contains the resulting identifiers and modified names of cohorts

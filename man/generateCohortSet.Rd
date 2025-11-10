@@ -60,7 +60,7 @@ be identified in the return value from this function.}
 \item{incremental}{Create only cohorts that haven't been created before?}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
-kept of which definition has been executed.}
+kept of which definition has been executed. (deprceated)}
 }
 \value{
 A data.frame consisting of the following columns:

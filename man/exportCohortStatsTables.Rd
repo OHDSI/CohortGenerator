@@ -47,7 +47,7 @@ convert from snake_case to camelCase? Default is FALSE}
 \item{fileNamesInSnakeCase}{Should the exported files use snake_case? Default is FALSE}
 
 \item{incremental}{If \code{incremental = TRUE}, results are written to update values instead of
-overwriting an existing results}
+overwriting an existing results (deprecated)}
 
 \item{databaseId}{Optional - when specified, the databaseId will be added
 to the exported results}

@@ -60,7 +60,7 @@ or all times the outcomeConceptId occurs for a person. Values accepted: 'all' or
 \item{incremental}{Create only cohorts that haven't been created before?}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where records are
-kept of which definition has been executed.}
+kept of which definition has been executed. (deprecated)}
 
 \item{detectOnDescendants}{When set to TRUE, detectOnDescendants will use the vocabulary to find negative control
 outcomes using the outcomeConceptId and all descendants via the concept_ancestor table.

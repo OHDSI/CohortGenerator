@@ -89,7 +89,7 @@ count is below this threshold, it will be set to `-minCellCount`.}
 
 \item{incrementalFolder}{If \code{incremental = TRUE}, specify a folder where
 records are kept of which definition has been
-executed.}
+executed. (deprecated)}
 }
 \description{
 Run a cohort generation and export results
