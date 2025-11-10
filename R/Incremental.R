@@ -28,7 +28,7 @@
 #'
 #' @return
 #' Returns a string containing the checksum
-#'
+#' @family utils
 #' @export
 computeChecksum <- function(val) {
   val <- as.character(val)
