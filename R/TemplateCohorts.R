@@ -477,8 +477,7 @@ generateTemplateCohorts <- function(connection,
                                     cohortDatabaseSchema,
                                     cohortTableNames,
                                     stopOnError,
-                                    incremental,
-                                    recordKeepingFile) {
+                                    incremental) {
 
   templateDefs <- getTemplateDefinitions(cohortDefinitionSet)
   statusTbl <- data.frame()
@@ -504,14 +503,6 @@ generateTemplateCohorts <- function(connection,
                                               cdmDatabaseSchema = cdmDatabaseSchema,
                                               cohortTableNames = cohortTableNames)
         ParallelLogger::logInfo("Template Cohort complete: ", template$getName())
-        # legacy task log not inside class as this will probably be removed
-        if (incremental) {
-          recordTasksDone(
-            cohortId = refs$cohortId,
-            checksum = template$getChecksum(),
-            recordKeepingFile = recordKeepingFile
-          )
-        }
         status
       }, error = function(err) {
         ParallelLogger::logError(err)

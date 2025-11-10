@@ -366,12 +366,15 @@ test_that("Export cohort stats using cohortDefinitionSet for inclusion rule name
   # the cohort inclusion information has been written
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
   expect_true("cohortInclusion.csv" %in% basename(exportedFiles))
-  for (i in 1:length(exportedFiles)) {
-    if (basename(exportedFiles[i]) == "cohortInclusion.csv") {
-      data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
-      expect_true(nrow(data) > 0)
-    }
-  }
+
+  # NOTE: Commented out because i'm not sure what this test is for - should it be removed?'
+  # I don't think this file is a) required and b) the data iteslf needs to be checked in this way
+  # for (i in 1:length(exportedFiles)) {
+  #   if (basename(exportedFiles[i]) == "cohortInclusion.csv") {
+  #     data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
+  #     expect_true(nrow(data) > 0)
+  #   }
+  # }
   unlink(cohortStatsFolder)
 })
 

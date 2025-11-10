@@ -307,9 +307,6 @@ test_that("subset generation", {
   expect_true("isSubset" %in% colnames(cohortDefinitionSetWithSubset))
   expect_true("subsetParent" %in% colnames(cohortDefinitionSetWithSubset))
 
-  recordKeepingFolder <- tempfile("gen_subsets")
-  unlink(recordKeepingFolder)
-  on.exit(unlink(recordKeepingFolder), add = TRUE)
   cohortTableNames <- getCohortTableNames(cohortTable = "gen_subsets")
   createCohortTables(
     connectionDetails = connectionDetails,
@@ -323,8 +320,7 @@ test_that("subset generation", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortDefinitionSetWithSubset,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
   # 2nd run using incremental mode to verify that all cohorts are created
   # but the return indicates that nothing new was generated
@@ -334,13 +330,11 @@ test_that("subset generation", {
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortDefinitionSetWithSubset,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
 
   expect_equal(nrow(cohortsGenerated), nrow(cohortDefinitionSetWithSubset))
   expect_true(all(cohortsGenerated$generationStatus == "SKIPPED"))
-  unlink(recordKeepingFolder, recursive = TRUE)
 })
 
 test_that("Subset definition creation and retrieval with definitionId != 1", {

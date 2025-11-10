@@ -41,7 +41,7 @@
 #' @param fileNamesInSnakeCase        Should the exported files use snake_case? Default is FALSE
 #'
 #' @param incremental                 If \code{incremental = TRUE}, results are written to update values instead of
-#'                                    overwriting an existing results
+#'                                    overwriting an existing results (deprecated)
 #'
 #' @param databaseId                  Optional - when specified, the databaseId will be added
 #'                                    to the exported results
@@ -112,6 +112,7 @@ exportCohortStatsTables <- function(connectionDetails,
     ))
   } else {
     inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
+    inclusionRules$databaseId <- databaseId
     names(inclusionRules) <- SqlRender::camelCaseToSnakeCase(names(inclusionRules))
     exportStats(
       data = inclusionRules,

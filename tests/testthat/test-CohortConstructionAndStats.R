@@ -141,7 +141,6 @@ test_that("Create cohorts with stats, Incremental = F, Gather Results", {
 })
 
 test_that("Create cohorts with stats, Incremental = T", {
-  recordKeepingFolder <- file.path(outputFolder, "RecordKeeping")
   cohortTableNames <- getCohortTableNames(cohortTable = "genStatsInc")
   createCohortTables(
     connectionDetails = connectionDetails,
@@ -172,7 +171,6 @@ test_that("Create cohorts with stats, Incremental = T", {
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
   expect_true(all(cohortsGenerated$generationStatus == "SKIPPED"))
   rm(cohortsWithStats)
-  unlink(recordKeepingFolder, recursive = TRUE)
 })
 
 test_that("Create cohorts without stats, Incremental = F", {
@@ -197,7 +195,6 @@ test_that("Create cohorts without stats, Incremental = F", {
 })
 
 test_that("Create cohorts without stats, Incremental = T", {
-  recordKeepingFolder <- file.path(outputFolder, "RecordKeeping")
   cohortTableNames <- getCohortTableNames(cohortTable = "noStatsInc")
   createCohortTables(
     connectionDetails = connectionDetails,
@@ -225,7 +222,6 @@ test_that("Create cohorts without stats, Incremental = T", {
     incremental = TRUE
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
-  unlink(recordKeepingFolder, recursive = TRUE)
 })
 
 test_that("Create cohorts with stopOnError = TRUE", {
@@ -292,7 +288,6 @@ test_that("Create cohorts with stopOnError = FALSE", {
 })
 
 test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
-  recordKeepingFolder <- file.path(outputFolder, "RecordKeeping")
   cohortTableNames <- getCohortTableNames(cohortTable = "stop_error_f_inc_t")
   createCohortTables(
     connectionDetails = connectionDetails,
@@ -343,7 +338,6 @@ test_that("Create cohorts with stopOnError = FALSE and incremental = TRUE", {
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithoutStats))
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "COMPLETE", ]), 1)
   expect_equal(nrow(cohortsGenerated[cohortsGenerated$generationStatus == "SKIPPED", ]), 4)
-  unlink(recordKeepingFolder, recursive = TRUE)
   if (file.exists("errorReportSql.txt")) {
     unlink("errorReportSql.txt")
   }
