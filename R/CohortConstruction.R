@@ -154,7 +154,7 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   if (!is.null(incrementalFolder)) {
-    lifecycle::deprecate_warn("incrementalFolder parameter is no longer used and will be removed in a future version")
+    lifecycle::deprecate_warn("1.1.0","incrementalFolder parameter is no longer used and will be removed in a future version")
   }
 
   start <- Sys.time()
