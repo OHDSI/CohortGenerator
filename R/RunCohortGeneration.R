@@ -205,9 +205,7 @@ generateAndExportCohorts <- function(connection,
 
   computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
                                                        cohortDatabaseSchema = cohortDatabaseSchema,
-                                                       cohortTableNames = cohortTableNames) |>
-    # Data model is inconsistent
-    dplyr::rename(cohortId = "cohortDefinitionId")
+                                                       cohortTableNames = cohortTableNames)
   computedChecksums$databaseId <- databaseId
   computedChecksums$generationStatus <- "COMPLETE"
 
