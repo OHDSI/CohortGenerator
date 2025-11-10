@@ -19,14 +19,18 @@
 #' @export
 #' @description
 #' Utility pattern for creating an indication subset from a set of target cohorts.
-#' The approach applies this definition to an exposure or set of exposures, requiring individuals to have
-#' a prior history of a condition before receiving treatment. By default, this creats new cohorts that have evidence
-#' of the indication cohort at any point in their history.
-#' For many situations it may be preffered to look back within a specific window of drug exposure and the look window
-#' period should be accordingly.
-#' Additionally, the R attribute of "indicationSubsetDefinitions" is attached to the cohort definition set.
-#' This can be obtained by calling `getIndicationSubsetDefinitionIds`, which should return the set of subset definition
-#' ids that are associated with indications.
+#' The approach applies this subset definition to an exposure (target cohort) or 
+#' set of exposures (multiple target cohorts), requiring the individual to have
+#' a history of the indication cohort overlapping the start of the first exposure. 
+#' The first exposure must have the `requiredPriorObservationTime` and 
+#' `requiredFollowUpTime`. If specified, the first exposure must also fall 
+#' within the `studyStartDate` and `studyEndDate` and also meet the age and 
+#' gender criteria.
+#' 
+#' Additionally, the R attribute of "indicationSubsetDefinitions" is attached to 
+#' the cohort definition set. This can be obtained by calling 
+#' `getIndicationSubsetDefinitionIds`, which should return the set of subset 
+#' definition ids that are associated with indications.
 #'
 #' @examples
 #' \dontrun{
@@ -106,16 +110,6 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
   checkmate::assertTRUE(all(indicationCohortIds %in% cohortDefinitionSet$cohortId))
 
   subsetOperators <- list()
-  subsetOperators[[length(subsetOperators) + 1]] <- createCohortSubsetOperator(
-    cohortIds = indicationCohortIds,
-    negate = FALSE,
-    cohortCombinationOperator = cohortCombinationOperator,
-    windows = list(
-      createSubsetCohortWindow(lookbackWindowStart, lookbackWindowEnd, "cohortStart"),
-      createSubsetCohortWindow(lookForwardWindowStart, lookForwardWindowEnd, "cohortStart")
-    )
-  )
-
   subsetOperators[[length(subsetOperators) + 1]] <- createLimitSubsetOperator(
     priorTime = requiredPriorObservationTime,
     followUpTime = requiredFollowUpTime,
@@ -131,6 +125,16 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
       gender = genderConceptIds
     )
   }
+  
+  subsetOperators[[length(subsetOperators) + 1]] <- createCohortSubsetOperator(
+    cohortIds = indicationCohortIds,
+    negate = FALSE,
+    cohortCombinationOperator = cohortCombinationOperator,
+    windows = list(
+      createSubsetCohortWindow(lookbackWindowStart, lookbackWindowEnd, "cohortStart"),
+      createSubsetCohortWindow(lookForwardWindowStart, lookForwardWindowEnd, "cohortStart")
+    )
+  )
 
   subsetDef <- createCohortSubsetDefinition(
     name = subsetDefinitionName,
