@@ -79,7 +79,6 @@ reference:
       - addCohortTemplateDefintion
       - addSqlCohortDefinition
       - addUnionCohortDefinition
-      - computeChecksum
       - createAtcCohortTemplateDefinition
       - createCohortTemplateDefintion
       - createRxNormCohortTemplateDefinition
@@ -150,11 +149,8 @@ reference:
       mode to only generate cohorts when their definition has changed from
       a previous run.
     contents:
-      - getRequiredTasks
-      - isTaskRequired
-      - recordTasksDone
-      - saveIncremental
       - getLastGeneratedCohortChecksums
+      - computeChecksum
       
   - title: "Cohort Sampling"
     desc: >
