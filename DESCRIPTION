@@ -24,6 +24,7 @@ Imports:
   checkmate,
   digest,
   dplyr,
+  lifecycle,
   lubridate,
   methods,
   ParallelLogger (>= 3.0.0),
