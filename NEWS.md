@@ -2,6 +2,7 @@ CohortGenerator 1.0.0
 =====================
 
 New Features
+
 - SQL cohorts as first class citizens - SQL templates for non-standard cohorts or large, bulk operations (#133, #247)
 - Remove file-based incremental operations. Creation of database cohort_checksum tables that enables verification of generated cohorts and incremental execution in distributed environments (#206, #131, #254)
 - Abbreviated logging for cohorts already generated (#113)
@@ -12,6 +13,7 @@ New Features
 - Add pretty print to subset definitions that includes SQL and logic definitions (#218)
 
 Bug Fixes
+
 - Limit subset operator produces broken SQL if R `date` of length 0 is passed instead of NULL (#252)
 - Remove warning around finalize (#242)
 

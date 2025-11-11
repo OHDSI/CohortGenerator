@@ -14,7 +14,7 @@ This R package contains functions for generating cohorts and cohort subsets usin
 -   Create a cohort table and generate [cohorts](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html) against an OMOP CDM.
 -   Get the count of subjects and events in a cohort.
 -   Define subsets of cohorts using different criteria or other cohorts.
--   Provides functions for performing incremental tasks. This is used by CohortGenerator to skip any cohorts that were successfully generated in a previous run. This functionality is generic enough for other packages to use for performing their own incremental tasks.
+-   Create cohorts using templated SQL.
 
 # Example
 
@@ -72,7 +72,7 @@ CohortGenerator is an R package.
 
 # System requirements
 
-Requires R (version 3.6.0 or higher).
+Requires R (version 4.1.0 or higher).
 
 # Getting Started
 
@@ -91,6 +91,8 @@ Documentation can be found on the [package website](https://ohdsi.github.io/Coho
 PDF versions of the documentation are also available:
 
 -   Vignette: [Generating Cohorts](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/GeneratingCohorts.pdf)
+-   Vignette: [Creating Cohort Subset Definitions](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/CreatingCohortSubsetDefinitions.pdf)
+-   Vigentte: [Using Template Cohorts](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/UsingTemplateCohorts.pdf)
 -   Package manual: [CohortGenerator.pdf](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/extras/CohortGenerator.pdf)
 
 # Support
@@ -108,8 +110,8 @@ CohortGenerator is licensed under Apache License 2.0
 
 # Development
 
-This package is being developed in RStudio.
+CohortGenerator is being developed in RStudio.
 
 ### Development status
 
-Beta
+CohortGenerator is actively being used in several studies and is ready for use.
