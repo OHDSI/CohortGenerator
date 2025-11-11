@@ -25,5 +25,5 @@ CREATE TABLE @database_schema.@table_prefix@cg_cohort_template_link (
 
 UPDATE @database_schema.@table_prefix@cg_cohort_definition SET is_templated_cohort = 0;
 
-ALTER TABLE @database_schema.@table_prefix@cg_cohort_generation RENAME COLUMN cohort_id TO cohort_definition_name;
+ALTER TABLE @database_schema.@table_prefix@cg_cohort_generation RENAME COLUMN cohort_id TO cohort_definition_id;
 ALTER TABLE @database_schema.@table_prefix@cg_cohort_generation DROP COLUMN cohort_name;

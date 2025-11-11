@@ -47,3 +47,5 @@ rmarkdown::render("vignettes/SamplingCohorts.Rmd",
                                           toc = TRUE,
                                           number_sections = TRUE))
 
+# Regenerate results for upload to embed in the package
+source("extras/CreateResultsForUpload.R")
