@@ -3,7 +3,7 @@ CohortGenerator 1.0.0
 
 New Features
 - SQL cohorts as first class citizens - SQL templates for non-standard cohorts or large, bulk operations (#133, #247)
-- Creation of cohort_checksum tables that enable verification of generated cohorts and incremental execution in distributed environments (#206, #131)
+- Remove file-based incremental operations. Creation of database cohort_checksum tables that enables verification of generated cohorts and incremental execution in distributed environments (#206, #131, #254)
 - Abbreviated logging for cohorts already generated (#113)
 - Added `maximumChortDuration` to the LimitSubset operator (#240)
 - Added "recipe" functions for creating indication and restriction subsets (#209)
