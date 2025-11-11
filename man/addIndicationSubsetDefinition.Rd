@@ -70,17 +70,17 @@ Optionally, this data frame may contain: \describe{
 }
 \description{
 Utility pattern for creating an indication subset from a set of target cohorts.
-The approach applies this subset definition to an exposure (target cohort) or 
+The approach applies this subset definition to an exposure (target cohort) or
 set of exposures (multiple target cohorts), requiring the individual to have
-a history of the indication cohort overlapping the start of the first exposure. 
-The first exposure must have the `requiredPriorObservationTime` and 
-`requiredFollowUpTime`. If specified, the first exposure must also fall 
-within the `studyStartDate` and `studyEndDate` and also meet the age and 
+a history of the indication cohort overlapping the start of the first exposure.
+The first exposure must have the `requiredPriorObservationTime` and
+`requiredFollowUpTime`. If specified, the first exposure must also fall
+within the `studyStartDate` and `studyEndDate` and also meet the age and
 gender criteria.
 
-Additionally, the R attribute of "indicationSubsetDefinitions" is attached to 
-the cohort definition set. This can be obtained by calling 
-`getIndicationSubsetDefinitionIds`, which should return the set of subset 
+Additionally, the R attribute of "indicationSubsetDefinitions" is attached to
+the cohort definition set. This can be obtained by calling
+`getIndicationSubsetDefinitionIds`, which should return the set of subset
 definition ids that are associated with indications.
 }
 \examples{

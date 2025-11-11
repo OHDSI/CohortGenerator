@@ -71,8 +71,7 @@ sql <- "INSERT INTO @cohort_database_schema.@cohort_table
         -- Find any matches of drugs named 'asprin' in the drug concept table
         WHERE lower(c.concept_name) like '\%asprin\%'; "
 
-cohortDefinitionSet = createEmptyCohortDefinitionSet() |>
- addSqlCohortDefinition(sql = sql, cohortId = 1, cohortName = "my asprin cohort")
-
+cohortDefinitionSet <- createEmptyCohortDefinitionSet() |>
+  addSqlCohortDefinition(sql = sql, cohortId = 1, cohortName = "my asprin cohort")
 
 }
