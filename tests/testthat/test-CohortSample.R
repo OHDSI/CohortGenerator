@@ -7,7 +7,6 @@ test_that("sampleCohortDefinitionSet", {
     cohortTable = "cohort",
     cohortSampleTable = "cohort_sample"
   )
-  recordKeepingFolder <- file.path(outputFolder, "RecordKeepingSamples")
 
   createCohortTables(
     connectionDetails = connectionDetails,
@@ -24,8 +23,7 @@ test_that("sampleCohortDefinitionSet", {
     cdmDatabaseSchema = "main",
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
 
   sampledCohorts <- sampleCohortDefinitionSet(
@@ -35,8 +33,7 @@ test_that("sampleCohortDefinitionSet", {
     seed = 64374,
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
   checkmate::expect_data_frame(sampledCohorts, nrow = nrow(cds))
   expect_true(attr(sampledCohorts, "isSampledCohortDefinition"))
@@ -61,8 +58,7 @@ test_that("sampleCohortDefinitionSet", {
     seed = 64374,
     cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
-    incremental = TRUE,
-    incrementalFolder = recordKeepingFolder
+    incremental = TRUE
   )
 
   expect_true(all(sampledCohorts2$status == "skipped"))
@@ -278,8 +274,7 @@ test_that("Error on bad params", {
       seed = 64374,
       cohortDatabaseSchema = "main",
       cohortTableNames = cohortTableNames,
-      incremental = TRUE,
-      incrementalFolder = recordKeepingFolder
+      incremental = TRUE
     )
   })
 
@@ -293,8 +288,7 @@ test_that("Error on bad params", {
       seed = 64374,
       cohortDatabaseSchema = "main",
       cohortTableNames = cohortTableNames,
-      incremental = TRUE,
-      incrementalFolder = recordKeepingFolder
+      incremental = TRUE
     )
   })
 
@@ -307,8 +301,7 @@ test_that("Error on bad params", {
       seed = 64374,
       cohortDatabaseSchema = "main",
       cohortTableNames = cohortTableNames,
-      incremental = TRUE,
-      incrementalFolder = NULL
+      incremental = TRUE
     )
   })
 })

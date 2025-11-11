@@ -2,40 +2,14 @@
 % Please edit documentation in R/Subsets.R
 \name{createCohortSubset}
 \alias{createCohortSubset}
-\title{A definition of subset functions to be applied to a set of cohorts}
+\title{Create Cohort Subset Operator}
 \usage{
-createCohortSubset(
-  name = NULL,
-  cohortIds,
-  cohortCombinationOperator,
-  negate,
-  windows = list(),
-  startWindow = NULL,
-  endWindow = NULL
-)
+createCohortSubset(...)
 }
 \arguments{
-\item{name}{optional name of operator}
-
-\item{cohortIds}{integer - set of cohort ids to subset to}
-
-\item{cohortCombinationOperator}{"any" or "all" if using more than one cohort id allow a subject to be in any cohort
-or require that they are in all cohorts in specified windows}
-
-\item{negate}{The opposite of this definition - include patients who do NOT meet the specified criteria}
-
-\item{windows}{A list of time windows to use to evaluate subset cohorts in relation to the
-target  cohorts. The logic is to always apply these windows with logical AND conditions.
-See [@seealso [createSubsetCohortWindow()]] for more details on how to create
-these windows.}
-
-\item{startWindow}{DEPRECATED: Use `windows` instead.}
-
-\item{endWindow}{DEPRECATED: Use `windows` instead.}
-}
-\value{
-a CohortSubsetOperator instance
+\item{...}{Arguments passed to the underlying operator.}
 }
 \description{
-A definition of subset functions to be applied to a set of cohorts
+Subset cohorts using specified limit criteria.
+deprecated This function is deprecated. Please use `createCohortSubsetOperator()` instead.
 }

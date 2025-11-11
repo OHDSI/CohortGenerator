@@ -295,8 +295,6 @@ test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'fi
 })
 
 test_that("incremental mode", {
-  incrementalFolder <- tempfile()
-  on.exit(unlink(incrementalFolder, recursive = TRUE, force = TRUE))
   cohortTableNames <- getCohortTableNames(cohortTable = "nc_custom_cohortid")
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection), add = TRUE)
@@ -315,12 +313,10 @@ test_that("incremental mode", {
     negativeControlOutcomeCohortSet = ncSet,
     occurrenceType = "first",
     detectOnDescendants = TRUE,
-    incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
 
   expect_equal(res, "FINISHED")
-  checkmate::expect_file_exists(file.path(incrementalFolder, "GeneratedNegativeControls.csv"))
   cohortCounts <- getCohortCounts(
     connection = connection,
     cohortDatabaseSchema = "main",
@@ -337,7 +333,6 @@ test_that("incremental mode", {
     negativeControlOutcomeCohortSet = ncSet,
     occurrenceType = "first",
     detectOnDescendants = TRUE,
-    incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
 
@@ -353,7 +348,6 @@ test_that("incremental mode", {
     negativeControlOutcomeCohortSet = ncSet,
     occurrenceType = "first",
     detectOnDescendants = FALSE,
-    incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
 
@@ -369,7 +363,6 @@ test_that("incremental mode", {
     negativeControlOutcomeCohortSet = ncSet,
     occurrenceType = "first",
     detectOnDescendants = FALSE,
-    incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
 
@@ -385,7 +378,6 @@ test_that("incremental mode", {
     negativeControlOutcomeCohortSet = ncSet,
     occurrenceType = "all",
     detectOnDescendants = FALSE,
-    incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
 
@@ -401,7 +393,6 @@ test_that("incremental mode", {
     negativeControlOutcomeCohortSet = ncSet,
     occurrenceType = "all",
     detectOnDescendants = FALSE,
-    incrementalFolder = incrementalFolder,
     incremental = TRUE
   )
 

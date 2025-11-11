@@ -35,8 +35,7 @@ test_that("createSnomedCohortTemplateDefinition", {
                     cohortTableNames = cohortTableNames,
                     cohortDefinitionSet = cohortDefinitionSet,
                     stopOnError = TRUE,
-                    incremental = TRUE,
-                    incrementalFolder = testOutputFolder)
+                    incremental = TRUE)
   # check the count is consistent with expectations
   count <- getCohortCounts(
     connection = connection,
@@ -77,8 +76,7 @@ test_that("createRxNormCohortTemplateDefinition", {
                     cohortTableNames = cohortTableNames,
                     cohortDefinitionSet = cohortDefinitionSet,
                     stopOnError = TRUE,
-                    incremental = TRUE,
-                    incrementalFolder = testOutputFolder)
+                    incremental = TRUE)
   # check the count is consistent with expectations
   count <- getCohortCounts(
     connection = connection,
@@ -145,8 +143,7 @@ test_that("createAtcCohortTemplateDefinition", {
                     cohortTableNames = cohortTableNames,
                     cohortDefinitionSet = cohortDefinitionSet,
                     stopOnError = TRUE,
-                    incremental = TRUE,
-                    incrementalFolder = testOutputFolder)
+                    incremental = TRUE)
   # check the count is consistent with expectations
   count <- getCohortCounts(
     connection = connection,

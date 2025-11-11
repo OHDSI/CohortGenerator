@@ -32,12 +32,12 @@ for (i in 1:length(cohortJsonFiles)) {
 }
 
 subsetOperations <- list(
-  createDemographicSubset(
+  createDemographicSubsetOperator(
     name = "Demographic Criteria 1",
     ageMin = 18,
     ageMax = 64
   ),
-  createDemographicSubset(
+  createDemographicSubsetOperator(
     name = "Demographic Criteria 2",
     ageMin = 32,
     ageMax = 48
@@ -47,8 +47,7 @@ subsetDef <- createCohortSubsetDefinition(
   name = "test definition 123",
   definitionId = 1,
   subsetOperators = subsetOperations,
-  subsetCohortNameTemplate = "FOOO @baseCohortName @subsetDefinitionName @operatorNames",
-  operatorNameConcatString = "zzzz"
+  subsetCohortNameTemplate = "FOOO @baseCohortName @subsetDefinitionName"
 )
 
 cohortDefinitionSet <- cohortDefinitionSet |>

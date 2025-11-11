@@ -477,8 +477,7 @@ generateTemplateCohorts <- function(connection,
                                     cohortDatabaseSchema,
                                     cohortTableNames,
                                     stopOnError,
-                                    incremental,
-                                    recordKeepingFile) {
+                                    incremental) {
 
   templateDefs <- getTemplateDefinitions(cohortDefinitionSet)
   statusTbl <- data.frame()
@@ -504,14 +503,6 @@ generateTemplateCohorts <- function(connection,
                                               cdmDatabaseSchema = cdmDatabaseSchema,
                                               cohortTableNames = cohortTableNames)
         ParallelLogger::logInfo("Template Cohort complete: ", template$getName())
-        # legacy task log not inside class as this will probably be removed
-        if (incremental) {
-          recordTasksDone(
-            cohortId = refs$cohortId,
-            checksum = template$getChecksum(),
-            recordKeepingFile = recordKeepingFile
-          )
-        }
         status
       }, error = function(err) {
         ParallelLogger::logError(err)
@@ -532,6 +523,7 @@ generateTemplateCohorts <- function(connection,
 
   return(statusTbl)
 }
+
 
 loadTemplateFromJson <- function(filePath) {
   CohortTemplateDefinition$new(ParallelLogger::loadSettingsFromJson(filePath))
@@ -566,3 +558,26 @@ loadTemplateDefinitionsFolder <- function(cohortDefinitionSet, templateFolder) {
 
   return(cohortDefinitionSet)
 }
+
+hasTemplateDefinitions <- function(x) {
+  containsTemplateDefs <- length(attr(x, "templateCohortDefinitions")) > 0
+  
+  if (!containsTemplateDefs) {
+    warns <- checkmate::checkList(attr(x, "templateCohortDefinitions"),
+                                  min.len = 1,
+                                  types = "CohortTemplateDefinition"
+    )
+    if (length(warns)) {
+      containsTemplateDefs <- FALSE
+    }
+  }
+  
+  hasColumns <- all(c("isTemplatedCohort") %in% colnames(x))
+  
+  return(all(
+    hasColumns,
+    containsTemplateDefs,
+    isTRUE(attr(x, "hasTemplateDefinitions"))
+  ))
+}
+

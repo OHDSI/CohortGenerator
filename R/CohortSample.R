@@ -71,8 +71,7 @@
                           seed,
                           tempEmulationSchema,
                           checksum,
-                          incremental,
-                          recordKeepingFile) {
+                          incremental) {
   startTime <- lubridate::now()
   randSampleTableName <- paste0("#SAMPLE_TABLE_", seed)
   DatabaseConnector::insertTable(
@@ -105,8 +104,7 @@
                 cohortChecksumTable = checksumTable,
                 incremental = incremental,
                 cohortId = outputCohortId,
-                checksum = checksum,
-                recordKeepingFile = recordKeepingFile)$generationStatus
+                checksum = checksum)$generationStatus
 }
 
 
@@ -200,15 +198,8 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
     stop("You must provide either a database connection or the connection details.")
   }
 
-  if (incremental) {
-    if (is.null(incrementalFolder)) {
-      stop("Must specify incrementalFolder when incremental = TRUE")
-    }
-    if (!file.exists(incrementalFolder)) {
-      dir.create(incrementalFolder, recursive = TRUE)
-    }
-
-    recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohortSamples.csv")
+  if (!is.null(incrementalFolder)) {
+    lifecycle::deprecate_warn("1.1.0","incrementalFolder parameter is no longer used and will be removed in a future version")
   }
   # check uniqueness of output ids
   .checkUniqueOutputIds(cohortDefinitionSet$cohortIds, seed, identifierExpression, cohortTableNames)
@@ -302,8 +293,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
         seed = seed + targetCohortId, # Seed is unique to each target cohort
         tempEmulationSchema = tempEmulationSchema,
         checksum = sampleChecksum,
-        incremental = incremental,
-        recordKeepingFile = recordKeepingFile
+        incremental = incremental
       )
 
       return(sampledCohortDefinition)

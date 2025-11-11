@@ -65,7 +65,7 @@
 #'
 #' @param incrementalFolder If \code{incremental = TRUE}, specify a folder where
 #'                          records are kept of which definition has been
-#'                          executed.
+#'                          executed. (deprecated)
 #'
 #' @export
 runCohortGeneration <- function(connectionDetails,
@@ -112,6 +112,10 @@ runCohortGeneration <- function(connectionDetails,
     dir.create(outputFolder, recursive = T)
   }
 
+  if (!is.null(incrementalFolder)) {
+    lifecycle::deprecate_warn("1.1.0","incrmentalFolder parameter is no longer used and will be removed in a future version")
+  }
+
   # Create the cohort tables
   createCohortTables(
     connection = connection,
@@ -131,8 +135,7 @@ runCohortGeneration <- function(connectionDetails,
     outputFolder = outputFolder,
     databaseId = databaseId,
     minCellCount = minCellCount,
-    incremental = incremental,
-    incrementalFolder = incrementalFolder
+    incremental = incremental
   )
 
   generateAndExportNegativeControls(
@@ -147,8 +150,7 @@ runCohortGeneration <- function(connectionDetails,
     outputFolder = outputFolder,
     databaseId = databaseId,
     minCellCount = minCellCount,
-    incremental = incremental,
-    incrementalFolder = incrementalFolder
+    incremental = incremental
   )
 
   # Export the results data model specification
@@ -170,8 +172,7 @@ generateAndExportCohorts <- function(connection,
                                      outputFolder,
                                      databaseId,
                                      minCellCount,
-                                     incremental,
-                                     incrementalFolder) {
+                                     incremental) {
   # Generate the cohorts
   cohortsGenerated <- createEmptyResult("cg_cohort_generation")
   cohortsGeneratedFileName <- file.path(outputFolder, "cg_cohort_generation.csv")
@@ -187,8 +188,7 @@ generateAndExportCohorts <- function(connection,
       cohortTableNames = cohortTableNames,
       cohortDefinitionSet = cohortDefinitionSet,
       stopOnError = stopOnError,
-      incremental = incremental,
-      incrementalFolder = incrementalFolder
+      incremental = incremental
     )
 
     cohortCountsFromDb <- getCohortCounts(
@@ -203,32 +203,22 @@ generateAndExportCohorts <- function(connection,
     cohortCounts <- cohortCountsFromDb[names(cohortCounts)]
   }
 
-  # Save the generation information
-  rlang::inform("Saving cohort generation information")
-  if (!is.null(cohortsGenerated) && nrow(cohortsGenerated) > 0) {
-    cohortsGenerated$databaseId <- databaseId
-    # Remove any cohorts that were skipped
-    cohortsGenerated <- cohortsGenerated[toupper(cohortsGenerated$generationStatus) != "SKIPPED", ]
-    if (incremental) {
-      # Format the data for saving
-      names(cohortsGenerated) <- SqlRender::camelCaseToSnakeCase(names(cohortsGenerated))
-      saveIncremental(
-        data = cohortsGenerated,
-        fileName = cohortsGeneratedFileName,
-        cohort_id = cohortsGenerated$cohort_id
-      )
-    } else {
-      writeCsv(
-        x = cohortsGenerated,
-        file = cohortsGeneratedFileName
-      )
-    }
-  }
+  computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
+                                                       cohortDatabaseSchema = cohortDatabaseSchema,
+                                                       cohortTableNames = cohortTableNames)
+  computedChecksums$databaseId <- databaseId
+  computedChecksums$generationStatus <- "COMPLETE"
+
+  writeCsv(
+    x = computedChecksums,
+    file = cohortsGeneratedFileName
+  )
 
   rlang::inform("Saving cohort counts")
   cohortCounts <- cohortCounts %>%
     enforceMinCellValue("cohortEntries", minCellCount) %>%
     enforceMinCellValue("cohortSubjects", minCellCount)
+
   writeCsv(
     x = cohortCounts,
     file = cohortCountsFileName
@@ -265,8 +255,7 @@ generateAndExportNegativeControls <- function(connection,
                                               outputFolder,
                                               databaseId,
                                               minCellCount,
-                                              incremental,
-                                              incrementalFolder) {
+                                              incremental) {
   # Generate any negative controls
   negativeControlOutcomes <- createEmptyResult("cg_cohort_definition_neg_ctrl")
   negativeControlOutcomesFileName <- file.path(outputFolder, "cg_cohort_definition_neg_ctrl.csv")
@@ -282,8 +271,7 @@ generateAndExportNegativeControls <- function(connection,
       tempEmulationSchema = tempEmulationSchema,
       occurrenceType = occurrenceType,
       detectOnDescendants = detectOnDescendants,
-      incremental = incremental,
-      incrementalFolder = incrementalFolder
+      incremental = incremental
     )
 
     # Assemble the negativeControlOutcomes for export

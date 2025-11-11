@@ -103,7 +103,7 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
 #' @param incremental                 Create only cohorts that haven't been created before?
 #'
 #' @param incrementalFolder           If \code{incremental = TRUE}, specify a folder where records are
-#'                                    kept of which definition has been executed.
+#'                                    kept of which definition has been executed. (deprceated)
 #' @returns
 #'
 #' A data.frame consisting of the following columns:
@@ -152,13 +152,9 @@ generateCohortSet <- function(connectionDetails = NULL,
   if (is.null(connection) && is.null(connectionDetails)) {
     stop("You must provide either a database connection or the connection details.")
   }
-  if (incremental) {
-    if (is.null(incrementalFolder)) {
-      stop("Must specify incrementalFolder when incremental = TRUE")
-    }
-    if (!file.exists(incrementalFolder)) {
-      dir.create(incrementalFolder, recursive = TRUE)
-    }
+
+  if (!is.null(incrementalFolder)) {
+    lifecycle::deprecate_warn("1.1.0","incrementalFolder parameter is no longer used and will be removed in a future version")
   }
 
   start <- Sys.time()
@@ -168,7 +164,6 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
-  recordKeepingFile <- file.path(incrementalFolder, "GeneratedCohorts.csv")
   if ("isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
     cohortDefinitionSet <- cohortDefinitionSet |> dplyr::filter(!.data$isTemplatedCohort)
 
@@ -181,8 +176,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                           cohortDatabaseSchema = cohortDatabaseSchema,
                                                           cohortTableNames = cohortTableNames,
                                                           stopOnError = stopOnError,
-                                                          incremental = incremental,
-                                                          recordKeepingFile = recordKeepingFile)
+                                                          incremental = incremental)
       return(generatedTemplateCohorts)
     }
   } else {
@@ -268,7 +262,6 @@ generateCohortSet <- function(connectionDetails = NULL,
     cohortTableNames = cohortTableNames,
     stopIfError = stopOnError,
     incremental = incremental,
-    recordKeepingFile = recordKeepingFile,
     stopOnError = stopOnError,
     progressBar = TRUE
   )
@@ -280,8 +273,7 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                       cohortDatabaseSchema = cohortDatabaseSchema,
                                                       cohortTableNames = cohortTableNames,
                                                       stopOnError = stopOnError,
-                                                      incremental = incremental,
-                                                      recordKeepingFile = recordKeepingFile)
+                                                      incremental = incremental)
 
   subsetsGenerated <- list()
   if (length(subsetsToGenerate)) {
@@ -298,7 +290,6 @@ generateCohortSet <- function(connectionDetails = NULL,
       cohortTableNames = cohortTableNames,
       stopIfError = stopOnError,
       incremental = incremental,
-      recordKeepingFile = recordKeepingFile,
       stopOnError = stopOnError,
       progressBar = TRUE
     )
@@ -313,7 +304,7 @@ generateCohortSet <- function(connectionDetails = NULL,
 }
 
 # Helper function used within the tryCatch block below
-.runCohortSql <- function(connection, sql, startTime, resultsDatabaseSchema, cohortChecksumTable, incremental, cohortId, checksum, recordKeepingFile) {
+.runCohortSql <- function(connection, sql, startTime, resultsDatabaseSchema, cohortChecksumTable, incremental, cohortId, checksum) {
 
   startTimeTt <- as.numeric(Sys.time()) * 1000
   startSql <- "
@@ -353,14 +344,6 @@ generateCohortSet <- function(connectionDetails = NULL,
                                                progressBar = FALSE,
                                                reportOverallTime = FALSE)
 
-  if (incremental) {
-    recordTasksDone(
-      cohortId = cohortId,
-      checksum = checksum,
-      recordKeepingFile = recordKeepingFile
-    )
-  }
-
   return(list(
     generationStatus = "COMPLETE",
     startTime = startTime,
@@ -392,8 +375,6 @@ generateCohortSet <- function(connectionDetails = NULL,
 #'
 #' @param incremental       Create only cohorts that haven't been created before?
 #'
-#' @param recordKeepingFile If \code{incremental = TRUE}, this file will contain
-#'                          information on cohorts already generated
 #' @noRd
 #' @keywords internal
 generateCohort <- function(cohortId = NULL,
@@ -405,8 +386,7 @@ generateCohort <- function(cohortId = NULL,
                            cohortDatabaseSchema,
                            cohortTableNames,
                            stopIfError = TRUE,
-                           incremental,
-                           recordKeepingFile) {
+                           incremental) {
   # Get the index of the cohort record for the current cohortId
   i <- which(cohortDefinitionSet$cohortId == cohortId)
   cohortName <- cohortDefinitionSet$cohortName[i]
@@ -473,8 +453,7 @@ generateCohort <- function(cohortId = NULL,
       cohortChecksumTable = cohortTableNames$cohortChecksumTable,
       incremental = incremental,
       cohortId = cohortDefinitionSet$cohortId[i],
-      checksum = cohortDefinitionSet$checksum[i],
-      recordKeepingFile = recordKeepingFile
+      checksum = cohortDefinitionSet$checksum[i]
     )
   }, error = function(e) {
     endTime <- lubridate::now()

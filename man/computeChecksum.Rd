@@ -18,3 +18,4 @@ This is used as part of the incremental operations to hash a value
 to store in a record keeping file. This function leverages the md5
 hash from the digest package
 }
+\concept{utils}

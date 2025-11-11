@@ -1,4 +1,4 @@
-dbmsPlatforms <- c("bigquery", "oracle", "postgresql", "redshift", "spark", "sql server") # DISABLE "snowflake" test for now
+dbmsPlatforms <- c("bigquery", "oracle", "postgresql", "redshift", "snowflake", "spark", "sql server")
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 outputFolder <- tempfile()
 dir.create(outputFolder)

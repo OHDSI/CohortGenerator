@@ -64,8 +64,7 @@ status <- generateCohortSet(connection = connection,
                             cdmDatabaseSchema = "main",
                             cohortTableNames = getCohortTableNames(),
                             cohortDefinitionSet = cohortDefinitionSet,
-                            incremental = TRUE,
-                            incrementalFolder = tempfile())
+                            incremental = TRUE)
 ```
 Note - in this definition we do not ever reference the bound variables `@cohort_table`, `@cohort_database_schema`,
 `@cdm_database_schema` or `@vocabulary_database_schema`. This is for two reasons, firstly these are already known at
@@ -193,8 +192,7 @@ status <- generateCohortSet(connection = connection,
                             cdmDatabaseSchema = "main",
                             cohortTableNames = getCohortTableNames(),
                             cohortDefinitionSet = cohortDefinitionSet,
-                            incremental = TRUE,
-                            incrementalFolder = tempfile())
+                            incremental = TRUE)
 
 ```
 

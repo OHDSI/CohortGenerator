@@ -43,3 +43,6 @@ FROM (
 {@use_min_cohort_duration} ? {
    AND ABS(DATEDIFF(day, c.cohort_start_date, c.cohort_end_date)) >= @min_cohort_duration
 }
+{@use_max_cohort_duration} ? {
+   AND ABS(DATEDIFF(day, c.cohort_start_date, c.cohort_end_date)) <= @max_cohort_duration
+}

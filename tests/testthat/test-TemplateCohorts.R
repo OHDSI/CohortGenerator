@@ -40,8 +40,7 @@ test_that("Test Basic Template", {
                     cohortTableNames = cohortTableNames,
                     cohortDefinitionSet = cohortDefinitionSet,
                     stopOnError = TRUE,
-                    incremental = TRUE,
-                    incrementalFolder = testOutputFolder)
+                    incremental = TRUE)
 
   # check the count is 2
   count <- getCohortCounts(
@@ -61,8 +60,7 @@ test_that("Test Basic Template", {
                               cohortTableNames = cohortTableNames,
                               cohortDefinitionSet = cohortDefinitionSet,
                               stopOnError = TRUE,
-                              incremental = TRUE,
-                              incrementalFolder = testOutputFolder)
+                              incremental = TRUE)
   expect_equal(status$generationStatus, "SKIPPED")
 })
 
@@ -89,8 +87,7 @@ test_that("Stop with a bad cohort", {
                       cohortTableNames = cohortTableNames,
                       cohortDefinitionSet = cohortDefinitionSet,
                       stopOnError = TRUE,
-                      incremental = FALSE,
-                      incrementalFolder = NULL)
+                      incremental = FALSE)
   })
 
   # No Error
@@ -100,8 +97,7 @@ test_that("Stop with a bad cohort", {
                       cohortTableNames = cohortTableNames,
                       cohortDefinitionSet = cohortDefinitionSet,
                       stopOnError = FALSE,
-                      incremental = FALSE,
-                      incrementalFolder = NULL)
+                      incremental = FALSE)
 })
 
 # Saving and loading, TODO:

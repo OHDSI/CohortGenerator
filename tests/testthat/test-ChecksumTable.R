@@ -27,10 +27,10 @@ test_that("getLastGeneratedCohortChecksums returns correct data frame", {
   sql <- "SELECT NULL;"
   startTime <- lubridate::now()
   # Generate the same cohort id twice, expect only one row to be returned
-  .runCohortSql(connection, sql, startTime, "main", cts$cohortChecksumTable, FALSE, 1, "ABC", "file.out")
+  .runCohortSql(connection, sql, startTime, "main", cts$cohortChecksumTable, FALSE, 1, "ABC")
 
   startTime <- lubridate::now()
-  .runCohortSql(connection, sql, startTime, "main", cts$cohortChecksumTable, FALSE, 1, "ABCDEFG", "file.out")
+  .runCohortSql(connection, sql, startTime, "main", cts$cohortChecksumTable, FALSE, 1, "ABCDEFG")
 
   result <- getLastGeneratedCohortChecksums(
     connection = connection,

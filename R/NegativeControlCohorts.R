@@ -72,7 +72,7 @@ createEmptyNegativeControlOutcomeCohortSet <- function(verbose = FALSE) {
 #' @param incremental             Create only cohorts that haven't been created before?
 #'
 #' @param incrementalFolder       If \code{incremental = TRUE}, specify a folder where records are
-#'                                kept of which definition has been executed.
+#'                                kept of which definition has been executed. (deprecated)
 #'
 #' @return
 #' Invisibly returns an empty negative control outcome cohort set data.frame
@@ -122,14 +122,9 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   ))[[1]]
 
   if (incremental) {
-    if (is.null(incrementalFolder)) {
-      stop("Must specify incrementalFolder when incremental = TRUE")
-    }
-    if (!file.exists(incrementalFolder)) {
-      dir.create(incrementalFolder, recursive = TRUE)
-    }
+    if (!is.null(incrementalFolder))
+      lifecycle::deprecate_warn("1.1.0", "incrementalFolder parameter is no longer used and will be removed in a future version")
 
-    recordKeepingFile <- file.path(incrementalFolder, "GeneratedNegativeControls.csv")
     computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
                                                          cohortDatabaseSchema = cohortDatabaseSchema,
                                                          cohortTableNames = cohortTableNames)
@@ -195,14 +190,6 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
 
   delta <- Sys.time() - start
   writeLines(paste("Generating negative control outcomes set took", round(delta, 2), attr(delta, "units")))
-
-  if (incremental) {
-    recordTasksDone(
-      paramHash = checksum,
-      checksum = checksum,
-      recordKeepingFile = recordKeepingFile
-    )
-  }
 
   invisible("FINISHED")
 }
