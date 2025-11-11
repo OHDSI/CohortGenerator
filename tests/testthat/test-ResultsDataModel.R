@@ -116,38 +116,7 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
   }
 }
 
-test_that("Create schema", {
-  skip_on_cran()
-
-  postgresInfo <- getPostgresInfo()
-  testCreateSchema(
-    connectionDetails = postgresInfo$connectionDetails,
-    resultsDatabaseSchema = postgresInfo$resultsSchema
-  )
-
-  sqliteInfo <- getSqliteInfo()
-  testCreateSchema(
-    connectionDetails = sqliteInfo$connectionDetails,
-    resultsDatabaseSchema = sqliteInfo$resultsSchema
-  )
-
-  on.exit(
-    {
-      connection <- DatabaseConnector::connect(connectionDetails = postgresInfo$connectionDetails)
-      sql <- "DROP SCHEMA IF EXISTS @resultsDatabaseSchema CASCADE;"
-      DatabaseConnector::renderTranslateExecuteSql(
-        sql = sql,
-        resultsDatabaseSchema = postgresInfo$resultsSchema,
-        connection = connection
-      )
-      DatabaseConnector::disconnect(connection)
-      unlink(sqliteInfo$connectionDetails$server, force = TRUE)
-    },
-    add = TRUE
-  )
-})
-
-test_that("Results upload", {
+test_that("Create schema and upload on Postgres", {
   skip_on_cran()
   unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
   dir.create(path = unzipFolder, recursive = TRUE)
@@ -162,16 +131,17 @@ test_that("Results upload", {
   )
 
   postgresInfo <- getPostgresInfo()
+  testCreateSchema(
+    connectionDetails = postgresInfo$connectionDetails,
+    resultsDatabaseSchema = postgresInfo$resultsSchema
+  )
+
   testUploadResults(
     connectionDetails = postgresInfo$connectionDetails,
     resultsDatabaseSchema = postgresInfo$resultsSchema,
     resultsFolder = unzipFolder
   )
-  testUploadResults(
-    connectionDetails = sqliteInfo$connectionDetails,
-    resultsDatabaseSchema = sqliteInfo$resultsSchema,
-    resultsFolder = unzipFolder
-  )
+
 
   on.exit(
     {
@@ -183,8 +153,36 @@ test_that("Results upload", {
         connection = connection
       )
       DatabaseConnector::disconnect(connection)
-      unlink(sqliteInfo$connectionDetails$server, force = TRUE)
     },
     add = TRUE
   )
+})
+
+test_that("Create schema and upload on Sqlite", {
+  skip_on_cran()
+  unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
+  dir.create(path = unzipFolder, recursive = TRUE)
+  on.exit(unlink(unzipFolder, recursive = TRUE), add = TRUE)
+
+  zip::unzip(
+    zipfile = system.file(
+      "testdata/Results_Eunomia.zip",
+      package = "CohortGenerator"
+    ),
+    exdir = unzipFolder
+  )
+
+  sqliteInfo <- getSqliteInfo()
+  testCreateSchema(
+    connectionDetails = sqliteInfo$connectionDetails,
+    resultsDatabaseSchema = sqliteInfo$resultsSchema
+  )
+
+  testUploadResults(
+    connectionDetails = sqliteInfo$connectionDetails,
+    resultsDatabaseSchema = sqliteInfo$resultsSchema,
+    resultsFolder = unzipFolder
+  )
+
+  on.exit(unlink(sqliteInfo$connectionDetails$server, force = TRUE), add = TRUE)
 })
