@@ -14,20 +14,30 @@ getConceptSetChecksum <- function(conceptSet) {
 
 extractCirceConceptSets <- function(cohortDefinition) {
   conceptSets <- list()
-  purrr::map(cohortDefinition$ConceptSets, function(csExpression) {
+
+  # Loop through each concept set expression in the definition
+  for (csIndex in seq_along(cohortDefinition$ConceptSets)) {
+    csExpression <- cohortDefinition$ConceptSets[[csIndex]]
 
     conceptSet <- data.frame()
-    for (item in csExpression$expression$items) {
-      conceptSet <- conceptSet |>
-        dplyr::bind_rows(
-          data.frame(conceptId = item$concept$CONCEPT_ID,
-                     isExcluded = as.integer(item$isExcluded),
-                     includeDescendants = as.integer(item$includeDescendants),
-                     includeMapped = as.integer(item$includeMapped)))
+
+    # Loop through each item in the concept set expression
+    for (itemIndex in seq_along(csExpression$expression$items)) {
+      item <- csExpression$expression$items[[itemIndex]]
+      newRow <- data.frame(
+        conceptId = item$concept$CONCEPT_ID,
+        isExcluded = ifelse(length(item$isExcluded), as.integer(item$isExcluded), 0),
+        includeDescendants =  ifelse(length(item$includeDescendants), as.integer(item$includeDescendants), 0),
+        includeMapped =  ifelse(length(item$includeMapped), as.integer(item$includeMapped), 0)
+      )
+
+      # Bind the new row to the existing conceptSet
+      conceptSet <- dplyr::bind_rows(conceptSet, newRow)
     }
 
-    conceptSets[[csExpression$name]] <<- conceptSet
-  })
+    # Save the complete conceptSet data frame in the list
+    conceptSets[[csExpression$name]] <- conceptSet
+  }
 
   return(conceptSets)
 }
