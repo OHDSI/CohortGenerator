@@ -113,7 +113,7 @@ runCohortGeneration <- function(connectionDetails,
   }
 
   if (!is.null(incrementalFolder)) {
-    lifecycle::deprecate_warn("1.1.0","incrmentalFolder parameter is no longer used and will be removed in a future version")
+    lifecycle::deprecate_warn("1.1.0", "incrmentalFolder parameter is no longer used and will be removed in a future version")
   }
 
   # Create the cohort tables
@@ -203,9 +203,11 @@ generateAndExportCohorts <- function(connection,
     cohortCounts <- cohortCountsFromDb[names(cohortCounts)]
   }
 
-  computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
-                                                       cohortDatabaseSchema = cohortDatabaseSchema,
-                                                       cohortTableNames = cohortTableNames)
+  computedChecksums <- getLastGeneratedCohortChecksums(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTableNames = cohortTableNames
+  )
   computedChecksums$databaseId <- databaseId
   computedChecksums$generationStatus <- "COMPLETE"
 

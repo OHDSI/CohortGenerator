@@ -83,7 +83,8 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
   result <- result |> dplyr::mutate(
     valid = .data$overlappingErasCount == 0 &
       .data$invalidDateCount == 0 &
-      .data$duplicateCount == 0)
+      .data$duplicateCount == 0
+  )
 
   delta <- Sys.time() - start
   writeLines(paste("Generating validation check set took", round(delta, 2), attr(delta, "units")))

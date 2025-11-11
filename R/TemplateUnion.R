@@ -50,8 +50,7 @@
 createUnionCohortTemplate <- function(cohortIds,
                                       cohortName,
                                       unionCohortId) {
-
-  checkmate::assertNumeric(cohortIds, min.len = 2)  # Require at least two input cohorts to union
+  checkmate::assertNumeric(cohortIds, min.len = 2) # Require at least two input cohorts to union
   checkmate::assertNumeric(unionCohortId, len = 1)
   checkmate::assertString(cohortName)
 
@@ -121,11 +120,11 @@ addUnionCohortDefinition <- function(cohortDefinitionSet,
                                      cohortName,
                                      unionCohortId) {
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "sql"
-                         )
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "sql"
+    )
   )
   assertLargeInteger(cohortDefinitionSet$cohortId)
 

@@ -9,7 +9,7 @@ test_that("addIndicationSubsetDefinition adds subset correctly for basic case", 
     packageName = "CohortGenerator",
     verbose = FALSE
   )
-  
+
   # Call function
   result <- addIndicationSubsetDefinition(
     cohortDefinitionSet = cohortSet,
@@ -19,14 +19,14 @@ test_that("addIndicationSubsetDefinition adds subset correctly for basic case", 
     subsetDefinitionName = "Test Indication",
     genderConceptIds = c(8532)
   )
-  
+
   # Check that the attribute contains the new ID
   ids <- getIndicationSubsetDefinitionIds(result)
   expect_true(999 %in% ids)
-  
+
   # Check the attribute is properly stored
   expect_equal(attr(result, "indicationSubsetDefinitions")[[length(ids)]], 999)
-  
+
   # Check the creation of subset operators - e.g., check your createCohortSubsetDefinition outputs
   # Can be assert-based or just check classes, etc.
 })
@@ -41,11 +41,11 @@ test_that("addIndicationSubsetDefinition handles multiple cohort IDs and operato
     packageName = "CohortGenerator",
     verbose = FALSE
   )
-  
+
   res <- addIndicationSubsetDefinition(
     cohortDefinitionSet = initialSet,
     targetCohortIds = c(1),
-    indicationCohortIds = c(2,3),
+    indicationCohortIds = c(2, 3),
     subsetDefinitionId = 1000,
     subsetDefinitionName = "test subset definition",
     cohortCombinationOperator = "all"
@@ -63,7 +63,7 @@ test_that("addRestrictionSubsetDefinition adds restriction correctly", {
     packageName = "CohortGenerator",
     verbose = FALSE
   )
-  
+
   res <- addRestrictionSubsetDefinition(
     cohortDefinitionSet = initialSet,
     targetCohortIds = c(1),
@@ -71,7 +71,7 @@ test_that("addRestrictionSubsetDefinition adds restriction correctly", {
     subsetDefinitionName = "Restriction Test",
     genderConceptIds = c(8532)
   )
-  
+
   expect_true(2000 %in% getRestrictionSubsetDefinitionIds(res))
 })
 
@@ -85,12 +85,12 @@ test_that("addExcludeOnIndexSubsetDefinition correctly adds exclusion", {
     packageName = "CohortGenerator",
     verbose = FALSE
   )
-  
+
   res <- addExcludeOnIndexSubsetDefinition(
     cohortDefinitionSet = initialSet,
     subsetDefinitionName = "Exclude Test",
     targetCohortIds = c(1),
-    exclusionCohortIds = c(2,3),
+    exclusionCohortIds = c(2, 3),
     exclusionWindow = 7,
     subsetDefinitionId = 3000
   )
@@ -112,18 +112,18 @@ test_that("addIndicationSubsetDefinition errors on invalid IDs", {
   expect_error(
     addIndicationSubsetDefinition(
       cohortDefinitionSet = cohortSet,
-      targetCohortIds = c(9999),  # invalid
+      targetCohortIds = c(9999), # invalid
       indicationCohortIds = c(2),
       subsetDefinitionId = 123,
       subsetDefinitionName = "Invalid target"
     )
   )
-  
+
   expect_error(
     addIndicationSubsetDefinition(
       cohortDefinitionSet = cohortSet,
       targetCohortIds = c(1),
-      indicationCohortIds = c(9999),  # invalid
+      indicationCohortIds = c(9999), # invalid
       subsetDefinitionId = 124,
       subsetDefinitionName = "Invalid indication"
     )

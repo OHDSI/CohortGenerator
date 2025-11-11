@@ -54,17 +54,21 @@ sql <- "INSERT INTO @cohort_database_schema.@cohort_table
          WHERE lower(c.concept_name) like '%asprin%'; "
 
 cohortDefinitionSet <- cohortDefinitionSet |>
-  addSqlCohortDefinition(sql = sql,
-                         cohortId = 1,
-                         cohortName = "my asprin cohort")
+  addSqlCohortDefinition(
+    sql = sql,
+    cohortId = 1,
+    cohortName = "my asprin cohort"
+  )
 
 connection <- DatabaseConnector::connect(Eunomia::getEunomiaConnectionDetails())
 createCohortTables(connection = connection, cohortDatabaseSchema = "main")
-status <- generateCohortSet(connection = connection,
-                            cdmDatabaseSchema = "main",
-                            cohortTableNames = getCohortTableNames(),
-                            cohortDefinitionSet = cohortDefinitionSet,
-                            incremental = TRUE)
+status <- generateCohortSet(
+  connection = connection,
+  cdmDatabaseSchema = "main",
+  cohortTableNames = getCohortTableNames(),
+  cohortDefinitionSet = cohortDefinitionSet,
+  incremental = TRUE
+)
 ```
 Note - in this definition we do not ever reference the bound variables `@cohort_table`, `@cohort_database_schema`,
 `@cdm_database_schema` or `@vocabulary_database_schema`. This is for two reasons, firstly these are already known at
@@ -87,9 +91,11 @@ However, this is not necessarily true when generating custom SQL definitions.
 Consequently, we use the `getCohortValidationCounts` function within the `CohortGenerator` package.
 
 ```{r}
-getCohortValidationCounts(connection = connection,
-                          cdmDatabaseSchema = "main",
-                          cohortDatabaseSchema = "main")
+getCohortValidationCounts(
+  connection = connection,
+  cdmDatabaseSchema = "main",
+  cohortDatabaseSchema = "main"
+)
 ```
 
 # Built in large scale definitions
@@ -115,33 +121,32 @@ library(DatabaseConnector)
 
 # Create RxNorm ingredient cohort template
 rxNormDefinition <- createRxNormCohortTemplateDefinition(
-  connection = connection,  # Replace with your DatabaseConnector connection
+  connection = connection, # Replace with your DatabaseConnector connection
   cdmDatabaseSchema = "main",
   priorObservationPeriod = 365
 )
 
 cohortDefinitionSet <- cohortDefinitionSet |>
-        addCohortTemplateDefintion(cohortTemplateDefintion = rxNormDefinition)
+  addCohortTemplateDefintion(cohortTemplateDefintion = rxNormDefinition)
 
 
 # View details of generated template references
 rxNormReferences <- rxNormDefinition$getTemplateReferences()
 head(rxNormReferences)
-
 ```
 
 ## ATC Base cohorts
 ```{r, eval=FALSE}
 # Create ATC-based cohort template
 atcDefinition <- createAtcCohortTemplateDefinition(
-  connection = connection,  # Replace with your DatabaseConnector connection
+  connection = connection, # Replace with your DatabaseConnector connection
   cdmDatabaseSchema = "main",
   mergeIngredientEras = TRUE,
   priorObservationPeriod = 365
 )
 
 cohortDefinitionSet <- cohortDefinitionSet |>
-        addCohortTemplateDefintion(cohortTemplateDefintion = atcDefinition)
+  addCohortTemplateDefintion(cohortTemplateDefintion = atcDefinition)
 
 # View ATC template references
 atcReferences <- atcDefinition$getTemplateReferences()
@@ -152,13 +157,13 @@ head(atcReferences)
 ```{r}
 # Create SNOMED cohort template
 snomedDefinition <- createSnomedCohortTemplateDefinition(
-  connection = connection,  # Replace with your DatabaseConnector connection
+  connection = connection, # Replace with your DatabaseConnector connection
   cdmDatabaseSchema = "main",
-  priorObservationPeriod = 180  # Require 180 days prior observation
+  priorObservationPeriod = 180 # Require 180 days prior observation
 )
 
 cohortDefinitionSet <- cohortDefinitionSet |>
-        addCohortTemplateDefintion(cohortTemplateDefintion = snomedDefinition)
+  addCohortTemplateDefintion(cohortTemplateDefintion = snomedDefinition)
 
 # View the condition template references
 snomedReferences <- snomedDefinition$getTemplateReferences()
@@ -188,12 +193,13 @@ The SQL for generating template cohorts has a few restrictive properties:
 
 Template cohorts generate in the standard model within cohort generator.
 ```{r}
-status <- generateCohortSet(connection = connection,
-                            cdmDatabaseSchema = "main",
-                            cohortTableNames = getCohortTableNames(),
-                            cohortDefinitionSet = cohortDefinitionSet,
-                            incremental = TRUE)
-
+status <- generateCohortSet(
+  connection = connection,
+  cdmDatabaseSchema = "main",
+  cohortTableNames = getCohortTableNames(),
+  cohortDefinitionSet = cohortDefinitionSet,
+  incremental = TRUE
+)
 ```
 
 ### On execution order

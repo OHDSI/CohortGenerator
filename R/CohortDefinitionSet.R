@@ -385,8 +385,9 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
   if (length(templateDefinitions) > 0) {
     saveCohortTemplateDefinitions(templateDefinitions, templateFolder)
-    if (all(cohortDefinitionSet$isTemplatedCohort))
+    if (all(cohortDefinitionSet$isTemplatedCohort)) {
       return(invisible())
+    }
     # Don't save templates as regular cohorts
     cohortDefinitionSet <- cohortDefinitionSet |>
       dplyr::filter(!.data$isTemplatedCohort)

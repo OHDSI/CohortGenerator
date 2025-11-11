@@ -42,5 +42,4 @@ test_that("getLastGeneratedCohortChecksums returns correct data frame", {
   expect_equal(nrow(result), 1)
   expect_equal(result$cohortDefinitionId, 1)
   expect_equal(result$checksum, "ABCDEFG")
-
 })

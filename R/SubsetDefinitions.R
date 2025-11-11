@@ -178,7 +178,7 @@ CohortSubsetDefinition <- R6::R6Class(
     setTargetOutputPairs = function(targetIds) {
       checkmate::assertNumeric(targetIds, min.len = 1)
       checkmate::assertTRUE(all(targetIds %% 1 == 0))
-      
+
       definitionId <- self$definitionId
       targetOutputPairs <- list()
 

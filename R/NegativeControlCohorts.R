@@ -97,7 +97,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   checkmate::assert_choice(x = tolower(occurrenceType), choices = c("all", "first"))
   checkmate::assert_logical(detectOnDescendants)
   checkmate::assertNames(colnames(negativeControlOutcomeCohortSet),
-                         must.include = names(createEmptyNegativeControlOutcomeCohortSet())
+    must.include = names(createEmptyNegativeControlOutcomeCohortSet())
   )
   checkmate::assert_data_frame(
     x = negativeControlOutcomeCohortSet,
@@ -122,12 +122,15 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
   ))[[1]]
 
   if (incremental) {
-    if (!is.null(incrementalFolder))
+    if (!is.null(incrementalFolder)) {
       lifecycle::deprecate_warn("1.1.0", "incrementalFolder parameter is no longer used and will be removed in a future version")
+    }
 
-    computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
-                                                         cohortDatabaseSchema = cohortDatabaseSchema,
-                                                         cohortTableNames = cohortTableNames)
+    computedChecksums <- getLastGeneratedCohortChecksums(
+      connection = connection,
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      cohortTableNames = cohortTableNames
+    )
     if (checksum %in% computedChecksums$checksum) {
       ParallelLogger::logInfo("Negative control set generation skipped")
       return(invisible("SKIPPED"))
@@ -266,13 +269,14 @@ recordNcCohorts <- function(connection,
   sql <- ""
   for (i in 1:nrow(negativeControlOutcomeCohortSet)) {
     sql <- paste(sql, SqlRender::render(endSql,
-                                        checksum = checksum,
-                                        start_time = start,
-                                        target_cohort_id = negativeControlOutcomeCohortSet$cohortId[i],
-                                        end_time = end,
-                                        results_database_schema = cohortDatabaseSchema,
-                                        cohort_checksum_table = cohortChecksumTable,
-                                        warnOnMissingParameters = FALSE))
+      checksum = checksum,
+      start_time = start,
+      target_cohort_id = negativeControlOutcomeCohortSet$cohortId[i],
+      end_time = end,
+      results_database_schema = cohortDatabaseSchema,
+      cohort_checksum_table = cohortChecksumTable,
+      warnOnMissingParameters = FALSE
+    ))
   }
 
 

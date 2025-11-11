@@ -55,13 +55,14 @@ CohortTemplateDefinition <- R6::R6Class(
       startSql <- "DELETE FROM @results_database_schema.@cohort_checksum_table
                       WHERE cohort_definition_id IN (@target_cohort_ids) AND checksum = '@checksum';"
       DatabaseConnector::renderTranslateExecuteSql(connection,
-                                                   startSql,
-                                                   results_database_schema = cohortDatabaseSchema,
-                                                   cohort_checksum_table = cohortTableNames$cohortChecksumTable,
-                                                   target_cohort_ids = private$.references$cohortId,
-                                                   checksum = self$getChecksum(),
-                                                   reportOverallTime = FALSE,
-                                                   progressBar = FALSE)
+        startSql,
+        results_database_schema = cohortDatabaseSchema,
+        cohort_checksum_table = cohortTableNames$cohortChecksumTable,
+        target_cohort_ids = private$.references$cohortId,
+        checksum = self$getChecksum(),
+        reportOverallTime = FALSE,
+        progressBar = FALSE
+      )
       batchSize <- 500
       startTime <- as.numeric(Sys.time()) * 1000
       # NOTE: Batch insert ids - fails with bigints on spark - crossplatform workaround
@@ -76,22 +77,25 @@ CohortTemplateDefinition <- R6::R6Class(
         sql <- "INSERT INTO @results_database_schema.@cohort_checksum_table
                    (cohort_definition_id, checksum, start_time)
             VALUES @values"
-        sql <- SqlRender::render(sql = sql,
-                                 results_database_schema = cohortDatabaseSchema,
-                                 cohort_checksum_table = cohortTableNames$cohortChecksumTable,
-                                 values = valuesString)
+        sql <- SqlRender::render(
+          sql = sql,
+          results_database_schema = cohortDatabaseSchema,
+          cohort_checksum_table = cohortTableNames$cohortChecksumTable,
+          values = valuesString
+        )
         sql <- SqlRender::translate(sql, targetDialect = dbms(connection))
         DatabaseConnector::executeSql(connection, sql, progressBar = FALSE, reportOverallTime = FALSE)
 
         # Delete existing batch ids from cohort table prior to generation as user may not have done this
         delSql <- "DELETE FROM @results_database_schema.@cohort_table WHERE cohort_definition_id IN (@cohort_ids)"
         DatabaseConnector::renderTranslateExecuteSql(connection,
-                                                     delSql,
-                                                     cohort_ids = batch$cohortId,
-                                                     results_database_schema = cohortDatabaseSchema,
-                                                     cohort_table = cohortTableNames$cohortTable,
-                                                     progressBar = FALSE,
-                                                     reportOverallTime = FALSE)
+          delSql,
+          cohort_ids = batch$cohortId,
+          results_database_schema = cohortDatabaseSchema,
+          cohort_table = cohortTableNames$cohortTable,
+          progressBar = FALSE,
+          reportOverallTime = FALSE
+        )
       }
       return(startTime)
     },
@@ -106,14 +110,15 @@ CohortTemplateDefinition <- R6::R6Class(
         AND checksum = '@checksum';"
 
       DatabaseConnector::renderTranslateExecuteSql(connection,
-                                                   endSql,
-                                                   target_cohort_ids = private$.references$cohortId,
-                                                   results_database_schema = cohortDatabaseSchema,
-                                                   cohort_checksum_table = cohortTableNames$cohortChecksumTable,
-                                                   checksum = self$getChecksum(),
-                                                   end_time = endTime,
-                                                   progressBar = FALSE,
-                                                   reportOverallTime = FALSE)
+        endSql,
+        target_cohort_ids = private$.references$cohortId,
+        results_database_schema = cohortDatabaseSchema,
+        cohort_checksum_table = cohortTableNames$cohortChecksumTable,
+        checksum = self$getChecksum(),
+        end_time = endTime,
+        progressBar = FALSE,
+        reportOverallTime = FALSE
+      )
 
       return(endTime)
     }
@@ -125,38 +130,42 @@ CohortTemplateDefinition <- R6::R6Class(
     #' @field translateSql        translate the sql for different platforms
     #' @field references          data.frame of name/id references for cohort template that aligns with cohort set
     name = function(val) {
-      if (missing(val))
+      if (missing(val)) {
         return(private$.name)
+      }
       checkmate::assertString(val)
       private$.name <- val
     },
-
     sqlArgs = function(sqlArgs) {
-      if (missing(sqlArgs))
+      if (missing(sqlArgs)) {
         return(private$.sqlArgs)
+      }
       # Check if eecuteFun are functions
       checkmate::assertList(sqlArgs)
 
       warnFields <- c("cohort_database_schema", "cdm_database_schema", "vocabulary_database_schema", "cohort_table")
-      if (any(warnFields %in% names(sqlArgs)))
-        warning(paste("Fields", paste(warnFields, collapse = ", "),
-                      "should not be included in template definitions, this prevents reproducability and leaks source information"))
+      if (any(warnFields %in% names(sqlArgs))) {
+        warning(paste(
+          "Fields", paste(warnFields, collapse = ", "),
+          "should not be included in template definitions, this prevents reproducability and leaks source information"
+        ))
+      }
 
       private$.sqlArgs <- sqlArgs
       private$generateId()
     },
-
     templateSql = function(templateSql) {
-      if (missing(templateSql))
+      if (missing(templateSql)) {
         return(private$.templateSql)
+      }
       checkmate::assertString(templateSql)
       private$.templateSql <- templateSql
       private$generateId()
     },
-
     references = function(references) {
-      if (missing(references))
+      if (missing(references)) {
         return(private$.references)
+      }
 
       checkmate::assertDataFrame(references, min.rows = 1)
       checkmate::assertNames(colnames(references), must.include = c("cohortId", "cohortName"))
@@ -165,18 +174,19 @@ CohortTemplateDefinition <- R6::R6Class(
       }
 
       # Cohort ID in sql for unqiueness in checksum
-      if (is.null(references$sql))
+      if (is.null(references$sql)) {
         references$sql <- paste0("SELECT '", references$cohortId, " - ", self$getName(), "';")
+      }
 
       references$isTemplatedCohort <- TRUE
 
       private$.references <- references
       private$generateId()
     },
-
     translateSql = function(translateSql) {
-      if (missing(translateSql))
+      if (missing(translateSql)) {
         return(private$.translateSql)
+      }
 
       checkmate::assertLogical(translateSql)
       private$.translateSql <- translateSql
@@ -219,7 +229,8 @@ CohortTemplateDefinition <- R6::R6Class(
       checkmate::assertString(tempEmulationSchema, null.ok = TRUE)
       checkmate::assertList(cohortTableNames)
       checkmate::assertNames(names(cohortTableNames),
-                             must.include = c("cohortTable", "cohortChecksumTable"))
+        must.include = c("cohortTable", "cohortChecksumTable")
+      )
       args <- private$.sqlArgs
       args$sql <- self$templateSql
       args$cohort_database_schema <- cohortDatabaseSchema
@@ -280,7 +291,7 @@ CohortTemplateDefinition <- R6::R6Class(
       def <- list(
         name = self$name,
         # Strategus uses an odd serialization strategy
-        references =  self$references,
+        references = self$references,
         templateSql = self$templateSql,
         sqlArgs = self$sqlArgs,
         translateSql = self$translateSql
@@ -331,11 +342,13 @@ createCohortTemplateDefintion <- function(name,
                                           references,
                                           sqlArgs = list(),
                                           translateSql = TRUE) {
-  settings <- list(name = name,
-                   sqlArgs = sqlArgs,
-                   references = references,
-                   templateSql = templateSql,
-                   translateSql = translateSql)
+  settings <- list(
+    name = name,
+    sqlArgs = sqlArgs,
+    references = references,
+    templateSql = templateSql,
+    translateSql = translateSql
+  )
 
   def <- CohortTemplateDefinition$new(settings)
   return(invisible(def))
@@ -347,11 +360,11 @@ createCohortTemplateDefintion <- function(name,
 getTemplateDefinitions <- function(cohortDefinitionSet) {
   checkmate::assertDataFrame(cohortDefinitionSet, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "sql"
-                         )
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "sql"
+    )
   )
 
   templates <- attr(cohortDefinitionSet, "templateCohortDefinitions")
@@ -377,8 +390,9 @@ addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDe
   if (is.null(attr(cohortDefinitionSet, "templateCohortDefinitions"))) {
     attr(cohortDefinitionSet, "templateCohortDefinitions") <- list()
 
-    if (nrow(cohortDefinitionSet) > 0)
+    if (nrow(cohortDefinitionSet) > 0) {
       cohortDefinitionSet$isTemplatedCohort <- FALSE
+    }
   }
   tplId <- cohortTemplateDefintion$getId()
   templateDefs <- attr(cohortDefinitionSet, "templateCohortDefinitions")
@@ -447,21 +461,24 @@ addCohortTemplateDefintion <- function(cohortDefinitionSet = createEmptyCohortDe
 #'         -- Find any matches of drugs named 'asprin' in the drug concept table
 #'         WHERE lower(c.concept_name) like '%asprin%'; "
 #'
-#' cohortDefinitionSet = createEmptyCohortDefinitionSet() |>
-#'  addSqlCohortDefinition(sql = sql, cohortId = 1, cohortName = "my asprin cohort")
-#'
+#' cohortDefinitionSet <- createEmptyCohortDefinitionSet() |>
+#'   addSqlCohortDefinition(sql = sql, cohortId = 1, cohortName = "my asprin cohort")
 #'
 addSqlCohortDefinition <- function(cohortDefinitionSet, sql, cohortId, cohortName, tanslateSql = TRUE, json = NULL, ...) {
   checkmate::assertString(sql)
   checkmate::assertString(cohortName)
   checkmate::assertNumeric(cohortId, len = 1)
-  tplDef <- createCohortTemplateDefintion(name = cohortName,
-                                          templateSql = sql,
-                                          references = data.frame(cohortId = cohortId,
-                                                                  cohortName = cohortName,
-                                                                  sql = sql),
-                                          sqlArgs = list(...),
-                                          translateSql = tanslateSql)
+  tplDef <- createCohortTemplateDefintion(
+    name = cohortName,
+    templateSql = sql,
+    references = data.frame(
+      cohortId = cohortId,
+      cohortName = cohortName,
+      sql = sql
+    ),
+    sqlArgs = list(...),
+    translateSql = tanslateSql
+  )
 
   cohortDefinitionSet <- addCohortTemplateDefintion(cohortDefinitionSet, tplDef)
   return(cohortDefinitionSet)
@@ -478,46 +495,57 @@ generateTemplateCohorts <- function(connection,
                                     cohortTableNames,
                                     stopOnError,
                                     incremental) {
-
   templateDefs <- getTemplateDefinitions(cohortDefinitionSet)
   statusTbl <- data.frame()
-  computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
-                                                       cohortDatabaseSchema = cohortDatabaseSchema,
-                                                       cohortTableNames = cohortTableNames)
+  computedChecksums <- getLastGeneratedCohortChecksums(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTableNames = cohortTableNames
+  )
 
   for (template in templateDefs) {
     startTime <- lubridate::now()
     refs <- template$getTemplateReferences()
-    skipit <- all(incremental,
-                  refs$cohortId %in% computedChecksums$cohortDefinitionId,
-                  template$getChecksum() %in% computedChecksums$checksum)
+    skipit <- all(
+      incremental,
+      refs$cohortId %in% computedChecksums$cohortDefinitionId,
+      template$getChecksum() %in% computedChecksums$checksum
+    )
     if (skipit) {
       status <- list(startTime = startTime, endTime = startTime, generationStatus = "SKIPPED")
       ParallelLogger::logInfo("Skipping Template Cohort: ", template$getName())
     } else {
-      status <- tryCatch({
-        ParallelLogger::logInfo("Generating Template Cohort: ", template$getName())
-        status <- template$executeTemplateSql(connection = connection,
-                                              cohortDatabaseSchema = cohortDatabaseSchema,
-                                              tempEmulationSchema = tempEmulationSchema,
-                                              cdmDatabaseSchema = cdmDatabaseSchema,
-                                              cohortTableNames = cohortTableNames)
-        ParallelLogger::logInfo("Template Cohort complete: ", template$getName())
-        status
-      }, error = function(err) {
-        ParallelLogger::logError(err)
-        if (stopOnError)
-          stop(err)
-        return(list(startTime = startTime, endTime = lubridate::now(), generationStatus = "FAILED"))
-      })
+      status <- tryCatch(
+        {
+          ParallelLogger::logInfo("Generating Template Cohort: ", template$getName())
+          status <- template$executeTemplateSql(
+            connection = connection,
+            cohortDatabaseSchema = cohortDatabaseSchema,
+            tempEmulationSchema = tempEmulationSchema,
+            cdmDatabaseSchema = cdmDatabaseSchema,
+            cohortTableNames = cohortTableNames
+          )
+          ParallelLogger::logInfo("Template Cohort complete: ", template$getName())
+          status
+        },
+        error = function(err) {
+          ParallelLogger::logError(err)
+          if (stopOnError) {
+            stop(err)
+          }
+          return(list(startTime = startTime, endTime = lubridate::now(), generationStatus = "FAILED"))
+        }
+      )
     }
     statusTbl <- statusTbl |> dplyr::bind_rows(
-      data.frame(cohortId = refs$cohortId,
-                 cohortName = refs$cohortName,
-                 generationStatus = status$generationStatus,
-                 startTime = status$startTime,
-                 endTime = status$endTime,
-                 checksum = template$getChecksum())
+      data.frame(
+        cohortId = refs$cohortId,
+        cohortName = refs$cohortName,
+        generationStatus = status$generationStatus,
+        startTime = status$startTime,
+        endTime = status$endTime,
+        checksum = template$getChecksum()
+      )
     )
   }
 
@@ -561,23 +589,22 @@ loadTemplateDefinitionsFolder <- function(cohortDefinitionSet, templateFolder) {
 
 hasTemplateDefinitions <- function(x) {
   containsTemplateDefs <- length(attr(x, "templateCohortDefinitions")) > 0
-  
+
   if (!containsTemplateDefs) {
     warns <- checkmate::checkList(attr(x, "templateCohortDefinitions"),
-                                  min.len = 1,
-                                  types = "CohortTemplateDefinition"
+      min.len = 1,
+      types = "CohortTemplateDefinition"
     )
     if (length(warns)) {
       containsTemplateDefs <- FALSE
     }
   }
-  
+
   hasColumns <- all(c("isTemplatedCohort") %in% colnames(x))
-  
+
   return(all(
     hasColumns,
     containsTemplateDefs,
     isTRUE(attr(x, "hasTemplateDefinitions"))
   ))
 }
-

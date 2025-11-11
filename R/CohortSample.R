@@ -31,10 +31,10 @@
   countSql <- "SELECT COUNT(DISTINCT SUBJECT_ID) as cnt FROM  @cohort_database_schema.@target_table
    WHERE cohort_definition_id = @target_cohort_id"
   count <- DatabaseConnector::renderTranslateQuerySql(connection,
-                                                      countSql,
-                                                      cohort_database_schema = cohortDatabaseSchema,
-                                                      target_cohort_id = targetCohortId,
-                                                      target_table = targetTable
+    countSql,
+    cohort_database_schema = cohortDatabaseSchema,
+    target_cohort_id = targetCohortId,
+    target_table = targetTable
   ) %>%
     dplyr::pull()
 
@@ -95,16 +95,19 @@
     target_table = targetTable
   )
   execSql <- SqlRender::translate(execSql,
-                                  targetDialect = DatabaseConnector::dbms(connection))
+    targetDialect = DatabaseConnector::dbms(connection)
+  )
 
-  .runCohortSql(connection = connection,
-                sql = execSql,
-                startTime = startTime,
-                resultsDatabaseSchema = cohortDatabaseSchema,
-                cohortChecksumTable = checksumTable,
-                incremental = incremental,
-                cohortId = outputCohortId,
-                checksum = checksum)$generationStatus
+  .runCohortSql(
+    connection = connection,
+    sql = execSql,
+    startTime = startTime,
+    resultsDatabaseSchema = cohortDatabaseSchema,
+    cohortChecksumTable = checksumTable,
+    incremental = incremental,
+    cohortId = outputCohortId,
+    checksum = checksum
+  )$generationStatus
 }
 
 
@@ -183,11 +186,11 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
   checkmate::assertIntegerish(seed, min.len = 1)
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "sql"
-                         )
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "sql"
+    )
   )
 
   if (is.null(n) && is.null(sampleFraction)) {
@@ -199,7 +202,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
   }
 
   if (!is.null(incrementalFolder)) {
-    lifecycle::deprecate_warn("1.1.0","incrementalFolder parameter is no longer used and will be removed in a future version")
+    lifecycle::deprecate_warn("1.1.0", "incrementalFolder parameter is no longer used and will be removed in a future version")
   }
   # check uniqueness of output ids
   .checkUniqueOutputIds(cohortDefinitionSet$cohortIds, seed, identifierExpression, cohortTableNames)
@@ -211,9 +214,11 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
   }
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
-  computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
-                                                       cohortDatabaseSchema = cohortDatabaseSchema,
-                                                       cohortTableNames = cohortTableNames)
+  computedChecksums <- getLastGeneratedCohortChecksums(
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTableNames = cohortTableNames
+  )
 
   sampledCohorts <-
     base::Map(function(seed, targetCohortId) {
@@ -253,8 +258,10 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
 
       sampleChecksum <- computeChecksum(paste0(sampledCohortDefinition$sql, n, seed, outputCohortId))
       cohortComputed <- computedChecksums |>
-        dplyr::filter(.data$checksum == sampleChecksum,
-                      .data$cohortDefinitionId == outputCohortId) |>
+        dplyr::filter(
+          .data$checksum == sampleChecksum,
+          .data$cohortDefinitionId == outputCohortId
+        ) |>
         dplyr::count() |>
         dplyr::pull() > 0
 
@@ -298,7 +305,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
 
       return(sampledCohortDefinition)
     }, seed, cohortIds) %>%
-      dplyr::bind_rows()
+    dplyr::bind_rows()
 
 
   attr(sampledCohorts, "isSampledCohortDefinition") <- TRUE

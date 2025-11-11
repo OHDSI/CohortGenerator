@@ -16,7 +16,7 @@ test_that("sampleCohortDefinitionSet", {
 
   cds <- getCohortsForTest(cohorts = cohorts)
 
-  
+
   generateCohortSet(
     cohortDefinitionSet = cds,
     connection = conn,
@@ -193,11 +193,13 @@ test_that(".sampleCohort", {
     camelCaseToSnakeCase = TRUE,
     data = tData
   )
-  
-  createCohortTables(connection = connection, 
-                     incremental = TRUE, 
-                     cohortDatabaseSchema = "main")
-  
+
+  createCohortTables(
+    connection = connection,
+    incremental = TRUE,
+    cohortDatabaseSchema = "main"
+  )
+
   sampleTable <- data.frame(rand_id = c(7, 8, 9, 10, 33, 198))
   .sampleCohort(
     connection,

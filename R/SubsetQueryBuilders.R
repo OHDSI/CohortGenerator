@@ -41,7 +41,6 @@ QueryBuilder <- R6::R6Class(
       )
       return(sql)
     },
-
     print = function(...) {
       cat(class(self)[1])
       cat("\n")

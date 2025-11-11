@@ -167,7 +167,7 @@ test_that("Create cohorts with stats, Incremental = T", {
     cohortDefinitionSet = cohortsWithStats,
     incremental = TRUE
   )
-  
+
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
   expect_true(all(cohortsGenerated$generationStatus == "SKIPPED"))
   rm(cohortsWithStats)

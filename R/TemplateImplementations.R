@@ -36,7 +36,7 @@ createRxNormCohortTemplateDefinition <- function(connection,
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  cohortDatabaseSchema,
                                                  priorObservationPeriod = 365,
-                                                 nameSuffix = '',
+                                                 nameSuffix = "",
                                                  vocabularyDatabaseSchema = cdmDatabaseSchema) {
   sql <- SqlRender::readSql(
     sourceFile = system.file(
@@ -109,11 +109,10 @@ createAtcCohortTemplateDefinition <- function(connection,
                                               cdmDatabaseSchema,
                                               tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                               cohortDatabaseSchema,
-                                              nameSuffix = '',
+                                              nameSuffix = "",
                                               mergeIngredientEras = TRUE,
                                               priorObservationPeriod = 365,
                                               vocabularyDatabaseSchema = cdmDatabaseSchema) {
-
   sql <- SqlRender::readSql(
     sourceFile = system.file(
       "sql/sql_server/templates/atc/references.sql",
@@ -132,7 +131,7 @@ createAtcCohortTemplateDefinition <- function(connection,
     targetDialect = connection@dbms,
     tempEmulationSchema = tempEmulationSchema
   )
-  # 
+  #
   # sql <- SqlRender::loadRenderTranslateSql(
   #   sqlFilename = file.path("templates", "atc", "references.sql"),
   #   packageName = utils::packageName(),
@@ -142,9 +141,11 @@ createAtcCohortTemplateDefinition <- function(connection,
   #   name_suffix = nameSuffix
   # )
 
-  references <- DatabaseConnector::querySql(connection = connection,
-                                            sql = sql,
-                                            snakeCaseToCamelCase = TRUE)
+  references <- DatabaseConnector::querySql(
+    connection = connection,
+    sql = sql,
+    snakeCaseToCamelCase = TRUE
+  )
   templateSql <- SqlRender::readSql(
     sourceFile = system.file(
       "sql/sql_server/templates/atc/definition.sql",
@@ -180,9 +181,9 @@ createAtcCohortTemplateDefinition <- function(connection,
 #' Template cohort definition for all OHDSI standard conditions. The cohortId = conceptId * 1000.
 #' The "identifierExpression" can be customized for uniqueness.
 #' This definition uses any valid SNOMED condition code and all its descendants.
-#' 
+#'
 #' Excluded terms include word patterns:
-#' 
+#'
 #'   '%finding', 'disorder of%', 'finding of%', 'disease of%' 'injury of%' '%by site' '%by body site' '%by mechanism'
 #'    '%of body region' '%of anatomical site' '%of specific body structure%'
 #'
@@ -205,7 +206,7 @@ createSnomedCohortTemplateDefinition <- function(connection,
                                                  tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
                                                  priorObservationPeriod = 365,
                                                  requireSecondDiagnosis = FALSE,
-                                                 nameSuffix = '',
+                                                 nameSuffix = "",
                                                  vocabularyDatabaseSchema = cdmDatabaseSchema) {
   sql <- SqlRender::readSql(
     sourceFile = system.file(
@@ -227,10 +228,12 @@ createSnomedCohortTemplateDefinition <- function(connection,
     tempEmulationSchema = tempEmulationSchema
   )
 
-  references <- DatabaseConnector::querySql(connection = connection,
-                                            sql = sql,
-                                            snakeCaseToCamelCase = TRUE)
-  
+  references <- DatabaseConnector::querySql(
+    connection = connection,
+    sql = sql,
+    snakeCaseToCamelCase = TRUE
+  )
+
   templateSql <- SqlRender::readSql(
     sourceFile = system.file(
       "sql/sql_server/templates/snomed/definition.sql",

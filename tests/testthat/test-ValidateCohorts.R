@@ -70,7 +70,7 @@ VALUES
   )
 
   expect_equal(
-    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 2) |> dplyr::pull("invalidDateCount"),2
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 2) |> dplyr::pull("invalidDateCount"), 2
   )
   expect_equal(
     validationCounts |> dplyr::filter(.data$cohortDefinitionId == 3) |> dplyr::pull("duplicateCount"), 1
