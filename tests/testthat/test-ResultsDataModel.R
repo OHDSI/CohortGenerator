@@ -4,15 +4,17 @@ library(testthat)
 if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
   jdbcDriverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
 } else {
-  jdbcDriverFolder <- "~/.jdbcDrivers"
-  dir.create(jdbcDriverFolder, showWarnings = FALSE)
-  DatabaseConnector::downloadJdbcDrivers("postgresql", pathToDriver = jdbcDriverFolder)
-  withr::defer(
-    {
-      unlink(jdbcDriverFolder, recursive = TRUE, force = TRUE)
-    },
-    testthat::teardown_env()
-  )
+  if (!skip_on_cran()) {
+    jdbcDriverFolder <- "~/.jdbcDrivers"
+    dir.create(jdbcDriverFolder, showWarnings = FALSE)
+    DatabaseConnector::downloadJdbcDrivers("postgresql", pathToDriver = jdbcDriverFolder)
+    withr::defer(
+      {
+        unlink(jdbcDriverFolder, recursive = TRUE, force = TRUE)
+      },
+      testthat::teardown_env()
+    )
+  }
 }
 
 postgresConnectionDetails <- DatabaseConnector::createConnectionDetails(
@@ -94,6 +96,7 @@ test_that("Create schema", {
 })
 
 testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsFolder) {
+  skip_on_cran()
   uploadResults(
     connectionDetails = connectionDetails,
     schema = resultsDatabaseSchema,
