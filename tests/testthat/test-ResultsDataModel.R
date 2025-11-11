@@ -1,10 +1,11 @@
 library(CohortGenerator)
 library(testthat)
 
-if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
-  jdbcDriverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
-} else {
-  if (!skip_on_cran()) {
+
+getPostgresInfo <- function() {
+  if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
+    jdbcDriverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
+  } else {
     jdbcDriverFolder <- "~/.jdbcDrivers"
     dir.create(jdbcDriverFolder, showWarnings = FALSE)
     DatabaseConnector::downloadJdbcDrivers("postgresql", pathToDriver = jdbcDriverFolder)
@@ -15,41 +16,39 @@ if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
       testthat::teardown_env()
     )
   }
+
+  postgresConnectionDetails <- DatabaseConnector::createConnectionDetails(
+    dbms = "postgresql",
+    user = Sys.getenv("CDM5_POSTGRESQL_USER"),
+    password = URLdecode(Sys.getenv("CDM5_POSTGRESQL_PASSWORD")),
+    server = Sys.getenv("CDM5_POSTGRESQL_SERVER"),
+    pathToDriver = jdbcDriverFolder
+  )
+
+  postgresResultsDatabaseSchema <- paste0("r", Sys.getpid(), format(Sys.time(), "%s"), sample(1:100, 1))
+  return(
+    list(
+      connectionDetails = postgresConnectionDetails,
+      resultsSchema = postgresResultsDatabaseSchema
+    )
+  )
 }
 
-postgresConnectionDetails <- DatabaseConnector::createConnectionDetails(
-  dbms = "postgresql",
-  user = Sys.getenv("CDM5_POSTGRESQL_USER"),
-  password = URLdecode(Sys.getenv("CDM5_POSTGRESQL_PASSWORD")),
-  server = Sys.getenv("CDM5_POSTGRESQL_SERVER"),
-  pathToDriver = jdbcDriverFolder
-)
+getSqliteInfo <- function() {
+  databaseFile <- tempfile(fileext = ".sqlite")
+  sqliteConnectionDetails <- DatabaseConnector::createConnectionDetails(
+    dbms = "sqlite",
+    server = databaseFile
+  )
+  sqliteResultsDatabaseSchema <- "main"
+  return(
+    list(
+      connectionDetails = sqliteConnectionDetails,
+      resultsSchema = sqliteResultsDatabaseSchema
+    )
+  )
+}
 
-postgresResultsDatabaseSchema <- paste0("r", Sys.getpid(), format(Sys.time(), "%s"), sample(1:100, 1))
-
-databaseFile <- tempfile(fileext = ".sqlite")
-sqliteConnectionDetails <- DatabaseConnector::createConnectionDetails(
-  dbms = "sqlite",
-  server = databaseFile
-)
-sqliteResultsDatabaseSchema <- "main"
-
-withr::defer(
-  {
-    if (Sys.getenv("CDM5_POSTGRESQL_SERVER") != "") {
-      connection <- DatabaseConnector::connect(connectionDetails = postgresConnectionDetails)
-      sql <- "DROP SCHEMA IF EXISTS @resultsDatabaseSchema CASCADE;"
-      DatabaseConnector::renderTranslateExecuteSql(
-        sql = sql,
-        resultsDatabaseSchema = postgresResultsDatabaseSchema,
-        connection = connection
-      )
-      DatabaseConnector::disconnect(connection)
-    }
-    unlink(databaseFile, force = TRUE)
-  },
-  testthat::teardown_env()
-)
 
 testCreateSchema <- function(connectionDetails, resultsDatabaseSchema) {
   connection <- DatabaseConnector::connect(connectionDetails)
@@ -83,20 +82,7 @@ testCreateSchema <- function(connectionDetails, resultsDatabaseSchema) {
   ))
 }
 
-test_that("Create schema", {
-  skip_on_cran()
-  testCreateSchema(
-    connectionDetails = postgresConnectionDetails,
-    resultsDatabaseSchema = postgresResultsDatabaseSchema
-  )
-  testCreateSchema(
-    connectionDetails = sqliteConnectionDetails,
-    resultsDatabaseSchema = sqliteResultsDatabaseSchema
-  )
-})
-
 testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsFolder) {
-  skip_on_cran()
   uploadResults(
     connectionDetails = connectionDetails,
     schema = resultsDatabaseSchema,
@@ -130,6 +116,37 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
   }
 }
 
+test_that("Create schema", {
+  skip_on_cran()
+
+  postgresInfo <- getPostgresInfo()
+  testCreateSchema(
+    connectionDetails = postgresInfo$connectionDetails,
+    resultsDatabaseSchema = postgresInfo$resultsSchema
+  )
+
+  sqliteInfo <- getSqliteInfo()
+  testCreateSchema(
+    connectionDetails = sqliteInfo$connectionDetails,
+    resultsDatabaseSchema = sqliteInfo$resultsSchema
+  )
+
+  on.exit(
+    {
+      connection <- DatabaseConnector::connect(connectionDetails = postgresInfo$connectionDetails)
+      sql <- "DROP SCHEMA IF EXISTS @resultsDatabaseSchema CASCADE;"
+      DatabaseConnector::renderTranslateExecuteSql(
+        sql = sql,
+        resultsDatabaseSchema = postgresInfo$resultsSchema,
+        connection = connection
+      )
+      DatabaseConnector::disconnect(connection)
+      unlink(sqliteInfo$connectionDetails$server, force = TRUE)
+    },
+    add = TRUE
+  )
+})
+
 test_that("Results upload", {
   skip_on_cran()
   unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
@@ -143,14 +160,31 @@ test_that("Results upload", {
     ),
     exdir = unzipFolder
   )
+
+  postgresInfo <- getPostgresInfo()
   testUploadResults(
-    connectionDetails = postgresConnectionDetails,
-    resultsDatabaseSchema = postgresResultsDatabaseSchema,
+    connectionDetails = postgresInfo$connectionDetails,
+    resultsDatabaseSchema = postgresInfo$resultsSchema,
     resultsFolder = unzipFolder
   )
   testUploadResults(
-    connectionDetails = sqliteConnectionDetails,
-    resultsDatabaseSchema = sqliteResultsDatabaseSchema,
+    connectionDetails = sqliteInfo$connectionDetails,
+    resultsDatabaseSchema = sqliteInfo$resultsSchema,
     resultsFolder = unzipFolder
+  )
+
+  on.exit(
+    {
+      connection <- DatabaseConnector::connect(connectionDetails = postgresInfo$connectionDetails)
+      sql <- "DROP SCHEMA IF EXISTS @resultsDatabaseSchema CASCADE;"
+      DatabaseConnector::renderTranslateExecuteSql(
+        sql = sql,
+        resultsDatabaseSchema = postgresInfo$resultsSchema,
+        connection = connection
+      )
+      DatabaseConnector::disconnect(connection)
+      unlink(sqliteInfo$connectionDetails$server, force = TRUE)
+    },
+    add = TRUE
   )
 })
