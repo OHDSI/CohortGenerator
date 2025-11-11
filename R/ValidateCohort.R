@@ -56,16 +56,28 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
   }
 
   start <- Sys.time()
-  sql <- SqlRender::loadRenderTranslateSql("ValidateCohorts.sql",
-                                           tempEmulationSchema = tempEmulationSchema,
-                                           cdm_database_schema = cdmDatabaseSchema,
-                                           cohort_table = cohortTableNames$cohortTable,
-                                           cohort_database_schema = cohortDatabaseSchema,
-                                           cohort_ids = cohortIds,
-                                           packageName = utils::packageName())
+  sql <- SqlRender::readSql(
+    sourceFile = system.file(
+      "sql/sql_server/ValidateCohorts.sql",
+      package = "CohortGenerator",
+      mustWork = TRUE
+    )
+  )
+  sql <- SqlRender::render(
+    sql = sql,
+    cdm_database_schema = cdmDatabaseSchema,
+    cohort_table = cohortTableNames$cohortTable,
+    cohort_database_schema = cohortDatabaseSchema,
+    cohort_ids = cohortIds
+  )
+  sql <- SqlRender::translate(
+    sql = sql,
+    targetDialect = connection@dbms,
+    tempEmulationSchema = tempEmulationSchema
+  )
 
   ParallelLogger::logInfo("Computing cohort validation checks")
-  result <- DatabaseConnector::renderTranslateQuerySql(connection, sql, snakeCaseToCamelCase = TRUE)
+  result <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
   ParallelLogger::logInfo(paste("Computed validation checks for", nrow(result), "cohorts"))
 
   result <- result |> dplyr::mutate(

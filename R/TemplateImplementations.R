@@ -38,23 +38,44 @@ createRxNormCohortTemplateDefinition <- function(connection,
                                                  priorObservationPeriod = 365,
                                                  nameSuffix = '',
                                                  vocabularyDatabaseSchema = cdmDatabaseSchema) {
-
-  sql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = file.path("templates", "rx_norm", "references.sql"),
-    packageName = utils::packageName(),
+  sql <- SqlRender::readSql(
+    sourceFile = system.file(
+      "sql/sql_server/templates/rx_norm/references.sql",
+      package = "CohortGenerator",
+      mustWork = TRUE
+    )
+  )
+  sql <- SqlRender::render(
+    sql = sql,
     identifier_expression = identifierExpression,
-    tempEmulationSchema = tempEmulationSchema,
     name_suffix = nameSuffix,
     vocabulary_database_schema = vocabularyDatabaseSchema
   )
+  sql <- SqlRender::translate(
+    sql = sql,
+    targetDialect = connection@dbms,
+    tempEmulationSchema = tempEmulationSchema
+  )
+
   references <- DatabaseConnector::querySql(connection, sql, snakeCaseToCamelCase = TRUE)
-  templateSql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = file.path("templates", "rx_norm", "definition.sql"),
-    packageName = utils::packageName(),
+
+  templateSql <- SqlRender::readSql(
+    sourceFile = system.file(
+      "sql/sql_server/templates/rx_norm/definition.sql",
+      package = "CohortGenerator",
+      mustWork = TRUE
+    )
+  )
+  templateSql <- SqlRender::render(
+    sql = templateSql,
     prior_observation_period = priorObservationPeriod,
-    temp_emulation_schema = tempEmulationSchema,
     identifier_expression = identifierExpression,
     warnOnMissingParameters = FALSE
+  )
+  templateSql <- SqlRender::translate(
+    sql = templateSql,
+    targetDialect = connection@dbms,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   def <- createCohortTemplateDefintion(
@@ -93,28 +114,55 @@ createAtcCohortTemplateDefinition <- function(connection,
                                               priorObservationPeriod = 365,
                                               vocabularyDatabaseSchema = cdmDatabaseSchema) {
 
-
-  sql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = file.path("templates", "atc", "references.sql"),
-    packageName = utils::packageName(),
-    identifier_expression = identifierExpression,
-    tempEmulationSchema = tempEmulationSchema,
-    vocabulary_database_schema = vocabularyDatabaseSchema,
-    name_suffix = nameSuffix
+  sql <- SqlRender::readSql(
+    sourceFile = system.file(
+      "sql/sql_server/templates/atc/references.sql",
+      package = "CohortGenerator",
+      mustWork = TRUE
+    )
   )
+  sql <- SqlRender::render(
+    sql = sql,
+    identifier_expression = identifierExpression,
+    name_suffix = nameSuffix,
+    vocabulary_database_schema = vocabularyDatabaseSchema
+  )
+  sql <- SqlRender::translate(
+    sql = sql,
+    targetDialect = connection@dbms,
+    tempEmulationSchema = tempEmulationSchema
+  )
+  # 
+  # sql <- SqlRender::loadRenderTranslateSql(
+  #   sqlFilename = file.path("templates", "atc", "references.sql"),
+  #   packageName = utils::packageName(),
+  #   identifier_expression = identifierExpression,
+  #   tempEmulationSchema = tempEmulationSchema,
+  #   vocabulary_database_schema = vocabularyDatabaseSchema,
+  #   name_suffix = nameSuffix
+  # )
 
   references <- DatabaseConnector::querySql(connection = connection,
                                             sql = sql,
                                             snakeCaseToCamelCase = TRUE)
-
-  templateSql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = file.path("templates", "atc", "definition.sql"),
-    packageName = utils::packageName(),
+  templateSql <- SqlRender::readSql(
+    sourceFile = system.file(
+      "sql/sql_server/templates/atc/definition.sql",
+      package = "CohortGenerator",
+      mustWork = TRUE
+    )
+  )
+  templateSql <- SqlRender::render(
+    sql = templateSql,
     prior_observation_period = priorObservationPeriod,
-    temp_emulation_schema = tempEmulationSchema,
     identifier_expression = identifierExpression,
     merge_ingredient_eras = mergeIngredientEras,
     warnOnMissingParameters = FALSE
+  )
+  templateSql <- SqlRender::translate(
+    sql = templateSql,
+    targetDialect = connection@dbms,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   def <- createCohortTemplateDefintion(
@@ -159,25 +207,46 @@ createSnomedCohortTemplateDefinition <- function(connection,
                                                  requireSecondDiagnosis = FALSE,
                                                  nameSuffix = '',
                                                  vocabularyDatabaseSchema = cdmDatabaseSchema) {
-  sql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = file.path("templates", "snomed", "references.sql"),
-    packageName = utils::packageName(),
+  sql <- SqlRender::readSql(
+    sourceFile = system.file(
+      "sql/sql_server/templates/snomed/references.sql",
+      package = "CohortGenerator",
+      mustWork = TRUE
+    )
+  )
+  sql <- SqlRender::render(
+    sql = sql,
     identifier_expression = identifierExpression,
-    tempEmulationSchema = tempEmulationSchema,
     require_second_diagnosis = requireSecondDiagnosis,
     name_suffix = nameSuffix,
     vocabulary_database_schema = vocabularyDatabaseSchema
+  )
+  sql <- SqlRender::translate(
+    sql = sql,
+    targetDialect = connection@dbms,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   references <- DatabaseConnector::querySql(connection = connection,
                                             sql = sql,
                                             snakeCaseToCamelCase = TRUE)
-  templateSql <- SqlRender::loadRenderTranslateSql(
-    sqlFilename = file.path("templates", "snomed", "definition.sql"),
-    packageName = utils::packageName(),
+  
+  templateSql <- SqlRender::readSql(
+    sourceFile = system.file(
+      "sql/sql_server/templates/snomed/definition.sql",
+      package = "CohortGenerator",
+      mustWork = TRUE
+    )
+  )
+  templateSql <- SqlRender::render(
+    sql = templateSql,
     identifier_expression = identifierExpression,
-    tempEmulationSchema = tempEmulationSchema,
     require_second_diagnosis = requireSecondDiagnosis
+  )
+  templateSql <- SqlRender::translate(
+    sql = templateSql,
+    targetDialect = connection@dbms,
+    tempEmulationSchema = tempEmulationSchema
   )
 
   def <- createCohortTemplateDefintion(
