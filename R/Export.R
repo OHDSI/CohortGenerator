@@ -112,7 +112,6 @@ exportCohortStatsTables <- function(connectionDetails,
     ))
   } else {
     inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
-    inclusionRules$databaseId <- databaseId
     names(inclusionRules) <- SqlRender::camelCaseToSnakeCase(names(inclusionRules))
     exportStats(
       data = inclusionRules,
