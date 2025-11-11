@@ -369,20 +369,6 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
 
   }
 
-  templateDefinitions <- getTemplateDefinitions(cohortDefinitionSet)
-  cohortTemplates <- data.frame()
-  for (template in templateDefinitions) {
-    row <- data.frame(
-      template_definition_id = template$id,
-      json = template$toJson() |> as.character()
-    )
-    cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
-  }
-
-  if (nrow(cohortTemplates) == 0) {
-    cohortDefinitions$isTemplatedCohort <- FALSE
-  }
-
   writeCsv(
     x = cohortDefinitions,
     file = file.path(outputFolder, "cg_cohort_definition.csv")
