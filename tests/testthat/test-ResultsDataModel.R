@@ -184,5 +184,5 @@ test_that("Create schema and upload on Sqlite", {
     resultsFolder = unzipFolder
   )
 
-  on.exit(unlink(sqliteInfo$connectionDetails$server, force = TRUE), add = TRUE)
+  on.exit(unlink(sqliteInfo$connectionDetails$server(), force = TRUE), add = TRUE)
 })
