@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CohortGenerator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/CreatingCohortSubsetDefinitions.html">Creating Cohort Subset Definitions</a></li>
     <li><a class="dropdown-item" href="../articles/GeneratingCohorts.html">Generating Cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/SamplingCohorts.html">Sampling Cohorts</a></li>
+    <li><a class="dropdown-item" href="../articles/UsingTemplateCohorts.html">Using Template Cohorts</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://ohdsi.github.io/Hades" aria-label="hadesLogo">hadesLogo</a></li>
@@ -34,11 +35,26 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/v0.12.2/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.12.2" id="cohortgenerator-0122">CohortGenerator 0.12.2<a class="anchor" aria-label="anchor" href="#cohortgenerator-0122"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.0.0" id="cohortgenerator-100">CohortGenerator 1.0.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-100"></a></h2><p class="text-muted">CRAN release: 2025-11-12</p>
+<p>New Features</p>
+<ul><li>SQL cohorts as first class citizens - SQL templates for non-standard cohorts or large, bulk operations (<a href="https://github.com/OHDSI/CohortGenerator/issues/133" class="external-link">#133</a>, <a href="https://github.com/OHDSI/CohortGenerator/issues/247" class="external-link">#247</a>)</li>
+<li>Remove file-based incremental operations. Creation of database cohort_checksum tables that enables verification of generated cohorts and incremental execution in distributed environments (<a href="https://github.com/OHDSI/CohortGenerator/issues/206" class="external-link">#206</a>, <a href="https://github.com/OHDSI/CohortGenerator/issues/131" class="external-link">#131</a>, <a href="https://github.com/OHDSI/CohortGenerator/issues/254" class="external-link">#254</a>)</li>
+<li>Abbreviated logging for cohorts already generated (<a href="https://github.com/OHDSI/CohortGenerator/issues/113" class="external-link">#113</a>)</li>
+<li>Added <code>maximumChortDuration</code> to the LimitSubset operator (<a href="https://github.com/OHDSI/CohortGenerator/issues/240" class="external-link">#240</a>)</li>
+<li>Added “recipe” functions for creating indication and restriction subsets (<a href="https://github.com/OHDSI/CohortGenerator/issues/209" class="external-link">#209</a>)</li>
+<li>Deprecate subset operator function names and add <code>operator</code> suffix (<a href="https://github.com/OHDSI/CohortGenerator/issues/233" class="external-link">#233</a>)</li>
+<li>Removes default ‘print friendly’ long text of subgroup names (<a href="https://github.com/OHDSI/CohortGenerator/issues/135" class="external-link">#135</a>, <a href="https://github.com/OHDSI/CohortGenerator/issues/231" class="external-link">#231</a>)</li>
+<li>Add pretty print to subset definitions that includes SQL and logic definitions (<a href="https://github.com/OHDSI/CohortGenerator/issues/218" class="external-link">#218</a>)</li>
+</ul><p>Bug Fixes</p>
+<ul><li>Limit subset operator produces broken SQL if R <code>date</code> of length 0 is passed instead of NULL (<a href="https://github.com/OHDSI/CohortGenerator/issues/252" class="external-link">#252</a>)</li>
+<li>Remove warning around finalize (<a href="https://github.com/OHDSI/CohortGenerator/issues/242" class="external-link">#242</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.12.2" id="cohortgenerator-0122">CohortGenerator 0.12.2<a class="anchor" aria-label="anchor" href="#cohortgenerator-0122"></a></h2><p class="text-muted">CRAN release: 2025-09-11</p>
 <ul><li>Updates unit tests to use lowercase field names (<a href="https://github.com/OHDSI/CohortGenerator/issues/237" class="external-link">#237</a>)</li>
 </ul></div>
     <div class="section level2">
@@ -48,7 +64,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.12.0" id="cohortgenerator-0120">CohortGenerator 0.12.0<a class="anchor" aria-label="anchor" href="#cohortgenerator-0120"></a></h2><p class="text-muted">CRAN release: 2025-07-31</p>
 <p>New Features</p>
-<ul><li>Backwards compatable extension to CohortSubsetOperators and cohortSubsetWindows to allow windowing to be logic of any length</li>
+<ul><li>Backwards compatible extension to CohortSubsetOperators and cohortSubsetWindows to allow windowing to be logic of any length</li>
 <li>Include observation table when creating negative control cohorts (<a href="https://github.com/OHDSI/CohortGenerator/issues/198" class="external-link">#198</a>)</li>
 <li>Improvements to cohort subset documentation (<a href="https://github.com/OHDSI/CohortGenerator/issues/199" class="external-link">#199</a>)</li>
 <li>Add <code>negate</code> parameter to createSubsetCohortWindow function (<a href="https://github.com/OHDSI/CohortGenerator/issues/217" class="external-link">#217</a>)</li>
@@ -182,7 +198,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

@@ -21,7 +21,7 @@ The first approach is preferred as to avoid the warning emitted."><link rel="sty
 
     <a class="navbar-brand me-2" href="../index.html">CohortGenerator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@ The first approach is preferred as to avoid the warning emitted."><link rel="sty
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/CreatingCohortSubsetDefinitions.html">Creating Cohort Subset Definitions</a></li>
     <li><a class="dropdown-item" href="../articles/GeneratingCohorts.html">Generating Cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/SamplingCohorts.html">Sampling Cohorts</a></li>
+    <li><a class="dropdown-item" href="../articles/UsingTemplateCohorts.html">Using Template Cohorts</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://ohdsi.github.io/Hades" aria-label="hadesLogo">hadesLogo</a></li>
@@ -48,7 +49,7 @@ The first approach is preferred as to avoid the warning emitted."><link rel="sty
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Export the cohort statistics tables to the file system</h1>
-      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/v0.12.2/R/Export.R" class="external-link"><code>R/Export.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/main/R/Export.R" class="external-link"><code>R/Export.R</code></a></small>
       <div class="d-none name"><code>exportCohortStatsTables.Rd</code></div>
     </div>
 
@@ -127,7 +128,7 @@ convert from snake_case to camelCase? Default is FALSE</p></dd>
 
 <dt id="arg-incremental">incremental<a class="anchor" aria-label="anchor" href="#arg-incremental"></a></dt>
 <dd><p>If <code>incremental = TRUE</code>, results are written to update values instead of
-overwriting an existing results</p></dd>
+overwriting an existing results (deprecated)</p></dd>
 
 
 <dt id="arg-databaseid">databaseId<a class="anchor" aria-label="anchor" href="#arg-databaseid"></a></dt>
@@ -173,7 +174,7 @@ file names.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

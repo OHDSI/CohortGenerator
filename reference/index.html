@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CohortGenerator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/CreatingCohortSubsetDefinitions.html">Creating Cohort Subset Definitions</a></li>
     <li><a class="dropdown-item" href="../articles/GeneratingCohorts.html">Generating Cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/SamplingCohorts.html">Sampling Cohorts</a></li>
+    <li><a class="dropdown-item" href="../articles/UsingTemplateCohorts.html">Using Template Cohorts</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://ohdsi.github.io/Hades" aria-label="hadesLogo">hadesLogo</a></li>
@@ -41,8 +42,7 @@
 
       <div class="section-desc"><p>Functions that support generating cohorts.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -53,7 +53,8 @@
 
         </dt>
         <dd>Run a cohort generation and export results</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="generateCohortSet.html">generateCohortSet()</a></code>
 
@@ -64,8 +65,7 @@
 
       <div class="section-desc"><p>Functions that support creating the necessary cohort tables.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -76,7 +76,8 @@
 
         </dt>
         <dd>Create cohort tables</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="getCohortTableNames.html">getCohortTableNames()</a></code>
 
@@ -87,8 +88,7 @@
 
       <div class="section-desc"><p>Functions that support working with a cohort definition set</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -99,25 +99,29 @@
 
         </dt>
         <dd>Save the cohort definition set to the file system</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="getCohortDefinitionSet.html">getCohortDefinitionSet()</a></code>
 
         </dt>
         <dd>Get a cohort definition set</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="createEmptyCohortDefinitionSet.html">createEmptyCohortDefinitionSet()</a></code>
 
         </dt>
         <dd>Create an empty cohort definition set</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="checkAndFixCohortDefinitionSetDataTypes.html">checkAndFixCohortDefinitionSetDataTypes()</a></code>
 
         </dt>
         <dd>Check if a cohort definition set is using the proper data types</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="isCohortDefinitionSet.html">isCohortDefinitionSet()</a></code>
 
@@ -128,8 +132,7 @@
 
       <div class="section-desc"><p>Function for obtaining the counts of subjects and events for one or more cohorts</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -145,8 +148,7 @@
 
       <div class="section-desc"><p>Functions for creating cohort subset definitions and subset operators.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -157,55 +159,219 @@
 
         </dt>
         <dd>Add cohort subset definition to a cohort definition set</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="createCohortSubset.html">createCohortSubset()</a></code>
 
         </dt>
+        <dd>Create Cohort Subset Operator</dd>
+
+        <dt>
+
+          <code><a href="createCohortSubsetOperator.html">createCohortSubsetOperator()</a></code>
+
+        </dt>
         <dd>A definition of subset functions to be applied to a set of cohorts</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="createCohortSubsetDefinition.html">createCohortSubsetDefinition()</a></code>
 
         </dt>
         <dd>Create Subset Definition</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="createDemographicSubset.html">createDemographicSubset()</a></code>
 
         </dt>
-        <dd>Create createDemographicSubset Subset</dd>
-      </dl><dl><dt>
+        <dd>Create Demographic Subset Operator</dd>
+
+        <dt>
+
+          <code><a href="createDemographicSubsetOperator.html">createDemographicSubsetOperator()</a></code>
+
+        </dt>
+        <dd>Create createDemographicSubset Subset operator</dd>
+
+        <dt>
 
           <code><a href="createLimitSubset.html">createLimitSubset()</a></code>
 
         </dt>
-        <dd>Create Limit Subset</dd>
-      </dl><dl><dt>
+        <dd>Create Limit Subset Operator</dd>
+
+        <dt>
+
+          <code><a href="createLimitSubsetOperator.html">createLimitSubsetOperator()</a></code>
+
+        </dt>
+        <dd>Create Limit Subset Operator</dd>
+
+        <dt>
 
           <code><a href="createSubsetCohortWindow.html">createSubsetCohortWindow()</a></code>
 
         </dt>
         <dd>Create a relative time window for cohort subset operations</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="getSubsetDefinitions.html">getSubsetDefinitions()</a></code>
 
         </dt>
         <dd>Get cohort subset definitions from a cohort definition set</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="saveCohortSubsetDefinition.html">saveCohortSubsetDefinition()</a></code>
 
         </dt>
         <dd>Save cohort subset definitions to json</dd>
       </dl></div><div class="section level2">
+      <h2 id="cohort-subset-recipies">Cohort Subset Recipies<a class="anchor" aria-label="anchor" href="#cohort-subset-recipies"></a></h2>
+
+      <div class="section-desc"><p>Standard functions for creating subsets that wrap more complex operations</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="addExcludeOnIndexSubsetDefinition.html">addExcludeOnIndexSubsetDefinition()</a></code>
+
+        </dt>
+        <dd>Add exclude on index subset definition</dd>
+
+        <dt>
+
+          <code><a href="addIndicationSubsetDefinition.html">addIndicationSubsetDefinition()</a></code>
+
+        </dt>
+        <dd>Add Indication Subset Definition</dd>
+
+        <dt>
+
+          <code><a href="addRestrictionSubsetDefinition.html">addRestrictionSubsetDefinition()</a></code>
+
+        </dt>
+        <dd>Add Restriction Subset Definition</dd>
+
+        <dt>
+
+          <code><a href="getExcludeOnIndexSubsetDefinitionIds.html">getExcludeOnIndexSubsetDefinitionIds()</a></code>
+
+        </dt>
+        <dd>Get Exclude On Index Subset Definition Ids</dd>
+
+        <dt>
+
+          <code><a href="getIndicationSubsetDefinitionIds.html">getIndicationSubsetDefinitionIds()</a></code>
+
+        </dt>
+        <dd>Get Indication Subset Definition Ids</dd>
+
+        <dt>
+
+          <code><a href="getRestrictionSubsetDefinitionIds.html">getRestrictionSubsetDefinitionIds()</a></code>
+
+        </dt>
+        <dd>Get Restriction Subset Definition Ids</dd>
+      </dl></div><div class="section level2">
+      <h2 id="cohort-template-functions">Cohort Template Functions<a class="anchor" aria-label="anchor" href="#cohort-template-functions"></a></h2>
+
+      <div class="section-desc"><p>Utilities for creating template cohort definitions from raw sql</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="CohortTemplateDefinition.html">CohortTemplateDefinition</a></code>
+
+        </dt>
+        <dd>Class for automating the creation of bulk cohorts</dd>
+
+        <dt>
+
+          <code><a href="addCohortTemplateDefintion.html">addCohortTemplateDefintion()</a></code>
+
+        </dt>
+        <dd>Add Cohort template definition to cohort set</dd>
+
+        <dt>
+
+          <code><a href="addSqlCohortDefinition.html">addSqlCohortDefinition()</a></code>
+
+        </dt>
+        <dd>Add an sql cohort definition</dd>
+
+        <dt>
+
+          <code><a href="addUnionCohortDefinition.html">addUnionCohortDefinition()</a></code>
+
+        </dt>
+        <dd>Add union cohort definition to cohort definition set</dd>
+
+        <dt>
+
+          <code><a href="createAtcCohortTemplateDefinition.html">createAtcCohortTemplateDefinition()</a></code>
+
+        </dt>
+        <dd>Create ATC Cohort Template Definition</dd>
+
+        <dt>
+
+          <code><a href="createCohortTemplateDefintion.html">createCohortTemplateDefintion()</a></code>
+
+        </dt>
+        <dd>Create Cohort Template Definition</dd>
+
+        <dt>
+
+          <code><a href="createRxNormCohortTemplateDefinition.html">createRxNormCohortTemplateDefinition()</a></code>
+
+        </dt>
+        <dd>Create Rx Norm Cohort Template Definition</dd>
+
+        <dt>
+
+          <code><a href="createSnomedCohortTemplateDefinition.html">createSnomedCohortTemplateDefinition()</a></code>
+
+        </dt>
+        <dd>Create SNOMED Cohort Template Definition</dd>
+
+        <dt>
+
+          <code><a href="createUnionCohortTemplate.html">createUnionCohortTemplate()</a></code>
+
+        </dt>
+        <dd>Create cohort template to union multiple cohorts</dd>
+
+        <dt>
+
+          <code><a href="getCohortValidationCounts.html">getCohortValidationCounts()</a></code>
+
+        </dt>
+        <dd>Validate cohort</dd>
+
+        <dt>
+
+          <code><a href="getTemplateDefinitions.html">getTemplateDefinitions()</a></code>
+
+        </dt>
+        <dd>Extract template definitions from a cohort definition set</dd>
+      </dl></div><div class="section level2">
       <h2 id="cohort-subset-classes">Cohort Subset Classes<a class="anchor" aria-label="anchor" href="#cohort-subset-classes"></a></h2>
 
       <div class="section-desc"><p>R6 classes for cohort subset definitions and subset operators.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -216,31 +382,36 @@
 
         </dt>
         <dd>Cohort Subset Definition</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="CohortSubsetOperator.html">CohortSubsetOperator</a></code>
 
         </dt>
         <dd>Cohort Subset Operator</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="DemographicSubsetOperator.html">DemographicSubsetOperator</a></code>
 
         </dt>
         <dd>Demographic Subset Operator</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="LimitSubsetOperator.html">LimitSubsetOperator</a></code>
 
         </dt>
         <dd>Limit Subset Operator</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="SubsetCohortWindow.html">SubsetCohortWindow</a></code>
 
         </dt>
         <dd>Time Window For Cohort Subset Operator</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="SubsetOperator.html">SubsetOperator</a></code>
 
@@ -251,8 +422,7 @@
 
       <div class="section-desc"><p>Functions for inserting inclusion rule names from a cohort definition, exporting the cohort statistics to the file system and a helper function for dropping those tables when they are no longer needed. These functions assume you are using <a href="https://github.com/OHDSI/circe-be" class="external-link">Circe</a> for inclusion rules and cohort statistics.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -263,25 +433,29 @@
 
         </dt>
         <dd>Get Cohort Inclusion Stats Table Data</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="getCohortInclusionRules.html">getCohortInclusionRules()</a></code>
 
         </dt>
         <dd>Get Cohort Inclusion Rules from a cohort definition set</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="insertInclusionRuleNames.html">insertInclusionRuleNames()</a></code>
 
         </dt>
         <dd>Used to insert the inclusion rule names from a cohort definition set when generating cohorts that include cohort statistics</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="exportCohortStatsTables.html">exportCohortStatsTables()</a></code>
 
         </dt>
         <dd>Export the cohort statistics tables to the file system</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="dropCohortStatsTables.html">dropCohortStatsTables()</a></code>
 
@@ -292,8 +466,7 @@
 
       <div class="section-desc"><p>Functions for creating negative control outcome cohorts for use in population-level estimation.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -304,7 +477,8 @@
 
         </dt>
         <dd>Create an empty negative control outcome cohort set</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="generateNegativeControlOutcomeCohorts.html">generateNegativeControlOutcomeCohorts()</a></code>
 
@@ -315,8 +489,7 @@
 
       <div class="section-desc"><p>Functions for managing the results of running Cohort Generator via <code>runCohortGeneration</code></p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -327,25 +500,29 @@
 
         </dt>
         <dd>Create the results data model tables on a database server.</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="getDataMigrator.html">getDataMigrator()</a></code>
 
         </dt>
         <dd>Get database migrations instance</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="getResultsDataModelSpecifications.html">getResultsDataModelSpecifications()</a></code>
 
         </dt>
         <dd>Get specifications for CohortGenerator results data model</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="migrateDataModel.html">migrateDataModel()</a></code>
 
         </dt>
         <dd>Migrate Data model</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="uploadResults.html">uploadResults()</a></code>
 
@@ -356,8 +533,7 @@
 
       <div class="section-desc"><p>Functions for reading and writing CSV files to ensure adherance to the HADES standard when interfacing between R and SQL/File System: <a href="https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL" class="external-link uri">https://ohdsi.github.io/Hades/codeStyle.html#Interfacing_between_R_and_SQL</a></p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -368,25 +544,29 @@
 
         </dt>
         <dd>Used to read a .csv file</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="writeCsv.html">writeCsv()</a></code>
 
         </dt>
         <dd>Used to write a .csv file</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="isCamelCase.html">isCamelCase()</a></code>
 
         </dt>
         <dd>Used to check if a string is in lower camel case</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="isSnakeCase.html">isSnakeCase()</a></code>
 
         </dt>
         <dd>Used to check if a string is in snake case</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="isFormattedForDatabaseUpload.html">isFormattedForDatabaseUpload()</a></code>
 
@@ -397,37 +577,19 @@
 
       <div class="section-desc"><p>Functions that support record keeping of tasks performed. CohortGenerator uses these functions when running in incremental mode to only generate cohorts when their definition has changed from a previous run.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
 
       <dl><dt>
 
-          <code><a href="getRequiredTasks.html">getRequiredTasks()</a></code>
+          <code><a href="getLastGeneratedCohortChecksums.html">getLastGeneratedCohortChecksums()</a></code>
 
         </dt>
-        <dd>Get a list of tasks required when running in incremental mode</dd>
-      </dl><dl><dt>
+        <dd>Get last generated cohort checksums</dd>
 
-          <code><a href="recordTasksDone.html">recordTasksDone()</a></code>
-
-        </dt>
-        <dd>Record a task as complete</dd>
-      </dl><dl><dt>
-
-          <code><a href="isTaskRequired.html">isTaskRequired()</a></code>
-
-        </dt>
-        <dd>Is a task required when running in incremental mode</dd>
-      </dl><dl><dt>
-
-          <code><a href="saveIncremental.html">saveIncremental()</a></code>
-
-        </dt>
-        <dd>Used in incremental mode to save values to a file</dd>
-      </dl><dl><dt>
+        <dt>
 
           <code><a href="computeChecksum.html">computeChecksum()</a></code>
 
@@ -438,8 +600,7 @@
 
       <div class="section-desc"><p>Functions that support sampling a cohort. Please note this is only for software development purposes and NOT for running studies.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -455,8 +616,7 @@
 
       <div class="section-desc"><p>Sample data used in vignettes to showcase how to perform cohort subsets.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -467,7 +627,8 @@
 
         </dt>
         <dd>OMOP CDM Drug Exposure Sample Data</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="omopCdmPerson.html">omopCdmPerson</a></code>
 
@@ -483,7 +644,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

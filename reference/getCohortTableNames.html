@@ -11,7 +11,7 @@ and cohort statistics tables."><link rel="stylesheet" type="text/css" href="extr
 
     <a class="navbar-brand me-2" href="../index.html">CohortGenerator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@ and cohort statistics tables."><link rel="stylesheet" type="text/css" href="extr
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/CreatingCohortSubsetDefinitions.html">Creating Cohort Subset Definitions</a></li>
     <li><a class="dropdown-item" href="../articles/GeneratingCohorts.html">Generating Cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/SamplingCohorts.html">Sampling Cohorts</a></li>
+    <li><a class="dropdown-item" href="../articles/UsingTemplateCohorts.html">Using Template Cohorts</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://ohdsi.github.io/Hades" aria-label="hadesLogo">hadesLogo</a></li>
@@ -38,7 +39,7 @@ and cohort statistics tables."><link rel="stylesheet" type="text/css" href="extr
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Used to get a list of cohort table names to use when creating the cohort tables</h1>
-      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/v0.12.2/R/CohortTables.R" class="external-link"><code>R/CohortTables.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/main/R/CohortTables.R" class="external-link"><code>R/CohortTables.R</code></a></small>
       <div class="d-none name"><code>getCohortTableNames.Rd</code></div>
     </div>
 
@@ -57,7 +58,8 @@ and cohort statistics tables.</p>
 <span>  cohortInclusionResultTable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cohortTable</span>, <span class="st">"_inclusion_result"</span><span class="op">)</span>,</span>
 <span>  cohortInclusionStatsTable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cohortTable</span>, <span class="st">"_inclusion_stats"</span><span class="op">)</span>,</span>
 <span>  cohortSummaryStatsTable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cohortTable</span>, <span class="st">"_summary_stats"</span><span class="op">)</span>,</span>
-<span>  cohortCensorStatsTable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cohortTable</span>, <span class="st">"_censor_stats"</span><span class="op">)</span></span>
+<span>  cohortCensorStatsTable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cohortTable</span>, <span class="st">"_censor_stats"</span><span class="op">)</span>,</span>
+<span>  cohortChecksumTable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cohortTable</span>, <span class="st">"_checksum"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -97,6 +99,10 @@ inclusion rule statistics.</p></dd>
 <dd><p>Name of the censor stats table, one of the tables for storing
 inclusion rule statistics.</p></dd>
 
+
+<dt id="arg-cohortchecksumtable">cohortChecksumTable<a class="anchor" aria-label="anchor" href="#arg-cohortchecksumtable"></a></dt>
+<dd><p>Stores the checksum of the cohort used and the time generation starts and ends</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -112,7 +118,7 @@ inclusion rule statistics.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

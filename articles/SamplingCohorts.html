@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CohortGenerator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,7 @@
 <li><a class="dropdown-item" href="../articles/CreatingCohortSubsetDefinitions.html">Creating Cohort Subset Definitions</a></li>
     <li><a class="dropdown-item" href="../articles/GeneratingCohorts.html">Generating Cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/SamplingCohorts.html">Sampling Cohorts</a></li>
+    <li><a class="dropdown-item" href="../articles/UsingTemplateCohorts.html">Using Template Cohorts</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -62,9 +63,9 @@
                         <h4 data-toc-skip class="author">James P.
 Gilbert</h4>
             
-            <h4 data-toc-skip class="date">2025-09-11</h4>
+            <h4 data-toc-skip class="date">2025-11-12</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/v0.12.2/vignettes/SamplingCohorts.Rmd" class="external-link"><code>vignettes/SamplingCohorts.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/main/vignettes/SamplingCohorts.Rmd" class="external-link"><code>vignettes/SamplingCohorts.Rmd</code></a></small>
       <div class="d-none name"><code>SamplingCohorts.Rmd</code></div>
     </div>
 
@@ -102,7 +103,7 @@ the same base table.</p>
 <p>We then need to create the cohort tables and cohorts in the usual
 manner.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/Eunomia/reference/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu">DatabaseConnector</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/DatabaseConnector/reference/connect.html" class="external-link">connect</a></span><span class="op">(</span>connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit</a></span><span class="op">(</span><span class="fu">DatabaseConnector</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/DatabaseConnector/reference/disconnect.html" class="external-link">disconnect</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -123,8 +124,7 @@ manner.</p>
 <span>  cdmDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
-<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  incrementalFolder <span class="op">=</span> <span class="va">recordKeepingFolder</span></span>
+<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We can then create a new cohort definition set from the original
 sample.</p>
@@ -136,8 +136,7 @@ sample.</p>
 <span>  seed <span class="op">=</span> <span class="fl">64374</span>, <span class="co"># OHDSI</span></span>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
-<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  incrementalFolder <span class="op">=</span> <span class="va">recordKeepingFolder</span></span>
+<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The resulting <code>sampledCohortDefinitionSet</code> is nearly
 identical to the base cohort set, however a few changes occur:</p>
@@ -164,8 +163,7 @@ as follows:</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">800</span> <span class="op">*</span> <span class="fl">64374</span>, <span class="co"># OHDSI</span></span>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
-<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  incrementalFolder <span class="op">=</span> <span class="va">recordKeepingFolder</span></span>
+<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Note that using incremental mode for your sampled cohorts will also
 work. In this case, a cohort will only be re-generated if the checksum
@@ -192,7 +190,7 @@ unchanged.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

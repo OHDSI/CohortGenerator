@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CohortGenerator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,7 @@
 <li><a class="dropdown-item" href="../articles/CreatingCohortSubsetDefinitions.html">Creating Cohort Subset Definitions</a></li>
     <li><a class="dropdown-item" href="../articles/GeneratingCohorts.html">Generating Cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/SamplingCohorts.html">Sampling Cohorts</a></li>
+    <li><a class="dropdown-item" href="../articles/UsingTemplateCohorts.html">Using Template Cohorts</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -62,9 +63,9 @@
                         <h4 data-toc-skip class="author">Anthony G. Sena
 and Martijn J. Schuemie</h4>
             
-            <h4 data-toc-skip class="date">2025-09-11</h4>
+            <h4 data-toc-skip class="date">2025-11-12</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/v0.12.2/vignettes/GeneratingCohorts.Rmd" class="external-link"><code>vignettes/GeneratingCohorts.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/main/vignettes/GeneratingCohorts.Rmd" class="external-link"><code>vignettes/GeneratingCohorts.Rmd</code></a></small>
       <div class="d-none name"><code>GeneratingCohorts.Rmd</code></div>
     </div>
 
@@ -197,7 +198,7 @@ will use the <a href="https://github.com/OHDSI/Eunomia" class="external-link">Eu
 set as our CDM.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get the Eunomia connection details</span></span>
-<span><span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Eunomia/man/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">connectionDetails</span> <span class="op">&lt;-</span> <span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/Eunomia/reference/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># First get the cohort table names to use for this generation task</span></span>
 <span><span class="va">cohortTableNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCohortTableNames.html">getCohortTableNames</a></span><span class="op">(</span>cohortTable <span class="op">=</span> <span class="st">"cg_example"</span><span class="op">)</span></span>
@@ -242,7 +243,7 @@ summary of the persons and events for each cohort:</p>
 <span>  cohortTable <span class="op">=</span> <span class="va">cohortTableNames</span><span class="op">$</span><span class="va">cohortTable</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span>
-<span><span class="co">#&gt; Counting cohorts took 0.0574 secs</span></span></code></pre>
+<span><span class="co">#&gt; Counting cohorts took 0.0228 secs</span></span></code></pre>
 <pre><code><span><span class="co">#&gt;   cohortId cohortEntries cohortSubjects</span></span>
 <span><span class="co">#&gt; 1        1          1800           1800</span></span>
 <span><span class="co">#&gt; 2        2           569            569</span></span>
@@ -402,7 +403,8 @@ the results:</p>
 <span><span class="co">#&gt; Table "cohort_inclusion_result" already exists and in incremental mode, so not recreating it.</span></span>
 <span><span class="co">#&gt; Table "cohort_inclusion_stats" already exists and in incremental mode, so not recreating it.</span></span>
 <span><span class="co">#&gt; Table "cohort_summary_stats" already exists and in incremental mode, so not recreating it.</span></span>
-<span><span class="co">#&gt; Table "cohort_censor_stats" already exists and in incremental mode, so not recreating it.</span></span></code></pre>
+<span><span class="co">#&gt; Table "cohort_censor_stats" already exists and in incremental mode, so not recreating it.</span></span>
+<span><span class="co">#&gt; Table "cohort_checksum" already exists and in incremental mode, so not recreating it.</span></span></code></pre>
 <p>The use of <code>incremental = TRUE</code> here allows for assurance
 that tables and results from previous runs are preserved. Next, we can
 generate our <code>cohortDefinitionSet</code> in incremental mode.</p>
@@ -413,23 +415,17 @@ generate our <code>cohortDefinitionSet</code> in incremental mode.</p>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
 <span>  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,</span>
-<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span></span>
+<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Here we indicate that we are performing this operational
-incrementally by specifying <code>incremental = TRUE</code> and by
-specifying a folder for holding a record keeping file to track where
-cohorts are generated:
-<code>incrementalFolder = file.path(someFolder, "RecordKeeping")</code>.
-Once a cohort is generated in incremental mode, the cohort ID and a
-checksum of the cohort SQL are saved in the
-<code>incrementalFolder</code> in a file called
-<code>GeneratedCohorts.csv</code>. If we attempt to re-generate the same
-cohort set in incremental mode, <code>generateCohortSet</code> will
-inspect the SQL for each cohort in the <code>cohortDefinitionSet</code>
-and if the checksum of that cohort matches the checksum found in the
-<code>incrementalFolder</code> for the same cohort ID, the generation is
-skipped. To illustrate how this looks:</p>
+incrementally by specifying <code>incremental = TRUE</code>. Once a
+cohort is generated in incremental mode, the cohort ID and a checksum of
+the cohort SQL are saved in a checksum table within the cohort database
+schema. If we attempt to re-generate the same cohort set in incremental
+mode, <code>generateCohortSet</code> will inspect the SQL for each
+cohort in the <code>cohortDefinitionSet</code> and if the checksum of
+that cohort matches the checksum found in the table for the same cohort
+ID, the generation is skipped. To illustrate how this looks:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/generateCohortSet.html">generateCohortSet</a></span><span class="op">(</span></span>
 <span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
@@ -437,35 +433,14 @@ skipped. To illustrate how this looks:</p>
 <span>  cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  cohortTableNames <span class="op">=</span> <span class="va">cohortTableNames</span>,</span>
 <span>  cohortDefinitionSet <span class="op">=</span> <span class="va">cohortDefinitionSet</span>,</span>
-<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  incrementalFolder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">someFolder</span>, <span class="st">"RecordKeeping"</span><span class="op">)</span></span>
+<span>  incremental <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Connecting using SQLite driver</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Initiating cluster consisting only of main thread</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Skipping cohortId = '1' because it is unchanged from earlier run</span></span>
-<span><span class="co">#&gt; Skipping cohortId = '2' because it is unchanged from earlier run</span></span>
-<span><span class="co">#&gt; Skipping cohortId = '3' because it is unchanged from earlier run</span></span>
-<span><span class="co">#&gt; Skipping cohortId = '4' because it is unchanged from earlier run</span></span></code></pre>
-<pre><code><span><span class="co">#&gt; Generating cohort set took 0.03 secs</span></span></code></pre>
-<div class="section level5">
-<h5 id="potential-pitfalls-of-incremental-mode">Potential Pitfalls of Incremental Mode<a class="anchor" aria-label="anchor" href="#potential-pitfalls-of-incremental-mode"></a>
-</h5>
-<p>Incremental mode makes some assumptions to provide a more flexible
-way to generate cohorts. These assumptions come with some risks that we
-would like to highlight:</p>
-<ul>
-<li>
-<strong>Record keeping files</strong>: The incremental approach for
-cohort generation makes use of a record keeping file to check if a
-cohort has already been generated. It does <strong>not</strong> check
-the database to verify this so you need to take care and preserve the
-file system where you store the record keeping file. If the file is
-removed, CohortGenerator will simply repeat the cohort generation
-process.</li>
-</ul>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">#&gt; Skipping cohorts already generated:  1, 2, 3, 4</span></span>
+<span><span class="co">#&gt; Initiating cluster consisting only of main thread</span></span>
+<span><span class="co">#&gt; Generating cohort set took 0.05 secs</span></span></code></pre>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">old</span><span class="op">)</span></span></code></pre></div>
-</div>
 </div>
 </div>
 </div>
@@ -480,7 +455,7 @@ process.</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
