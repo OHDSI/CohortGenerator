@@ -67,7 +67,7 @@ connection <- DatabaseConnector::connect(Eunomia::getEunomiaConnectionDetails())
 
     ## attempting to download GiBleed
 
-    ## attempting to extract and load: /tmp/Rtmpiuvu51/GiBleed_5.3.zip to: /tmp/Rtmpiuvu51/GiBleed_5.3.sqlite
+    ## attempting to extract and load: /tmp/RtmpQWUqrS/GiBleed_5.3.zip to: /tmp/RtmpQWUqrS/GiBleed_5.3.sqlite
 
     ## Connecting using SQLite driver
 
@@ -84,7 +84,7 @@ createCohortTables(connection = connection, cohortDatabaseSchema = "main")
     ## - Created table main.cohort_summary_stats
     ## - Created table main.cohort_censor_stats
     ## - Created table main.cohort_checksum
-    ## Creating cohort tables took 0.04secs
+    ## Creating cohort tables took 0.03secs
 
 ``` r
 status <- generateCohortSet(
