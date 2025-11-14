@@ -113,7 +113,7 @@ runCohortGeneration <- function(connectionDetails,
   }
 
   if (!is.null(incrementalFolder)) {
-    lifecycle::deprecate_warn("1.1.0", "incrmentalFolder parameter is no longer used and will be removed in a future version")
+    warning("incrementalFolder parameter is no longer used and will be removed in a future version")
   }
 
   # Create the cohort tables
