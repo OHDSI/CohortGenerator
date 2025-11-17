@@ -140,7 +140,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     if (!is.null(incrementalFolder)) {
       warning("incrementalFolder parameter is no longer used and will be removed in a future version")
     }
-    
+
     computedChecksums <- getLastGeneratedCohortChecksums(
       connection = connection,
       cohortDatabaseSchema = cohortDatabaseSchema,
@@ -151,7 +151,7 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
       return(invisible("SKIPPED"))
     }
   }
-  
+
   rlang::inform("Generating negative control outcome cohorts")
 
   recordNcCohorts(
