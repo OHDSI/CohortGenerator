@@ -121,22 +121,6 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     )
   ))[[1]]
 
-  if (incremental) {
-    if (!is.null(incrementalFolder)) {
-      warning("incrementalFolder parameter is no longer used and will be removed in a future version")
-    }
-
-    computedChecksums <- getLastGeneratedCohortChecksums(
-      connection = connection,
-      cohortDatabaseSchema = cohortDatabaseSchema,
-      cohortTableNames = cohortTableNames
-    )
-    if (checksum %in% computedChecksums$checksum) {
-      ParallelLogger::logInfo("Negative control set generation skipped")
-      return(invisible("SKIPPED"))
-    }
-  }
-
   start <- Sys.time()
   if (is.null(connection)) {
     connection <- DatabaseConnector::connect(connectionDetails)
@@ -152,6 +136,22 @@ generateNegativeControlOutcomeCohorts <- function(connectionDetails = NULL,
     stop(paste0("Table: ", cohortTable, " not found in schema: ", cohortDatabaseSchema, ". Please use `createCohortTable` to ensure the cohort table is created before generating cohorts."))
   }
 
+  if (incremental) {
+    if (!is.null(incrementalFolder)) {
+      warning("incrementalFolder parameter is no longer used and will be removed in a future version")
+    }
+    
+    computedChecksums <- getLastGeneratedCohortChecksums(
+      connection = connection,
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      cohortTableNames = cohortTableNames
+    )
+    if (checksum %in% computedChecksums$checksum) {
+      ParallelLogger::logInfo("Negative control set generation skipped")
+      return(invisible("SKIPPED"))
+    }
+  }
+  
   rlang::inform("Generating negative control outcome cohorts")
 
   recordNcCohorts(

@@ -104,6 +104,7 @@ test_that("Call generateNegativeControlOutcomeCohorts with incrementalFolder spe
       negativeControlOutcomeCohortSet = ncSet,
       occurrenceType = "all",
       detectOnDescendants = TRUE,
+      incremental = TRUE,
       incrementalFolder = "folder"
     ),
     message = "(incrementalFolder parameter is no longer used)"
