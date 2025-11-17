@@ -226,6 +226,27 @@ test_that(".sampleCohort", {
   expect_true(all(resCohort$subjectId %in% sampleTable$rand_id))
 })
 
+test_that("Call sampleCohortDefinitionSet with incrementalFolder specified", {
+  cohortDefinitionSet <- getCohortsForTest(cohorts)
+  cohortTableNames <- getCohortTableNames(cohortTable = "inc_folder_cohort")
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+  expect_warning(
+    sampleCohortDefinitionSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortDefinitionSet,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      n = 1,
+      incrementalFolder = "folder"
+    ),
+    message = "(incrementalFolder parameter is no longer used)"
+  )
+})
+
 test_that("Eval expression is safe", {
   expect_true(.computeIdentifierExpression("cohortId + seed", 1, 5) == 6)
   expect_true(.computeIdentifierExpression("seed", 1, 55) == 55)
@@ -263,7 +284,6 @@ test_that("checkUniqueOutputIds does not return error when cohortTable and cohor
 
   expect_silent(.checkUniqueOutputIds(cohortIds, seed, identifierExpression, cohortTableNames))
 })
-
 
 test_that("Error on bad params", {
   # No connection details

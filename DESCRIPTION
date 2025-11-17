@@ -1,8 +1,8 @@
 Package: CohortGenerator
 Type: Package
 Title: Cohort Generation for the OMOP Common Data Model
-Version: 1.0.0
-Date: 2025-11-11
+Version: 1.0.1
+Date: 2025-11-17
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Jamie", "Gilbert", role = c("aut")),
@@ -24,7 +24,6 @@ Imports:
   checkmate,
   digest,
   dplyr,
-  lifecycle,
   lubridate,
   methods,
   ParallelLogger (>= 3.0.0),
