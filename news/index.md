@@ -1,5 +1,9 @@
 # Changelog
 
+## CohortGenerator 1.0.1
+
+Bug Fixes - Remove calls to `lifecycle` and add unit tests
+
 ## CohortGenerator 1.0.0
 
 CRAN release: 2025-11-12
