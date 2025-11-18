@@ -170,7 +170,7 @@ getCohortCounts(
 ```
 
     #> Connecting using SQLite driver
-    #> Counting cohorts took 0.0244 secs
+    #> Counting cohorts took 0.0209 secs
 
     #>   cohortId cohortEntries cohortSubjects
     #> 1        1          1800           1800
@@ -391,7 +391,7 @@ generateCohortSet(
 
     #> Skipping cohorts already generated:  1, 2, 3, 4
     #> Initiating cluster consisting only of main thread
-    #> Generating cohort set took 0.05 secs
+    #> Generating cohort set took 0.04 secs
 
 ``` r
 options(old)
