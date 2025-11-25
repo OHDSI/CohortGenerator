@@ -53,20 +53,20 @@ SubsetCohortWindow <- R6::R6Class(
     toList = function() {
       objRepr <- list()
       if (length(private$.startDay)) {
-        objRepr$startDay <- jsonlite::unbox(private$.startDay)
+        objRepr$startDay <- safeUnbox(private$.startDay)
       }
       if (length(private$.endDay)) {
-        objRepr$endDay <- jsonlite::unbox(private$.endDay)
+        objRepr$endDay <- safeUnbox(private$.endDay)
       }
       if (length(private$.targetAnchor)) {
-        objRepr$targetAnchor <- jsonlite::unbox(private$.targetAnchor)
+        objRepr$targetAnchor <- safeUnbox(private$.targetAnchor)
       }
 
       if (length(private$.subsetAnchor)) {
-        objRepr$subsetAnchor <- jsonlite::unbox(private$.subsetAnchor)
+        objRepr$subsetAnchor <- safeUnbox(private$.subsetAnchor)
       }
       if (length(private$.negate)) {
-        objRepr$negate <- jsonlite::unbox(private$.negate)
+        objRepr$negate <- safeUnbox(private$.negate)
       }
       objRepr
     },
@@ -270,8 +270,8 @@ SubsetOperator <- R6::R6Class(
     #' @description convert to List representation
     toList = function() {
       repr <- list(
-        name = jsonlite::unbox(self$name),
-        subsetType = jsonlite::unbox(self$classname())
+        name = safeUnbox(self$name),
+        subsetType = safeUnbox(self$classname())
       )
       return(repr)
     },
@@ -357,8 +357,8 @@ CohortSubsetOperator <- R6::R6Class(
     toList = function() {
       objRepr <- super$toList()
       objRepr$cohortIds <- private$.cohortIds
-      objRepr$cohortCombinationOperator <- jsonlite::unbox(private$.cohortCombinationOperator)
-      objRepr$negate <- jsonlite::unbox(private$.negate)
+      objRepr$cohortCombinationOperator <- safeUnbox(private$.cohortCombinationOperator)
+      objRepr$negate <- safeUnbox(private$.negate)
       objRepr$windows <- lapply(private$.windows, function(x) {
         x$toList()
       })
@@ -526,10 +526,10 @@ DemographicSubsetOperator <- R6::R6Class(
     toList = function() {
       objRepr <- super$toList()
       if (length(private$.ageMin)) {
-        objRepr$ageMin <- jsonlite::unbox(private$.ageMin)
+        objRepr$ageMin <- safeUnbox(private$.ageMin)
       }
       if (length(private$.ageMax)) {
-        objRepr$ageMax <- jsonlite::unbox(private$.ageMax)
+        objRepr$ageMax <- safeUnbox(private$.ageMax)
       }
       if (!is.null(private$.gender)) {
         objRepr$gender <- private$.gender
@@ -839,13 +839,13 @@ LimitSubsetOperator <- R6::R6Class(
     #' @description List representation of object
     toList = function() {
       objRef <- super$toList()
-      objRef$priorTime <- jsonlite::unbox(private$.priorTime)
-      objRef$followUpTime <- jsonlite::unbox(private$.followUpTime)
-      objRef$minimumCohortDuration <- jsonlite::unbox(private$.minimumCohortDuration)
-      objRef$maximumCohortDuration <- jsonlite::unbox(private$.maximumCohortDuration)
-      objRef$limitTo <- jsonlite::unbox(private$.limitTo)
-      objRef$calendarStartDate <- jsonlite::unbox(private$.calendarStartDate)
-      objRef$calendarEndDate <- jsonlite::unbox(private$.calendarEndDate)
+      objRef$priorTime <- safeUnbox(private$.priorTime)
+      objRef$followUpTime <- safeUnbox(private$.followUpTime)
+      objRef$minimumCohortDuration <- safeUnbox(private$.minimumCohortDuration)
+      objRef$maximumCohortDuration <- safeUnbox(private$.maximumCohortDuration)
+      objRef$limitTo <- safeUnbox(private$.limitTo)
+      objRef$calendarStartDate <- safeUnbox(private$.calendarStartDate)
+      objRef$calendarEndDate <- safeUnbox(private$.calendarEndDate)
 
       objRef
     }
