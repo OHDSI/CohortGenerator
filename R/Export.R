@@ -340,7 +340,6 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
           templateSql = template$templateSql
         )
 
-        browser()
         cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
         linkRows <- data.frame(
           templateDefinitionId = template$getChecksum(),
