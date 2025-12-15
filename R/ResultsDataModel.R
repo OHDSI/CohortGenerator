@@ -109,7 +109,7 @@ uploadResults <- function(connectionDetails,
 #' Migrate data from current state to next state
 #'
 #' It is strongly advised that you have a backup of all data (either sqlite files, a backup database (in the case you
-#' are using a postgres backend) or have kept the csv/zip files from your data generation.
+#' are using a PostgreSQL backend) or have kept the csv/zip files from your data generation.
 #'
 #' @inheritParams getDataMigrator
 #' @export
@@ -127,7 +127,7 @@ migrateDataModel <- function(connectionDetails, databaseSchema, tablePrefix = ""
 #' Get database migrations instance
 #' @description
 #'
-#' Returns ResultModelManager DataMigrationsManager instance.
+#' Returns ResultModelManager DataMigrationManager instance.
 # '@seealso [ResultModelManager::DataMigrationManager] which this function is a utility for.
 #'
 #' @param connectionDetails             DatabaseConnector connection details object

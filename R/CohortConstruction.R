@@ -24,7 +24,7 @@
 #' end time in this table. The last end time will be the cohort that is in the cohort table (assuming no other manual
 #' modifications are made to the cohort table itself).
 #'
-#' This can be used downstream of CohortGeneratro to evaluate if cohorts are consistent with passed definitions.
+#' This can be used downstream of CohortGenerator to evaluate if cohorts are consistent with passed definitions.
 #'
 #' @inheritParams generateCohortSet
 #'
@@ -66,12 +66,14 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
   {@cohort_id != ''} ? {AND cohort_definition_id IN (@cohort_id)}
   "
 
-  results <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
-                                                        sql = sql,
-                                                        cohort_id = cohortId,
-                                                        cohort_database_schema = cohortDatabaseSchema,
-                                                        cohort_checksum_table = cohortTableNames$cohortChecksumTable,
-                                                        snakeCaseToCamelCase = TRUE)
+  results <- DatabaseConnector::renderTranslateQuerySql(
+    connection = connection,
+    sql = sql,
+    cohort_id = cohortId,
+    cohort_database_schema = cohortDatabaseSchema,
+    cohort_checksum_table = cohortTableNames$cohortChecksumTable,
+    snakeCaseToCamelCase = TRUE
+  )
 
   results$startTime <- as.POSIXct(results$startTime / 1000, origin = "1970-01-01", tz = "UTC")
   results$endTime <- as.POSIXct(results$endTime / 1000, origin = "1970-01-01", tz = "UTC")
@@ -136,11 +138,11 @@ generateCohortSet <- function(connectionDetails = NULL,
                               incrementalFolder = NULL) {
   checkmate::assertDataFrame(cohortDefinitionSet, min.rows = 1, col.names = "named")
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "sql"
-                         )
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "sql"
+    )
   )
   assertLargeInteger(cohortDefinitionSet$cohortId)
   # Verify that cohort IDs are not repeated in the cohort definition
@@ -154,7 +156,7 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   if (!is.null(incrementalFolder)) {
-    lifecycle::deprecate_warn("1.1.0","incrementalFolder parameter is no longer used and will be removed in a future version")
+    warning("incrementalFolder parameter is no longer used and will be removed in a future version")
   }
 
   start <- Sys.time()
@@ -169,14 +171,16 @@ generateCohortSet <- function(connectionDetails = NULL,
 
 
     if (nrow(cohortDefinitionSet) == 0) {
-      generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
-                                                          cohortDefinitionSet = cohortDefinitionSet,
-                                                          cdmDatabaseSchema = cdmDatabaseSchema,
-                                                          tempEmulationSchema = tempEmulationSchema,
-                                                          cohortDatabaseSchema = cohortDatabaseSchema,
-                                                          cohortTableNames = cohortTableNames,
-                                                          stopOnError = stopOnError,
-                                                          incremental = incremental)
+      generatedTemplateCohorts <- generateTemplateCohorts(
+        connection = connection,
+        cohortDefinitionSet = cohortDefinitionSet,
+        cdmDatabaseSchema = cdmDatabaseSchema,
+        tempEmulationSchema = tempEmulationSchema,
+        cohortDatabaseSchema = cohortDatabaseSchema,
+        cohortTableNames = cohortTableNames,
+        stopOnError = stopOnError,
+        incremental = incremental
+      )
       return(generatedTemplateCohorts)
     }
   } else {
@@ -202,9 +206,11 @@ generateCohortSet <- function(connectionDetails = NULL,
   }
 
   if (incremental) {
-    computedChecksums <- getLastGeneratedCohortChecksums(connection = connection,
-                                                         cohortDatabaseSchema = cohortDatabaseSchema,
-                                                         cohortTableNames = cohortTableNames) |>
+    computedChecksums <- getLastGeneratedCohortChecksums(
+      connection = connection,
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      cohortTableNames = cohortTableNames
+    ) |>
       dplyr::rename(lastChecksum = "checksum")
 
     uncomputedCohorts <- cohortDefinitionSet |>
@@ -218,7 +224,7 @@ generateCohortSet <- function(connectionDetails = NULL,
       dplyr::select("cohortId", "cohortName", "checksum", "startTime", "endTime") |>
       dplyr::mutate(generationStatus = "SKIPPED")
 
-    computedStr <- paste(computedCohorts$cohortId, collapse = ', ')
+    computedStr <- paste(computedCohorts$cohortId, collapse = ", ")
     ParallelLogger::logInfo(paste("Skipping cohorts already generated: ", computedStr))
   } else {
     uncomputedCohorts <- cohortDefinitionSet
@@ -266,14 +272,16 @@ generateCohortSet <- function(connectionDetails = NULL,
     progressBar = TRUE
   )
 
-  generatedTemplateCohorts <- generateTemplateCohorts(connection = connection,
-                                                      cohortDefinitionSet = cohortDefinitionSet,
-                                                      cdmDatabaseSchema = cdmDatabaseSchema,
-                                                      tempEmulationSchema = tempEmulationSchema,
-                                                      cohortDatabaseSchema = cohortDatabaseSchema,
-                                                      cohortTableNames = cohortTableNames,
-                                                      stopOnError = stopOnError,
-                                                      incremental = incremental)
+  generatedTemplateCohorts <- generateTemplateCohorts(
+    connection = connection,
+    cohortDefinitionSet = cohortDefinitionSet,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    tempEmulationSchema = tempEmulationSchema,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTableNames = cohortTableNames,
+    stopOnError = stopOnError,
+    incremental = incremental
+  )
 
   subsetsGenerated <- list()
   if (length(subsetsToGenerate)) {
@@ -305,7 +313,6 @@ generateCohortSet <- function(connectionDetails = NULL,
 
 # Helper function used within the tryCatch block below
 .runCohortSql <- function(connection, sql, startTime, resultsDatabaseSchema, cohortChecksumTable, incremental, cohortId, checksum) {
-
   startTimeTt <- as.numeric(Sys.time()) * 1000
   startSql <- "
   DELETE FROM @results_database_schema.@cohort_checksum_table
@@ -315,14 +322,15 @@ generateCohortSet <- function(connectionDetails = NULL,
   VALUES (@target_cohort_id, '@checksum', @start_time, NULL);"
 
   DatabaseConnector::renderTranslateExecuteSql(connection,
-                                               startSql,
-                                               results_database_schema = resultsDatabaseSchema,
-                                               cohort_checksum_table = cohortChecksumTable,
-                                               target_cohort_id = cohortId,
-                                               checksum = checksum,
-                                               start_time = startTimeTt,
-                                               reportOverallTime = FALSE,
-                                               progressBar = FALSE)
+    startSql,
+    results_database_schema = resultsDatabaseSchema,
+    cohort_checksum_table = cohortChecksumTable,
+    target_cohort_id = cohortId,
+    checksum = checksum,
+    start_time = startTimeTt,
+    reportOverallTime = FALSE,
+    progressBar = FALSE
+  )
   DatabaseConnector::executeSql(connection, sql)
   endTime <- lubridate::now()
 
@@ -334,15 +342,16 @@ generateCohortSet <- function(connectionDetails = NULL,
   INSERT INTO @results_database_schema.@cohort_checksum_table (cohort_definition_id, checksum, start_time, end_time)
   VALUES (@target_cohort_id, '@checksum', @start_time, @end_time);"
   DatabaseConnector::renderTranslateExecuteSql(connection,
-                                               endSql,
-                                               target_cohort_id = cohortId,
-                                               results_database_schema = resultsDatabaseSchema,
-                                               cohort_checksum_table = cohortChecksumTable,
-                                               checksum = checksum,
-                                               start_time = startTimeTt,
-                                               end_time = as.numeric(Sys.time()) * 1000,
-                                               progressBar = FALSE,
-                                               reportOverallTime = FALSE)
+    endSql,
+    target_cohort_id = cohortId,
+    results_database_schema = resultsDatabaseSchema,
+    cohort_checksum_table = cohortChecksumTable,
+    checksum = checksum,
+    start_time = startTimeTt,
+    end_time = as.numeric(Sys.time()) * 1000,
+    progressBar = FALSE,
+    reportOverallTime = FALSE
+  )
 
   return(list(
     generationStatus = "COMPLETE",

@@ -887,7 +887,7 @@ LimitSubsetOperator <- R6::R6Class(
       }
       if (is.null(duration)) {
         private$.maximumCohortDuration <- NULL
-        return(self);
+        return(self)
       } else {
         checkmate::assertInt(duration, lower = 0, upper = 99999)
         private$.maximumCohortDuration <- duration
@@ -934,8 +934,9 @@ LimitSubsetOperator <- R6::R6Class(
       }
       checkmate::assertDate(calendarStartDate, null.ok = TRUE)
 
-      if (length(calendarStartDate) && is.na(calendarStartDate))
+      if (length(calendarStartDate) && is.na(calendarStartDate)) {
         stop("Must provide a valid date, not NA")
+      }
 
       private$.calendarStartDate <- calendarStartDate
       self
@@ -955,8 +956,9 @@ LimitSubsetOperator <- R6::R6Class(
       }
       checkmate::assertDate(calendarEndDate, null.ok = TRUE)
 
-      if (length(calendarEndDate) && is.na(calendarEndDate))
+      if (length(calendarEndDate) && is.na(calendarEndDate)) {
         stop("Must provide a valid date, not NA")
+      }
 
       private$.calendarEndDate <- calendarEndDate
       self
@@ -999,8 +1001,8 @@ createLimitSubsetOperator <- function(name = NULL,
     limitTo <- "all"
   }
 
-  if (minimumCohortDuration == 0 && priorTime == 0 & followUpTime == 0 & limitTo == "all" 
-      & is.null(maximumCohortDuration) & is.null(calendarStartDate) & is.null(calendarEndDate)) {
+  if (minimumCohortDuration == 0 && priorTime == 0 & followUpTime == 0 & limitTo == "all" &
+    is.null(maximumCohortDuration) & is.null(calendarStartDate) & is.null(calendarEndDate)) {
     stop("No limit criteria specified")
   }
 

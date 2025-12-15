@@ -1,8 +1,8 @@
 Package: CohortGenerator
 Type: Package
 Title: Cohort Generation for the OMOP Common Data Model
-Version: 1.0.0.9000
-Date: 2025-09-12
+Version: 1.0.1
+Date: 2025-11-17
 Authors@R: c(
   person("Anthony", "Sena", email = "sena@ohdsi.org", role = c("aut", "cre")),
   person("Jamie", "Gilbert", role = c("aut")),
@@ -18,13 +18,12 @@ Description: Generate cohorts and subsets using an Observational
   SQL compatible with 'SqlRender' (<https://github.com/OHDSI/SqlRender>).
 Depends:
   DatabaseConnector (>= 5.0.0),
-  R (>= 3.6.0),
+  R (>= 4.1.0),
   R6
 Imports:
   checkmate,
   digest,
   dplyr,
-  lifecycle,
   lubridate,
   methods,
   ParallelLogger (>= 3.0.0),

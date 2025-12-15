@@ -19,17 +19,17 @@
 #' @export
 #' @description
 #' Utility pattern for creating an indication subset from a set of target cohorts.
-#' The approach applies this subset definition to an exposure (target cohort) or 
+#' The approach applies this subset definition to an exposure (target cohort) or
 #' set of exposures (multiple target cohorts), requiring the individual to have
-#' a history of the indication cohort overlapping the start of the first exposure. 
-#' The first exposure must have the `requiredPriorObservationTime` and 
-#' `requiredFollowUpTime`. If specified, the first exposure must also fall 
-#' within the `studyStartDate` and `studyEndDate` and also meet the age and 
+#' a history of the indication cohort overlapping the start of the first exposure.
+#' The first exposure must have the `requiredPriorObservationTime` and
+#' `requiredFollowUpTime`. If specified, the first exposure must also fall
+#' within the `studyStartDate` and `studyEndDate` and also meet the age and
 #' gender criteria.
-#' 
-#' Additionally, the R attribute of "indicationSubsetDefinitions" is attached to 
-#' the cohort definition set. This can be obtained by calling 
-#' `getIndicationSubsetDefinitionIds`, which should return the set of subset 
+#'
+#' Additionally, the R attribute of "indicationSubsetDefinitions" is attached to
+#' the cohort definition set. This can be obtained by calling
+#' `getIndicationSubsetDefinitionIds`, which should return the set of subset
 #' definition ids that are associated with indications.
 #'
 #' @examples
@@ -104,7 +104,6 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
                                           studyEndDate = NULL,
                                           requiredPriorObservationTime = 365,
                                           requiredFollowUpTime = 1) {
-
   .cohortDefinitionSetHasRequiredColumns(cohortDefinitionSet)
   checkmate::assertTRUE(all(targetCohortIds %in% cohortDefinitionSet$cohortId))
   checkmate::assertTRUE(all(indicationCohortIds %in% cohortDefinitionSet$cohortId))
@@ -125,7 +124,7 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
       gender = genderConceptIds
     )
   }
-  
+
   subsetOperators[[length(subsetOperators) + 1]] <- createCohortSubsetOperator(
     cohortIds = indicationCohortIds,
     negate = FALSE,
@@ -150,8 +149,10 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
     )
 
 
-  attr(cohortDefinitionSet, "indicationSubsetDefinitions") <- c(getIndicationSubsetDefinitionIds(cohortDefinitionSet),
-                                                                subsetDefinitionId)
+  attr(cohortDefinitionSet, "indicationSubsetDefinitions") <- c(
+    getIndicationSubsetDefinitionIds(cohortDefinitionSet),
+    subsetDefinitionId
+  )
   return(cohortDefinitionSet)
 }
 
@@ -160,13 +161,13 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
 #' @export
 #' @description
 #' Utility pattern for creating cohort subset definitions as a standard approach for indicated drugs.
-#' Restriction subset definitions are twins of indication definitions. They should apply the same core properites
+#' Restriction subset definitions are twins of indication definitions. They should apply the same core properties
 #' to a base exposure cohort (i.e. study dates,  required prior observation time, ages, gender) as indications but,
 #' crucially, they do not require history of any prior condition(s).
 #'
 #' This is useful in the context of comparing drug exposure + indication population, to population as a whole.
 #'
-#' The prefered use of this function is to create this in conjunction with the target population.
+#' The preferred use of this function is to create this in conjunction with the target population.
 #' @inheritParams addIndicationSubsetDefinition
 #' @examples
 #' \dontrun{
@@ -214,7 +215,6 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
                                            studyEndDate = NULL,
                                            requiredPriorObservationTime = 365,
                                            requiredFollowUpTime = 1) {
-
   .cohortDefinitionSetHasRequiredColumns(cohortDefinitionSet)
   checkmate::assertChoice(targetCohortIds, cohortDefinitionSet$cohortId)
 
@@ -248,8 +248,10 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
       targetCohortIds = targetCohortIds
     )
 
-  attr(cohortDefinitionSet, "restrictionSubsetDefinitions") <- c(getRestrictionSubsetDefinitionIds(cohortDefinitionSet),
-                                                                 subsetDefinitionId)
+  attr(cohortDefinitionSet, "restrictionSubsetDefinitions") <- c(
+    getRestrictionSubsetDefinitionIds(cohortDefinitionSet),
+    subsetDefinitionId
+  )
   return(cohortDefinitionSet)
 }
 
@@ -293,7 +295,7 @@ addRestrictionSubsetDefinition <- function(cohortDefinitionSet,
 #'   targetCohortIds = c(1, 2),
 #'   exclusionCohortIds = c(3),
 #'   subsetDefinitionId = 20,
-#'   subsetDefinitioName = 'Exclude on index if in cohort 3'
+#'   subsetDefinitioName = "Exclude on index if in cohort 3"
 #' )
 #'
 #' print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])
@@ -340,8 +342,10 @@ addExcludeOnIndexSubsetDefinition <- function(cohortDefinitionSet,
       targetCohortIds = targetCohortIds
     )
 
-  attr(cohortDefinitionSet, "excludeOnIndexSubsetDefinitions") <- c(getExcludeOnIndexSubsetDefinitionIds(cohortDefinitionSet),
-                                                                    subsetDefinitionId)
+  attr(cohortDefinitionSet, "excludeOnIndexSubsetDefinitions") <- c(
+    getExcludeOnIndexSubsetDefinitionIds(cohortDefinitionSet),
+    subsetDefinitionId
+  )
 
   return(cohortDefinitionSet)
 }

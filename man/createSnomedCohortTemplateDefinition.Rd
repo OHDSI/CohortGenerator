@@ -29,7 +29,7 @@ createSnomedCohortTemplateDefinition(
 \item{requireSecondDiagnosis}{(optional) Require more than one diagnosis code}
 
 \item{nameSuffix}{A name suffix to use to add to the cohort names - this is useful if you're using multiple
-paramaterized versions of this definition}
+parameterized versions of this definition}
 
 \item{vocabularyDatabaseSchema}{Vocabulary database schema}
 }
@@ -39,7 +39,7 @@ A CohortTemplateDefinition instance
 \description{
 Template cohort definition for all OHDSI standard conditions. The cohortId = conceptId * 1000.
 The "identifierExpression" can be customized for uniqueness.
-This definition uses any valid snomed condition code and all its descedants.
+This definition uses any valid SNOMED condition code and all its descendants.
 
 Excluded terms include word patterns:
 

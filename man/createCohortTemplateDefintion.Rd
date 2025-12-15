@@ -24,13 +24,13 @@ cohort definition set instance.}
 
 \item{sqlArgs}{Optional parameters for execution of the query - for example vocabulary schema
 These are arguments that should be passed to the sql. These are used in the checksum
-if using paramtaried sql for different definitions (e.g. a definition requiring
-varying observation lengths. This is used to distingish them)
+if using parameterized sql for different definitions (e.g. a definition requiring
+varying observation lengths. This is used to distinguish them)
 This should not include cdm/data source
-specfic parameters such as the cohort table names,
+specific parameters such as the cohort table names,
 cdm database schema or vocabulary database schema. If the definition requires
 runtime specific arguments (e.g. non standard tables) this presents a problem
-for seralizing and uniqiuely idenitifying template cohort definitions.}
+for serializing and uniquely identifying template cohort definitions.}
 
 \item{translateSql}{to translate the sql or not.}
 }

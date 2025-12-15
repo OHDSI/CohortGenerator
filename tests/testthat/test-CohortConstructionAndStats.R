@@ -44,6 +44,26 @@ test_that("Call generateCohortSet with cohortDefinitionSet containing duplicate 
   )
 })
 
+test_that("Call generateCohortSet with incrementalFolder specified", {
+  cohortDefinitionSet <- getCohortsForTest(cohorts)
+  cohortTableNames <- getCohortTableNames(cohortTable = "inc_folder_cohort")
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+  expect_warning(
+    generateCohortSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortDefinitionSet,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      incrementalFolder = "folder"
+    ),
+    message = "(incrementalFolder parameter is no longer used)"
+  )
+})
 
 test_that("Call instatiateCohortSet with malformed cohortDefinitionSet parameter", {
   expect_error(
@@ -167,7 +187,7 @@ test_that("Create cohorts with stats, Incremental = T", {
     cohortDefinitionSet = cohortsWithStats,
     incremental = TRUE
   )
-  
+
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
   expect_true(all(cohortsGenerated$generationStatus == "SKIPPED"))
   rm(cohortsWithStats)

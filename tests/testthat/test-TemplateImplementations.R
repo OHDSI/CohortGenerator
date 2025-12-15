@@ -1,8 +1,11 @@
 connection <- DatabaseConnector::connect(connectionDetails)
 
-withr::defer({
-  DatabaseConnector::disconnect(connection)
-}, testthat::teardown_env())
+withr::defer(
+  {
+    DatabaseConnector::disconnect(connection)
+  },
+  testthat::teardown_env()
+)
 
 
 test_that("createSnomedCohortTemplateDefinition", {
@@ -25,17 +28,21 @@ test_that("createSnomedCohortTemplateDefinition", {
   testOutputFolder <- file.path(outputFolder, "tpl_tests")
   cohortTableNames <- CohortGenerator::getCohortTableNames("cohort_tpl")
 
-  createCohortTables(connection = connection,
-                     cohortTableNames = cohortTableNames,
-                     cohortDatabaseSchema = "main")
+  createCohortTables(
+    connection = connection,
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = "main"
+  )
 
-  generateCohortSet(connection = connection,
-                    cdmDatabaseSchema = "main",
-                    cohortDatabaseSchema = "main",
-                    cohortTableNames = cohortTableNames,
-                    cohortDefinitionSet = cohortDefinitionSet,
-                    stopOnError = TRUE,
-                    incremental = TRUE)
+  generateCohortSet(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDefinitionSet = cohortDefinitionSet,
+    stopOnError = TRUE,
+    incremental = TRUE
+  )
   # check the count is consistent with expectations
   count <- getCohortCounts(
     connection = connection,
@@ -66,17 +73,21 @@ test_that("createRxNormCohortTemplateDefinition", {
   testOutputFolder <- file.path(outputFolder, "tpl_tests")
   cohortTableNames <- CohortGenerator::getCohortTableNames("cohort_tpl")
 
-  createCohortTables(connection = connection,
-                     cohortTableNames = cohortTableNames,
-                     cohortDatabaseSchema = "main")
+  createCohortTables(
+    connection = connection,
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = "main"
+  )
 
-  generateCohortSet(connection = connection,
-                    cdmDatabaseSchema = "main",
-                    cohortDatabaseSchema = "main",
-                    cohortTableNames = cohortTableNames,
-                    cohortDefinitionSet = cohortDefinitionSet,
-                    stopOnError = TRUE,
-                    incremental = TRUE)
+  generateCohortSet(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDefinitionSet = cohortDefinitionSet,
+    stopOnError = TRUE,
+    incremental = TRUE
+  )
   # check the count is consistent with expectations
   count <- getCohortCounts(
     connection = connection,
@@ -90,7 +101,6 @@ test_that("createRxNormCohortTemplateDefinition", {
 })
 
 test_that("createAtcCohortTemplateDefinition", {
-
   # Required - INSERT TEST DATA INTO Concept and concept ancestor tables
   # Eunomia data does not map to atc by default
   sql <- "
@@ -133,17 +143,21 @@ test_that("createAtcCohortTemplateDefinition", {
   testOutputFolder <- file.path(outputFolder, "tpl_tests")
   cohortTableNames <- CohortGenerator::getCohortTableNames("cohort_tpl")
 
-  createCohortTables(connection = connection,
-                     cohortTableNames = cohortTableNames,
-                     cohortDatabaseSchema = "main")
+  createCohortTables(
+    connection = connection,
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = "main"
+  )
 
-  generateCohortSet(connection = connection,
-                    cdmDatabaseSchema = "main",
-                    cohortDatabaseSchema = "main",
-                    cohortTableNames = cohortTableNames,
-                    cohortDefinitionSet = cohortDefinitionSet,
-                    stopOnError = TRUE,
-                    incremental = TRUE)
+  generateCohortSet(
+    connection = connection,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDefinitionSet = cohortDefinitionSet,
+    stopOnError = TRUE,
+    incremental = TRUE
+  )
   # check the count is consistent with expectations
   count <- getCohortCounts(
     connection = connection,

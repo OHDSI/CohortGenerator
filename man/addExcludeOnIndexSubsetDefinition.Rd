@@ -71,7 +71,7 @@ res <- addExcludeOnIndexSubsetDefinition(
   targetCohortIds = c(1, 2),
   exclusionCohortIds = c(3),
   subsetDefinitionId = 20,
-  subsetDefinitioName = 'Exclude on index if in cohort 3'
+  subsetDefinitioName = "Exclude on index if in cohort 3"
 )
 
 print(res[, c("cohortId", "cohortName", "subsetParent", "subsetDefinitionId", "isSubset")])

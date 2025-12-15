@@ -239,6 +239,9 @@ Cohort subset definitions can be run incrementally. In fact, if the base cohort 
 In the graph below we show the 12 subjects who are in our sample data set. Each subject's graph is labeled with their subject ID, gender and their age at index for the celecoxib exposure. The y-axis describes the eras of time where a subject is a member of that cohort. The x-axis represents the observation period for each subject. 
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, error = FALSE, results = 'hide', fig.width = 10, fig.height = 6}
+#| fig.alt: >
+#|   Cohort subset membership by subject
+
 library(ggplot2)
 cohorts <- DatabaseConnector::querySql(
   connection = connection,

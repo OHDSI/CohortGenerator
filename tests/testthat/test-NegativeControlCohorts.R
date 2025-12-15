@@ -86,6 +86,32 @@ test_that("Call generateNegativeControlOutcomeCohorts before creating cohort tab
   )
 })
 
+test_that("Call generateNegativeControlOutcomeCohorts with incrementalFolder specified", {
+  ncSet <- getNegativeControlOutcomeCohortsForTest()
+  cohortTableNames <- getCohortTableNames(cohortTable = "inc_folder_cohort")
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+  expect_warning(
+    generateNegativeControlOutcomeCohorts(
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTable = cohortTableNames$cohortTable,
+      cohortTableNames = cohortTableNames,
+      negativeControlOutcomeCohortSet = ncSet,
+      occurrenceType = "all",
+      detectOnDescendants = TRUE,
+      incremental = TRUE,
+      incrementalFolder = "folder"
+    ),
+    message = "(incrementalFolder parameter is no longer used)"
+  )
+})
+
+
 test_that("Call generateNegativeControlOutcomeCohorts with occurrenceType == 'all' and detectOnDescendants == FALSE", {
   cohortTableNames <- getCohortTableNames(cohortTable = "ot_all_dod_f")
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)

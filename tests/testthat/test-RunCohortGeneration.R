@@ -15,6 +15,35 @@ test_that("Call runCohortGeneration without connectionDetails", {
   )
 })
 
+test_that("Call runCohortGeneration with incrementalFolder specified", {
+  testOutputFolder <- file.path(outputFolder, "inc_folder_test")
+  on.exit(unlink(testOutputFolder, recursive = TRUE))
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  ncSet <- getNegativeControlOutcomeCohortsForTest()
+  cohortTableNames <- getCohortTableNames(cohortTable = "inc_folder_cohort")
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+  expect_warning(
+    runCohortGeneration(
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortDefinitionSet = cohortsWithStats,
+      negativeControlOutcomeCohortSet = ncSet,
+      occurrenceType = "all",
+      detectOnDescendants = TRUE,
+      stopOnError = FALSE,
+      outputFolder = testOutputFolder,
+      incrementalFolder = "folder"
+    ),
+    message = "(incrementalFolder parameter is no longer used)"
+  )
+})
+
 test_that("Call runCohortGeneration happy path", {
   testOutputFolder <- file.path(outputFolder, "runCG")
   on.exit(unlink(testOutputFolder, recursive = TRUE))

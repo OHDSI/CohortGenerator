@@ -23,5 +23,5 @@ addUnionCohortDefinition(
 \description{
 This utility function adds the union of any two or more cohort ids to the cohort definition set with a new id and name.
 
-If a name parameter is not provideded this will be auto generated as the union of the provided cohort id
+If a name parameter is not provided this will be auto generated as the union of the provided cohort id
 }

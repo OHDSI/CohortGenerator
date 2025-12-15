@@ -17,5 +17,5 @@ getDataMigrator(connectionDetails, databaseSchema, tablePrefix = "")
 Instance of ResultModelManager::DataMigrationManager that has interface for converting existing data models
 }
 \description{
-Returns ResultModelManager DataMigrationsManager instance.
+Returns ResultModelManager DataMigrationManager instance.
 }

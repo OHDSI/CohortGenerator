@@ -23,13 +23,13 @@ the following columns: \describe{
 Optionally, this data frame may contain: \describe{
 \item{json}{The Circe JSON representation of the cohort}}}
 
-\item{sql}{Ohdsi Stanaard sql}
+\item{sql}{OHDSI SqlRender-compatible sql}
 
 \item{cohortId}{Id of cohort to add. Must be unique in the cohort definition set}
 
 \item{cohortName}{Name of the cohort to add}
 
-\item{tanslateSql}{perfom translation on the sql. This is ignored if the sql has already been translated
+\item{tanslateSql}{perform translation on the sql. This is ignored if the sql has already been translated
 with the sql render function.}
 
 \item{json}{optional json parameters}
@@ -71,8 +71,7 @@ sql <- "INSERT INTO @cohort_database_schema.@cohort_table
         -- Find any matches of drugs named 'asprin' in the drug concept table
         WHERE lower(c.concept_name) like '\%asprin\%'; "
 
-cohortDefinitionSet = createEmptyCohortDefinitionSet() |>
- addSqlCohortDefinition(sql = sql, cohortId = 1, cohortName = "my asprin cohort")
-
+cohortDefinitionSet <- createEmptyCohortDefinitionSet() |>
+  addSqlCohortDefinition(sql = sql, cohortId = 1, cohortName = "my asprin cohort")
 
 }

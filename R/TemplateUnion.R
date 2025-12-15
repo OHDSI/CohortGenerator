@@ -41,7 +41,7 @@
 #' ```
 #' A U B:  [--------]     [-------]
 #' ```
-#' It is never allowed to have multiple overlapping eras for the same indiviudal within a cohort
+#' It is never allowed to have multiple overlapping eras for the same individual within a cohort
 #'
 #' @param cohortIds A vector of `cohort_definition_id` values for the input cohorts.
 #' @param unionCohortId The `cohort_definition_id` for the resulting union cohort.
@@ -50,8 +50,7 @@
 createUnionCohortTemplate <- function(cohortIds,
                                       cohortName,
                                       unionCohortId) {
-
-  checkmate::assertNumeric(cohortIds, min.len = 2)  # Require at least two input cohorts to union
+  checkmate::assertNumeric(cohortIds, min.len = 2) # Require at least two input cohorts to union
   checkmate::assertNumeric(unionCohortId, len = 1)
   checkmate::assertString(cohortName)
 
@@ -79,10 +78,10 @@ createUnionCohortTemplate <- function(cohortIds,
                 ELSE 0
               END
             ) OVER (PARTITION BY c.subject_id ORDER BY c.cohort_start_date) AS group_id
-        FROM @cohort_database_scheme.@cohort_table c
+        FROM @cohort_database_schema.@cohort_table c
         WHERE c.cohort_definition_id IN (@cohort_ids)
     )
-    GROUP BY subject_id group_id
+    GROUP BY subject_id, group_id
    "
 
   # Create references for the resulting union cohort
@@ -111,7 +110,7 @@ createUnionCohortTemplate <- function(cohortIds,
 #' @description
 #' This utility function adds the union of any two or more cohort ids to the cohort definition set with a new id and name.
 #'
-#' If a name parameter is not provideded this will be auto generated as the union of the provided cohort id
+#' If a name parameter is not provided this will be auto generated as the union of the provided cohort id
 #' @param cohortDefinitionSet   cohort definition set
 #' @inheritParams createUnionCohortTemplate
 #' @export
@@ -121,11 +120,11 @@ addUnionCohortDefinition <- function(cohortDefinitionSet,
                                      cohortName,
                                      unionCohortId) {
   checkmate::assertNames(colnames(cohortDefinitionSet),
-                         must.include = c(
-                           "cohortId",
-                           "cohortName",
-                           "sql"
-                         )
+    must.include = c(
+      "cohortId",
+      "cohortName",
+      "sql"
+    )
   )
   assertLargeInteger(cohortDefinitionSet$cohortId)
 

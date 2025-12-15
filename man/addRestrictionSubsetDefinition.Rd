@@ -52,13 +52,13 @@ Optionally, this data frame may contain: \describe{
 }
 \description{
 Utility pattern for creating cohort subset definitions as a standard approach for indicated drugs.
-Restriction subset definitions are twins of indication definitions. They should apply the same core properites
+Restriction subset definitions are twins of indication definitions. They should apply the same core properties
 to a base exposure cohort (i.e. study dates,  required prior observation time, ages, gender) as indications but,
 crucially, they do not require history of any prior condition(s).
 
 This is useful in the context of comparing drug exposure + indication population, to population as a whole.
 
-The prefered use of this function is to create this in conjunction with the target population.
+The preferred use of this function is to create this in conjunction with the target population.
 }
 \examples{
 \dontrun{

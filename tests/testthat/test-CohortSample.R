@@ -16,7 +16,7 @@ test_that("sampleCohortDefinitionSet", {
 
   cds <- getCohortsForTest(cohorts = cohorts)
 
-  
+
   generateCohortSet(
     cohortDefinitionSet = cds,
     connection = conn,
@@ -193,11 +193,13 @@ test_that(".sampleCohort", {
     camelCaseToSnakeCase = TRUE,
     data = tData
   )
-  
-  createCohortTables(connection = connection, 
-                     incremental = TRUE, 
-                     cohortDatabaseSchema = "main")
-  
+
+  createCohortTables(
+    connection = connection,
+    incremental = TRUE,
+    cohortDatabaseSchema = "main"
+  )
+
   sampleTable <- data.frame(rand_id = c(7, 8, 9, 10, 33, 198))
   .sampleCohort(
     connection,
@@ -222,6 +224,27 @@ test_that(".sampleCohort", {
 
   checkmate::expect_data_frame(resCohort, nrows = nrow(sampleTable) * 2)
   expect_true(all(resCohort$subjectId %in% sampleTable$rand_id))
+})
+
+test_that("Call sampleCohortDefinitionSet with incrementalFolder specified", {
+  cohortDefinitionSet <- getCohortsForTest(cohorts)
+  cohortTableNames <- getCohortTableNames(cohortTable = "inc_folder_cohort")
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+  expect_warning(
+    sampleCohortDefinitionSet(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortDefinitionSet,
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      n = 1,
+      incrementalFolder = "folder"
+    ),
+    message = "(incrementalFolder parameter is no longer used)"
+  )
 })
 
 test_that("Eval expression is safe", {
@@ -261,7 +284,6 @@ test_that("checkUniqueOutputIds does not return error when cohortTable and cohor
 
   expect_silent(.checkUniqueOutputIds(cohortIds, seed, identifierExpression, cohortTableNames))
 })
-
 
 test_that("Error on bad params", {
   # No connection details
