@@ -163,6 +163,42 @@ test_that("Subset definition", {
 })
 
 
+test_that("Deprecated subset wrapper warnings", {
+  windowSubsetOperation <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortEnd"
+    )
+  )
+
+  expect_warning(
+    createCohortSubset(
+      name = "Cohort Subset",
+      cohortIds = 11,
+      cohortCombinationOperator = "all",
+      negate = FALSE,
+      windows = windowSubsetOperation
+    ),
+    "createCohortSubsetOperator"
+  )
+
+  expect_warning(
+    createDemographicSubset(
+      name = "Demographic Criteria",
+      ageMin = 18,
+      ageMax = 64
+    ),
+    "createDemographicSubsetOperator"
+  )
+})
+
+
 test_that("Saving and loading definitions via attributes", {
   cohortDefinitionSet <- getCohortDefinitionSet(
     settingsFileName = "testdata/name/Cohorts.csv",

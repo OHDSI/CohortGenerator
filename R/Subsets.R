@@ -1037,7 +1037,7 @@ createLimitSubset <- function(...) {
 #' @param ... Arguments passed to the underlying operator.
 #' @export
 createCohortSubset <- function(...) {
-  .Deprecated("createLimitSubsetOperator")
+  .Deprecated("createCohortSubsetOperator")
   createCohortSubsetOperator(...)
 }
 
@@ -1048,6 +1048,6 @@ createCohortSubset <- function(...) {
 #' @param ... Arguments passed to the underlying operator.
 #' @export
 createDemographicSubset <- function(...) {
-  .Deprecated("createLimitSubsetOperator")
+  .Deprecated("createDemographicSubsetOperator")
   createDemographicSubsetOperator(...)
 }
