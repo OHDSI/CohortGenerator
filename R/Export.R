@@ -320,3 +320,18 @@ enforceMinCellValue <- function(data, fieldName, minValues, silent = FALSE) {
   }
   return(data)
 }
+
+#' Safely unbox values with jsonlite::unbox
+#' where values are of length 0 they are converted to NULL
+#' Only use on vectors of length 1 or 0 or it will throw an error (as unbox does)
+#' @noRd
+safeUnbox <- function(x) {
+  if (is.factor(x)) {
+    x <- as.character(x)
+  }
+  
+  if (length(x) == 0)
+    x <- NULL
+
+  return(jsonlite::unbox(x))
+}
