@@ -326,6 +326,10 @@ enforceMinCellValue <- function(data, fieldName, minValues, silent = FALSE) {
 #' Only use on vectors of length 1 or 0 or it will throw an error (as unbox does)
 #' @noRd
 safeUnbox <- function(x) {
+  if (is.factor(x)) {
+    x <- as.character(x)
+  }
+  
   if (length(x) == 0)
     x <- NULL
 
