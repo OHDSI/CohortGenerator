@@ -1,3 +1,9 @@
+CohortGenerator 1.0.2
+=====================
+
+Bug Fixes
+- Fix bug where `negate` parameter of `createCohortSubsetOperator` was not passed properly to the SQL statement
+
 CohortGenerator 1.0.1
 =====================
 

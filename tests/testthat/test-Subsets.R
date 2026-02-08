@@ -567,6 +567,29 @@ test_that("Basic Negate logic check", {
 
   sqlForCohort1006 <- cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
   expect_true(grepl("AND NOT", sqlForCohort1006, ignore.case = TRUE))
+
+  # Ensure NEGATE = TRUE produces a RIGHT JOIN
+  op <- CohortGenerator::createCohortSubsetOperator(
+    name = "Test negate",
+    cohortIds = c(1),
+    windows = list(
+        CohortGenerator::createSubsetCohortWindow(
+        startDay = 1,
+        endDay = 365,
+        targetAnchor = "cohortEnd",
+        subsetAnchor = "cohortStart"
+      ),
+      CohortGenerator::createSubsetCohortWindow(
+        startDay = 366,
+        endDay = 99999,
+        targetAnchor = "cohortEnd",
+        subsetAnchor = "cohortStart"
+      )
+    ),
+    negate = TRUE,
+    cohortCombinationOperator = "any"
+  )
+  expect_true(grepl("RIGHT JOIN foo", op$getQueryBuilder(1)$getQuery("foo"), ignore.case = TRUE))
 })
 
 
