@@ -33,7 +33,7 @@ reproducibility and replicability of studies using these cohorts.
 The most straightforward cohort template is an SQL only definition for an individual cohort.
 A good use case for this example is a cohort for which a Circe definition is inefficient and an equivalent cohort
 can be made with SQL alone or, in this example, where the cohort is speculative based on the standard vocabulary.
-Here we create a cohort that searches for all drug exposusres based on string patterns in the concept vocabulary
+Here we create a cohort that searches for all drug exposures based on string patterns in the concept vocabulary
 table.
 
 The first step is to create a definition as follows
@@ -100,7 +100,7 @@ getCohortValidationCounts(
 
 # Built in large scale definitions
 There are currently 3 large scale cohort generation methods included within the package that use vocabulary tables to
-bulk generate thousands of cohorts in a time that would be infieasible if using Circe standard cohorts from ATLAS or
+bulk generate thousands of cohorts in a time that would be infeasible if using Circe standard cohorts from ATLAS or
 Capr.
 These can be broadly defined as:
 
