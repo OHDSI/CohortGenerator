@@ -2,6 +2,7 @@ CohortGenerator 1.0.2
 =====================
 
 Bug Fixes
+
 - Fix bug where `negate` parameter of `createCohortSubsetOperator` was not passed properly to the SQL statement (#264)
 - Fix deprecation messages (#263)
 - Fix issue with unboxing nulls (#262)
@@ -10,6 +11,7 @@ CohortGenerator 1.0.1
 =====================
 
 Bug Fixes
+
 - Remove calls to `lifecycle` and add unit tests
 
 CohortGenerator 1.0.0
