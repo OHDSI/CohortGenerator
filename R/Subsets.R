@@ -1,4 +1,4 @@
-# Copyright 2025 Observational Health Data Sciences and Informatics
+# Copyright 2026 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -334,7 +334,6 @@ CohortSubsetOperator <- R6::R6Class(
     .windows = list()
   ),
   public = list(
-
     #' @param definition json character or list - definition of subset operator
     #'
     #' @return instance of object

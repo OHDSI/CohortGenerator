@@ -1,4 +1,4 @@
-# Copyright 2025 Observational Health Data Sciences and Informatics
+# Copyright 2026 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -329,9 +329,10 @@ safeUnbox <- function(x) {
   if (is.factor(x)) {
     x <- as.character(x)
   }
-  
-  if (length(x) == 0)
+
+  if (length(x) == 0) {
     x <- NULL
+  }
 
   return(jsonlite::unbox(x))
 }

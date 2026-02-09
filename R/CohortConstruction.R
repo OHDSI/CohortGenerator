@@ -1,4 +1,4 @@
-# Copyright 2025 Observational Health Data Sciences and Informatics
+# Copyright 2026 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -105,7 +105,7 @@ getLastGeneratedCohortChecksums <- function(connectionDetails = NULL,
 #' @param incremental                 Create only cohorts that haven't been created before?
 #'
 #' @param incrementalFolder           If \code{incremental = TRUE}, specify a folder where records are
-#'                                    kept of which definition has been executed. (deprceated)
+#'                                    kept of which definition has been executed. (deprecated)
 #' @returns
 #'
 #' A data.frame consisting of the following columns:
