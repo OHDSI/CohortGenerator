@@ -38,6 +38,12 @@ cg_cohort_summary_stats,mode_id,int,Yes,Yes,No,The mode id
 cg_cohort_censor_stats,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
 cg_cohort_censor_stats,lost_count,bigint,Yes,Yes,Yes,The number lost due to censoring
 cg_cohort_censor_stats,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_attrition,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_attrition,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_attrition,mode_id,int,Yes,Yes,No,The mode id (person-level attrition uses 1)
+cg_cohort_attrition,cohort_entry,int,Yes,Yes,No,Indicator that row represents cohort entry before applying inclusion rules
+cg_cohort_attrition,rule_sequence,int,No,Yes,No,The rule sequence for sequential attrition (NULL for cohort entry)
+cg_cohort_attrition,person_count,bigint,Yes,Yes,Yes,The number of persons after applying the sequential rules
 cg_cohort_count,database_id,varchar,Yes,Yes,No,The database idenifier for this information
 cg_cohort_count,cohort_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
 cg_cohort_count,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort entries
