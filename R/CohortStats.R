@@ -278,7 +278,7 @@ getCohortStats <- function(connectionDetails,
 #'   \item \code{cohortDefinitionId}: Cohort definition identifier.
 #'   \item \code{modeId}: Always 1 (person-level).
 #'   \item \code{cohortEntry}: 1 for the base cohort entry count, 0 for rule rows.
-#'   \item \code{ruleSequence}: Inclusion rule sequence (NA for base row).
+#'   \item \code{ruleSequence}: Inclusion rule sequence (-1 for base row).
 #'   \item \code{personCount}: Count after applying rules.
 #' }
 #'
@@ -350,7 +350,7 @@ computeCohortAttrition <- function(cohortInclusionResult,
     dplyr::mutate(
       modeId = modeId,
       cohortEntry = 1L,
-      ruleSequence = NA_integer_
+      ruleSequence = as.integer(-1)
     )
 
   rules <- cohortInclusion %>%
