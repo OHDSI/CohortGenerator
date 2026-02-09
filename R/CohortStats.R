@@ -221,6 +221,7 @@ getCohortStats <- function(connectionDetails,
       cohortInclusionResult = results$cohortInclusionResultTable,
       cohortInclusion = results$cohortInclusionTable
     )
+    names(results$cohortAttritionTable) <- SqlRender::camelCaseToSnakeCase(names(results$cohortAttritionTable))
   }
 
   if (!("cohortInclusionTable" %in% requestedTables)) {
@@ -282,12 +283,27 @@ getCohortStats <- function(connectionDetails,
 #' @export
 computeCohortAttrition <- function(cohortInclusionResult,
                                    cohortInclusion) {
-  checkmate::assert_true(all(isCamelCase(names(cohortInclusionResult))))
-  checkmate::assert_true(all(isCamelCase(names(cohortInclusion))))
+  checkmate::assert_data_frame(cohortInclusionResult)
+  checkmate::assert_data_frame(cohortInclusion)
+
+  # Force all columns to camelCase
+  if (!all(isCamelCase(names(cohortInclusionResult)))) {
+    names(cohortInclusionResult) <- SqlRender::snakeCaseToCamelCase(names(cohortInclusionResult))
+  }
+  if (!all(isCamelCase(names(cohortInclusion)))) {
+    names(cohortInclusion) <- SqlRender::snakeCaseToCamelCase(names(cohortInclusion))
+  }
+
   # Attrition is reported at the person level in OHDSI tools (modeId = 1).
   # We hard-code this to keep the output consistent and future-proof.
   modeId <- 1
 
+  # Add the databaseId column if it is missing since 
+  # this is requried later in the function
+  if (!"databaseId" %in% names(cohortInclusionResult)) {
+    cohortInclusionResult <- cohortInclusionResult |>
+      dplyr::mutate(databaseId = NA)
+  }
   cohortInclusionResultRequiredColumns <- c(
     "databaseId",
     "cohortDefinitionId",
