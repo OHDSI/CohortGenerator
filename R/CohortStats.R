@@ -221,7 +221,9 @@ getCohortStats <- function(connectionDetails,
       cohortInclusionResult = results$cohortInclusionResultTable,
       cohortInclusion = results$cohortInclusionTable
     )
-    names(results$cohortAttritionTable) <- SqlRender::camelCaseToSnakeCase(names(results$cohortAttritionTable))
+    if (isFALSE(snakeCaseToCamelCase)) {
+      names(results$cohortAttritionTable) <- SqlRender::camelCaseToSnakeCase(names(results$cohortAttritionTable))
+    }
   }
 
   if (!("cohortInclusionTable" %in% requestedTables)) {
