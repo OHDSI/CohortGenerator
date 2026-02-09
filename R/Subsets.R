@@ -334,7 +334,6 @@ CohortSubsetOperator <- R6::R6Class(
     .windows = list()
   ),
   public = list(
-
     #' @param definition json character or list - definition of subset operator
     #'
     #' @return instance of object

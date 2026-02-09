@@ -559,7 +559,6 @@ test_that("Basic Negate logic check", {
   expect_true(grepl('"negate": true', jsonOutput))
 
 
-
   # Testing if Negate (AND NOT) IS FOUND IN SQL QUERY
   # What this test does is check if using a cohort celcoxib,
   # create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
@@ -609,7 +608,7 @@ test_that("Basic Negate logic check", {
     name = "Test negate",
     cohortIds = c(1),
     windows = list(
-        CohortGenerator::createSubsetCohortWindow(
+      CohortGenerator::createSubsetCohortWindow(
         startDay = 1,
         endDay = 365,
         targetAnchor = "cohortEnd",
@@ -627,7 +626,6 @@ test_that("Basic Negate logic check", {
   )
   expect_true(grepl("RIGHT JOIN foo", op$getQueryBuilder(1)$getQuery("foo"), ignore.case = TRUE))
 })
-
 
 
 test_that("Subset logic checks", {

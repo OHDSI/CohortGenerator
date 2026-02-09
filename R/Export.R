@@ -329,9 +329,10 @@ safeUnbox <- function(x) {
   if (is.factor(x)) {
     x <- as.character(x)
   }
-  
-  if (length(x) == 0)
+
+  if (length(x) == 0) {
     x <- NULL
+  }
 
   return(jsonlite::unbox(x))
 }
