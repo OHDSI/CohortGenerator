@@ -233,6 +233,7 @@ insertInclusionRuleNames(
 
 exportCohortStatsTables(
   connectionDetails = connectionDetails,
+  cohortDefinitionSet = cohortDefinitionSet,
   cohortDatabaseSchema = "main",
   cohortTableNames = cohortTableNames,
   cohortStatisticsFolder = file.path(someFolder, "InclusionStats")
