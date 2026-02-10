@@ -291,7 +291,7 @@ have an era for the cohort ID on that row. For example, subject 6
 qualifies for cohort ID 1010 which identifies patients aged 20-50 years
 at the start of the celecoxib exposure. Similarly, subject ID 2
 qualifies for all subsets since they are aged 22 and also have an
-ibuprofen exposure during their expsoure to celecoxib.
+ibuprofen exposure during their exposure to celecoxib.
 
 ## Saving and loading subset definitions
 

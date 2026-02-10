@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CohortGenerator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,9 +63,9 @@
                         <h4 data-toc-skip class="author">James P.
 Gilbert</h4>
             
-            <h4 data-toc-skip class="date">2025-11-18</h4>
+            <h4 data-toc-skip class="date">2026-02-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/v1.0.1/vignettes/UsingTemplateCohorts.Rmd" class="external-link"><code>vignettes/UsingTemplateCohorts.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/OHDSI/CohortGenerator/blob/main/vignettes/UsingTemplateCohorts.Rmd" class="external-link"><code>vignettes/UsingTemplateCohorts.Rmd</code></a></small>
       <div class="d-none name"><code>UsingTemplateCohorts.Rmd</code></div>
     </div>
 
@@ -101,7 +101,7 @@ for an individual cohort. A good use case for this example is a cohort
 for which a Circe definition is inefficient and an equivalent cohort can
 be made with SQL alone or, in this example, where the cohort is
 speculative based on the standard vocabulary. Here we create a cohort
-that searches for all drug exposusres based on string patterns in the
+that searches for all drug exposures based on string patterns in the
 concept vocabulary table.</p>
 <p>The first step is to create a definition as follows</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -131,7 +131,7 @@ concept vocabulary table.</p>
 <span></span>
 <span><span class="va">connection</span> <span class="op">&lt;-</span> <span class="fu">DatabaseConnector</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/DatabaseConnector/reference/connect.html" class="external-link">connect</a></span><span class="op">(</span><span class="fu">Eunomia</span><span class="fu">::</span><span class="fu"><a href="https://ohdsi.github.io/Eunomia/reference/getEunomiaConnectionDetails.html" class="external-link">getEunomiaConnectionDetails</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## attempting to download GiBleed</span></span></code></pre>
-<pre><code><span><span class="co">## attempting to extract and load: /tmp/RtmpAb9z0V/GiBleed_5.3.zip to: /tmp/RtmpAb9z0V/GiBleed_5.3.sqlite</span></span></code></pre>
+<pre><code><span><span class="co">## attempting to extract and load: /tmp/Rtmp3zyRjL/GiBleed_5.3.zip to: /tmp/Rtmp3zyRjL/GiBleed_5.3.sqlite</span></span></code></pre>
 <pre><code><span><span class="co">## Connecting using SQLite driver</span></span></code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/createCohortTables.html">createCohortTables</a></span><span class="op">(</span>connection <span class="op">=</span> <span class="va">connection</span>, cohortDatabaseSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span></code></pre></div>
@@ -203,7 +203,7 @@ SQL definitions. Consequently, we use the
 </h2>
 <p>There are currently 3 large scale cohort generation methods included
 within the package that use vocabulary tables to bulk generate thousands
-of cohorts in a time that would be infieasible if using Circe standard
+of cohorts in a time that would be infeasible if using Circe standard
 cohorts from ATLAS or Capr. These can be broadly defined as:</p>
 <ol style="list-style-type: decimal">
 <li>

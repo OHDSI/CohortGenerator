@@ -28,7 +28,7 @@ an individual cohort. A good use case for this example is a cohort for
 which a Circe definition is inefficient and an equivalent cohort can be
 made with SQL alone or, in this example, where the cohort is speculative
 based on the standard vocabulary. Here we create a cohort that searches
-for all drug exposusres based on string patterns in the concept
+for all drug exposures based on string patterns in the concept
 vocabulary table.
 
 The first step is to create a definition as follows
@@ -67,7 +67,7 @@ connection <- DatabaseConnector::connect(Eunomia::getEunomiaConnectionDetails())
 
     ## attempting to download GiBleed
 
-    ## attempting to extract and load: /tmp/RtmpAb9z0V/GiBleed_5.3.zip to: /tmp/RtmpAb9z0V/GiBleed_5.3.sqlite
+    ## attempting to extract and load: /tmp/Rtmp3zyRjL/GiBleed_5.3.zip to: /tmp/Rtmp3zyRjL/GiBleed_5.3.sqlite
 
     ## Connecting using SQLite driver
 
@@ -149,7 +149,7 @@ getCohortValidationCounts(
 
 There are currently 3 large scale cohort generation methods included
 within the package that use vocabulary tables to bulk generate thousands
-of cohorts in a time that would be infieasible if using Circe standard
+of cohorts in a time that would be infeasible if using Circe standard
 cohorts from ATLAS or Capr. These can be broadly defined as:
 
 1.  `createRxNormCohortTemplateDefinition` This is definition of all

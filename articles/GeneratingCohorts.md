@@ -170,7 +170,7 @@ getCohortCounts(
 ```
 
     #> Connecting using SQLite driver
-    #> Counting cohorts took 0.0209 secs
+    #> Counting cohorts took 0.0235 secs
 
     #>   cohortId cohortEntries cohortSubjects
     #> 1        1          1800           1800
@@ -185,7 +185,7 @@ getCohortCounts(
 Cohorts defined in ATLAS may define one or more inclusion criteria as
 part of the cohort’s logic. As part of cohort generation, we may want to
 capture these cohort statistics for use in other packages. For example,
-[CohortDiagnostics](https://ohdsi.github.io/CohortDiagnostics) has
+[CohortDiagnostics](https://ohdsi.github.io/CohortDiagnostics/) has
 functionality that allows for review of inclusion rule statistics to
 understand how these rules may materialize between data sources.
 
@@ -391,8 +391,9 @@ generateCohortSet(
 
     #> Skipping cohorts already generated:  1, 2, 3, 4
     #> Initiating cluster consisting only of main thread
-    #> Generating cohort set took 0.04 secs
+    #> Generating cohort set took 0.05 secs
 
 ``` r
 options(old)
+options(rsErrorsSuppressed)
 ```

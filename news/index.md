@@ -1,10 +1,24 @@
 # Changelog
 
+## CohortGenerator 1.0.2
+
+Bug Fixes
+
+- Fix bug where `negate` parameter of `createCohortSubsetOperator` was
+  not passed properly to the SQL statement
+  ([\#264](https://github.com/OHDSI/CohortGenerator/issues/264))
+- Fix deprecation messages
+  ([\#263](https://github.com/OHDSI/CohortGenerator/issues/263))
+- Fix issue with unboxing nulls
+  ([\#262](https://github.com/OHDSI/CohortGenerator/issues/262))
+
 ## CohortGenerator 1.0.1
 
 CRAN release: 2025-11-17
 
-Bug Fixes - Remove calls to `lifecycle` and add unit tests
+Bug Fixes
+
+- Remove calls to `lifecycle` and add unit tests
 
 ## CohortGenerator 1.0.0
 

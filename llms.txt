@@ -105,7 +105,7 @@ PDF versions of the documentation are also available:
   Cohorts](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/GeneratingCohorts.pdf)
 - Vignette: [Creating Cohort Subset
   Definitions](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/CreatingCohortSubsetDefinitions.pdf)
-- Vigentte: [Using Template
+- Vignette: [Using Template
   Cohorts](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/inst/doc/UsingTemplateCohorts.pdf)
 - Package manual:
   [CohortGenerator.pdf](https://raw.githubusercontent.com/OHDSI/CohortGenerator/main/extras/CohortGenerator.pdf)

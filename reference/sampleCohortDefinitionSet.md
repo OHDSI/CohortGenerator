@@ -136,7 +136,7 @@ sampleCohortDefinitionSet(
 - incrementalFolder:
 
   If `incremental = TRUE`, specify a folder where records are kept of
-  which definition has been executed. (deprceated)
+  which definition has been executed. (deprecated)
 
 ## Value
 
