@@ -18,6 +18,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 old <- options(width = 80)
+rsErrorsSuppressed <- options(rstudio.connectionObserver.errorsSuppressed = TRUE)
 knitr::opts_chunk$set(
   cache = FALSE,
   comment = "#>",
@@ -159,7 +160,7 @@ getCohortCounts(
 
 ### Cohort Statistics (Inclusion Rule Statistics)
 
-Cohorts defined in ATLAS may define one or more inclusion criteria as part of the cohort's logic. As part of cohort generation, we may want to capture these cohort statistics for use in other packages. For example, [CohortDiagnostics](https://ohdsi.github.io/CohortDiagnostics) has functionality that allows for review of inclusion rule statistics to understand how these rules may materialize between data sources. 
+Cohorts defined in ATLAS may define one or more inclusion criteria as part of the cohort's logic. As part of cohort generation, we may want to capture these cohort statistics for use in other packages. For example, [CohortDiagnostics](https://ohdsi.github.io/CohortDiagnostics/) has functionality that allows for review of inclusion rule statistics to understand how these rules may materialize between data sources. 
 
 Here we will review how to generate cohorts with inclusion rule statistics and how to export these results for use by downstream packages such as CohortDiagnostics. If you have constructed your cohorts in ATLAS, you can again use the [exportCohortDefinitionSet](https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html) function of the `ROhdsiWebApi` package. The [exportCohortDefinitionSet](https://ohdsi.github.io/ROhdsiWebApi/reference/exportCohortDefinitionSet.html) function has an additional parameter called `generateStats` which when set to TRUE will include the SQL necessary to generate the cohort statistics.
 
@@ -302,4 +303,5 @@ generateCohortSet(
 ```
 ```{r results='hide'}
 options(old)
+options(rsErrorsSuppressed)
 ```

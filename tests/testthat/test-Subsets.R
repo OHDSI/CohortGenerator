@@ -163,6 +163,42 @@ test_that("Subset definition", {
 })
 
 
+test_that("Deprecated subset wrapper warnings", {
+  windowSubsetOperation <- list(
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortStart"
+    ),
+    createSubsetCohortWindow(
+      startDay = -99999,
+      endDay = 99999,
+      targetAnchor = "cohortEnd"
+    )
+  )
+
+  expect_warning(
+    createCohortSubset(
+      name = "Cohort Subset",
+      cohortIds = 11,
+      cohortCombinationOperator = "all",
+      negate = FALSE,
+      windows = windowSubsetOperation
+    ),
+    "createCohortSubsetOperator"
+  )
+
+  expect_warning(
+    createDemographicSubset(
+      name = "Demographic Criteria",
+      ageMin = 18,
+      ageMax = 64
+    ),
+    "createDemographicSubsetOperator"
+  )
+})
+
+
 test_that("Saving and loading definitions via attributes", {
   cohortDefinitionSet <- getCohortDefinitionSet(
     settingsFileName = "testdata/name/Cohorts.csv",
@@ -523,7 +559,6 @@ test_that("Basic Negate logic check", {
   expect_true(grepl('"negate": true', jsonOutput))
 
 
-
   # Testing if Negate (AND NOT) IS FOUND IN SQL QUERY
   # What this test does is check if using a cohort celcoxib,
   # create a subset based on a year after celcoxib exposure of patients NOT exposed in the specified time window
@@ -567,8 +602,30 @@ test_that("Basic Negate logic check", {
 
   sqlForCohort1006 <- cohortDefinitionSet[cohortDefinitionSet$cohortId == 1006, "sql"]
   expect_true(grepl("AND NOT", sqlForCohort1006, ignore.case = TRUE))
-})
 
+  # Ensure NEGATE = TRUE produces a RIGHT JOIN
+  op <- CohortGenerator::createCohortSubsetOperator(
+    name = "Test negate",
+    cohortIds = c(1),
+    windows = list(
+      CohortGenerator::createSubsetCohortWindow(
+        startDay = 1,
+        endDay = 365,
+        targetAnchor = "cohortEnd",
+        subsetAnchor = "cohortStart"
+      ),
+      CohortGenerator::createSubsetCohortWindow(
+        startDay = 366,
+        endDay = 99999,
+        targetAnchor = "cohortEnd",
+        subsetAnchor = "cohortStart"
+      )
+    ),
+    negate = TRUE,
+    cohortCombinationOperator = "any"
+  )
+  expect_true(grepl("RIGHT JOIN foo", op$getQueryBuilder(1)$getQuery("foo"), ignore.case = TRUE))
+})
 
 
 test_that("Subset logic checks", {

@@ -1,4 +1,4 @@
-# Copyright 2025 Observational Health Data Sciences and Informatics
+# Copyright 2026 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -76,16 +76,16 @@ CohortSubsetDefinition <- R6::R6Class(
     #' @description List representation of object
     toList = function() {
       list(
-        name = jsonlite::unbox(self$name),
-        definitionId = jsonlite::unbox(self$definitionId),
+        name = safeUnbox(self$name),
+        definitionId = safeUnbox(self$definitionId),
         # Note - when there is a base definition that includes multiple calls to the same subset this should be replaced
         subsetOperators = lapply(self$subsetOperators, function(operator) {
           operator$toList()
         }),
-        packageVersion = jsonlite::unbox(as.character(utils::packageVersion("CohortGenerator"))),
-        identifierExpression = jsonlite::unbox(as.character(private$.identifierExpression)),
-        operatorNameConcatString = jsonlite::unbox(as.character(private$.operatorNameConcatString)),
-        subsetCohortNameTemplate = jsonlite::unbox(as.character(private$.subsetCohortNameTemplate))
+        packageVersion = safeUnbox(as.character(utils::packageVersion("CohortGenerator"))),
+        identifierExpression = safeUnbox(as.character(private$.identifierExpression)),
+        operatorNameConcatString = safeUnbox(as.character(private$.operatorNameConcatString)),
+        subsetCohortNameTemplate = safeUnbox(as.character(private$.subsetCohortNameTemplate))
       )
     },
     #' to JSON

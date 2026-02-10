@@ -1,4 +1,4 @@
-# Copyright 2025 Observational Health Data Sciences and Informatics
+# Copyright 2026 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -79,7 +79,7 @@ CohortSubsetQb <- R6::R6Class(
       sql <- SqlRender::render(sql,
         target_table = targetTable,
         output_table = self$getTableObjectId(),
-        negate = private$operator$negate,
+        negate = ifelse(private$operator$negate == TRUE, yes = "1", no = "0"),
         cohort_window_logic = cohortWindowLogic,
         cohort_ids = private$operator$cohortIds,
         subset_length = ifelse(private$operator$cohortCombinationOperator == "any",

@@ -475,3 +475,37 @@ test_that("export template definitions functions", {
   cs <- read.csv(file.path(outputFolder, "cg_cohort_template_link.csv"))
   checkmate::expect_data_frame(cs, nrows = 1)
 })
+
+
+test_that("empty vector becomes NULL", {
+  expect_null(
+    safeUnbox(character(0))
+  )
+
+  expect_null(
+    safeUnbox(numeric(0))
+  )
+})
+
+test_that("scalar values are unboxed", {
+  expect_equal(safeUnbox("a"), jsonlite::unbox("a"))
+  expect_equal(safeUnbox(42), jsonlite::unbox(42))
+  expect_equal(safeUnbox(TRUE), jsonlite::unbox(TRUE))
+})
+
+test_that("NA values serialize as null", {
+  expect_equal(safeUnbox(NA), jsonlite::unbox(NA))
+})
+
+test_that("multi-length vectors throw an error from unbox", {
+  expect_error(safeUnbox(c(1, 2)), "length.*2")
+})
+
+test_that("factors are coerced to character before unboxing", {
+  f <- factor("level1")
+  expect_equal(safeUnbox(f), jsonlite::unbox("level1"))
+})
+
+test_that("NULL input stays NULL", {
+  expect_equal(safeUnbox(NULL), jsonlite::unbox(NULL))
+})

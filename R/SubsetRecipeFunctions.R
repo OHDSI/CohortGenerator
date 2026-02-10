@@ -1,4 +1,4 @@
-# Copyright 2025 Observational Health Data Sciences and Informatics
+# Copyright 2026 Observational Health Data Sciences and Informatics
 #
 # This file is part of CohortGenerator
 #
@@ -109,12 +109,21 @@ addIndicationSubsetDefinition <- function(cohortDefinitionSet,
   checkmate::assertTRUE(all(indicationCohortIds %in% cohortDefinitionSet$cohortId))
 
   subsetOperators <- list()
+
+  if (!is.null(studyEndDate)) {
+    studyEndDate <- as.Date(studyEndDate, "%Y%m%d")
+  }
+
+  if (!is.null(studyStartDate)) {
+    studyStartDate <- as.Date(studyStartDate, "%Y%m%d")
+  }
+
   subsetOperators[[length(subsetOperators) + 1]] <- createLimitSubsetOperator(
     priorTime = requiredPriorObservationTime,
     followUpTime = requiredFollowUpTime,
     limitTo = "firstEver",
-    calendarStartDate = as.Date(studyStartDate, "%Y%m%d"),
-    calendarEndDate = as.Date(studyEndDate, "%Y%m%d")
+    calendarStartDate = studyStartDate,
+    calendarEndDate = studyEndDate
   )
 
   if (any(!is.null(c(genderConceptIds, ageMin, ageMax)))) {
