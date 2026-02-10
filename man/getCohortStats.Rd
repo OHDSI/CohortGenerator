@@ -13,7 +13,8 @@ getCohortStats(
   outputTables = c("cohortInclusionTable", "cohortInclusionResultTable",
     "cohortInclusionStatsTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable",
     "cohortCensorStatsTable", "cohortAttritionTable"),
-  cohortTableNames = getCohortTableNames()
+  cohortTableNames = getCohortTableNames(),
+  inclusionRules = NULL
 )
 }
 \arguments{
@@ -44,6 +45,9 @@ example, the cohort table. Defaults to all stats tables.}
 
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
+
+\item{inclusionRules}{A data.frame with inclusion rules from the cohortDefinitionSet used to generate
+the cohort stats obtained by running \code{getCohortInclusionRules(cohortDefinitionSet)} (Optional)}
 }
 \description{
 This function returns a data frame of the data in the Cohort Inclusion Tables.

@@ -103,6 +103,7 @@ exportCohortStatsTables <- function(connectionDetails,
     resultsDataModelTableName = c("cg_cohort_inc_result", "cg_cohort_inc_stats", "cg_cohort_summary_stats", "cg_cohort_censor_stats", "cg_cohort_attrition")
   )
 
+  inclusionRules <- NULL
   if (is.null(cohortDefinitionSet)) {
     warning("No cohortDefinitionSet specified; please make sure you've inserted the inclusion rule names using the insertInclusionRuleNames function.")
     tablesToExport <- rbind(tablesToExport, data.frame(
@@ -128,7 +129,8 @@ exportCohortStatsTables <- function(connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     databaseId = databaseId,
     snakeCaseToCamelCase = snakeCaseToCamelCase,
-    cohortTableNames = cohortTableNames
+    cohortTableNames = cohortTableNames,
+    inclusionRules = inclusionRules
   )
 
   for (i in 1:nrow(tablesToExport)) {

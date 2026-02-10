@@ -28,7 +28,7 @@ A data.frame with the following columns:
   \item \code{cohortDefinitionId}: Cohort definition identifier.
   \item \code{modeId}: Always 1 (person-level).
   \item \code{cohortEntry}: 1 for the base cohort entry count, 0 for rule rows.
-  \item \code{ruleSequence}: Inclusion rule sequence (NA for base row).
+  \item \code{ruleSequence}: Inclusion rule sequence (-1 for base row).
   \item \code{personCount}: Count after applying rules.
 }
 }

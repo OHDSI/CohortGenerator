@@ -153,6 +153,8 @@ getStatsTable <- function(connectionDetails,
 #'                                    "cohortInclusionStatsTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable"
 #'                                    or "cohortCensorStatsTable", "cohortAttritionTable". Output is limited to these tables. Cannot export, for,
 #'                                    example, the cohort table. Defaults to all stats tables.
+#' @param inclusionRules              A data.frame with inclusion rules from the cohortDefinitionSet used to generate
+#'                                    the cohort stats obtained by running `getCohortInclusionRules(cohortDefinitionSet)` (Optional)
 #' @export
 getCohortStats <- function(connectionDetails,
                            connection = NULL,
@@ -168,7 +170,8 @@ getCohortStats <- function(connectionDetails,
                              "cohortCensorStatsTable",
                              "cohortAttritionTable"
                            ),
-                           cohortTableNames = getCohortTableNames()) {
+                           cohortTableNames = getCohortTableNames(),
+                           inclusionRules = NULL) {
   # Names of cohort table names must include output tables
   requiredTables <- setdiff(outputTables, "cohortAttritionTable")
   checkmate::assertNames(names(cohortTableNames), must.include = requiredTables)
@@ -217,9 +220,12 @@ getCohortStats <- function(connectionDetails,
     )
   }
   if ("cohortAttritionTable" %in% requestedTables) {
+    if (is.null(inclusionRules)) {
+      inclusionRules <- results$cohortInclusionTable
+    }
     results$cohortAttritionTable <- computeCohortAttrition(
       cohortInclusionResult = results$cohortInclusionResultTable,
-      cohortInclusion = results$cohortInclusionTable
+      cohortInclusion = inclusionRules
     )
     if (isFALSE(snakeCaseToCamelCase)) {
       names(results$cohortAttritionTable) <- SqlRender::camelCaseToSnakeCase(names(results$cohortAttritionTable))
@@ -364,11 +370,22 @@ computeCohortAttrition <- function(cohortInclusionResult,
     dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$ruleSequence) %>%
     dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
     dplyr::mutate(
-      modeId = modeId,
+      modeId = !!modeId,
       cohortEntry = 0L
     )
+  
+  databaseId <- result$databaseId[[1]]
+  zeroCountRuleRows <- rules %>%
+    dplyr::left_join(ruleRows) %>%
+    dplyr::filter(is.na(.data$personCount)) %>%
+    dplyr::mutate(
+      databaseId = !!databaseId,
+      cohortEntry = 0L, 
+      personCount = 0L,
+      modeId = !!modeId
+    )
 
-  output <- dplyr::bind_rows(base, ruleRows) %>%
+  output <- dplyr::bind_rows(base, ruleRows, zeroCountRuleRows) %>%
     dplyr::select(all_of(emptyColumns)) %>%
     dplyr::arrange(.data$cohortDefinitionId, dplyr::desc(.data$cohortEntry), .data$ruleSequence)
 
