@@ -18,7 +18,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/OHDSI/CohortGenerator/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/OHDSI/CohortGenerator/blob/v1.0.2/DESCRIPTION)
 
 Sena A, Gilbert J, Rao G, Avila Cruz F, Schuemie M (2026).
 *CohortGenerator: Cohort Generation for the OMOP Common Data Model*. R

@@ -67,7 +67,7 @@ connection <- DatabaseConnector::connect(Eunomia::getEunomiaConnectionDetails())
 
     ## attempting to download GiBleed
 
-    ## attempting to extract and load: /tmp/Rtmp3zyRjL/GiBleed_5.3.zip to: /tmp/Rtmp3zyRjL/GiBleed_5.3.sqlite
+    ## attempting to extract and load: /tmp/Rtmp36oXyx/GiBleed_5.3.zip to: /tmp/Rtmp36oXyx/GiBleed_5.3.sqlite
 
     ## Connecting using SQLite driver
 
