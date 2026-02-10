@@ -13,6 +13,7 @@ test_that("Call getCohortTableNames with defaults", {
       cohortInclusionStatsTable = "cohort_inclusion_stats",
       cohortSummaryStatsTable = "cohort_summary_stats",
       cohortCensorStatsTable = "cohort_censor_stats",
+      cohortSubsetAttritionTable = "cohort_subset_attrition",
       cohortChecksumTable = "cohort_checksum"
     )
   )
@@ -27,7 +28,8 @@ test_that("Call getCohortTableNames with custom table names", {
       cohortInclusionStatsTable = "d",
       cohortSummaryStatsTable = "e",
       cohortCensorStatsTable = "f",
-      cohortChecksumTable = "g"
+      cohortChecksumTable = "g",
+      cohortSubsetAttritionTable = "h"
     ),
     list(
       cohortTable = "a",
@@ -37,6 +39,7 @@ test_that("Call getCohortTableNames with custom table names", {
       cohortInclusionStatsTable = "d",
       cohortSummaryStatsTable = "e",
       cohortCensorStatsTable = "f",
+      cohortSubsetAttritionTable = "h",
       cohortChecksumTable = "g"
     )
   )

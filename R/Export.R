@@ -148,6 +148,88 @@ exportCohortStatsTables <- function(connectionDetails,
 }
 
 
+#' Export cohort subset statistics tables to the file system
+#'
+#' @description
+#' This function retrieves the data from the cohort subset statistics table and
+#' writes them to the subset statistics folder specified in the function call.
+#'
+#' @template Connection
+#' @template CohortTableNames
+#'
+#' @param cohortSubsetStatisticsFolder The path to the folder where the cohort subset statistics
+#'                                     results will be written.
+#' @param snakeCaseToCamelCase         Should column names in the exported files
+#'                                     convert from snake_case to camelCase? Default is FALSE
+#' @param fileNamesInSnakeCase         Should the exported files use snake_case? Default is FALSE
+#' @param databaseId                   Optional - when specified, the databaseId will be added
+#'                                     to the exported results
+#' @template minCellCount
+#' @param tablePrefix                  Optional - allows to append a prefix to the exported
+#'                                     file names.
+#'
+#' @export
+exportCohortSubsetStatsTables <- function(connectionDetails,
+                                          connection = NULL,
+                                          cohortDatabaseSchema,
+                                          cohortTableNames = getCohortTableNames(),
+                                          cohortSubsetStatisticsFolder,
+                                          snakeCaseToCamelCase = TRUE,
+                                          fileNamesInSnakeCase = FALSE,
+                                          databaseId = NULL,
+                                          minCellCount = 5,
+                                          tablePrefix = "") {
+  if (is.null(connection)) {
+    connection <- DatabaseConnector::connect(connectionDetails)
+    on.exit(DatabaseConnector::disconnect(connection))
+  }
+
+  if (!dir.exists(cohortSubsetStatisticsFolder)) {
+    dir.create(cohortSubsetStatisticsFolder, recursive = TRUE)
+  }
+
+  exportStats <- function(data,
+                          fileName,
+                          resultsDataModelTableName,
+                          tablePrefix) {
+    fullFileName <- file.path(cohortSubsetStatisticsFolder, paste0(tablePrefix, fileName))
+    columnsToCensor <- getColumnsToCensor(resultsDataModelTableName)
+    rlang::inform(paste0("- Saving data to - ", fullFileName))
+
+    if (length(columnsToCensor) > 0) {
+      for (i in seq_along(columnsToCensor)) {
+        colName <- ifelse(isTRUE(snakeCaseToCamelCase), yes = columnsToCensor[i], no = SqlRender::camelCaseToSnakeCase(columnsToCensor[i]))
+        data <- data %>%
+          enforceMinCellValue(colName, minCellCount)
+      }
+    }
+
+    .writeCsv(x = data, file = fullFileName)
+  }
+
+  subsetAttrition <- getStatsTable(
+    connectionDetails = connectionDetails,
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    table = cohortTableNames$cohortSubsetAttritionTable,
+    snakeCaseToCamelCase = snakeCaseToCamelCase,
+    includeDatabaseId = TRUE,
+    databaseId = databaseId
+  )
+
+  fileName <- ifelse(test = fileNamesInSnakeCase,
+    yes = "cohort_subset_attrition.csv",
+    no = SqlRender::snakeCaseToCamelCase("cohort_subset_attrition.csv")
+  )
+
+  exportStats(
+    data = subsetAttrition,
+    fileName = fileName,
+    resultsDataModelTableName = "cg_cohort_subset_attrition",
+    tablePrefix = tablePrefix
+  )
+}
+
 addSubsetColumns <- function(cohortDefinitionSet) {
   if (nrow(cohortDefinitionSet) > 0 & !hasSubsetDefinitions(cohortDefinitionSet)) {
     cohortDefinitionSet$isSubset <- 0
