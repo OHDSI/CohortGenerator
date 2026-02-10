@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Anthony Sena \email{asena5@its.jnj.com}
+\strong{Maintainer}: Anthony Sena \email{sena@ohdsi.org}
 
 Authors:
 \itemize{
