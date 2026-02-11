@@ -63,7 +63,7 @@ cg_cohort_count_neg_ctrl,cohort_subjects,bigint,Yes,Yes,Yes,The number of unique
 cg_cohort_subset_definition,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
 cg_cohort_subset_definition,json,text,Yes,No,No,The JSON representation of the subset definition
 cg_cohort_subset_operator,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
-cg_cohort_subset_operator,subset_definition_name,varchar,Yes,Yes,No,The name of the cohort subset definition
+cg_cohort_subset_operator,operator_name,varchar,Yes,Yes,No,The name of the cohort subset operator
 cg_cohort_subset_operator,operator_sequence,int,Yes,Yes,No,The operator sequence within the subset definition
 cg_cohort_subset_operator,operator_type,varchar,Yes,Yes,No,The subset operator type (subsetType)
 cg_cohort_subset_operator,definition_json,text,Yes,No,No,The JSON representation of the subset operator

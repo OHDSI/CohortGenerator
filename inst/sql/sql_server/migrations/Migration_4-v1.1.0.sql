@@ -32,11 +32,11 @@ CREATE TABLE @database_schema.@table_prefix@cg_cohort_subset_attrition (
 
 CREATE TABLE @database_schema.@table_prefix@cg_cohort_subset_operator (
     subset_definition_id BIGINT NOT NULL,
-    subset_definition_name VARCHAR NOT NULL,
+    operator_name VARCHAR NOT NULL,
     operator_sequence INT NOT NULL,
     operator_type VARCHAR NOT NULL,
     definition_json TEXT NOT NULL,
-	PRIMARY KEY(subset_definition_id,subset_definition_name,operator_sequence,operator_type)
+	PRIMARY KEY(subset_definition_id,operator_sequence,operator_type)
 );
 
 CREATE TABLE @database_schema.@table_prefix@cg_cohort_attrition_mode (

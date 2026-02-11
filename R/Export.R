@@ -296,7 +296,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
           operatorList <- operator$toList()
           subsetOperatorRows[[length(subsetOperatorRows) + 1]] <- data.frame(
             subsetDefinitionId = subsetDefinitionId,
-            subsetDefinitionName = subsetDefinitionName,
+            operatorName = operatorList$name,
             operatorSequence = as.integer(i - 1),
             operatorType = operatorList$subsetType,
             definitionJson = as.character(operator$toJSON()),
