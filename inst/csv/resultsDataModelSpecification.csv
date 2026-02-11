@@ -78,3 +78,5 @@ cg_cohort_template_definition,template_sql,text,No,No,No,The template sql expres
 cg_cohort_template_definition,template_name,text,No,No,No,The template name
 cg_cohort_template_link,template_definition_id,varchar,Yes,Yes,No,cohort template definition identifier
 cg_cohort_template_link,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_attrition_mode,mode_id,int,Yes,Yes,Yes,No,The mode for storing cohort attrition. This is a reference lookup value.
+cg_cohort_attrition_mode,mode_name,varchar,Yes,No,No,No,The mode name for the type of statistic stored for the cohort attrition.
