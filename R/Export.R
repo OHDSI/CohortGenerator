@@ -251,6 +251,7 @@ addTemplateColumns <- function(cohortDefinitionSet) {
 exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) {
   cohortDefinitions <- createEmptyResult("cg_cohort_definition")
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
+  cohortSubsetOperators <- createEmptyResult("cg_cohort_subset_operator")
   cohortTemplates <- createEmptyResult("cg_cohort_template_definition")
   cohortTemplateLink <- createEmptyResult("cg_cohort_template_link")
   if (!is.null(cohortDefinitionSet)) {
@@ -286,6 +287,26 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
           )
         )
       }
+      subsetOperatorRows <- list()
+      for (subsetDefinition in cdsCohortSubsets) {
+        subsetDefinitionName <- subsetDefinition$name
+        subsetDefinitionId <- subsetDefinition$definitionId
+        for (i in seq_along(subsetDefinition$subsetOperators)) {
+          operator <- subsetDefinition$subsetOperators[[i]]
+          operatorList <- operator$toList()
+          subsetOperatorRows[[length(subsetOperatorRows) + 1]] <- data.frame(
+            subsetDefinitionId = subsetDefinitionId,
+            subsetDefinitionName = subsetDefinitionName,
+            operatorSequence = as.integer(i - 1),
+            operatorType = operatorList$subsetType,
+            definitionJson = as.character(operator$toJSON()),
+            stringsAsFactors = FALSE
+          )
+        }
+      }
+      if (length(subsetOperatorRows) > 0) {
+        cohortSubsetOperators <- dplyr::bind_rows(subsetOperatorRows)
+      }
       cohortDefinitionSet$isSubset <- as.integer(cohortDefinitionSet$isSubset)
     } else {
       cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns()
@@ -306,6 +327,10 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   writeCsv(
     x = cohortSubsets,
     file = file.path(outputFolder, "cg_cohort_subset_definition.csv")
+  )
+  writeCsv(
+    x = cohortSubsetOperators,
+    file = file.path(outputFolder, "cg_cohort_subset_operator.csv")
   )
 
   writeCsv(

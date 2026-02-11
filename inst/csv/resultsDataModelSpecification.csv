@@ -62,6 +62,11 @@ cg_cohort_count_neg_ctrl,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort 
 cg_cohort_count_neg_ctrl,cohort_subjects,bigint,Yes,Yes,Yes,The number of unique subjects
 cg_cohort_subset_definition,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
 cg_cohort_subset_definition,json,text,Yes,No,No,The JSON representation of the subset definition
+cg_cohort_subset_operator,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
+cg_cohort_subset_operator,subset_definition_name,varchar,Yes,Yes,No,The name of the cohort subset definition
+cg_cohort_subset_operator,operator_sequence,int,Yes,Yes,No,The operator sequence within the subset definition
+cg_cohort_subset_operator,operator_type,varchar,Yes,Yes,No,The subset operator type (subsetType)
+cg_cohort_subset_operator,definition_json,text,Yes,No,No,The JSON representation of the subset operator
 cg_cohort_definition_neg_ctrl,cohort_id,bigint,Yes,Yes,No,The cohort identifier for the negative control outcome
 cg_cohort_definition_neg_ctrl,outcome_concept_id,bigint,Yes,No,No,The concept ID for the negative control outcome
 cg_cohort_definition_neg_ctrl,cohort_name,varchar,Yes,No,No,The concept name for the negative control outcome
