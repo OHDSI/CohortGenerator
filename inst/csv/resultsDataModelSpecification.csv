@@ -40,7 +40,7 @@ cg_cohort_censor_stats,lost_count,bigint,Yes,Yes,Yes,The number lost due to cens
 cg_cohort_censor_stats,database_id,varchar,Yes,Yes,No,The database idenifier for this information
 cg_cohort_attrition,database_id,varchar,Yes,Yes,No,The database idenifier for this information
 cg_cohort_attrition,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
-cg_cohort_attrition,mode_id,int,Yes,Yes,No,The mode id (person-level attrition uses 1)
+cg_cohort_attrition,mode_id,int,Yes,Yes,No,The mode id (for example 1=person-level and 0=event-level)
 cg_cohort_attrition,cohort_entry,int,Yes,Yes,No,Indicator that row represents cohort entry before applying inclusion rules
 cg_cohort_attrition,rule_sequence,int,Yes,Yes,No,The rule sequence for sequential attrition (-1 for cohort entry)
 cg_cohort_attrition,person_count,bigint,Yes,No,Yes,The number of persons after applying the sequential rules

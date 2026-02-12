@@ -26,14 +26,14 @@ A data.frame with the following columns:
 \itemize{
   \item \code{databaseId}: Database identifier.
   \item \code{cohortDefinitionId}: Cohort definition identifier.
-  \item \code{modeId}: Always 1 (person-level).
+  \item \code{modeId}: The mode identifier from \code{cohortInclusionResult}.
   \item \code{cohortEntry}: 1 for the base cohort entry count, 0 for rule rows.
   \item \code{ruleSequence}: Inclusion rule sequence (-1 for base row).
   \item \code{personCount}: Count after applying rules.
 }
 }
 \description{
-Computes a sequential, person-level attrition table using the inclusion
+Computes a sequential attrition table using the inclusion
 rule statistics stored in the cohort statistics tables. The computation
 follows the same logic described in the CohortGenerator vignette:
 for each cohort definition, we report a base cohort entry count
@@ -48,6 +48,6 @@ bits indicates which rules were met. To compute the count after the first
 \code{bitwAnd(inclusionRuleMask, requiredMask) == requiredMask}, where
 \code{requiredMask = 2^k - 1}.
 
-The function uses \code{modeId == 1} (person-level) by design to match
-typical attrition reporting in OHDSI tools such as ATLAS/WebAPI.
+Attrition is computed separately for each \code{modeId} present in
+\code{cohortInclusionResult} (for example, person-level and event-level).
 }
