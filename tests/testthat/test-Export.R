@@ -462,7 +462,7 @@ test_that("export template definitions functions", {
   outputFolder <- tempfile()
   dir.create(outputFolder)
   on.exit(unlink(outputFolder, recursive = TRUE))
-  cds <- createEmptyCohortDefinitionSet() |> addSqlCohortDefinition("SELECT * FROM FOO", 1, "test sql")
+  cds <- createEmptyCohortDefinitionSet() |> addSqlCohortDefinition(cohortName = "TEST", cohortId = 1, sql = "SELECT * FROM FOO")
   exportCohortDefinitionSet(outputFolder, cohortDefinitionSet = cds)
   checkmate::expect_file_exists(file.path(outputFolder, "cg_cohort_template_link.csv"))
   checkmate::expect_file_exists(file.path(outputFolder, "cg_cohort_template_definition.csv"))

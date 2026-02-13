@@ -164,6 +164,166 @@ addTemplateColumns <- function(cohortDefinitionSet) {
   return(cohortDefinitionSet)
 }
 
+
+#' Extract Unique Concept Sets and Map to Cohorts
+#'
+#' @description
+#' Parses a cohort definition set, extracts all unique concept sets and their mappings to cohorts, and writes them in RDBMS-normalized CSV files for downstream analysis or ETL.
+#' Concept sets are uniquely identified via checksum hashes. Subset cohorts and "templated" cohorts are handled distinctly.
+#'
+#' @param cohortDefinitionSet Data frame or list. A cohort definition set, such as returned by `getCohortDefinitionSet()`.
+#' @param conceptSetExportPath A path to export the files to
+#'
+#' @details
+#' - Unique concept sets (from JSON or templated cohorts) are extracted and assigned hash-based IDs.
+#' - Mappings between cohorts and concept sets, as well as concept set name associations, are recorded.
+#' - Three CSV files are produced in `conceptSetExportPath`:
+#'   - `cg_concept_set.csv`: Each row is a concept within a unique concept set.
+#'   - `cg_cohort_concept_set.csv`: Maps concept sets to cohorts.
+#'   - `cg_concept_set_name.csv`: Maps concept set names to their hash keys.
+#'
+#' Files are overwritten on each run.
+#' Subsets are supported; concept sets from parent cohorts propagate as needed.
+#'
+#' @return Invisible `NULL`. Used for its side effects (CSV file export).
+#'
+#' @examples
+#' \dontrun{
+#' extractConceptSets()
+#' }
+#' @internal
+#' @seealso [getCohortDefinitionSet()]
+exportConceptSets <- function(cohortDefinitionSet, conceptSetExportPath) {
+  # Named lists instead of fastmap
+  conceptSets <- list()
+  cohortChecksums <- list()
+  cohortConceptSetMap <- list()
+  conceptSetNames <- list()
+
+  # --- Process non-subset cohorts ---
+  nonSubset <- cohortDefinitionSet[!cohortDefinitionSet$isSubset, ]
+
+  for (i in seq_len(nrow(nonSubset))) {
+    cohortName <- nonSubset$cohortName[i]
+    cohortId <- nonSubset$cohortId[i]
+    isTemplatedCohort <- nonSubset$isTemplatedCohort[i]
+    json <- nonSubset$json[i]
+
+    if (isTemplatedCohort) {
+      # Templated cohort — generate concept set directly
+      conceptSet <- data.frame(
+        conceptId = as.integer(cohortId / 1000),
+        includeMapped = 0,
+        isExcluded = 0,
+        includeDescendants = 1
+      )
+      checksum <- getConceptSetChecksum(conceptSet)
+      conceptSets[[checksum]] <- conceptSet
+
+      # Update cohortConceptSetMap
+      if (is.null(cohortConceptSetMap[[checksum]])) cohortConceptSetMap[[checksum]] <- integer()
+      cohortConceptSetMap[[checksum]] <- sort(unique(c(cohortConceptSetMap[[checksum]], cohortId)))
+
+      # Update cohortChecksums
+      keyId <- as.character(cohortId)
+      if (is.null(cohortChecksums[[keyId]])) cohortChecksums[[keyId]] <- character()
+      cohortChecksums[[keyId]] <- sort(unique(c(cohortChecksums[[keyId]], checksum)))
+
+      # Update names
+      if (is.null(conceptSetNames[[checksum]])) conceptSetNames[[checksum]] <- character()
+      conceptSetNames[[checksum]] <- unique(c(conceptSetNames[[checksum]], cohortName))
+
+    } else {
+      # Non-templated — parse JSON and extract codesets
+      cohortDef <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+      codesets <- extractCirceConceptSets(cohortDef)
+
+      for (csname in names(codesets)) {
+        if (!nrow(codesets[[csname]])) next
+
+        conceptSet <- dplyr::select(
+          codesets[[csname]],
+          "conceptId", "includeMapped", "includeDescendants", "isExcluded"
+        )
+        checksum <- getConceptSetChecksum(conceptSet)
+        conceptSets[[checksum]] <- conceptSet
+
+        # Map concept set to cohorts
+        if (is.null(cohortConceptSetMap[[checksum]])) cohortConceptSetMap[[checksum]] <- integer()
+        cohortConceptSetMap[[checksum]] <- sort(unique(c(cohortConceptSetMap[[checksum]], cohortId)))
+
+        # Map cohort to checksums
+        keyId <- as.character(cohortId)
+        if (is.null(cohortChecksums[[keyId]])) cohortChecksums[[keyId]] <- character()
+        cohortChecksums[[keyId]] <- sort(unique(c(cohortChecksums[[keyId]], checksum)))
+
+        # Map concept set name to ID
+        if (is.null(conceptSetNames[[checksum]])) conceptSetNames[[checksum]] <- character()
+        conceptSetNames[[checksum]] <- unique(c(conceptSetNames[[checksum]], csname))
+      }
+    }
+  }
+
+  # --- Add subset cohorts ---
+  subsetRows <- cohortDefinitionSet[cohortDefinitionSet$isSubset, ]
+
+  for (i in seq_len(nrow(subsetRows))) {
+    cohortId <- subsetRows$cohortId[i]
+    keyId <- as.character(cohortId)
+    checksums <- cohortChecksums[[keyId]]
+
+    if (!is.null(checksums) && length(checksums) > 0) {
+      for (checksum in checksums) {
+        if (is.null(cohortConceptSetMap[[checksum]])) cohortConceptSetMap[[checksum]] <- integer()
+        cohortConceptSetMap[[checksum]] <- sort(unique(c(cohortConceptSetMap[[checksum]], cohortId)))
+      }
+    }
+  }
+
+  # --- Create export directory ---
+  dir.create(conceptSetExportPath, showWarnings = FALSE)
+  conceptSetFile <- file.path(conceptSetExportPath, "cg_concept_set.csv")
+  cohortConceptSetFile <- file.path(conceptSetExportPath, "cg_cohort_concept_set.csv")
+  conceptSetNamesFile <- file.path(conceptSetExportPath, "cg_concept_set_name.csv")
+
+  unlink(c(conceptSetFile, cohortConceptSetFile, conceptSetNamesFile))
+
+  # --- Export unique concept sets ---
+  for (key in names(conceptSets)) {
+    rows <- conceptSets[[key]]
+    rows$conceptSetId <- key
+    writeCsv(
+      x = rows,
+      file = conceptSetFile,
+      append = file.exists(conceptSetFile)
+    )
+  }
+
+  # --- Export mapping: concept set → cohorts ---
+  for (key in names(cohortConceptSetMap)) {
+    cohortIds <- cohortConceptSetMap[[key]]
+    rows <- data.frame(conceptSetId = key, cohortDefinitionId = cohortIds)
+    writeCsv(
+      x = rows,
+      file = cohortConceptSetFile,
+      append = file.exists(cohortConceptSetFile)
+    )
+  }
+
+  # --- Export mapping: names → IDs ---
+  for (key in names(conceptSetNames)) {
+    namesVec <- conceptSetNames[[key]]
+    rows <- data.frame(conceptSetName = namesVec, conceptSetId = key)
+    writeCsv(
+      x = rows,
+      file = conceptSetNamesFile,
+      append = file.exists(conceptSetNamesFile)
+    )
+  }
+
+  invisible(NULL)
+}
+
 exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) {
   cohortDefinitions <- createEmptyResult("cg_cohort_definition")
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
@@ -179,6 +339,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
           templateName = template$name,
           templateSql = template$templateSql
         )
+
         cohortTemplates <- dplyr::bind_rows(cohortTemplates, row)
         linkRows <- data.frame(
           templateDefinitionId = template$getChecksum(),
@@ -206,6 +367,9 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
     } else {
       cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns()
     }
+
+    exportConceptSets(cohortDefinitionSet, outputFolder)
+
     # Massage and save the cohort definition set
     colsToRename <- c("cohortId", "cohortName", "sql", "json")
     colInd <- which(names(cohortDefinitionSet) %in% colsToRename)
@@ -215,6 +379,7 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
     }
     cohortDefinitions <- cohortDefinitionSet[, intersect(names(cohortDefinitions), names(cohortDefinitionSet))]
   }
+
   writeCsv(
     x = cohortDefinitions,
     file = file.path(outputFolder, "cg_cohort_definition.csv")
