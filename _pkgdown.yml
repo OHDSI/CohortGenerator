@@ -110,6 +110,7 @@ reference:
       - getCohortInclusionRules
       - insertInclusionRuleNames
       - exportCohortStatsTables
+      - exportCohortSubsetStatsTables
       - dropCohortStatsTables
       
   - title: "Negative Control Outcomes"
