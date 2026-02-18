@@ -246,10 +246,9 @@ getCohortStats <- function(connectionDetails,
 #' Compute cohort attrition from inclusion rule statistics
 #'
 #' @description
-#' Computes a sequential, person-level attrition table using the inclusion
-#' rule statistics stored in the cohort statistics tables. The computation
-#' follows the same logic described in the CohortGenerator vignette:
-#' for each cohort definition, we report a base cohort entry count
+#' Computes a sequential attrition table using the inclusion
+#' rule statistics stored in the cohort statistics tables for Circe-based
+#' cohorts. For each cohort definition, we report a base cohort entry count
 #' (before inclusion rules) and then counts after applying the first
 #' \code{k} inclusion rules in sequence.
 #'
@@ -261,8 +260,8 @@ getCohortStats <- function(connectionDetails,
 #' \code{bitwAnd(inclusionRuleMask, requiredMask) == requiredMask}, where
 #' \code{requiredMask = 2^k - 1}.
 #'
-#' The function uses \code{modeId == 1} (person-level) by design to match
-#' typical attrition reporting in OHDSI tools such as ATLAS/WebAPI.
+#' Attrition is computed separately for each \code{modeId} present in
+#' \code{cohortInclusionResult} (for example, person-level and event-level).
 #'
 #' @param cohortInclusionResult A data.frame containing inclusion rule masks
 #' and counts, typically from the \code{cohortInclusionResultTable} with
@@ -282,7 +281,7 @@ getCohortStats <- function(connectionDetails,
 #' \itemize{
 #'   \item \code{databaseId}: Database identifier.
 #'   \item \code{cohortDefinitionId}: Cohort definition identifier.
-#'   \item \code{modeId}: Always 1 (person-level).
+#'   \item \code{modeId}: The mode identifier from \code{cohortInclusionResult}.
 #'   \item \code{cohortEntry}: 1 for the base cohort entry count, 0 for rule rows.
 #'   \item \code{ruleSequence}: Inclusion rule sequence (-1 for base row).
 #'   \item \code{personCount}: Count after applying rules.
@@ -301,10 +300,6 @@ computeCohortAttrition <- function(cohortInclusionResult,
   if (!all(isCamelCase(names(cohortInclusion)))) {
     names(cohortInclusion) <- SqlRender::snakeCaseToCamelCase(names(cohortInclusion))
   }
-
-  # Attrition is reported at the person level in OHDSI tools (modeId = 1).
-  # We hard-code this to keep the output consistent and future-proof.
-  modeId <- 1
 
   # Add the databaseId column if it is missing since 
   # this is requried later in the function
@@ -333,8 +328,7 @@ computeCohortAttrition <- function(cohortInclusionResult,
     stop(paste("Missing required columns in cohortInclusion:", paste(missingColumns, collapse = ", ")))
   }
 
-  result <- cohortInclusionResult %>%
-    dplyr::filter(.data$modeId == !!modeId)
+  result <- cohortInclusionResult
 
   emptyColumns <- c(
     "databaseId",
@@ -351,10 +345,9 @@ computeCohortAttrition <- function(cohortInclusionResult,
   }
 
   base <- result %>%
-    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId) %>%
+    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId) %>%
     dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
     dplyr::mutate(
-      modeId = modeId,
       cohortEntry = 1L,
       ruleSequence = as.integer(-1)
     )
@@ -367,27 +360,35 @@ computeCohortAttrition <- function(cohortInclusionResult,
   ruleRows <- result %>%
     dplyr::inner_join(rules, by = "cohortDefinitionId") %>%
     dplyr::filter(bitwAnd(.data$inclusionRuleMask, .data$requiredMask) == .data$requiredMask) %>%
-    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$ruleSequence) %>%
+    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
     dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
     dplyr::mutate(
-      modeId = !!modeId,
       cohortEntry = 0L
     )
-  
-  databaseId <- result$databaseId[[1]]
-  zeroCountRuleRows <- rules %>%
-    dplyr::left_join(ruleRows) %>%
+
+  cohortModes <- result %>%
+    dplyr::select(.data$databaseId, .data$cohortDefinitionId, .data$modeId) %>%
+    dplyr::distinct()
+  zeroCountRuleRows <- cohortModes %>%
+    dplyr::inner_join(rules, by = "cohortDefinitionId") %>%
+    dplyr::select(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
+    dplyr::left_join(ruleRows,
+      by = c(
+        "databaseId",
+        "cohortDefinitionId",
+        "modeId",
+        "ruleSequence"
+      )
+    ) %>%
     dplyr::filter(is.na(.data$personCount)) %>%
     dplyr::mutate(
-      databaseId = !!databaseId,
       cohortEntry = 0L, 
-      personCount = 0L,
-      modeId = !!modeId
+      personCount = 0L
     )
 
   output <- dplyr::bind_rows(base, ruleRows, zeroCountRuleRows) %>%
     dplyr::select(all_of(emptyColumns)) %>%
-    dplyr::arrange(.data$cohortDefinitionId, dplyr::desc(.data$cohortEntry), .data$ruleSequence)
+    dplyr::arrange(.data$cohortDefinitionId, .data$modeId, dplyr::desc(.data$cohortEntry), .data$ruleSequence)
 
   return(output)
 }
