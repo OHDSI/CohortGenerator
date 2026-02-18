@@ -5,8 +5,6 @@
 {DEFAULT @cg_cohort_attrition = cg_cohort_attrition}
 {DEFAULT @cg_cohort_subset_attrition = cg_cohort_subset_attrition}
 {DEFAULT @cg_cohort_subset_operator = cg_cohort_subset_operator}
-{DEFAULT @cg_cohort_attrition_mode = cg_cohort_attrition_mode}
-
 
 CREATE TABLE @database_schema.@table_prefix@cg_cohort_attrition (
     database_id VARCHAR NOT NULL,
@@ -38,19 +36,4 @@ CREATE TABLE @database_schema.@table_prefix@cg_cohort_subset_operator (
     definition_json TEXT NOT NULL,
 	PRIMARY KEY(subset_definition_id,operator_sequence,operator_type)
 );
-
-CREATE TABLE @database_schema.@table_prefix@cg_cohort_attrition_mode (
-    mode_id INT NOT NULL,
-    mode_name VARCHAR NOT NULL,
-	PRIMARY KEY(mode_id)
-);
-
-INSERT INTO @database_schema.@table_prefix@cg_cohort_attrition_mode (
-    mode_id,
-    mode_name
-)
-VALUES
-    (0, 'events'),
-    (1, 'persons');
-
 
