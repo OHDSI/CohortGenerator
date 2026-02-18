@@ -41,53 +41,23 @@ CohortSubsetDefinition <- R6::R6Class(
     },
 
     attritionInsert = function(sourceTable, targetOutputPair, operatorSequence, cohortEntry) {
-        SqlRender::render(
-          "INSERT INTO @cohort_database_schema.@cohort_subset_attrition_table (
-            cohort_definition_id,
-            subset_definition_id,
-            subset_parent_id,
-            mode_id,
-            cohort_entry,
-            operator_sequence,
-            count_value
-          )
-          SELECT
-            @output_cohort_id,
-            @subset_definition_id,
-            @subset_parent_id,
-            0,
-            @cohort_entry,
-            @operator_sequence,
-            COUNT(*)
-          FROM @source_table;
-
-          INSERT INTO @cohort_database_schema.@cohort_subset_attrition_table (
-            cohort_definition_id,
-            subset_definition_id,
-            subset_parent_id,
-            mode_id,
-            cohort_entry,
-            operator_sequence,
-            count_value
-          )
-          SELECT
-            @output_cohort_id,
-            @subset_definition_id,
-            @subset_parent_id,
-            1,
-            @cohort_entry,
-            @operator_sequence,
-            COUNT(DISTINCT subject_id)
-          FROM @source_table;",
-          output_cohort_id = targetOutputPair[2],
-          subset_definition_id = self$definitionId,
-          subset_parent_id = targetOutputPair[1],
-          operator_sequence = operatorSequence,
-          cohort_entry = cohortEntry,
-          source_table = sourceTable,
-          warnOnMissingParameters = FALSE
-        )
-      }
+      sql <- SqlRender::readSql(system.file(
+        "sql",
+        "sql_server",
+        "subsets",
+        "CohortSubsetAttritionInsert.sql",
+        package = "CohortGenerator"
+      ))
+      SqlRender::render(sql,
+        output_cohort_id = targetOutputPair[2],
+        subset_definition_id = self$definitionId,
+        subset_parent_id = targetOutputPair[1],
+        operator_sequence = operatorSequence,
+        cohort_entry = cohortEntry,
+        source_table = sourceTable,
+        warnOnMissingParameters = FALSE
+      )
+    }
   ),
   public = list(
     #' pretty in print
@@ -175,6 +145,8 @@ CohortSubsetDefinition <- R6::R6Class(
       sql <- c(sql, private$attritionInsert(sourceTable = targetTable, targetOutputPair = targetOutputPair, operatorSequence = -1, cohortEntry = 1))
 
       dropTables <- c(targetTable)
+      # Build SQL sequentially per operator: append operator SQL, switch to that operator's
+      # output temp table as the new source, track it for cleanup, then record attrition.
       for (i in seq_along(self$subsetOperators) ) {
         subsetOperator <- self$subsetOperators[[i]]
         queryBuilder <- subsetOperator$getQueryBuilder(i)
