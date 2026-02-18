@@ -44,6 +44,14 @@ cg_cohort_attrition,mode_id,int,Yes,Yes,No,The mode id (for example 1=person-lev
 cg_cohort_attrition,cohort_entry,int,Yes,Yes,No,Indicator that row represents cohort entry before applying inclusion rules
 cg_cohort_attrition,rule_sequence,int,Yes,Yes,No,The rule sequence for sequential attrition (-1 for cohort entry)
 cg_cohort_attrition,person_count,bigint,Yes,No,Yes,The number of persons after applying the sequential rules
+cg_cohort_subset_attrition,database_id,varchar,Yes,Yes,No,The database idenifier for this information
+cg_cohort_subset_attrition,cohort_definition_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
+cg_cohort_subset_attrition,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
+cg_cohort_subset_attrition,subset_parent_id,bigint,Yes,Yes,No,The parent cohort id for this subset attrition
+cg_cohort_subset_attrition,mode_id,int,Yes,Yes,No,The mode id (0=events, 1=persons)
+cg_cohort_subset_attrition,cohort_entry,int,Yes,Yes,No,Indicator that row represents cohort entry before applying subset operators
+cg_cohort_subset_attrition,operator_sequence,int,Yes,Yes,No,The operator sequence for sequential subset attrition (-1 for cohort entry)
+cg_cohort_subset_attrition,count_value,bigint,Yes,No,Yes,The count after applying the sequential operators
 cg_cohort_count,database_id,varchar,Yes,Yes,No,The database idenifier for this information
 cg_cohort_count,cohort_id,bigint,Yes,Yes,No,The unique identifier for the cohort definition
 cg_cohort_count,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort entries
@@ -54,6 +62,11 @@ cg_cohort_count_neg_ctrl,cohort_entries,bigint,Yes,Yes,Yes,The number of cohort 
 cg_cohort_count_neg_ctrl,cohort_subjects,bigint,Yes,Yes,Yes,The number of unique subjects
 cg_cohort_subset_definition,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
 cg_cohort_subset_definition,json,text,Yes,No,No,The JSON representation of the subset definition
+cg_cohort_subset_operator,subset_definition_id,bigint,Yes,Yes,No,The identifier for the cohort subset definition
+cg_cohort_subset_operator,operator_name,varchar,Yes,Yes,No,The name of the cohort subset operator
+cg_cohort_subset_operator,operator_sequence,int,Yes,Yes,No,The operator sequence within the subset definition
+cg_cohort_subset_operator,operator_type,varchar,Yes,Yes,No,The subset operator type (subsetType)
+cg_cohort_subset_operator,definition_json,text,Yes,No,No,The JSON representation of the subset operator
 cg_cohort_definition_neg_ctrl,cohort_id,bigint,Yes,Yes,No,The cohort identifier for the negative control outcome
 cg_cohort_definition_neg_ctrl,outcome_concept_id,bigint,Yes,No,No,The concept ID for the negative control outcome
 cg_cohort_definition_neg_ctrl,cohort_name,varchar,Yes,No,No,The concept name for the negative control outcome

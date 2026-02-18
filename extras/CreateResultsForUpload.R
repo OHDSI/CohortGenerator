@@ -1,5 +1,5 @@
 library(CohortGenerator)
-resultsFolder <- "E:/TEMP/cg"
+resultsFolder <- "C:/TEMP/cg"
 databaseId <- "Eunomia"
 tablePrefix = "cg_"
 
