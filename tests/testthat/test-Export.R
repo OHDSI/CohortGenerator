@@ -28,7 +28,8 @@ test_that("Export cohort stats with permanent tables", {
       "cohortInclusionStatsTable",
       "cohortInclusionStatsTable",
       "cohortSummaryStatsTable",
-      "cohortCensorStatsTable"
+      "cohortCensorStatsTable",
+      "cohortAttritionTable"
     )
   )
 
@@ -71,7 +72,7 @@ test_that("Export cohort stats with permanent tables", {
 
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
-  expect_equal(length(exportedFiles), 5)
+  expect_equal(length(exportedFiles), 6)
   unlink(cohortStatsFolder)
 })
 
@@ -196,7 +197,7 @@ test_that("Export cohort stats in incremental mode", {
 
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
-  expect_equal(length(exportedFiles), 5)
+  expect_equal(length(exportedFiles), 6)
   unlink(cohortStatsFolder)
 })
 

@@ -5,6 +5,7 @@
 {DEFAULT @create_cohort_inclusion_stats_table = TRUE}
 {DEFAULT @create_cohort_summary_stats_table = TRUE}
 {DEFAULT @create_cohort_censor_stats_table = TRUE}
+{DEFAULT @create_cohort_subset_attrition_table = TRUE}
 {DEFAULT @create_cohort_checksum_table = TRUE}
 
 {@create_cohort_table}?{
@@ -88,6 +89,21 @@
   CREATE TABLE @cohort_database_schema.@cohort_censor_stats_table(
     cohort_definition_id BIGINT NOT NULL,
     lost_count BIGINT NOT NULL
+  	);
+}:{}
+
+{@create_cohort_subset_attrition_table}?{
+  IF OBJECT_ID('@cohort_database_schema.@cohort_subset_attrition_table', 'U') IS NOT NULL
+  	DROP TABLE @cohort_database_schema.@cohort_subset_attrition_table;
+
+  CREATE TABLE @cohort_database_schema.@cohort_subset_attrition_table(
+    cohort_definition_id BIGINT NOT NULL,
+    subset_definition_id BIGINT NOT NULL,
+    subset_parent_id BIGINT NOT NULL,
+    mode_id INT NOT NULL,
+    cohort_entry INT NOT NULL,
+    operator_sequence INT NOT NULL,
+    count_value BIGINT NOT NULL
   	);
 }:{}
 

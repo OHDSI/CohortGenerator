@@ -105,10 +105,12 @@ reference:
       assume you are using [Circe](https://github.com/OHDSI/circe-be) for 
       inclusion rules and cohort statistics.
     contents:
+      - computeCohortAttrition
       - getCohortStats
       - getCohortInclusionRules
       - insertInclusionRuleNames
       - exportCohortStatsTables
+      - exportCohortSubsetStatsTables
       - dropCohortStatsTables
       
   - title: "Negative Control Outcomes"

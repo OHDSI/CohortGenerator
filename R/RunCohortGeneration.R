@@ -241,9 +241,22 @@ generateAndExportCohorts <- function(connection,
     tablePrefix = "cg_"
   )
 
+  exportCohortSubsetStatsTables(
+    connection = connection,
+    cohortTableNames = cohortTableNames,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortSubsetStatisticsFolder = outputFolder,
+    snakeCaseToCamelCase = FALSE,
+    fileNamesInSnakeCase = TRUE,
+    databaseId = databaseId,
+    minCellCount = minCellCount,
+    tablePrefix = "cg_"
+  )
+
   # Export the cohort definition set
   rlang::inform("Saving cohort definition set")
   exportCohortDefinitionSet(outputFolder, cohortDefinitionSet)
+
 }
 
 generateAndExportNegativeControls <- function(connection,

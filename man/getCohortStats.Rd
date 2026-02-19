@@ -12,8 +12,9 @@ getCohortStats(
   snakeCaseToCamelCase = TRUE,
   outputTables = c("cohortInclusionTable", "cohortInclusionResultTable",
     "cohortInclusionStatsTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable",
-    "cohortCensorStatsTable"),
-  cohortTableNames = getCohortTableNames()
+    "cohortCensorStatsTable", "cohortAttritionTable"),
+  cohortTableNames = getCohortTableNames(),
+  inclusionRules = NULL
 )
 }
 \arguments{
@@ -39,21 +40,25 @@ to the exported results}
 
 \item{outputTables}{Character vector. One or more of "cohortInclusionTable", "cohortInclusionResultTable",
 "cohortInclusionStatsTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable"
-or "cohortCensorStatsTable". Output is limited to these tables. Cannot export, for,
+or "cohortCensorStatsTable", "cohortAttritionTable". Output is limited to these tables. Cannot export, for,
 example, the cohort table. Defaults to all stats tables.}
 
 \item{cohortTableNames}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
+
+\item{inclusionRules}{A data.frame with inclusion rules from the cohortDefinitionSet used to generate
+the cohort stats obtained by running \code{getCohortInclusionRules(cohortDefinitionSet)} (Optional)}
 }
 \description{
 This function returns a data frame of the data in the Cohort Inclusion Tables.
-Results are organized in to a list with 5 different data frames:
+Results are organized in to a list with 6 different data frames:
 \itemize{
 \item cohortInclusionTable
 \item cohortInclusionResultTable
 \item cohortInclusionStatsTable
 \item cohortSummaryStatsTable
 \item cohortCensorStatsTable
+\item cohortAttritionTable
 }
 
 These can be optionally specified with the \code{outputTables}.
