@@ -477,6 +477,77 @@ test_that("export template definitions functions", {
   checkmate::expect_data_frame(cs, nrows = 1)
 })
 
+test_that("Export subset attrition honors results model primary key", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortSubsetAttritionPk")
+  subsetStatsFolder <- file.path(outputFolder, "subsetAttritionPk")
+
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
+  cohortDefinitionSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
+
+  subsetDef <- createCohortSubsetDefinition(
+    name = "pk regression test",
+    definitionId = 1,
+    subsetOperators = list(
+      createLimitSubsetOperator(
+        name = "first ever",
+        limitTo = "firstEver"
+      ),
+      createDemographicSubsetOperator(
+        name = "adult",
+        ageMin = 18
+      )
+    )
+  )
+
+  cohortDefinitionSet <- cohortDefinitionSet %>%
+    addCohortSubsetDefinition(subsetDef, targetCohortIds = c(1))
+
+  generateCohortSet(
+    connectionDetails = connectionDetails,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDefinitionSet = cohortDefinitionSet,
+    incremental = FALSE
+  )
+
+  exportCohortSubsetStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortSubsetStatisticsFolder = subsetStatsFolder,
+    databaseId = "Eunomia",
+    minCellCount = 0
+  )
+
+  subsetAttrition <- CohortGenerator:::.readCsv(file.path(subsetStatsFolder, "cohortSubsetAttrition.csv"))
+  checkmate::expect_data_frame(subsetAttrition, min.rows = 1)
+
+  primaryKey <- getResultsDataModelSpecifications() %>%
+    dplyr::filter(.data$tableName == "cg_cohort_subset_attrition" & .data$primaryKey == "Yes") %>%
+    dplyr::pull(.data$columnName) %>%
+    SqlRender::snakeCaseToCamelCase()
+  duplicatePrimaryKeys <- subsetAttrition %>%
+    dplyr::count(dplyr::across(dplyr::all_of(primaryKey)), name = "n") %>%
+    dplyr::filter(.data$n > 1)
+
+  expect_equal(nrow(duplicatePrimaryKeys), 0)
+  unlink(subsetStatsFolder, recursive = TRUE)
+})
+
 
 test_that("empty vector becomes NULL", {
   expect_null(

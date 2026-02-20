@@ -148,12 +148,13 @@ CohortSubsetDefinition <- R6::R6Class(
       # Build SQL sequentially per operator: append operator SQL, switch to that operator's
       # output temp table as the new source, track it for cleanup, then record attrition.
       for (i in seq_along(self$subsetOperators) ) {
+        operatorSequence <- i - 1
         subsetOperator <- self$subsetOperators[[i]]
         queryBuilder <- subsetOperator$getQueryBuilder(i)
         sql <- c(sql, queryBuilder$getQuery(targetTable))
         targetTable <- queryBuilder$getTableObjectId()
         dropTables <- c(dropTables, targetTable)
-        sql <- c(sql, private$attritionInsert(sourceTable = targetTable, targetOutputPair = targetOutputPair, operatorSequence = -1, cohortEntry = 0))
+        sql <- c(sql, private$attritionInsert(sourceTable = targetTable, targetOutputPair = targetOutputPair, operatorSequence = operatorSequence, cohortEntry = 0))
       }
 
       sql <- c(sql, SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetDefinition.sql", package = "CohortGenerator")))
