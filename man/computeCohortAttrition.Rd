@@ -34,9 +34,8 @@ A data.frame with the following columns:
 }
 \description{
 Computes a sequential attrition table using the inclusion
-rule statistics stored in the cohort statistics tables. The computation
-follows the same logic described in the CohortGenerator vignette:
-for each cohort definition, we report a base cohort entry count
+rule statistics stored in the cohort statistics tables for Circe-based
+cohorts. For each cohort definition, we report a base cohort entry count
 (before inclusion rules) and then counts after applying the first
 \code{k} inclusion rules in sequence.
 

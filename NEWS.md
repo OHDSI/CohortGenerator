@@ -1,3 +1,10 @@
+CohortGenerator 1.1.0
+=====================
+
+New Features
+
+- Adds functions and documentation for computing attrition for cohorts and subsetted cohorts (#123, #79)
+
 CohortGenerator 1.0.2
 =====================
 

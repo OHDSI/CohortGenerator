@@ -301,7 +301,7 @@ computeCohortAttrition <- function(cohortInclusionResult,
     names(cohortInclusion) <- SqlRender::snakeCaseToCamelCase(names(cohortInclusion))
   }
 
-  # Add the databaseId column if it is missing since 
+  # Add the databaseId column if it is missing since
   # this is requried later in the function
   if (!"databaseId" %in% names(cohortInclusionResult)) {
     cohortInclusionResult <- cohortInclusionResult |>
@@ -382,7 +382,7 @@ computeCohortAttrition <- function(cohortInclusionResult,
     ) %>%
     dplyr::filter(is.na(.data$personCount)) %>%
     dplyr::mutate(
-      cohortEntry = 0L, 
+      cohortEntry = 0L,
       personCount = 0L
     )
 
