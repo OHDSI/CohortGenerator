@@ -39,7 +39,6 @@ CohortSubsetDefinition <- R6::R6Class(
       checkmate::assertR6(obj, "SubsetOperator")
       return(obj)
     },
-
     attritionInsert = function(sourceTable, targetOutputPair, operatorSequence, cohortEntry) {
       sql <- SqlRender::readSql(system.file(
         "sql",
@@ -147,7 +146,7 @@ CohortSubsetDefinition <- R6::R6Class(
       dropTables <- c(targetTable)
       # Build SQL sequentially per operator: append operator SQL, switch to that operator's
       # output temp table as the new source, track it for cleanup, then record attrition.
-      for (i in seq_along(self$subsetOperators) ) {
+      for (i in seq_along(self$subsetOperators)) {
         operatorSequence <- i - 1
         subsetOperator <- self$subsetOperators[[i]]
         queryBuilder <- subsetOperator$getQueryBuilder(i)
