@@ -38,6 +38,24 @@ CohortSubsetDefinition <- R6::R6Class(
       obj <- classDef$new(item)
       checkmate::assertR6(obj, "SubsetOperator")
       return(obj)
+    },
+    attritionInsert = function(sourceTable, targetOutputPair, operatorSequence, cohortEntry) {
+      sql <- SqlRender::readSql(system.file(
+        "sql",
+        "sql_server",
+        "subsets",
+        "CohortSubsetAttritionInsert.sql",
+        package = "CohortGenerator"
+      ))
+      SqlRender::render(sql,
+        output_cohort_id = targetOutputPair[2],
+        subset_definition_id = self$definitionId,
+        subset_parent_id = targetOutputPair[1],
+        operator_sequence = operatorSequence,
+        cohort_entry = cohortEntry,
+        source_table = sourceTable,
+        warnOnMissingParameters = FALSE
+      )
     }
   ),
   public = list(
@@ -115,20 +133,27 @@ CohortSubsetDefinition <- R6::R6Class(
       checkmate::assertFALSE(targetOutputPair[[1]] == targetOutputPair[[2]])
 
       targetTable <- "#cohort_sub_base"
+
       sql <- c(
         "DELETE FROM @cohort_database_schema.@cohort_table WHERE cohort_definition_id = @output_cohort_id;",
+        "DELETE FROM @cohort_database_schema.@cohort_subset_attrition_table WHERE cohort_definition_id = @output_cohort_id;",
         "DROP TABLE IF EXISTS #cohort_sub_base;",
         "SELECT * INTO #cohort_sub_base FROM @cohort_database_schema.@cohort_table",
         "WHERE cohort_definition_id = @target_cohort_id;"
       )
+      sql <- c(sql, private$attritionInsert(sourceTable = targetTable, targetOutputPair = targetOutputPair, operatorSequence = -1, cohortEntry = 1))
 
       dropTables <- c(targetTable)
-      for (i in 1:length(self$subsetOperators)) {
+      # Build SQL sequentially per operator: append operator SQL, switch to that operator's
+      # output temp table as the new source, track it for cleanup, then record attrition.
+      for (i in seq_along(self$subsetOperators)) {
+        operatorSequence <- i - 1
         subsetOperator <- self$subsetOperators[[i]]
         queryBuilder <- subsetOperator$getQueryBuilder(i)
         sql <- c(sql, queryBuilder$getQuery(targetTable))
         targetTable <- queryBuilder$getTableObjectId()
         dropTables <- c(dropTables, targetTable)
+        sql <- c(sql, private$attritionInsert(sourceTable = targetTable, targetOutputPair = targetOutputPair, operatorSequence = operatorSequence, cohortEntry = 0))
       }
 
       sql <- c(sql, SqlRender::readSql(system.file("sql", "sql_server", "subsets", "CohortSubsetDefinition.sql", package = "CohortGenerator")))

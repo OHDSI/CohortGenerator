@@ -132,12 +132,14 @@ getStatsTable <- function(connectionDetails,
 #'
 #' @description
 #' This function returns a data frame of the data in the Cohort Inclusion Tables.
-#' Results are organized in to a list with 5 different data frames:
+#' Results are organized in to a list with 6 different data frames:
 #'  * cohortInclusionTable
 #'  * cohortInclusionResultTable
 #'  * cohortInclusionStatsTable
 #'  * cohortSummaryStatsTable
 #'  * cohortCensorStatsTable
+#'  * cohortAttritionTable
+#'
 #'
 #'
 #' These can be optionally specified with the `outputTables`.
@@ -149,8 +151,10 @@ getStatsTable <- function(connectionDetails,
 #' @param snakeCaseToCamelCase        Convert column names from snake case to camel case.
 #' @param outputTables                Character vector. One or more of "cohortInclusionTable", "cohortInclusionResultTable",
 #'                                    "cohortInclusionStatsTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable"
-#'                                    or "cohortCensorStatsTable". Output is limited to these tables. Cannot export, for,
+#'                                    or "cohortCensorStatsTable", "cohortAttritionTable". Output is limited to these tables. Cannot export, for,
 #'                                    example, the cohort table. Defaults to all stats tables.
+#' @param inclusionRules              A data.frame with inclusion rules from the cohortDefinitionSet used to generate
+#'                                    the cohort stats obtained by running `getCohortInclusionRules(cohortDefinitionSet)` (Optional)
 #' @export
 getCohortStats <- function(connectionDetails,
                            connection = NULL,
@@ -163,11 +167,14 @@ getCohortStats <- function(connectionDetails,
                              "cohortInclusionStatsTable",
                              "cohortInclusionStatsTable",
                              "cohortSummaryStatsTable",
-                             "cohortCensorStatsTable"
+                             "cohortCensorStatsTable",
+                             "cohortAttritionTable"
                            ),
-                           cohortTableNames = getCohortTableNames()) {
+                           cohortTableNames = getCohortTableNames(),
+                           inclusionRules = NULL) {
   # Names of cohort table names must include output tables
-  checkmate::assertNames(names(cohortTableNames), must.include = outputTables)
+  requiredTables <- setdiff(outputTables, "cohortAttritionTable")
+  checkmate::assertNames(names(cohortTableNames), must.include = requiredTables)
   # ouput tables strictly the set of allowed tables
   checkmate::assertNames(outputTables,
     subset.of = c(
@@ -176,9 +183,23 @@ getCohortStats <- function(connectionDetails,
       "cohortInclusionStatsTable",
       "cohortInclusionStatsTable",
       "cohortSummaryStatsTable",
-      "cohortCensorStatsTable"
+      "cohortCensorStatsTable",
+      "cohortAttritionTable"
     )
   )
+
+  # cohortAttritionTable is derived (not a physical DB table). Track the caller's
+  # requested tables, fetch the required inputs, then compute attrition in R.
+  requestedTables <- outputTables
+  if ("cohortAttritionTable" %in% outputTables) {
+    outputTables <- setdiff(outputTables, "cohortAttritionTable")
+    outputTables <- unique(c(
+      outputTables,
+      "cohortInclusionTable",
+      "cohortInclusionResultTable"
+    ))
+  }
+
   results <- list()
   for (table in outputTables) {
     # The cohortInclusionTable does not hold database
@@ -198,7 +219,178 @@ getCohortStats <- function(connectionDetails,
       databaseId = databaseId
     )
   }
+  if ("cohortAttritionTable" %in% requestedTables) {
+    if (is.null(inclusionRules)) {
+      inclusionRules <- results$cohortInclusionTable
+    }
+    results$cohortAttritionTable <- computeCohortAttrition(
+      cohortInclusionResult = results$cohortInclusionResultTable,
+      cohortInclusion = inclusionRules
+    )
+    if (isFALSE(snakeCaseToCamelCase)) {
+      names(results$cohortAttritionTable) <- SqlRender::camelCaseToSnakeCase(names(results$cohortAttritionTable))
+    }
+  }
+
+  if (!("cohortInclusionTable" %in% requestedTables)) {
+    results$cohortInclusionTable <- NULL
+  }
+  if (!("cohortInclusionResultTable" %in% requestedTables)) {
+    results$cohortInclusionResultTable <- NULL
+  }
+
   return(results)
+}
+
+
+#' Compute cohort attrition from inclusion rule statistics
+#'
+#' @description
+#' Computes a sequential attrition table using the inclusion
+#' rule statistics stored in the cohort statistics tables for Circe-based
+#' cohorts. For each cohort definition, we report a base cohort entry count
+#' (before inclusion rules) and then counts after applying the first
+#' \code{k} inclusion rules in sequence.
+#'
+#' Inclusion rule satisfaction is encoded as a bit mask in
+#' \code{inclusionRuleMask}. For a rule sequence \code{i}, its bit value is
+#' \code{2^i}. A row with \code{inclusionRuleMask} equal to the sum of the
+#' bits indicates which rules were met. To compute the count after the first
+#' \code{k} rules, we require all first-\code{k} bits to be set by checking
+#' \code{bitwAnd(inclusionRuleMask, requiredMask) == requiredMask}, where
+#' \code{requiredMask = 2^k - 1}.
+#'
+#' Attrition is computed separately for each \code{modeId} present in
+#' \code{cohortInclusionResult} (for example, person-level and event-level).
+#'
+#' @param cohortInclusionResult A data.frame containing inclusion rule masks
+#' and counts, typically from the \code{cohortInclusionResultTable} with
+#' camelCase column names.
+#' Required columns: \code{databaseId}, \code{cohortDefinitionId},
+#' \code{inclusionRuleMask}, \code{modeId}, \code{personCount}.
+#' You can obtain this via \code{getCohortStats(..., outputTables = "cohortInclusionResultTable")}
+#' or by querying the cohort results schema table created when stats are generated.
+#'
+#' @param cohortInclusion A data.frame of inclusion rule metadata, typically
+#' from \code{cohortInclusionTable} with camelCase column names.
+#' Required columns: \code{cohortDefinitionId}, \code{ruleSequence}.
+#' You can obtain this via \code{getCohortStats(..., outputTables = "cohortInclusionTable")}
+#' or by querying the cohort results schema table created when stats are generated.
+#'
+#' @return A data.frame with the following columns:
+#' \itemize{
+#'   \item \code{databaseId}: Database identifier.
+#'   \item \code{cohortDefinitionId}: Cohort definition identifier.
+#'   \item \code{modeId}: The mode identifier from \code{cohortInclusionResult}.
+#'   \item \code{cohortEntry}: 1 for the base cohort entry count, 0 for rule rows.
+#'   \item \code{ruleSequence}: Inclusion rule sequence (-1 for base row).
+#'   \item \code{personCount}: Count after applying rules.
+#' }
+#'
+#' @export
+computeCohortAttrition <- function(cohortInclusionResult,
+                                   cohortInclusion) {
+  checkmate::assert_data_frame(cohortInclusionResult)
+  checkmate::assert_data_frame(cohortInclusion)
+
+  # Force all columns to camelCase
+  if (!all(isCamelCase(names(cohortInclusionResult)))) {
+    names(cohortInclusionResult) <- SqlRender::snakeCaseToCamelCase(names(cohortInclusionResult))
+  }
+  if (!all(isCamelCase(names(cohortInclusion)))) {
+    names(cohortInclusion) <- SqlRender::snakeCaseToCamelCase(names(cohortInclusion))
+  }
+
+  # Add the databaseId column if it is missing since
+  # this is requried later in the function
+  if (!"databaseId" %in% names(cohortInclusionResult)) {
+    cohortInclusionResult <- cohortInclusionResult |>
+      dplyr::mutate(databaseId = NA)
+  }
+  cohortInclusionResultRequiredColumns <- c(
+    "databaseId",
+    "cohortDefinitionId",
+    "inclusionRuleMask",
+    "modeId",
+    "personCount"
+  )
+  missingColumns <- setdiff(cohortInclusionResultRequiredColumns, names(cohortInclusionResult))
+  if (length(missingColumns) > 0) {
+    stop(paste("Missing required columns in cohortInclusionResult:", paste(missingColumns, collapse = ", ")))
+  }
+
+  cohortInclusionRequiredColumns <- c(
+    "ruleSequence",
+    "cohortDefinitionId"
+  )
+  missingColumns <- setdiff(cohortInclusionRequiredColumns, names(cohortInclusion))
+  if (length(missingColumns) > 0) {
+    stop(paste("Missing required columns in cohortInclusion:", paste(missingColumns, collapse = ", ")))
+  }
+
+  result <- cohortInclusionResult
+
+  emptyColumns <- c(
+    "databaseId",
+    "cohortDefinitionId",
+    "modeId",
+    "cohortEntry",
+    "ruleSequence",
+    "personCount"
+  )
+
+  if (nrow(result) == 0) {
+    empty <- as.data.frame(setNames(replicate(length(emptyColumns), logical(0), simplify = FALSE), emptyColumns))
+    return(empty)
+  }
+
+  base <- result %>%
+    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId) %>%
+    dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
+    dplyr::mutate(
+      cohortEntry = 1L,
+      ruleSequence = as.integer(-1)
+    )
+
+  rules <- cohortInclusion %>%
+    dplyr::select(.data$cohortDefinitionId, .data$ruleSequence) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(requiredMask = 2^(.data$ruleSequence + 1) - 1)
+
+  ruleRows <- result %>%
+    dplyr::inner_join(rules, by = "cohortDefinitionId") %>%
+    dplyr::filter(bitwAnd(.data$inclusionRuleMask, .data$requiredMask) == .data$requiredMask) %>%
+    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
+    dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
+    dplyr::mutate(
+      cohortEntry = 0L
+    )
+
+  cohortModes <- result %>%
+    dplyr::select(.data$databaseId, .data$cohortDefinitionId, .data$modeId) %>%
+    dplyr::distinct()
+  zeroCountRuleRows <- cohortModes %>%
+    dplyr::inner_join(rules, by = "cohortDefinitionId") %>%
+    dplyr::select(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
+    dplyr::left_join(ruleRows,
+      by = c(
+        "databaseId",
+        "cohortDefinitionId",
+        "modeId",
+        "ruleSequence"
+      )
+    ) %>%
+    dplyr::filter(is.na(.data$personCount)) %>%
+    dplyr::mutate(
+      cohortEntry = 0L,
+      personCount = 0L
+    )
+
+  output <- dplyr::bind_rows(base, ruleRows, zeroCountRuleRows) %>%
+    dplyr::select(all_of(emptyColumns)) %>%
+    dplyr::arrange(.data$cohortDefinitionId, .data$modeId, dplyr::desc(.data$cohortEntry), .data$ruleSequence)
+
+  return(output)
 }
 
 

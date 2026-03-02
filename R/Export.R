@@ -98,11 +98,12 @@ exportCohortStatsTables <- function(connectionDetails,
   }
 
   tablesToExport <- data.frame(
-    tableName = c("cohortInclusionResultTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable", "cohortCensorStatsTable"),
-    fileName = c("cohort_inc_result.csv", "cohort_inc_stats.csv", "cohort_summary_stats.csv", "cohort_censor_stats.csv"),
-    resultsDataModelTableName = c("cg_cohort_inc_result", "cg_cohort_inc_stats", "cg_cohort_summary_stats", "cg_cohort_censor_stats")
+    tableName = c("cohortInclusionResultTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable", "cohortCensorStatsTable", "cohortAttritionTable"),
+    fileName = c("cohort_inc_result.csv", "cohort_inc_stats.csv", "cohort_summary_stats.csv", "cohort_censor_stats.csv", "cohort_attrition.csv"),
+    resultsDataModelTableName = c("cg_cohort_inc_result", "cg_cohort_inc_stats", "cg_cohort_summary_stats", "cg_cohort_censor_stats", "cg_cohort_attrition")
   )
 
+  inclusionRules <- NULL
   if (is.null(cohortDefinitionSet)) {
     warning("No cohortDefinitionSet specified; please make sure you've inserted the inclusion rule names using the insertInclusionRuleNames function.")
     tablesToExport <- rbind(tablesToExport, data.frame(
@@ -128,7 +129,8 @@ exportCohortStatsTables <- function(connectionDetails,
     cohortDatabaseSchema = cohortDatabaseSchema,
     databaseId = databaseId,
     snakeCaseToCamelCase = snakeCaseToCamelCase,
-    cohortTableNames = cohortTableNames
+    cohortTableNames = cohortTableNames,
+    inclusionRules = inclusionRules
   )
 
   for (i in 1:nrow(tablesToExport)) {
@@ -145,6 +147,88 @@ exportCohortStatsTables <- function(connectionDetails,
   }
 }
 
+
+#' Export cohort subset statistics tables to the file system
+#'
+#' @description
+#' This function retrieves the data from the cohort subset statistics table and
+#' writes them to the subset statistics folder specified in the function call.
+#'
+#' @template Connection
+#' @template CohortTableNames
+#'
+#' @param cohortSubsetStatisticsFolder The path to the folder where the cohort subset statistics
+#'                                     results will be written.
+#' @param snakeCaseToCamelCase         Should column names in the exported files
+#'                                     convert from snake_case to camelCase? Default is FALSE
+#' @param fileNamesInSnakeCase         Should the exported files use snake_case? Default is FALSE
+#' @param databaseId                   Optional - when specified, the databaseId will be added
+#'                                     to the exported results
+#' @template minCellCount
+#' @param tablePrefix                  Optional - allows to append a prefix to the exported
+#'                                     file names.
+#'
+#' @export
+exportCohortSubsetStatsTables <- function(connectionDetails,
+                                          connection = NULL,
+                                          cohortDatabaseSchema,
+                                          cohortTableNames = getCohortTableNames(),
+                                          cohortSubsetStatisticsFolder,
+                                          snakeCaseToCamelCase = TRUE,
+                                          fileNamesInSnakeCase = FALSE,
+                                          databaseId = NULL,
+                                          minCellCount = 5,
+                                          tablePrefix = "") {
+  if (is.null(connection)) {
+    connection <- DatabaseConnector::connect(connectionDetails)
+    on.exit(DatabaseConnector::disconnect(connection))
+  }
+
+  if (!dir.exists(cohortSubsetStatisticsFolder)) {
+    dir.create(cohortSubsetStatisticsFolder, recursive = TRUE)
+  }
+
+  exportStats <- function(data,
+                          fileName,
+                          resultsDataModelTableName,
+                          tablePrefix) {
+    fullFileName <- file.path(cohortSubsetStatisticsFolder, paste0(tablePrefix, fileName))
+    columnsToCensor <- getColumnsToCensor(resultsDataModelTableName)
+    rlang::inform(paste0("- Saving data to - ", fullFileName))
+
+    if (length(columnsToCensor) > 0) {
+      for (i in seq_along(columnsToCensor)) {
+        colName <- ifelse(isTRUE(snakeCaseToCamelCase), yes = columnsToCensor[i], no = SqlRender::camelCaseToSnakeCase(columnsToCensor[i]))
+        data <- data %>%
+          enforceMinCellValue(colName, minCellCount)
+      }
+    }
+
+    .writeCsv(x = data, file = fullFileName)
+  }
+
+  subsetAttrition <- getStatsTable(
+    connectionDetails = connectionDetails,
+    connection = connection,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    table = cohortTableNames$cohortSubsetAttritionTable,
+    snakeCaseToCamelCase = snakeCaseToCamelCase,
+    includeDatabaseId = TRUE,
+    databaseId = databaseId
+  )
+
+  fileName <- ifelse(test = fileNamesInSnakeCase,
+    yes = "cohort_subset_attrition.csv",
+    no = SqlRender::snakeCaseToCamelCase("cohort_subset_attrition.csv")
+  )
+
+  exportStats(
+    data = subsetAttrition,
+    fileName = fileName,
+    resultsDataModelTableName = "cg_cohort_subset_attrition",
+    tablePrefix = tablePrefix
+  )
+}
 
 addSubsetColumns <- function(cohortDefinitionSet) {
   if (nrow(cohortDefinitionSet) > 0 & !hasSubsetDefinitions(cohortDefinitionSet)) {
@@ -167,6 +251,7 @@ addTemplateColumns <- function(cohortDefinitionSet) {
 exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) {
   cohortDefinitions <- createEmptyResult("cg_cohort_definition")
   cohortSubsets <- createEmptyResult("cg_cohort_subset_definition")
+  cohortSubsetOperators <- createEmptyResult("cg_cohort_subset_operator")
   cohortTemplates <- createEmptyResult("cg_cohort_template_definition")
   cohortTemplateLink <- createEmptyResult("cg_cohort_template_link")
   if (!is.null(cohortDefinitionSet)) {
@@ -202,6 +287,26 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
           )
         )
       }
+      subsetOperatorRows <- list()
+      for (subsetDefinition in cdsCohortSubsets) {
+        subsetDefinitionName <- subsetDefinition$name
+        subsetDefinitionId <- subsetDefinition$definitionId
+        for (i in seq_along(subsetDefinition$subsetOperators)) {
+          operator <- subsetDefinition$subsetOperators[[i]]
+          operatorList <- operator$toList()
+          subsetOperatorRows[[length(subsetOperatorRows) + 1]] <- data.frame(
+            subsetDefinitionId = subsetDefinitionId,
+            operatorName = operatorList$name,
+            operatorSequence = as.integer(i - 1),
+            operatorType = operatorList$subsetType,
+            definitionJson = as.character(operator$toJSON()),
+            stringsAsFactors = FALSE
+          )
+        }
+      }
+      if (length(subsetOperatorRows) > 0) {
+        cohortSubsetOperators <- dplyr::bind_rows(subsetOperatorRows)
+      }
       cohortDefinitionSet$isSubset <- as.integer(cohortDefinitionSet$isSubset)
     } else {
       cohortDefinitionSet <- cohortDefinitionSet |> addSubsetColumns()
@@ -222,6 +327,10 @@ exportCohortDefinitionSet <- function(outputFolder, cohortDefinitionSet = NULL) 
   writeCsv(
     x = cohortSubsets,
     file = file.path(outputFolder, "cg_cohort_subset_definition.csv")
+  )
+  writeCsv(
+    x = cohortSubsetOperators,
+    file = file.path(outputFolder, "cg_cohort_subset_operator.csv")
   )
 
   writeCsv(

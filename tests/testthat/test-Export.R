@@ -28,7 +28,8 @@ test_that("Export cohort stats with permanent tables", {
       "cohortInclusionStatsTable",
       "cohortInclusionStatsTable",
       "cohortSummaryStatsTable",
-      "cohortCensorStatsTable"
+      "cohortCensorStatsTable",
+      "cohortAttritionTable"
     )
   )
 
@@ -71,7 +72,7 @@ test_that("Export cohort stats with permanent tables", {
 
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = "*.csv")
-  expect_equal(length(exportedFiles), 5)
+  expect_equal(length(exportedFiles), 6)
   unlink(cohortStatsFolder)
 })
 
@@ -196,7 +197,7 @@ test_that("Export cohort stats in incremental mode", {
 
   # Verify the files are written to the file system
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
-  expect_equal(length(exportedFiles), 5)
+  expect_equal(length(exportedFiles), 6)
   unlink(cohortStatsFolder)
 })
 
@@ -474,6 +475,77 @@ test_that("export template definitions functions", {
   checkmate::expect_data_frame(cs, nrows = 1)
   cs <- read.csv(file.path(outputFolder, "cg_cohort_template_link.csv"))
   checkmate::expect_data_frame(cs, nrows = 1)
+})
+
+test_that("Export subset attrition honors results model primary key", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "cohortSubsetAttritionPk")
+  subsetStatsFolder <- file.path(outputFolder, "subsetAttritionPk")
+
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
+  cohortDefinitionSet <- getCohortDefinitionSet(
+    settingsFileName = "testdata/name/Cohorts.csv",
+    jsonFolder = "testdata/name/cohorts",
+    sqlFolder = "testdata/name/sql/sql_server",
+    cohortFileNameFormat = "%s",
+    cohortFileNameValue = c("cohortName"),
+    packageName = "CohortGenerator",
+    verbose = FALSE
+  )
+
+  subsetDef <- createCohortSubsetDefinition(
+    name = "pk regression test",
+    definitionId = 1,
+    subsetOperators = list(
+      createLimitSubsetOperator(
+        name = "first ever",
+        limitTo = "firstEver"
+      ),
+      createDemographicSubsetOperator(
+        name = "adult",
+        ageMin = 18
+      )
+    )
+  )
+
+  cohortDefinitionSet <- cohortDefinitionSet %>%
+    addCohortSubsetDefinition(subsetDef, targetCohortIds = c(1))
+
+  generateCohortSet(
+    connectionDetails = connectionDetails,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortDefinitionSet = cohortDefinitionSet,
+    incremental = FALSE
+  )
+
+  exportCohortSubsetStatsTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames,
+    cohortSubsetStatisticsFolder = subsetStatsFolder,
+    databaseId = "Eunomia",
+    minCellCount = 0
+  )
+
+  subsetAttrition <- CohortGenerator:::.readCsv(file.path(subsetStatsFolder, "cohortSubsetAttrition.csv"))
+  checkmate::expect_data_frame(subsetAttrition, min.rows = 1)
+
+  primaryKey <- getResultsDataModelSpecifications() %>%
+    dplyr::filter(.data$tableName == "cg_cohort_subset_attrition" & .data$primaryKey == "Yes") %>%
+    dplyr::pull(.data$columnName) %>%
+    SqlRender::snakeCaseToCamelCase()
+  duplicatePrimaryKeys <- subsetAttrition %>%
+    dplyr::count(dplyr::across(dplyr::all_of(primaryKey)), name = "n") %>%
+    dplyr::filter(.data$n > 1)
+
+  expect_equal(nrow(duplicatePrimaryKeys), 0)
+  unlink(subsetStatsFolder, recursive = TRUE)
 })
 
 
