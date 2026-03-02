@@ -170,7 +170,7 @@ getCohortCounts(
 ```
 
     #> Connecting using SQLite driver
-    #> Counting cohorts took 0.0225 secs
+    #> Counting cohorts took 0.0266 secs
 
     #>   cohortId cohortEntries cohortSubjects
     #> 1        1          1800           1800
@@ -349,6 +349,7 @@ createCohortTables(
     #> Table "cohort_inclusion_stats" already exists and in incremental mode, so not recreating it.
     #> Table "cohort_summary_stats" already exists and in incremental mode, so not recreating it.
     #> Table "cohort_censor_stats" already exists and in incremental mode, so not recreating it.
+    #> Table "cohort_subset_attrition" already exists and in incremental mode, so not recreating it.
     #> Table "cohort_checksum" already exists and in incremental mode, so not recreating it.
 
 The use of `incremental = TRUE` here allows for assurance that tables

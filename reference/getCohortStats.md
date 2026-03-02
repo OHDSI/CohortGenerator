@@ -1,7 +1,7 @@
 # Get Cohort Inclusion Stats Table Data
 
 This function returns a data frame of the data in the Cohort Inclusion
-Tables. Results are organized in to a list with 5 different data frames:
+Tables. Results are organized in to a list with 6 different data frames:
 
 - cohortInclusionTable
 
@@ -12,6 +12,8 @@ Tables. Results are organized in to a list with 5 different data frames:
 - cohortSummaryStatsTable
 
 - cohortCensorStatsTable
+
+- cohortAttritionTable
 
 These can be optionally specified with the `outputTables`. See
 `exportCohortStatsTables` function for saving data to csv.
@@ -27,8 +29,9 @@ getCohortStats(
   snakeCaseToCamelCase = TRUE,
   outputTables = c("cohortInclusionTable", "cohortInclusionResultTable",
     "cohortInclusionStatsTable", "cohortInclusionStatsTable", "cohortSummaryStatsTable",
-    "cohortCensorStatsTable"),
-  cohortTableNames = getCohortTableNames()
+    "cohortCensorStatsTable", "cohortAttritionTable"),
+  cohortTableNames = getCohortTableNames(),
+  inclusionRules = NULL
 )
 ```
 
@@ -70,11 +73,18 @@ getCohortStats(
   Character vector. One or more of "cohortInclusionTable",
   "cohortInclusionResultTable", "cohortInclusionStatsTable",
   "cohortInclusionStatsTable", "cohortSummaryStatsTable" or
-  "cohortCensorStatsTable". Output is limited to these tables. Cannot
-  export, for, example, the cohort table. Defaults to all stats tables.
+  "cohortCensorStatsTable", "cohortAttritionTable". Output is limited to
+  these tables. Cannot export, for, example, the cohort table. Defaults
+  to all stats tables.
 
 - cohortTableNames:
 
   The names of the cohort tables. See
   [`getCohortTableNames`](https://ohdsi.github.io/CohortGenerator/reference/getCohortTableNames.md)
   for more details.
+
+- inclusionRules:
+
+  A data.frame with inclusion rules from the cohortDefinitionSet used to
+  generate the cohort stats obtained by running
+  `getCohortInclusionRules(cohortDefinitionSet)` (Optional)

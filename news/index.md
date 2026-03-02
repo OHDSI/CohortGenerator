@@ -1,6 +1,17 @@
 # Changelog
 
+## CohortGenerator 1.1.0
+
+New Features
+
+- Adds functions and documentation for computing attrition for cohorts
+  and subsetted cohorts
+  ([\#123](https://github.com/OHDSI/CohortGenerator/issues/123),
+  [\#79](https://github.com/OHDSI/CohortGenerator/issues/79))
+
 ## CohortGenerator 1.0.2
+
+CRAN release: 2026-02-10
 
 Bug Fixes
 

@@ -140,6 +140,8 @@ functions assume you are using
 [Circe](https://github.com/OHDSI/circe-be) for inclusion rules and
 cohort statistics.
 
+- [`computeCohortAttrition()`](https://ohdsi.github.io/CohortGenerator/reference/computeCohortAttrition.md)
+  : Compute cohort attrition from inclusion rule statistics
 - [`getCohortStats()`](https://ohdsi.github.io/CohortGenerator/reference/getCohortStats.md)
   : Get Cohort Inclusion Stats Table Data
 - [`getCohortInclusionRules()`](https://ohdsi.github.io/CohortGenerator/reference/getCohortInclusionRules.md)
@@ -149,6 +151,8 @@ cohort statistics.
   when generating cohorts that include cohort statistics
 - [`exportCohortStatsTables()`](https://ohdsi.github.io/CohortGenerator/reference/exportCohortStatsTables.md)
   : Export the cohort statistics tables to the file system
+- [`exportCohortSubsetStatsTables()`](https://ohdsi.github.io/CohortGenerator/reference/exportCohortSubsetStatsTables.md)
+  : Export cohort subset statistics tables to the file system
 - [`dropCohortStatsTables()`](https://ohdsi.github.io/CohortGenerator/reference/dropCohortStatsTables.md)
   : Drop cohort statistics tables
 

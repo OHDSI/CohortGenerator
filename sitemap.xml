@@ -25,6 +25,7 @@
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/addUnionCohortDefinition.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/checkAndFixCohortDefinitionSetDataTypes.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/computeChecksum.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortGenerator/reference/computeCohortAttrition.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/createAtcCohortTemplateDefinition.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/createCohortSubset.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/createCohortSubsetDefinition.html</loc></url>
@@ -44,6 +45,7 @@
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/createUnionCohortTemplate.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/dropCohortStatsTables.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/exportCohortStatsTables.html</loc></url>
+<url><loc>https://ohdsi.github.io/CohortGenerator/reference/exportCohortSubsetStatsTables.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/generateCohortSet.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/generateNegativeControlOutcomeCohorts.html</loc></url>
 <url><loc>https://ohdsi.github.io/CohortGenerator/reference/getCohortCounts.html</loc></url>
