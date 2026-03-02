@@ -170,7 +170,7 @@ getCohortCounts(
 ```
 
     #> Connecting using SQLite driver
-    #> Counting cohorts took 0.0266 secs
+    #> Counting cohorts took 0.0264 secs
 
     #>   cohortId cohortEntries cohortSubjects
     #> 1        1          1800           1800

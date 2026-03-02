@@ -67,7 +67,7 @@ connection <- DatabaseConnector::connect(Eunomia::getEunomiaConnectionDetails())
 
     ## attempting to download GiBleed
 
-    ## attempting to extract and load: /tmp/RtmpqX84tT/GiBleed_5.3.zip to: /tmp/RtmpqX84tT/GiBleed_5.3.sqlite
+    ## attempting to extract and load: /tmp/RtmpQeR3If/GiBleed_5.3.zip to: /tmp/RtmpQeR3If/GiBleed_5.3.sqlite
 
     ## Connecting using SQLite driver
 
@@ -85,7 +85,7 @@ createCohortTables(connection = connection, cohortDatabaseSchema = "main")
     ## - Created table main.cohort_censor_stats
     ## - Created table main.cohort_subset_attrition
     ## - Created table main.cohort_checksum
-    ## Creating cohort tables took 0.05secs
+    ## Creating cohort tables took 0.04secs
 
 ``` r
 status <- generateCohortSet(
@@ -138,7 +138,7 @@ getCohortValidationCounts(
 
     ## Computing cohort validation checks
     ## Computed validation checks for 0 cohorts
-    ## Generating validation check set took 0.03 secs
+    ## Generating validation check set took 0.04 secs
 
     ## [1] cohortDefinitionId           overlappingErasCount        
     ## [3] invalidDateCount             duplicateCount              
