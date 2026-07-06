@@ -341,12 +341,14 @@ CohortSubsetOperator <- R6::R6Class(
       # support backwards compatibility with old style of storing definitions
       if (!is.null(definition)) {
         oldFormat <- c("startWindow", "endWindow") %in% names(definition)
-        if (any(oldFormat)) {
+        if (all(oldFormat)) {
           definition$startWindow$subsetAnchor <- "cohortStart"
-          definition$startWindow$subsetAnchor <- "cohortEnd"
-          definition["windows"] <- list(definition$startWindow, definition$endWindow)
+          definition$endWindow$subsetAnchor <- "cohortEnd"
+          definition[["windows"]] <- list(definition$startWindow, definition$endWindow)
           definition$startWindow <- NULL
           definition$endWindow <- NULL
+        } else if (any(oldFormat)) {
+          stop("Only one of startWindow and endWindow were found when parsing old style CohortSubsetOperator definition")
         }
       }
       super$initialize(definition)
