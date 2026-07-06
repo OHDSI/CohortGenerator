@@ -103,6 +103,17 @@ runCohortGeneration <- function(connectionDetails,
   checkmate::assert_logical(stopOnError, add = errorMessages)
   checkmate::reportAssertions(collection = errorMessages)
 
+  if (!is.null(cohortDefinitionSet) && !is.null(negativeControlOutcomeCohortSet)) {
+    duplicatedCohortIds <- intersect(cohortDefinitionSet$cohortId, negativeControlOutcomeCohortSet$cohortId)
+    if (length(duplicatedCohortIds) > 0) {
+      stop(
+        "Cannot generate! Duplicate cohort IDs found across your cohortDefinitionSet and negativeControlOutcomeCohortSet: ",
+        paste(duplicatedCohortIds, collapse = ","),
+        ". Please fix your cohort IDs and try again."
+      )
+    }
+  }
+
   # Establish the connection and ensure the cleanup is performed
   connection <- DatabaseConnector::connect(connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
