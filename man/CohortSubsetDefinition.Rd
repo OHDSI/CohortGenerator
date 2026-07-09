@@ -8,205 +8,223 @@ Set of subset definitions
 pretty in print
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{targetOutputPairs}}{list of pairs of integers - (targetCohortId, outputCohortId)}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{targetOutputPairs}}{list of pairs of integers - (targetCohortId, outputCohortId)}
 
-\item{\code{subsetOperators}}{list of subset operations}
+    \item{\code{subsetOperators}}{list of subset operations}
 
-\item{\code{name}}{name of definition}
+    \item{\code{name}}{name of definition}
 
-\item{\code{subsetCohortNameTemplate}}{template string for formatting resulting cohort names}
+    \item{\code{subsetCohortNameTemplate}}{template string for formatting resulting cohort names}
 
-\item{\code{operatorNameConcatString}}{string used when concatenating operator names together}
+    \item{\code{operatorNameConcatString}}{string used when concatenating operator names together}
 
-\item{\code{definitionId}}{numeric definition id}
+    \item{\code{definitionId}}{numeric definition id}
 
-\item{\code{identifierExpression}}{expression that can be evaluated from}
-}
-\if{html}{\out{</div>}}
+    \item{\code{identifierExpression}}{expression that can be evaluated from}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-CohortSubsetDefinition-print}{\code{CohortSubsetDefinition$print()}}
-\item \href{#method-CohortSubsetDefinition-new}{\code{CohortSubsetDefinition$new()}}
-\item \href{#method-CohortSubsetDefinition-toList}{\code{CohortSubsetDefinition$toList()}}
-\item \href{#method-CohortSubsetDefinition-toJSON}{\code{CohortSubsetDefinition$toJSON()}}
-\item \href{#method-CohortSubsetDefinition-addSubsetOperator}{\code{CohortSubsetDefinition$addSubsetOperator()}}
-\item \href{#method-CohortSubsetDefinition-getSubsetQuery}{\code{CohortSubsetDefinition$getSubsetQuery()}}
-\item \href{#method-CohortSubsetDefinition-getSubsetCohortName}{\code{CohortSubsetDefinition$getSubsetCohortName()}}
-\item \href{#method-CohortSubsetDefinition-setTargetOutputPairs}{\code{CohortSubsetDefinition$setTargetOutputPairs()}}
-\item \href{#method-CohortSubsetDefinition-getJsonFileName}{\code{CohortSubsetDefinition$getJsonFileName()}}
-\item \href{#method-CohortSubsetDefinition-clone}{\code{CohortSubsetDefinition$clone()}}
-}
+  \itemize{
+    \item \href{#method-CohortSubsetDefinition-print}{\code{CohortSubsetDefinition$print()}}
+    \item \href{#method-CohortSubsetDefinition-initialize}{\code{CohortSubsetDefinition$new()}}
+    \item \href{#method-CohortSubsetDefinition-toList}{\code{CohortSubsetDefinition$toList()}}
+    \item \href{#method-CohortSubsetDefinition-toJSON}{\code{CohortSubsetDefinition$toJSON()}}
+    \item \href{#method-CohortSubsetDefinition-addSubsetOperator}{\code{CohortSubsetDefinition$addSubsetOperator()}}
+    \item \href{#method-CohortSubsetDefinition-getSubsetQuery}{\code{CohortSubsetDefinition$getSubsetQuery()}}
+    \item \href{#method-CohortSubsetDefinition-getSubsetCohortName}{\code{CohortSubsetDefinition$getSubsetCohortName()}}
+    \item \href{#method-CohortSubsetDefinition-setTargetOutputPairs}{\code{CohortSubsetDefinition$setTargetOutputPairs()}}
+    \item \href{#method-CohortSubsetDefinition-getJsonFileName}{\code{CohortSubsetDefinition$getJsonFileName()}}
+    \item \href{#method-CohortSubsetDefinition-clone}{\code{CohortSubsetDefinition$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-print"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-print}{}}}
-\subsection{Method \code{print()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$print(...)}\if{html}{\out{</div>}}
+\subsection{\code{CohortSubsetDefinition$print()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$print(...)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{...}}{further arguments passed to or from other methods.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{further arguments passed to or from other methods.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-CohortSubsetDefinition-new"></a>}}
-\if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$new(definition = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-CohortSubsetDefinition-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-initialize}{}}}
+\subsection{\code{CohortSubsetDefinition$new()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$new(definition = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{definition}}{json or list representation of object
+to List}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{definition}}{json or list representation of object
-to List}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-toList"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-toList}{}}}
-\subsection{Method \code{toList()}}{
-List representation of object
+\subsection{\code{CohortSubsetDefinition$toList()}}{
+  List representation of object
 to JSON
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$toList()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$toList()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-toJSON"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-toJSON}{}}}
-\subsection{Method \code{toJSON()}}{
-json serialized representation of object
+\subsection{\code{CohortSubsetDefinition$toJSON()}}{
+  json serialized representation of object
 add Subset Operator
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$toJSON()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$toJSON()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-addSubsetOperator"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-addSubsetOperator}{}}}
-\subsection{Method \code{addSubsetOperator()}}{
-add subset to class - checks if equivalent id is present
+\subsection{\code{CohortSubsetDefinition$addSubsetOperator()}}{
+  add subset to class - checks if equivalent id is present
 Will throw an error if a matching ID is found but reference object is different
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$addSubsetOperator(subsetOperator)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{subsetOperator}}{a SubsetOperator instance}
-
-\item{\code{overwrite}}{if a subset operator of the same ID is present, replace it with a new definition
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$addSubsetOperator(subsetOperator)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{subsetOperator}}{a SubsetOperator instance}
+      \item{\code{overwrite}}{if a subset operator of the same ID is present, replace it with a new definition
 get query for a given target output pair}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-getSubsetQuery"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-getSubsetQuery}{}}}
-\subsection{Method \code{getSubsetQuery()}}{
-Returns vector of join, logic, having statements returned by subset operations
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$getSubsetQuery(targetOutputPair)}\if{html}{\out{</div>}}
+\subsection{\code{CohortSubsetDefinition$getSubsetQuery()}}{
+  Returns vector of join, logic, having statements returned by subset operations
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$getSubsetQuery(targetOutputPair)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{targetOutputPair}}{Target output pair
+Get name of an output cohort}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{targetOutputPair}}{Target output pair
-Get name of an output cohort}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-getSubsetCohortName"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-getSubsetCohortName}{}}}
-\subsection{Method \code{getSubsetCohortName()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$getSubsetCohortName(
+\subsection{\code{CohortSubsetDefinition$getSubsetCohortName()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$getSubsetCohortName(
   cohortDefinitionSet,
   targetOutputPair
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{cohortDefinitionSet}}{Cohort definition set containing base names}
-
-\item{\code{targetOutputPair}}{Target output pair
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{cohortDefinitionSet}}{Cohort definition set containing base names}
+      \item{\code{targetOutputPair}}{Target output pair
 Set the targetOutputPairs to be added to a cohort definition set}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-setTargetOutputPairs"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-setTargetOutputPairs}{}}}
-\subsection{Method \code{setTargetOutputPairs()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$setTargetOutputPairs(targetIds)}\if{html}{\out{</div>}}
+\subsection{\code{CohortSubsetDefinition$setTargetOutputPairs()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$setTargetOutputPairs(targetIds)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{targetIds}}{list of cohort ids to apply subsetting operations to
+Get json file name for subset definition in folder}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{targetIds}}{list of cohort ids to apply subsetting operations to
-Get json file name for subset definition in folder}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-getJsonFileName"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-getJsonFileName}{}}}
-\subsection{Method \code{getJsonFileName()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$getJsonFileName(
+\subsection{\code{CohortSubsetDefinition$getJsonFileName()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$getJsonFileName(
   subsetJsonFolder = "inst/cohort_subset_definitions/"
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{subsetJsonFolder}}{path to folder to place file}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{subsetJsonFolder}}{path to folder to place file}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortSubsetDefinition-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortSubsetDefinition-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortSubsetDefinition$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{CohortSubsetDefinition$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortSubsetDefinition$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

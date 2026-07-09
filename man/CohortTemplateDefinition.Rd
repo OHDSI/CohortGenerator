@@ -4,11 +4,6 @@
 \alias{CohortTemplateDefinition}
 \title{Class for automating the creation of bulk cohorts}
 \description{
-Class for automating the creation of bulk cohorts
-
-Class for automating the creation of bulk cohorts
-}
-\details{
 This class provides a framework for automating the creation of bulk cohorts
 by defining template SQL queries and associated callbacks to execute them.
 This is useful when defining lots of exposure or outcomes for cohorts that are very general in nature.
@@ -27,47 +22,48 @@ CURRENTLY NOT SUPPORTED:
    is not desirable.
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{name}}{name for this template definition that describes the cohorts it creation}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{name}}{name for this template definition that describes the cohorts it creation}
 
-\item{\code{sqlArgs}}{optional arguments for sql}
+    \item{\code{sqlArgs}}{optional arguments for sql}
 
-\item{\code{templateSql}}{sql template}
+    \item{\code{templateSql}}{sql template}
 
-\item{\code{translateSql}}{translate the sql for different platforms}
+    \item{\code{translateSql}}{translate the sql for different platforms}
 
-\item{\code{references}}{data.frame of name/id references for cohort template that aligns with cohort set}
-}
-\if{html}{\out{</div>}}
+    \item{\code{references}}{data.frame of name/id references for cohort template that aligns with cohort set}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-CohortTemplateDefinition-new}{\code{CohortTemplateDefinition$new()}}
-\item \href{#method-CohortTemplateDefinition-executeTemplateSql}{\code{CohortTemplateDefinition$executeTemplateSql()}}
-\item \href{#method-CohortTemplateDefinition-getTemplateReferences}{\code{CohortTemplateDefinition$getTemplateReferences()}}
-\item \href{#method-CohortTemplateDefinition-getName}{\code{CohortTemplateDefinition$getName()}}
-\item \href{#method-CohortTemplateDefinition-getId}{\code{CohortTemplateDefinition$getId()}}
-\item \href{#method-CohortTemplateDefinition-getChecksum}{\code{CohortTemplateDefinition$getChecksum()}}
-\item \href{#method-CohortTemplateDefinition-toList}{\code{CohortTemplateDefinition$toList()}}
-\item \href{#method-CohortTemplateDefinition-toJson}{\code{CohortTemplateDefinition$toJson()}}
-\item \href{#method-CohortTemplateDefinition-saveTemplate}{\code{CohortTemplateDefinition$saveTemplate()}}
-\item \href{#method-CohortTemplateDefinition-clone}{\code{CohortTemplateDefinition$clone()}}
-}
+  \itemize{
+    \item \href{#method-CohortTemplateDefinition-initialize}{\code{CohortTemplateDefinition$new()}}
+    \item \href{#method-CohortTemplateDefinition-executeTemplateSql}{\code{CohortTemplateDefinition$executeTemplateSql()}}
+    \item \href{#method-CohortTemplateDefinition-getTemplateReferences}{\code{CohortTemplateDefinition$getTemplateReferences()}}
+    \item \href{#method-CohortTemplateDefinition-getName}{\code{CohortTemplateDefinition$getName()}}
+    \item \href{#method-CohortTemplateDefinition-getId}{\code{CohortTemplateDefinition$getId()}}
+    \item \href{#method-CohortTemplateDefinition-getChecksum}{\code{CohortTemplateDefinition$getChecksum()}}
+    \item \href{#method-CohortTemplateDefinition-toList}{\code{CohortTemplateDefinition$toList()}}
+    \item \href{#method-CohortTemplateDefinition-toJson}{\code{CohortTemplateDefinition$toJson()}}
+    \item \href{#method-CohortTemplateDefinition-saveTemplate}{\code{CohortTemplateDefinition$saveTemplate()}}
+    \item \href{#method-CohortTemplateDefinition-clone}{\code{CohortTemplateDefinition$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-CohortTemplateDefinition-new"></a>}}
-\if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$new(settings)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{settings}}{Settings of object to load seealso createCohortTemplateDefinition
+\if{html}{\out{<a id="method-CohortTemplateDefinition-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-initialize}{}}}
+\subsection{\code{CohortTemplateDefinition$new()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$new(settings)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{settings}}{Settings of object to load seealso createCohortTemplateDefinition
 To alter the execution, override this function in a subclass.
 This translates and executes the sql of the cohort definition
 Note that calling this function will generate the cohorts but will not do so in an incremental manner.
@@ -75,155 +71,168 @@ Checksums and timestamps will, however, be added to the generation table
 ever want to call this function outside of a testing environment.
 It is best practice to always use the standard runCohortGeneration/generateCohortSet pipeline to ensure
 validity of execution steps.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-executeTemplateSql"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-executeTemplateSql}{}}}
-\subsection{Method \code{executeTemplateSql()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$executeTemplateSql(
+\subsection{\code{CohortTemplateDefinition$executeTemplateSql()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$executeTemplateSql(
   connection,
   cohortDatabaseSchema,
   cdmDatabaseSchema,
   cohortTableNames,
   vocabularyDatabaseSchema = cdmDatabaseSchema,
   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema")
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{connection}}{An object of type \code{connection} as created using the
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{connection}}{An object of type \code{connection} as created using the
 \code{\link[DatabaseConnector]{connect}} function in the
 DatabaseConnector package. Can be left NULL if \code{connectionDetails}
 is provided, in which case a new connection will be opened at the start
 of the function, and closed when the function finishes.}
-
-\item{\code{cohortDatabaseSchema}}{Schema name where your cohort tables reside. Note that for SQL Server,
+      \item{\code{cohortDatabaseSchema}}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
-
-\item{\code{cohortDatabaseSchema}}{Schema name where your cohort tables reside. Note that for SQL Server,
+      \item{\code{cohortDatabaseSchema}}{Schema name where your cohort tables reside. Note that for SQL Server,
 this should include both the database and schema name, for example
 'scratch.dbo'.}
-
-\item{\code{cdmDatabaseSchema}}{Schema name where your patient-level data in OMOP CDM format resides.
+      \item{\code{cdmDatabaseSchema}}{Schema name where your patient-level data in OMOP CDM format resides.
 Note that for SQL Server, this should include both the database and
 schema name, for example 'cdm_data.dbo'.}
-
-\item{\code{cohortTableNames}}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
+      \item{\code{cohortTableNames}}{The names of the cohort tables. See \code{\link{getCohortTableNames}}
 for more details.}
-
-\item{\code{vocabularyDatabaseSchema}}{vocabulary database schema}
-
-\item{\code{tempEmulationSchema}}{cdm temp emulation schema
+      \item{\code{vocabularyDatabaseSchema}}{vocabulary database schema}
+      \item{\code{tempEmulationSchema}}{cdm temp emulation schema
 get template references data.frame}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-getTemplateReferences"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-getTemplateReferences}{}}}
-\subsection{Method \code{getTemplateReferences()}}{
-Returns data.frame of references
+\subsection{\code{CohortTemplateDefinition$getTemplateReferences()}}{
+  Returns data.frame of references
 get the name of the definition
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$getTemplateReferences()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$getTemplateReferences()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-getName"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-getName}{}}}
-\subsection{Method \code{getName()}}{
-Name field
+\subsection{\code{CohortTemplateDefinition$getName()}}{
+  Name field
 get the generated id of the template definition
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$getName()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$getName()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-getId"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-getId}{}}}
-\subsection{Method \code{getId()}}{
-this is not the cohort ids and is based off of the checksum of the template definition
+\subsection{\code{CohortTemplateDefinition$getId()}}{
+  this is not the cohort ids and is based off of the checksum of the template definition
 get checksum
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$getId()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$getId()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-getChecksum"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-getChecksum}{}}}
-\subsection{Method \code{getChecksum()}}{
-Get the hash of the definition (generated when class is instantiated)
+\subsection{\code{CohortTemplateDefinition$getChecksum()}}{
+  Get the hash of the definition (generated when class is instantiated)
 to list
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$getChecksum()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$getChecksum()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-toList"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-toList}{}}}
-\subsection{Method \code{toList()}}{
-Used for serializing the definition
+\subsection{\code{CohortTemplateDefinition$toList()}}{
+  Used for serializing the definition
 to json
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$toList()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$toList()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-toJson"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-toJson}{}}}
-\subsection{Method \code{toJson()}}{
-json serialized form of the template definition
+\subsection{\code{CohortTemplateDefinition$toJson()}}{
+  json serialized form of the template definition
 save to disk
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$toJson()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$toJson()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-saveTemplate"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-saveTemplate}{}}}
-\subsection{Method \code{saveTemplate()}}{
-Save object to specified json path
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$saveTemplate(filePath)}\if{html}{\out{</div>}}
+\subsection{\code{CohortTemplateDefinition$saveTemplate()}}{
+  Save object to specified json path
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$saveTemplate(filePath)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{filePath}}{File path to save json serialized from}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{filePath}}{File path to save json serialized from}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CohortTemplateDefinition-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-CohortTemplateDefinition-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CohortTemplateDefinition$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{CohortTemplateDefinition$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{CohortTemplateDefinition$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

@@ -40,8 +40,8 @@ a CohortSubsetOperator instance
 A definition of subset functions to be applied to a set of cohorts
 }
 \seealso{
-Other subsets: 
-\code{\link{createDemographicSubsetOperator}()},
-\code{\link{createLimitSubsetOperator}()}
+Other subsets:
+\code{\link[=createDemographicSubsetOperator]{createDemographicSubsetOperator()}},
+\code{\link[=createLimitSubsetOperator]{createLimitSubsetOperator()}}
 }
 \concept{subsets}
