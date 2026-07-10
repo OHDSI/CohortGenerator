@@ -33,8 +33,8 @@ Specific concept ids not in this set can be used but are not explicitly validate
 Create createDemographicSubset Subset operator
 }
 \seealso{
-Other subsets: 
-\code{\link{createCohortSubsetOperator}()},
-\code{\link{createLimitSubsetOperator}()}
+Other subsets:
+\code{\link[=createCohortSubsetOperator]{createCohortSubsetOperator()}},
+\code{\link[=createLimitSubsetOperator]{createLimitSubsetOperator()}}
 }
 \concept{subsets}

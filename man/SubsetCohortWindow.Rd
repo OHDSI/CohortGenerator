@@ -7,83 +7,91 @@
 Representation of a time window to use when subsetting a target cohort with a subset cohort
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{startDay}}{Integer}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{startDay}}{Integer}
 
-\item{\code{endDay}}{Integer}
+    \item{\code{endDay}}{Integer}
 
-\item{\code{targetAnchor}}{Boolean}
+    \item{\code{targetAnchor}}{Boolean}
 
-\item{\code{subsetAnchor}}{Boolean}
+    \item{\code{subsetAnchor}}{Boolean}
 
-\item{\code{negate}}{Boolean}
-}
-\if{html}{\out{</div>}}
+    \item{\code{negate}}{Boolean}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-SubsetCohortWindow-toList}{\code{SubsetCohortWindow$toList()}}
-\item \href{#method-SubsetCohortWindow-toJSON}{\code{SubsetCohortWindow$toJSON()}}
-\item \href{#method-SubsetCohortWindow-isEqualTo}{\code{SubsetCohortWindow$isEqualTo()}}
-\item \href{#method-SubsetCohortWindow-clone}{\code{SubsetCohortWindow$clone()}}
-}
+  \itemize{
+    \item \href{#method-SubsetCohortWindow-toList}{\code{SubsetCohortWindow$toList()}}
+    \item \href{#method-SubsetCohortWindow-toJSON}{\code{SubsetCohortWindow$toJSON()}}
+    \item \href{#method-SubsetCohortWindow-isEqualTo}{\code{SubsetCohortWindow$isEqualTo()}}
+    \item \href{#method-SubsetCohortWindow-clone}{\code{SubsetCohortWindow$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SubsetCohortWindow-toList"></a>}}
 \if{latex}{\out{\hypertarget{method-SubsetCohortWindow-toList}{}}}
-\subsection{Method \code{toList()}}{
-List representation of object
+\subsection{\code{SubsetCohortWindow$toList()}}{
+  List representation of object
 To JSON
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SubsetCohortWindow$toList()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{SubsetCohortWindow$toList()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SubsetCohortWindow-toJSON"></a>}}
 \if{latex}{\out{\hypertarget{method-SubsetCohortWindow-toJSON}{}}}
-\subsection{Method \code{toJSON()}}{
-json serialized representation of object
+\subsection{\code{SubsetCohortWindow$toJSON()}}{
+  json serialized representation of object
 Is Equal to
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SubsetCohortWindow$toJSON()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{SubsetCohortWindow$toJSON()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SubsetCohortWindow-isEqualTo"></a>}}
 \if{latex}{\out{\hypertarget{method-SubsetCohortWindow-isEqualTo}{}}}
-\subsection{Method \code{isEqualTo()}}{
-Compare SubsetCohortWindow to another
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SubsetCohortWindow$isEqualTo(criteria)}\if{html}{\out{</div>}}
+\subsection{\code{SubsetCohortWindow$isEqualTo()}}{
+  Compare SubsetCohortWindow to another
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{SubsetCohortWindow$isEqualTo(criteria)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{criteria}}{SubsetCohortWindow instance}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{criteria}}{SubsetCohortWindow instance}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SubsetCohortWindow-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-SubsetCohortWindow-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SubsetCohortWindow$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{SubsetCohortWindow$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{SubsetCohortWindow$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }
