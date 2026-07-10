@@ -1,3 +1,12 @@
+CohortGenerator 1.1.1
+=====================
+
+Bug Fixes
+
+- Prevents duplicate cohort IDs bin `runCohortGeneration` (#275)
+- Fix backwards compatiblity for v0.x cohort subset operator (#276)
+
+
 CohortGenerator 1.1.0
 =====================
 

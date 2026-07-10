@@ -502,6 +502,52 @@ test_that("Subset operator serialization tests", {
   expect_silent(ls2$toJSON())
 })
 
+test_that("CohortSubsetOperator supports old style startWindow and endWindow definitions", {
+  definition <- list(
+    name = "AntiVegfKidneyFailure old style cohort subset",
+    cohortIds = 1,
+    cohortCombinationOperator = "any",
+    negate = FALSE,
+    startWindow = list(
+      startDay = 0,
+      endDay = 0,
+      targetAnchor = "cohortStart"
+    ),
+    endWindow = list(
+      startDay = 0,
+      endDay = 0,
+      targetAnchor = "cohortEnd"
+    )
+  )
+
+  cohortSubsetOperator <- CohortSubsetOperator$new(definition)
+
+  expect_length(cohortSubsetOperator$windows, 2)
+  expect_s3_class(cohortSubsetOperator$windows[[1]], "SubsetCohortWindow")
+  expect_s3_class(cohortSubsetOperator$windows[[2]], "SubsetCohortWindow")
+  expect_equal(cohortSubsetOperator$windows[[1]]$subsetAnchor, "cohortStart")
+  expect_equal(cohortSubsetOperator$windows[[2]]$subsetAnchor, "cohortEnd")
+})
+
+test_that("CohortSubsetOperator old style definitions require both windows", {
+  definition <- list(
+    name = "Invalid old style cohort subset",
+    cohortIds = 1,
+    cohortCombinationOperator = "any",
+    negate = FALSE,
+    startWindow = list(
+      startDay = 0,
+      endDay = 0,
+      targetAnchor = "cohortStart"
+    )
+  )
+
+  expect_error(
+    CohortSubsetOperator$new(definition),
+    message = "Only one of startWindow and endWindow"
+  )
+})
+
 test_that("Subset name templates function", {
   cohortDefinitionSet <- getCohortDefinitionSet(
     settingsFileName = "testdata/name/Cohorts.csv",
