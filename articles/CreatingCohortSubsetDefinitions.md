@@ -58,6 +58,7 @@ We will start by loading a cohort definition set with two cohorts for
 this example:
 
 ``` r
+
 jsonFilePath <- system.file("testdata", "CohortsToSubset.JSON", package = "CohortGenerator")
 cohortDefinitionSet <- jsonlite::fromJSON(jsonFilePath)
 cohortDefinitionSet <- cohortDefinitionSet |>
@@ -87,6 +88,7 @@ Here is an example of a demographic subset operator called `ageCriteria`
 that identifies cohort subjects between the ages 20 - 50 years old.
 
 ``` r
+
 ageCriteria <- CohortGenerator::createDemographicSubsetOperator(
   ageMin = 20,
   ageMax = 50
@@ -100,6 +102,7 @@ This is an example of how we can create a limit subset operator called
 1 January 2000 and 31 December 2008.
 
 ``` r
+
 limitToLastEver <- CohortGenerator::createLimitSubsetOperator(
   name = "Last event during 1 January 2000 and 31 December 2008",
   priorTime = 0,
@@ -116,6 +119,7 @@ The following example shows how we can identify patients that have an
 ibuprofen event that starts during the target cohort start and end date:
 
 ``` r
+
 ibuprofenSubset <- CohortGenerator::createCohortSubsetOperator(
   name = "ibuprofen exposure",
   cohortIds = 2, # Ibuprofen cohort
@@ -159,6 +163,7 @@ definition. Here is how to create a subset definition for patients aged
 between 20 to 50:
 
 ``` r
+
 ageRequirementSubset <- CohortGenerator::createCohortSubsetDefinition(
   name = "Patients 20 to 50 years old ",
   definitionId = 10,
@@ -175,6 +180,7 @@ ibuprofen at the start of the cohort and to extract the last event from
 1 January 2000 and 31 December 2008:
 
 ``` r
+
 ibuprofenWCelcoxib <- CohortGenerator::createCohortSubsetDefinition(
   name = "Aged 20-50 yrs, last ibuprofen exposure from 2000-2008",
   definitionId = 11, # Unique ID for this subset
@@ -198,6 +204,7 @@ operators. Here we will apply the subset definitions to the target
 cohort celecoxib (cohortId == 1).
 
 ``` r
+
 cohortDefinitionSet <- cohortDefinitionSet |>
   CohortGenerator::addCohortSubsetDefinition(ageRequirementSubset, targetCohortIds = c(1)) |>
   CohortGenerator::addCohortSubsetDefinition(ibuprofenWCelcoxib, targetCohortIds = c(1))
@@ -206,12 +213,12 @@ cohortDefinitionSet |>
   knitr::kable()
 ```
 
-| cohortId | cohortName                                                        |
-|---------:|:------------------------------------------------------------------|
-|        1 | Celcoxib                                                          |
-|        2 | Ibuprofen                                                         |
-|     1010 | Celcoxib - Patients 20 to 50 years old                            |
-|     1011 | Celcoxib - Aged 20-50 yrs, last ibuprofen exposure from 2000-2008 |
+| cohortId | cohortName |
+|---:|:---|
+| 1 | Celcoxib |
+| 2 | Ibuprofen |
+| 1010 | Celcoxib - Patients 20 to 50 years old |
+| 1011 | Celcoxib - Aged 20-50 yrs, last ibuprofen exposure from 2000-2008 |
 
 ## Generating subsets
 
@@ -222,6 +229,7 @@ entries. For reference, the script used to generate the test data in
 `extras/PackageMaintenance.R`.
 
 ``` r
+
 databaseFile <- tempfile(fileext = ".duckdb")
 duckdbConnectionDetails <- DatabaseConnector::createConnectionDetails(
   dbms = "duckdb",
@@ -234,6 +242,7 @@ connection <- DatabaseConnector::connect(duckdbConnectionDetails)
     #>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
 
 ``` r
+
 DatabaseConnector::insertTable(
   connection = connection,
   databaseSchema = resultsSchema,
@@ -252,6 +261,7 @@ DatabaseConnector::insertTable(
 We can now use this sample data to generate the subsets:
 
 ``` r
+
 cohortTableNames <- CohortGenerator::getCohortTableNames()
 CohortGenerator::createCohortTables(
   connection = connection,
@@ -301,6 +311,7 @@ Saving applied subsets can automatically be added to a project using
 `saveCohortDefinitionSet`
 
 ``` r
+
 saveCohortDefinitionSet(cohortDefinitionSet,
   subsetJsonFolder = "<path_to_my_subset_definition>"
 )
@@ -309,6 +320,7 @@ saveCohortDefinitionSet(cohortDefinitionSet,
 loading is also achieved with `getCohortDefinitionSet`
 
 ``` r
+
 cohortDefinitionSet <- getCohortDefinitionSet(
   subsetJsonFolder = "<path_to_my_subset_definition>"
 )
@@ -322,6 +334,7 @@ cohort definition set.
 Subset definitions can be converted to JSON objects as follows:
 
 ``` r
+
 jsonDefinition <- subsetDef$toJSON()
 ```
 
@@ -329,6 +342,7 @@ For the purpose of writing to disk we recommend the use of
 `ParallelLogger` for consistency.
 
 ``` r
+
 # Save to a file
 ParallelLogger::saveSettingsToJson(subsetDef$toList(), "subsetDefinition1.json")
 ```

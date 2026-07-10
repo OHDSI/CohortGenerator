@@ -1,11 +1,5 @@
 # Class for automating the creation of bulk cohorts
 
-Class for automating the creation of bulk cohorts
-
-Class for automating the creation of bulk cohorts
-
-## Details
-
 This class provides a framework for automating the creation of bulk
 cohorts by defining template SQL queries and associated callbacks to
 execute them. This is useful when defining lots of exposure or outcomes
@@ -55,7 +49,7 @@ within the CDM schema in a shared OHDSI study is not desirable.
 
 ### Public methods
 
-- [`CohortTemplateDefinition$new()`](#method-CohortTemplateDefinition-new)
+- [`CohortTemplateDefinition$new()`](#method-CohortTemplateDefinition-initialize)
 
 - [`CohortTemplateDefinition$executeTemplateSql()`](#method-CohortTemplateDefinition-executeTemplateSql)
 
@@ -77,7 +71,7 @@ within the CDM schema in a shared OHDSI study is not desirable.
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `CohortTemplateDefinition$new()`
 
 #### Usage
 
@@ -99,7 +93,7 @@ within the CDM schema in a shared OHDSI study is not desirable.
 
 ------------------------------------------------------------------------
 
-### Method `executeTemplateSql()`
+### `CohortTemplateDefinition$executeTemplateSql()`
 
 #### Usage
 
@@ -157,7 +151,7 @@ within the CDM schema in a shared OHDSI study is not desirable.
 
 ------------------------------------------------------------------------
 
-### Method `getTemplateReferences()`
+### `CohortTemplateDefinition$getTemplateReferences()`
 
 Returns data.frame of references get the name of the definition
 
@@ -167,7 +161,7 @@ Returns data.frame of references get the name of the definition
 
 ------------------------------------------------------------------------
 
-### Method `getName()`
+### `CohortTemplateDefinition$getName()`
 
 Name field get the generated id of the template definition
 
@@ -177,7 +171,7 @@ Name field get the generated id of the template definition
 
 ------------------------------------------------------------------------
 
-### Method `getId()`
+### `CohortTemplateDefinition$getId()`
 
 this is not the cohort ids and is based off of the checksum of the
 template definition get checksum
@@ -188,7 +182,7 @@ template definition get checksum
 
 ------------------------------------------------------------------------
 
-### Method `getChecksum()`
+### `CohortTemplateDefinition$getChecksum()`
 
 Get the hash of the definition (generated when class is instantiated) to
 list
@@ -199,7 +193,7 @@ list
 
 ------------------------------------------------------------------------
 
-### Method `toList()`
+### `CohortTemplateDefinition$toList()`
 
 Used for serializing the definition to json
 
@@ -209,7 +203,7 @@ Used for serializing the definition to json
 
 ------------------------------------------------------------------------
 
-### Method `toJson()`
+### `CohortTemplateDefinition$toJson()`
 
 json serialized form of the template definition save to disk
 
@@ -219,7 +213,7 @@ json serialized form of the template definition save to disk
 
 ------------------------------------------------------------------------
 
-### Method `saveTemplate()`
+### `CohortTemplateDefinition$saveTemplate()`
 
 Save object to specified json path
 
@@ -235,7 +229,7 @@ Save object to specified json path
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `CohortTemplateDefinition$clone()`
 
 The objects of this class are cloneable with this method.
 

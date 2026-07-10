@@ -34,6 +34,7 @@ vocabulary table.
 The first step is to create a definition as follows
 
 ``` r
+
 library(CohortGenerator)
 ```
 
@@ -42,6 +43,7 @@ library(CohortGenerator)
     ## Loading required package: R6
 
 ``` r
+
 cohortDefinitionSet <- createEmptyCohortDefinitionSet()
 
 sql <- "INSERT INTO @cohort_database_schema.@cohort_table
@@ -67,11 +69,12 @@ connection <- DatabaseConnector::connect(Eunomia::getEunomiaConnectionDetails())
 
     ## attempting to download GiBleed
 
-    ## attempting to extract and load: /tmp/RtmpQeR3If/GiBleed_5.3.zip to: /tmp/RtmpQeR3If/GiBleed_5.3.sqlite
+    ## attempting to extract and load: /tmp/Rtmp5bNfdT/GiBleed_5.3.zip to: /tmp/Rtmp5bNfdT/GiBleed_5.3.sqlite
 
     ## Connecting using SQLite driver
 
 ``` r
+
 createCohortTables(connection = connection, cohortDatabaseSchema = "main")
 ```
 
@@ -88,6 +91,7 @@ createCohortTables(connection = connection, cohortDatabaseSchema = "main")
     ## Creating cohort tables took 0.04secs
 
 ``` r
+
 status <- generateCohortSet(
   connection = connection,
   cdmDatabaseSchema = "main",
@@ -129,6 +133,7 @@ SQL definitions. Consequently, we use the `getCohortValidationCounts`
 function within the `CohortGenerator` package.
 
 ``` r
+
 getCohortValidationCounts(
   connection = connection,
   cdmDatabaseSchema = "main",
@@ -138,7 +143,7 @@ getCohortValidationCounts(
 
     ## Computing cohort validation checks
     ## Computed validation checks for 0 cohorts
-    ## Generating validation check set took 0.04 secs
+    ## Generating validation check set took 0.03 secs
 
     ## [1] cohortDefinitionId           overlappingErasCount        
     ## [3] invalidDateCount             duplicateCount              
@@ -167,6 +172,7 @@ cohorts from ATLAS or Capr. These can be broadly defined as:
 ### Drug ingredient cohorts
 
 ``` r
+
 # Library imports
 library(CohortGenerator)
 library(DatabaseConnector)
@@ -205,6 +211,7 @@ head(rxNormReferences)
 ### ATC Base cohorts
 
 ``` r
+
 # Create ATC-based cohort template
 atcDefinition <- createAtcCohortTemplateDefinition(
   connection = connection, # Replace with your DatabaseConnector connection
@@ -224,6 +231,7 @@ head(atcReferences)
 ### SNOMED condition cohorts
 
 ``` r
+
 # Create SNOMED cohort template
 snomedDefinition <- createSnomedCohortTemplateDefinition(
   connection = connection, # Replace with your DatabaseConnector connection
@@ -281,6 +289,7 @@ vocabulary tables should be stored within the cdm).
 Template cohorts generate in the standard model within cohort generator.
 
 ``` r
+
 status <- generateCohortSet(
   connection = connection,
   cdmDatabaseSchema = "main",

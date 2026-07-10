@@ -21,6 +21,8 @@ Useful links:
 
 Authors:
 
+- Anthony Sena <sena@ohdsi.org>
+
 - Jamie Gilbert
 
 - Gowtham Rao <gowthamrao@gmail.com>

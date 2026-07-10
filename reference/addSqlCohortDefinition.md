@@ -90,6 +90,7 @@ addSqlCohortDefinition(
 ## Examples
 
 ``` r
+
 sql <- "INSERT INTO @cohort_database_schema.@cohort_table
              (cohort_definition_id, subject_id, cohort_start_date, cohort_end_date)
         SELECT 1 as cohort_definition_id,

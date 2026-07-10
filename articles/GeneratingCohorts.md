@@ -23,6 +23,7 @@ Here we will load a cohort definition set using some cohorts we use to
 test the `CohortGenerator` package:
 
 ``` r
+
 cohortDefinitionSet <- getCohortDefinitionSet(
   settingsFileName = "testdata/name/Cohorts.csv",
   jsonFolder = "testdata/name/cohorts",
@@ -43,6 +44,7 @@ of cohorts that come with the CohortGenerator package. The
 `cohortDefinitionSet` data frame has the following columns:
 
 ``` r
+
 names(cohortDefinitionSet)
 ```
 
@@ -73,6 +75,7 @@ do this, we’ve created a function to save the cohort definition set to
 the file system:
 
 ``` r
+
 saveCohortDefinitionSet(
   cohortDefinitionSet = cohortDefinitionSet,
   settingsFileName = file.path(
@@ -105,6 +108,7 @@ Your study package can later re-construct the cohortDefinitionSet by
 reading in these resources using the `getCohortDefinitionSet` function.
 
 ``` r
+
 cohortDefinitionSet <- getCohortDefinitionSet(
   settingsFileName = file.path(
     packageRoot, "inst/settings/CohortsToCreate.csv"
@@ -121,6 +125,7 @@ generate our cohorts against our OMOP CDM. In this example, we will use
 the [Eunomia](https://github.com/OHDSI/Eunomia) data set as our CDM.
 
 ``` r
+
 # Get the Eunomia connection details
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 
@@ -162,6 +167,7 @@ the `getCohortCounts` method to query the cohort table for a summary of
 the persons and events for each cohort:
 
 ``` r
+
 getCohortCounts(
   connectionDetails = connectionDetails,
   cohortDatabaseSchema = "main",
@@ -170,7 +176,7 @@ getCohortCounts(
 ```
 
     #> Connecting using SQLite driver
-    #> Counting cohorts took 0.0264 secs
+    #> Counting cohorts took 0.0249 secs
 
     #>   cohortId cohortEntries cohortSubjects
     #> 1        1          1800           1800
@@ -205,6 +211,7 @@ Building on our previous example where we loaded a cohort set from the
 SQL for the cohort statistics:
 
 ``` r
+
 # First construct a cohort definition set: an empty
 # data frame with the cohorts to generate
 cohortDefinitionSet <- CohortGenerator::createEmptyCohortDefinitionSet()
@@ -245,6 +252,7 @@ Next we’ll create the tables to store the cohort and the cohort
 statistics. Then we can generate the cohorts.
 
 ``` r
+
 # First get the cohort table names to use for this generation task
 cohortTableNames <- getCohortTableNames(cohortTable = "stats_example")
 
@@ -272,6 +280,7 @@ available in the cohort statistics tables. The next step is to export
 the results to the file system which is done using the code below:
 
 ``` r
+
 insertInclusionRuleNames(
   connectionDetails = connectionDetails,
   cohortDefinitionSet = cohortDefinitionSet,
@@ -298,6 +307,7 @@ Once you have exported your cohort statistics, you can optionally drop
 the statistics tables by using the following command:
 
 ``` r
+
 dropCohortStatsTables(
   connectionDetails = connectionDetails,
   cohortDatabaseSchema = "main",
@@ -317,6 +327,7 @@ incremental mode and explain how it works, we’ll continue along with our
 example from earlier.
 
 ``` r
+
 # Create a set of tables for this example
 cohortTableNames <- getCohortTableNames(cohortTable = "cohort")
 createCohortTables(
@@ -333,6 +344,7 @@ the database to see if the tables already exist before creating them. To
 verify this, we can call the function again and check the results:
 
 ``` r
+
 createCohortTables(
   connectionDetails = connectionDetails,
   cohortTableNames = cohortTableNames,
@@ -357,6 +369,7 @@ and results from previous runs are preserved. Next, we can generate our
 `cohortDefinitionSet` in incremental mode.
 
 ``` r
+
 generateCohortSet(
   connectionDetails = connectionDetails,
   cdmDatabaseSchema = "main",
@@ -378,6 +391,7 @@ checksum found in the table for the same cohort ID, the generation is
 skipped. To illustrate how this looks:
 
 ``` r
+
 generateCohortSet(
   connectionDetails = connectionDetails,
   cdmDatabaseSchema = "main",
@@ -395,6 +409,7 @@ generateCohortSet(
     #> Generating cohort set took 0.05 secs
 
 ``` r
+
 options(old)
 options(rsErrorsSuppressed)
 ```

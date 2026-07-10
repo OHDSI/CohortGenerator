@@ -1,6 +1,17 @@
 # Changelog
 
+## CohortGenerator 1.1.1
+
+Bug Fixes
+
+- Prevents duplicate cohort IDs bin `runCohortGeneration`
+  ([\#275](https://github.com/OHDSI/CohortGenerator/issues/275))
+- Fix backwards compatiblity for v0.x cohort subset operator
+  ([\#276](https://github.com/OHDSI/CohortGenerator/issues/276))
+
 ## CohortGenerator 1.1.0
+
+CRAN release: 2026-03-03
 
 New Features
 

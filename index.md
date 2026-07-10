@@ -25,6 +25,7 @@ subsets using data in the CDM.
 # Example
 
 ``` r
+
 # First construct a cohort definition set: an empty 
 # data frame with the cohorts to generate
 cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
@@ -91,6 +92,7 @@ Requires R (version 4.1.0 or higher).
     CohortGenerator:
 
     ``` r
+
     remotes::install_github("OHDSI/CohortGenerator")
     ```
 

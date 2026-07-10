@@ -38,7 +38,7 @@ Set of subset definitions pretty in print
 
 - [`CohortSubsetDefinition$print()`](#method-CohortSubsetDefinition-print)
 
-- [`CohortSubsetDefinition$new()`](#method-CohortSubsetDefinition-new)
+- [`CohortSubsetDefinition$new()`](#method-CohortSubsetDefinition-initialize)
 
 - [`CohortSubsetDefinition$toList()`](#method-CohortSubsetDefinition-toList)
 
@@ -58,7 +58,7 @@ Set of subset definitions pretty in print
 
 ------------------------------------------------------------------------
 
-### Method [`print()`](https://rdrr.io/r/base/print.html)
+### `CohortSubsetDefinition$print()`
 
 #### Usage
 
@@ -72,7 +72,7 @@ Set of subset definitions pretty in print
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `CohortSubsetDefinition$new()`
 
 #### Usage
 
@@ -86,7 +86,7 @@ Set of subset definitions pretty in print
 
 ------------------------------------------------------------------------
 
-### Method `toList()`
+### `CohortSubsetDefinition$toList()`
 
 List representation of object to JSON
 
@@ -96,7 +96,7 @@ List representation of object to JSON
 
 ------------------------------------------------------------------------
 
-### Method `toJSON()`
+### `CohortSubsetDefinition$toJSON()`
 
 json serialized representation of object add Subset Operator
 
@@ -106,7 +106,7 @@ json serialized representation of object add Subset Operator
 
 ------------------------------------------------------------------------
 
-### Method `addSubsetOperator()`
+### `CohortSubsetDefinition$addSubsetOperator()`
 
 add subset to class - checks if equivalent id is present Will throw an
 error if a matching ID is found but reference object is different
@@ -128,7 +128,7 @@ error if a matching ID is found but reference object is different
 
 ------------------------------------------------------------------------
 
-### Method `getSubsetQuery()`
+### `CohortSubsetDefinition$getSubsetQuery()`
 
 Returns vector of join, logic, having statements returned by subset
 operations
@@ -145,7 +145,7 @@ operations
 
 ------------------------------------------------------------------------
 
-### Method `getSubsetCohortName()`
+### `CohortSubsetDefinition$getSubsetCohortName()`
 
 #### Usage
 
@@ -167,7 +167,7 @@ operations
 
 ------------------------------------------------------------------------
 
-### Method `setTargetOutputPairs()`
+### `CohortSubsetDefinition$setTargetOutputPairs()`
 
 #### Usage
 
@@ -182,7 +182,7 @@ operations
 
 ------------------------------------------------------------------------
 
-### Method `getJsonFileName()`
+### `CohortSubsetDefinition$getJsonFileName()`
 
 #### Usage
 
@@ -198,7 +198,7 @@ operations
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `CohortSubsetDefinition$clone()`
 
 The objects of this class are cloneable with this method.
 

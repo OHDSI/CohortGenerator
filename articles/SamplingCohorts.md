@@ -27,6 +27,7 @@ same base table.
 First we need to load the initial cohort definition set
 
 ``` r
+
 cds <- getCohortDefinitionSet(...)
 ```
 
@@ -34,6 +35,7 @@ We then need to create the cohort tables and cohorts in the usual
 manner.
 
 ``` r
+
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
 on.exit(DatabaseConnector::disconnect(conn))
@@ -62,6 +64,7 @@ generateCohortSet(
 We can then create a new cohort definition set from the original sample.
 
 ``` r
+
 sampledCohortDefinitionSet <- sampleCohortDefinitionSet(
   cohortDefinitionSet = cds,
   connection = conn,
@@ -88,6 +91,7 @@ To generate multiple samples, simply specify multiple seed variables as
 follows:
 
 ``` r
+
 # Generate 800 samples of size n
 sampledCohortDefinitionSet <- sampleCohortDefinitionSet(
   cohortDefinitionSet = cds,
@@ -112,5 +116,6 @@ OHDSI packages with minimal issues. For example, `FeatureExtraction`
 will be able to use this sample unchanged.
 
 ``` r
+
 options(old)
 ```

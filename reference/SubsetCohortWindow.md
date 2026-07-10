@@ -39,7 +39,7 @@ with a subset cohort
 
 ------------------------------------------------------------------------
 
-### Method `toList()`
+### `SubsetCohortWindow$toList()`
 
 List representation of object To JSON
 
@@ -49,7 +49,7 @@ List representation of object To JSON
 
 ------------------------------------------------------------------------
 
-### Method `toJSON()`
+### `SubsetCohortWindow$toJSON()`
 
 json serialized representation of object Is Equal to
 
@@ -59,7 +59,7 @@ json serialized representation of object Is Equal to
 
 ------------------------------------------------------------------------
 
-### Method `isEqualTo()`
+### `SubsetCohortWindow$isEqualTo()`
 
 Compare SubsetCohortWindow to another
 
@@ -75,7 +75,7 @@ Compare SubsetCohortWindow to another
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `SubsetCohortWindow$clone()`
 
 The objects of this class are cloneable with this method.
 
