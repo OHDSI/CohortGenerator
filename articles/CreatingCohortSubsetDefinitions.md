@@ -237,11 +237,6 @@ duckdbConnectionDetails <- DatabaseConnector::createConnectionDetails(
 )
 resultsSchema <- "main"
 connection <- DatabaseConnector::connect(duckdbConnectionDetails)
-```
-
-    #>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
-
-``` r
 
 DatabaseConnector::insertTable(
   connection = connection,
