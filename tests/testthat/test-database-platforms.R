@@ -1,12 +1,14 @@
-test_that("database test config loads PostgreSQL as the initial platform", {
+test_that("database test config loads the full platform list", {
   config <- getDatabaseTestConfig()
 
   expect_equal(config$schemaVersion, 1)
   expect_equal(config$package, "CohortGenerator")
   expect_equal(config$databaseConnection, "subset")
-  expect_length(config$platforms, 1)
-  expect_equal(config$platforms[[1]]$dbms, "postgresql")
-  expect_true(isTRUE(config$platforms[[1]]$enabled))
+  expect_equal(
+    vapply(config$platforms, function(platform) platform$dbms, character(1)),
+    c("sqlite", "postgresql", "sql server", "oracle", "redshift", "spark", "bigquery", "snowflake")
+  )
+  expect_true(all(vapply(config$platforms, function(platform) isTRUE(platform$enabled), logical(1))))
 })
 
 test_that("selected DBMS is read from HADES_TEST_DBMS", {
