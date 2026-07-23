@@ -6,7 +6,7 @@ getDatabaseTestConfig <- function() {
     mustWork = FALSE
   )
 
-  if (!nzchar(configFile)) {
+  if (!nzchar(configFile) || !file.exists(configFile)) {
     configFile <- file.path(getwd(), "inst", "test-config", "database-platforms.yml")
   }
 
@@ -16,6 +16,12 @@ getDatabaseTestConfig <- function() {
   }
   if (!identical(config$package, "CohortGenerator")) {
     stop("Database test config package must be CohortGenerator.", call. = FALSE)
+  }
+  if (is.null(config$databaseConnection) || !config$databaseConnection %in% c("none", "subset", "all")) {
+    stop(
+      "Database test config databaseConnection must be one of none, subset, or all.",
+      call. = FALSE
+    )
   }
   config
 }

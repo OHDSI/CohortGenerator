@@ -3,6 +3,7 @@ test_that("database test config loads PostgreSQL as the initial platform", {
 
   expect_equal(config$schemaVersion, 1)
   expect_equal(config$package, "CohortGenerator")
+  expect_equal(config$databaseConnection, "subset")
   expect_length(config$platforms, 1)
   expect_equal(config$platforms[[1]]$dbms, "postgresql")
   expect_true(isTRUE(config$platforms[[1]]$enabled))
