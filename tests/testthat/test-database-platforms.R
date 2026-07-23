@@ -58,14 +58,37 @@ test_that("environment variables are mapped per platform", {
   )
 })
 
-test_that("validateDatabaseTestEnvironment reports missing variables", {
+test_that("validateDatabaseTestEnvironment reports missing variables locally", {
   withr::with_envvar(
     c(
       CDM5_POSTGRESQL_USER = "",
       CDM5_POSTGRESQL_PASSWORD = "",
       CDM5_POSTGRESQL_SERVER = "",
       CDM5_POSTGRESQL_CDM_SCHEMA = "",
-      CDM5_POSTGRESQL_OHDSI_SCHEMA = ""
+      CDM5_POSTGRESQL_OHDSI_SCHEMA = "",
+      HADES_DATABASE_TEST = "false"
+    ),
+    {
+      cond <- tryCatch(
+        validateDatabaseTestEnvironment("postgresql"),
+        condition = function(e) e
+      )
+
+      expect_s3_class(cond, "skip")
+      expect_match(cond$message, "Missing environment variables for postgresql:")
+    }
+  )
+})
+
+test_that("validateDatabaseTestEnvironment fails missing variables in CI", {
+  withr::with_envvar(
+    c(
+      CDM5_POSTGRESQL_USER = "",
+      CDM5_POSTGRESQL_PASSWORD = "",
+      CDM5_POSTGRESQL_SERVER = "",
+      CDM5_POSTGRESQL_CDM_SCHEMA = "",
+      CDM5_POSTGRESQL_OHDSI_SCHEMA = "",
+      HADES_DATABASE_TEST = "true"
     ),
     {
       expect_error(

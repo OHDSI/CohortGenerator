@@ -62,6 +62,13 @@ skipIfNoLiveDatabase <- function() {
   }
 }
 
+isCiDatabaseTest <- function() {
+  identical(
+    tolower(Sys.getenv("HADES_DATABASE_TEST", unset = "false")),
+    "true"
+  )
+}
+
 getJdbcDriverFolder <- function() {
   if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
     Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
@@ -370,15 +377,18 @@ validateDatabaseTestEnvironment <- function(dbmsPlatform, requiredVariables = ge
   missingVariables <- requiredVariables[!nzchar(Sys.getenv(requiredVariables, unset = ""))]
 
   if (length(missingVariables) > 0) {
-    stop(
-      paste0(
-        "Missing environment variables for ",
-        dbmsPlatform,
-        ": ",
-        paste(missingVariables, collapse = ", ")
-      ),
-      call. = FALSE
+    message <- paste0(
+      "Missing environment variables for ",
+      dbmsPlatform,
+      ": ",
+      paste(missingVariables, collapse = ", ")
     )
+
+    if (isCiDatabaseTest()) {
+      stop(message, call. = FALSE)
+    }
+
+    testthat::skip(message)
   }
 
   invisible(TRUE)

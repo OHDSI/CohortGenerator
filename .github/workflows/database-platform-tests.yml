@@ -1,0 +1,69 @@
+# Workflow for live database platform tests.
+name: Database platform tests
+
+on:
+  pull_request:
+    paths:
+      - 'R/**'
+      - 'tests/**'
+      - 'inst/test-config/hades-database-platforms.yml'
+      - '.github/workflows/database-platform-tests.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'R/**'
+      - 'tests/**'
+      - 'inst/test-config/hades-database-platforms.yml'
+      - '.github/workflows/database-platform-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  database-test:
+    name: Database test (${{ matrix.dbms }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dbms: postgresql
+            environment: test-postgresql
+
+    environment: ${{ matrix.environment }}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+      HADES_DATABASE_TEST: 'true'
+      HADES_TEST_DBMS: ${{ matrix.dbms }}
+
+      CDM5_POSTGRESQL_CDM_SCHEMA: ${{ secrets.CDM5_POSTGRESQL_CDM54_SCHEMA }}
+      CDM5_POSTGRESQL_OHDSI_SCHEMA: ${{ secrets.CDM5_POSTGRESQL_OHDSI_SCHEMA }}
+      CDM5_POSTGRESQL_PASSWORD: ${{ secrets.CDM5_POSTGRESQL_PASSWORD }}
+      CDM5_POSTGRESQL_SERVER: ${{ secrets.CDM5_POSTGRESQL_SERVER }}
+      CDM5_POSTGRESQL_USER: ${{ secrets.CDM5_POSTGRESQL_USER }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: '8'
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::testthat
+          needs: check
+
+      - name: Run live database tests
+        shell: Rscript {0}
+        run: |
+          testthat::test_file(
+            "tests/testthat/test-dbms-platforms.R",
+            reporter = "summary"
+          )
