@@ -191,6 +191,16 @@ getSqlServerConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder
   )
 }
 
+getSnowflakeConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  DatabaseConnector::createConnectionDetails(
+    dbms = "snowflake",
+    user = Sys.getenv("CDM_SNOWFLAKE_USER"),
+    password = URLdecode(Sys.getenv("CDM_SNOWFLAKE_PASSWORD")),
+    connectionString = Sys.getenv("CDM_SNOWFLAKE_CONNECTION_STRING"),
+    pathToDriver = jdbcDriverFolder
+  )
+}
+
 getBigQueryConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
   bqKeyFile <- tempfile(fileext = ".json")
   writeLines(Sys.getenv("CDM_BIG_QUERY_KEY_FILE"), bqKeyFile)
@@ -208,6 +218,103 @@ getBigQueryConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder(
     password = "",
     connectionString = !!bqConnectionString,
     pathToDriver = jdbcDriverFolder
+  )
+}
+
+getSqliteDatabaseSettings <- function() {
+  list(
+    connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+    cdmDatabaseSchema = "main",
+    vocabularyDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
+    tempEmulationSchema = NULL,
+    needsDrivers = FALSE,
+    needsWindowsOnly = FALSE,
+    cohortTable = "cohort"
+  )
+}
+
+getPostgresqlDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  list(
+    connectionDetails = getPostgresqlConnectionDetails(jdbcDriverFolder),
+    cdmDatabaseSchema = Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA"),
+    vocabularyDatabaseSchema = Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA"),
+    cohortDatabaseSchema = Sys.getenv("CDM5_POSTGRESQL_OHDSI_SCHEMA"),
+    tempEmulationSchema = NULL,
+    needsDrivers = TRUE,
+    needsWindowsOnly = FALSE
+  )
+}
+
+getOracleDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  list(
+    connectionDetails = getOracleConnectionDetails(jdbcDriverFolder),
+    cdmDatabaseSchema = Sys.getenv("CDM5_ORACLE_CDM_SCHEMA"),
+    vocabularyDatabaseSchema = Sys.getenv("CDM5_ORACLE_CDM_SCHEMA"),
+    cohortDatabaseSchema = Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA"),
+    tempEmulationSchema = Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA"),
+    needsDrivers = TRUE,
+    needsWindowsOnly = FALSE
+  )
+}
+
+getRedshiftDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  list(
+    connectionDetails = getRedshiftConnectionDetails(jdbcDriverFolder),
+    cdmDatabaseSchema = Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA"),
+    vocabularyDatabaseSchema = Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA"),
+    cohortDatabaseSchema = Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA"),
+    tempEmulationSchema = NULL,
+    needsDrivers = TRUE,
+    needsWindowsOnly = FALSE
+  )
+}
+
+getSparkDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  list(
+    connectionDetails = getSparkConnectionDetails(jdbcDriverFolder),
+    cdmDatabaseSchema = Sys.getenv("CDM5_SPARK_CDM_SCHEMA"),
+    vocabularyDatabaseSchema = Sys.getenv("CDM5_SPARK_CDM_SCHEMA"),
+    cohortDatabaseSchema = Sys.getenv("CDM5_SPARK_OHDSI_SCHEMA"),
+    tempEmulationSchema = Sys.getenv("CDM5_SPARK_OHDSI_SCHEMA"),
+    needsDrivers = TRUE,
+    needsWindowsOnly = FALSE
+  )
+}
+
+getSqlServerDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  list(
+    connectionDetails = getSqlServerConnectionDetails(jdbcDriverFolder),
+    cdmDatabaseSchema = Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA"),
+    vocabularyDatabaseSchema = Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA"),
+    cohortDatabaseSchema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA"),
+    tempEmulationSchema = NULL,
+    needsDrivers = TRUE,
+    needsWindowsOnly = FALSE
+  )
+}
+
+getSnowflakeDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  list(
+    connectionDetails = getSnowflakeConnectionDetails(jdbcDriverFolder),
+    cdmDatabaseSchema = Sys.getenv("CDM_SNOWFLAKE_CDM53_SCHEMA"),
+    vocabularyDatabaseSchema = Sys.getenv("CDM_SNOWFLAKE_CDM53_SCHEMA"),
+    cohortDatabaseSchema = Sys.getenv("CDM_SNOWFLAKE_OHDSI_SCHEMA"),
+    tempEmulationSchema = Sys.getenv("CDM_SNOWFLAKE_OHDSI_SCHEMA"),
+    needsDrivers = TRUE,
+    needsWindowsOnly = FALSE
+  )
+}
+
+getBigQueryDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  list(
+    connectionDetails = getBigQueryConnectionDetails(jdbcDriverFolder),
+    cdmDatabaseSchema = Sys.getenv("CDM_BIG_QUERY_CDM_SCHEMA"),
+    vocabularyDatabaseSchema = Sys.getenv("CDM_BIG_QUERY_CDM_SCHEMA"),
+    cohortDatabaseSchema = Sys.getenv("CDM_BIG_QUERY_OHDSI_SCHEMA"),
+    tempEmulationSchema = Sys.getenv("CDM_BIG_QUERY_OHDSI_SCHEMA"),
+    needsDrivers = TRUE,
+    needsWindowsOnly = TRUE
   )
 }
 
@@ -244,85 +351,36 @@ validateDatabaseTestEnvironment <- function(dbmsPlatform, requiredVariables = ge
 }
 
 resolveDatabasePlatformSettings <- function(dbmsPlatform, jdbcDriverFolder = getJdbcDriverFolder()) {
-  settings <- list(
-    connectionDetails = NULL,
-    cdmDatabaseSchema = NULL,
-    vocabularyDatabaseSchema = NULL,
-    cohortDatabaseSchema = NULL,
-    tempEmulationSchema = NULL,
-    needsDrivers = TRUE,
-    needsWindowsOnly = FALSE
-  )
-
   if (dbmsPlatform == "sqlite") {
-    settings$connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-    settings$cdmDatabaseSchema <- "main"
-    settings$vocabularyDatabaseSchema <- "main"
-    settings$cohortDatabaseSchema <- "main"
-    settings$cohortTable <- "cohort"
-    settings$needsDrivers <- FALSE
-    return(settings)
+    return(getSqliteDatabaseSettings())
   }
 
   if (dbmsPlatform == "bigquery") {
-    settings$needsWindowsOnly <- TRUE
-    settings$connectionDetails <- getBigQueryConnectionDetails(jdbcDriverFolder)
-    settings$cdmDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_CDM_SCHEMA")
-    settings$vocabularyDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_CDM_SCHEMA")
-    settings$cohortDatabaseSchema <- Sys.getenv("CDM_BIG_QUERY_OHDSI_SCHEMA")
-    settings$tempEmulationSchema <- Sys.getenv("CDM_BIG_QUERY_OHDSI_SCHEMA")
-    return(settings)
+    return(getBigQueryDatabaseSettings(jdbcDriverFolder))
   }
 
   if (dbmsPlatform == "oracle") {
-    settings$connectionDetails <- getOracleConnectionDetails(jdbcDriverFolder)
-    settings$cdmDatabaseSchema <- Sys.getenv("CDM5_ORACLE_CDM_SCHEMA")
-    settings$vocabularyDatabaseSchema <- Sys.getenv("CDM5_ORACLE_CDM_SCHEMA")
-    settings$cohortDatabaseSchema <- Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA")
-    settings$tempEmulationSchema <- Sys.getenv("CDM5_ORACLE_OHDSI_SCHEMA")
-    return(settings)
+    return(getOracleDatabaseSettings(jdbcDriverFolder))
   }
 
   if (dbmsPlatform == "postgresql") {
-    settings$connectionDetails <- getPostgresqlConnectionDetails(jdbcDriverFolder)
-    settings$cdmDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA")
-    settings$vocabularyDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA")
-    settings$cohortDatabaseSchema <- Sys.getenv("CDM5_POSTGRESQL_OHDSI_SCHEMA")
-    return(settings)
+    return(getPostgresqlDatabaseSettings(jdbcDriverFolder))
   }
 
   if (dbmsPlatform == "redshift") {
-    settings$connectionDetails <- getRedshiftConnectionDetails(jdbcDriverFolder)
-    settings$cdmDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA")
-    settings$vocabularyDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_CDM_SCHEMA")
-    settings$cohortDatabaseSchema <- Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA")
-    return(settings)
+    return(getRedshiftDatabaseSettings(jdbcDriverFolder))
   }
 
   if (dbmsPlatform == "snowflake") {
-    settings$connectionDetails <- getSnowflakeConnectionDetails(jdbcDriverFolder)
-    settings$cdmDatabaseSchema <- Sys.getenv("CDM_SNOWFLAKE_CDM53_SCHEMA")
-    settings$vocabularyDatabaseSchema <- Sys.getenv("CDM_SNOWFLAKE_CDM53_SCHEMA")
-    settings$cohortDatabaseSchema <- Sys.getenv("CDM_SNOWFLAKE_OHDSI_SCHEMA")
-    settings$tempEmulationSchema <- Sys.getenv("CDM_SNOWFLAKE_OHDSI_SCHEMA")
-    return(settings)
+    return(getSnowflakeDatabaseSettings(jdbcDriverFolder))
   }
 
   if (dbmsPlatform == "spark") {
-    settings$connectionDetails <- getSparkConnectionDetails(jdbcDriverFolder)
-    settings$cdmDatabaseSchema <- Sys.getenv("CDM5_SPARK_CDM_SCHEMA")
-    settings$vocabularyDatabaseSchema <- Sys.getenv("CDM5_SPARK_CDM_SCHEMA")
-    settings$cohortDatabaseSchema <- Sys.getenv("CDM5_SPARK_OHDSI_SCHEMA")
-    settings$tempEmulationSchema <- Sys.getenv("CDM5_SPARK_OHDSI_SCHEMA")
-    return(settings)
+    return(getSparkDatabaseSettings(jdbcDriverFolder))
   }
 
   if (dbmsPlatform == "sql server") {
-    settings$connectionDetails <- getSqlServerConnectionDetails(jdbcDriverFolder)
-    settings$cdmDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA")
-    settings$vocabularyDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_CDM_SCHEMA")
-    settings$cohortDatabaseSchema <- Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")
-    return(settings)
+    return(getSqlServerDatabaseSettings(jdbcDriverFolder))
   }
 
   stop(sprintf("Unsupported DBMS '%s'.", dbmsPlatform), call. = FALSE)
