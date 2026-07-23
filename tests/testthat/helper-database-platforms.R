@@ -1,13 +1,13 @@
 getDatabaseTestConfig <- function() {
   configFile <- system.file(
     "test-config",
-    "database-platforms.yml",
+    "hades-database-platforms.yml",
     package = "CohortGenerator",
     mustWork = FALSE
   )
 
   if (!nzchar(configFile) || !file.exists(configFile)) {
-    configFile <- file.path(getwd(), "inst", "test-config", "database-platforms.yml")
+    configFile <- file.path(getwd(), "inst", "test-config", "hades-database-platforms.yml")
   }
 
   config <- yaml::read_yaml(configFile)

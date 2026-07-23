@@ -144,7 +144,7 @@ For the first implementation, that platform should be PostgreSQL.
 Create:
 
 ```text
-inst/test-config/database-platforms.yml
+inst/test-config/hades-database-platforms.yml
 ```
 
 Placing the declaration under `inst/` makes it available from both the source repository and the installed package. It also allows the configuration to function as a machine-readable package support claim rather than only an internal test setting.
@@ -409,7 +409,7 @@ Example:
 getDatabaseTestConfig <- function() {
   configFile <- system.file(
     "test-config",
-    "database-platforms.yml",
+    "hades-database-platforms.yml",
     package = "CohortGenerator",
     mustWork = TRUE
   )
@@ -423,7 +423,7 @@ getDatabaseTestConfig <- function() {
 When tests are run directly from the source tree, `system.file()` should work after `devtools::load_all()` or package installation. If needed, a development fallback can read:
 
 ```text
-inst/test-config/database-platforms.yml
+inst/test-config/hades-database-platforms.yml
 ```
 
 directly.
@@ -995,7 +995,7 @@ Do not dynamically generate the matrix from YAML in the first implementation.
 
 Instead, add a validation script that compares:
 
-- enabled platforms in `database-platforms.yml`;
+- enabled platforms in `hades-database-platforms.yml`;
 - platforms present in the GitHub workflow matrix.
 
 A later implementation can generate the matrix automatically.
@@ -1125,7 +1125,7 @@ Rscript -e 'testthat::test_file("tests/testthat/test-dbms-platforms.R", reporter
 ## New files
 
 ```text
-inst/test-config/database-platforms.yml
+inst/test-config/hades-database-platforms.yml
 tests/testthat/helper-database-platforms.R
 tools/test-database-platform.R
 tools/validate-database-test-matrix.R
@@ -1191,7 +1191,7 @@ Add one DBMS per matrix job.
 ## Step 1: Add the declaration
 
 - Add `yaml` to `Suggests`.
-- Create `inst/test-config/database-platforms.yml`.
+- Create `inst/test-config/hades-database-platforms.yml`.
 - Represent PostgreSQL as the initial supported platform.
 - Add a validator for the YAML structure.
 
@@ -1359,7 +1359,7 @@ Possible approaches:
 
 A useful first implementation task for Codex would be:
 
-> Refactor CohortGenerator’s live DBMS test infrastructure so that supported platforms are declared in `inst/test-config/database-platforms.yml`, one platform is selected using `HADES_TEST_DBMS`, and `tests/testthat/test-dbms-platforms.R` runs only that selected platform. Preserve all current DatabaseConnector connection behavior and existing environment-variable names. Add unit tests for YAML parsing and platform selection, but do not yet modify GitHub Actions.
+> Refactor CohortGenerator’s live DBMS test infrastructure so that supported platforms are declared in `inst/test-config/hades-database-platforms.yml`, one platform is selected using `HADES_TEST_DBMS`, and `tests/testthat/test-dbms-platforms.R` runs only that selected platform. Preserve all current DatabaseConnector connection behavior and existing environment-variable names. Add unit tests for YAML parsing and platform selection, but do not yet modify GitHub Actions.
 
 This isolates the R package changes from CI changes and allows local validation before restructuring the workflows.
 

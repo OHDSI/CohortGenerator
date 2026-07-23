@@ -106,3 +106,22 @@ test_that("database test context is assembled from resolved settings", {
   expect_equal(ctx$tempEmulationSchema, "temp_schema")
   expect_true(isTRUE(ctx$needsWindowsOnly))
 })
+
+test_that("platform connection details are assembled from settings", {
+  settings <- list(
+    connectionDetails = list(dbms = "postgresql"),
+    cohortDatabaseSchema = "cohort_schema",
+    cohortTable = "ct_123",
+    cdmDatabaseSchema = "cdm_schema",
+    vocabularyDatabaseSchema = "vocab_schema"
+  )
+
+  details <- assemblePlatformConnectionDetails("postgresql", settings)
+
+  expect_equal(details$dbmsPlatform, "postgresql")
+  expect_equal(details$connectionDetails$dbms, "postgresql")
+  expect_equal(details$cohortDatabaseSchema, "cohort_schema")
+  expect_equal(details$cohortTable, "ct_123")
+  expect_equal(details$cdmDatabaseSchema, "cdm_schema")
+  expect_equal(details$vocabularyDatabaseSchema, "vocab_schema")
+})
