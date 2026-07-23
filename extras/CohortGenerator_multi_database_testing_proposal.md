@@ -149,6 +149,14 @@ inst/test-config/database-platforms.yml
 
 Placing the declaration under `inst/` makes it available from both the source repository and the installed package. It also allows the configuration to function as a machine-readable package support claim rather than only an internal test setting.
 
+The declaration should answer one higher-level question first: does the package connect to databases at all?
+
+- `databaseConnection: none` for packages that never connect to a database.
+- `databaseConnection: subset` for packages that intentionally support only a subset of DatabaseConnector platforms.
+- `databaseConnection: all` for packages that intend to support the full DatabaseConnector platform set.
+
+This gives HADES a consistent way to distinguish packages like Andromeda, database-heavy packages like CohortGenerator, and packages that are database-free by design.
+
 Add `yaml` to `Suggests` in `DESCRIPTION`.
 
 ### Proposed initial YAML
@@ -159,6 +167,8 @@ The first prototype should start with PostgreSQL only. Additional platforms can 
 schemaVersion: 1
 
 package: CohortGenerator
+
+databaseConnection: subset
 
 platforms:
   - dbms: postgresql
@@ -185,6 +195,20 @@ This allows the structure to evolve while shared tooling continues to validate o
 
 Package owning the declaration.
 
+#### `databaseConnection`
+
+High-level database relationship for the package.
+
+This field should use one of:
+
+```text
+none
+subset
+all
+```
+
+Packages that never connect to a database should use `none`. Packages that intentionally support only a subset of DatabaseConnector platforms should use `subset`. Packages that aim to support the full DatabaseConnector platform set should use `all`.
+
 #### `dbms`
 
 Canonical `DatabaseConnector` DBMS identifier.
@@ -194,6 +218,8 @@ The exact permitted values should eventually come from a shared HADES validator.
 #### `enabled`
 
 Whether the package currently claims support for and intends to test the platform.
+
+In `subset` and `all` mode, `enabled: true` means the platform is part of the intended support or test surface. In `none` mode, platform entries should not normally be present.
 
 #### `required`
 
@@ -252,6 +278,8 @@ options(sqlRenderTempEmulationSchema = ...)
 
 Required when a previously supported or recognized platform is disabled.
 
+If `databaseConnection: none`, the package-level declaration should explain that the package is intentionally database-free rather than merely missing DBMS support.
+
 ### Data that should not appear in YAML
 
 The YAML should not contain:
@@ -264,6 +292,8 @@ The YAML should not contain:
 - actual schema names.
 
 Those values remain in local environment variables or GitHub secrets.
+
+For `databaseConnection: none`, no live database credentials or schema settings should be required by the package's test declaration.
 
 ---
 

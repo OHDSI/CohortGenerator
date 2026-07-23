@@ -2,6 +2,8 @@ schemaVersion: 1
 
 package: CohortGenerator
 
+databaseConnection: subset
+
 platforms:
   - dbms: postgresql
     enabled: true
