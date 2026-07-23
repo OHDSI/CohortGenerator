@@ -34,3 +34,75 @@ test_that("unknown selected DBMS fails fast", {
     "Database platform 'oracle' is not declared by CohortGenerator."
   )
 })
+
+test_that("environment variables are mapped per platform", {
+  expect_setequal(
+    getRequiredDatabaseEnvironmentVariables("postgresql"),
+    c(
+      "CDM5_POSTGRESQL_USER",
+      "CDM5_POSTGRESQL_PASSWORD",
+      "CDM5_POSTGRESQL_SERVER",
+      "CDM5_POSTGRESQL_CDM_SCHEMA",
+      "CDM5_POSTGRESQL_OHDSI_SCHEMA"
+    )
+  )
+  expect_setequal(
+    getRequiredDatabaseEnvironmentVariables("sql server"),
+    c(
+      "CDM5_SQL_SERVER_USER",
+      "CDM5_SQL_SERVER_PASSWORD",
+      "CDM5_SQL_SERVER_SERVER",
+      "CDM5_SQL_SERVER_CDM_SCHEMA",
+      "CDM5_SQL_SERVER_OHDSI_SCHEMA"
+    )
+  )
+})
+
+test_that("validateDatabaseTestEnvironment reports missing variables", {
+  withr::with_envvar(
+    c(
+      CDM5_POSTGRESQL_USER = "",
+      CDM5_POSTGRESQL_PASSWORD = "",
+      CDM5_POSTGRESQL_SERVER = "",
+      CDM5_POSTGRESQL_CDM_SCHEMA = "",
+      CDM5_POSTGRESQL_OHDSI_SCHEMA = ""
+    ),
+    {
+      expect_error(
+        validateDatabaseTestEnvironment("postgresql"),
+        "Missing environment variables for postgresql:"
+      )
+    }
+  )
+})
+
+test_that("BigQuery is only supported on Windows", {
+  expect_false(isBigQuerySupportedOnCurrentPlatform("bigquery") && .Platform$OS.type != "windows")
+  expect_true(isBigQuerySupportedOnCurrentPlatform("postgresql"))
+})
+
+test_that("database test context is assembled from resolved settings", {
+  testthat::local_mocked_bindings(
+    resolveDatabasePlatformSettings = function(dbmsPlatform, jdbcDriverFolder = getJdbcDriverFolder()) {
+      list(
+        connectionDetails = list(dbms = dbmsPlatform),
+        cdmDatabaseSchema = "cdm_schema",
+        vocabularyDatabaseSchema = "vocab_schema",
+        cohortDatabaseSchema = "cohort_schema",
+        tempEmulationSchema = "temp_schema",
+        needsDrivers = TRUE,
+        needsWindowsOnly = TRUE
+      )
+    }
+  )
+
+  ctx <- getDatabaseTestContext("postgresql", jdbcDriverFolder = "C:/tmp")
+
+  expect_equal(ctx$dbmsPlatform, "postgresql")
+  expect_match(ctx$cohortTable, "^ct_")
+  expect_equal(ctx$cdmDatabaseSchema, "cdm_schema")
+  expect_equal(ctx$vocabularyDatabaseSchema, "vocab_schema")
+  expect_equal(ctx$cohortDatabaseSchema, "cohort_schema")
+  expect_equal(ctx$tempEmulationSchema, "temp_schema")
+  expect_true(isTRUE(ctx$needsWindowsOnly))
+})

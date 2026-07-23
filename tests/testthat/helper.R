@@ -85,13 +85,5 @@ getPlatformConnectionDetails <- function(dbmsPlatform) {
   }
 
   options(sqlRenderTempEmulationSchema = settings$tempEmulationSchema)
-
-  return(list(
-    dbmsPlatform = dbmsPlatform,
-    connectionDetails = settings$connectionDetails,
-    cohortDatabaseSchema = settings$cohortDatabaseSchema,
-    cohortTable = settings$cohortTable,
-    cdmDatabaseSchema = settings$cdmDatabaseSchema,
-    vocabularyDatabaseSchema = settings$vocabularyDatabaseSchema
-  ))
+  assemblePlatformConnectionDetails(dbmsPlatform, settings)
 }

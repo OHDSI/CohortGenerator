@@ -337,6 +337,17 @@ getDatabaseTestContext <- function(dbmsPlatform, jdbcDriverFolder = getJdbcDrive
   )
 }
 
+assemblePlatformConnectionDetails <- function(dbmsPlatform, settings) {
+  list(
+    dbmsPlatform = dbmsPlatform,
+    connectionDetails = settings$connectionDetails,
+    cohortDatabaseSchema = settings$cohortDatabaseSchema,
+    cohortTable = settings$cohortTable,
+    cdmDatabaseSchema = settings$cdmDatabaseSchema,
+    vocabularyDatabaseSchema = settings$vocabularyDatabaseSchema
+  )
+}
+
 isBigQuerySupportedOnCurrentPlatform <- function(dbmsPlatform) {
   !identical(dbmsPlatform, "bigquery") || .Platform$OS.type == "windows"
 }
