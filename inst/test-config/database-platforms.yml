@@ -1,0 +1,13 @@
+schemaVersion: 1
+
+package: CohortGenerator
+
+platforms:
+  - dbms: postgresql
+    enabled: true
+    required: true
+    ci: pull-request
+    environmentPrefix: CDM5_POSTGRESQL
+    cdmVersion: "5.4"
+    connectionMode: server
+    tempEmulationSchema: false

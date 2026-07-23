@@ -41,6 +41,7 @@ Suggests:
   ggplot2,
   knitr,
   rmarkdown,
+  yaml,
   testthat,
   withr,
   zip
