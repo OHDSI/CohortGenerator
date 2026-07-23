@@ -318,6 +318,29 @@ getBigQueryDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()
   )
 }
 
+getDatabaseTestContext <- function(dbmsPlatform, jdbcDriverFolder = getJdbcDriverFolder()) {
+  settings <- resolveDatabasePlatformSettings(dbmsPlatform, jdbcDriverFolder)
+
+  list(
+    dbmsPlatform = dbmsPlatform,
+    connectionDetails = settings$connectionDetails,
+    cohortDatabaseSchema = settings$cohortDatabaseSchema,
+    cohortTable = if (isTRUE(settings$needsDrivers)) {
+      paste0("ct_", Sys.getpid(), format(Sys.time(), "%s"), sample(1:100, 1))
+    } else {
+      settings$cohortTable
+    },
+    cdmDatabaseSchema = settings$cdmDatabaseSchema,
+    vocabularyDatabaseSchema = settings$vocabularyDatabaseSchema,
+    tempEmulationSchema = settings$tempEmulationSchema,
+    needsWindowsOnly = isTRUE(settings$needsWindowsOnly)
+  )
+}
+
+isBigQuerySupportedOnCurrentPlatform <- function(dbmsPlatform) {
+  !identical(dbmsPlatform, "bigquery") || .Platform$OS.type == "windows"
+}
+
 getRequiredDatabaseEnvironmentVariables <- function(dbmsPlatform) {
   switch(
     dbmsPlatform,

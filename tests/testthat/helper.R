@@ -68,42 +68,29 @@ getNegativeControlOutcomeCohortsForTest <- function(setCohortIdToConceptId = TRU
 
 getPlatformConnectionDetails <- function(dbmsPlatform) {
   options("sqlRenderTempEmulationSchema" = NULL)
-  if (dbmsPlatform == "sqlite") {
-    options("sqlRenderTempEmulationSchema" = NULL)
-    return(list(
-      dbmsPlatform = dbmsPlatform,
-      connectionDetails = Eunomia::getEunomiaConnectionDetails(),
-      cohortDatabaseSchema = "main",
-      cohortTable = "cohort",
-      cdmDatabaseSchema = "main",
-      vocabularyDatabaseSchema = "main"
-    ))
-  }
-
-  if (dbmsPlatform == "bigquery" && .Platform$OS.type != "windows") {
+  if (!isBigQuerySupportedOnCurrentPlatform(dbmsPlatform)) {
     return(NULL)
   }
 
   jdbcDriverFolder <- getJdbcDriverFolder()
-  settings <- resolveDatabasePlatformSettings(dbmsPlatform, jdbcDriverFolder)
+  settings <- getDatabaseTestContext(dbmsPlatform, jdbcDriverFolder)
   validateDatabaseTestEnvironment(dbmsPlatform)
 
-  if (!isTRUE(settings$needsDrivers)) {
-    cohortTable <- "cohort"
-  } else {
-    DatabaseConnector::downloadJdbcDrivers(dbmsPlatform, pathToDriver = jdbcDriverFolder)
-    cohortTable <- paste0("ct_", Sys.getpid(), format(Sys.time(), "%s"), sample(1:100, 1))
+  if (isTRUE(settings$needsWindowsOnly) && .Platform$OS.type != "windows") {
+    return(NULL)
   }
 
-  if (!is.null(settings$tempEmulationSchema)) {
-    options(sqlRenderTempEmulationSchema = settings$tempEmulationSchema)
+  if (!identical(dbmsPlatform, "sqlite")) {
+    DatabaseConnector::downloadJdbcDrivers(dbmsPlatform, pathToDriver = jdbcDriverFolder)
   }
+
+  options(sqlRenderTempEmulationSchema = settings$tempEmulationSchema)
 
   return(list(
     dbmsPlatform = dbmsPlatform,
     connectionDetails = settings$connectionDetails,
     cohortDatabaseSchema = settings$cohortDatabaseSchema,
-    cohortTable = cohortTable,
+    cohortTable = settings$cohortTable,
     cdmDatabaseSchema = settings$cdmDatabaseSchema,
     vocabularyDatabaseSchema = settings$vocabularyDatabaseSchema
   ))
