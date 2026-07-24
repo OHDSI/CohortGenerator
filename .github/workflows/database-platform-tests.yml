@@ -85,10 +85,10 @@ jobs:
 
       - name: Run live database tests
         shell: Rscript {0}
-        with:
-          path: ${{ env.R_LIBS_USER }}
+
         run: |
           print(.libPaths())
+          print(Sys.getenv("R_LIBS_USER"))
           .libPaths(c(Sys.getenv("R_LIBS_USER"), .libPaths()))
           print(.libPaths())
           library(CohortGenerator, lib.loc = Sys.getenv("R_LIBS_USER"))
