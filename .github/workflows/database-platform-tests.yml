@@ -85,6 +85,13 @@ jobs:
         run: |    
           sudo apt-get install libssh-dev
 
+      - name: Install dependencies
+        run: |
+          install.packages("cachem")
+          remotes::install_deps(dependencies = TRUE, INSTALL_opts=c("--no-multiarch"))
+          remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
