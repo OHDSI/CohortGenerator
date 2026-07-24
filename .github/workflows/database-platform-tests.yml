@@ -83,9 +83,20 @@ jobs:
         run: |
           system("R CMD build . --no-build-vignettes --no-manual")
 
+      - name: Install package
+        shell: Rscript {0}
+        run: |
+          tarball <- list.files(pattern = "^CohortGenerator_.*\\.tar\\.gz$", full.names = TRUE)
+          stopifnot(length(tarball) == 1)
+          lib <- Sys.getenv("R_LIBS_USER")
+          dir.create(lib, recursive = TRUE, showWarnings = FALSE)
+          status <- system2("R", c("CMD", "INSTALL", "--library", lib, tarball))
+          if (!identical(status, 0L)) {
+            stop("Package installation failed.")
+          }
+
       - name: Run live database tests
         shell: Rscript {0}
-
         run: |
           print(.libPaths())
           print(Sys.getenv("R_LIBS_USER"))
