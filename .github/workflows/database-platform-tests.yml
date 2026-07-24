@@ -86,7 +86,9 @@ jobs:
       - name: Run live database tests
         shell: Rscript {0}
         run: |
+          print(.libPaths())
           .libPaths(c(Sys.getenv("R_LIBS_USER"), .libPaths()))
+          print(.libPaths())
           library(CohortGenerator, lib.loc = Sys.getenv("R_LIBS_USER"))
           testthat::test_file(
             "tests/testthat/test-dbms-platforms.R",
