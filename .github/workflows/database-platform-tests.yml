@@ -48,10 +48,28 @@ jobs:
         with:
           r-version: release
 
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y make
+          sudo apt-get install -y default-jdk
+          sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get install -y libssl-dev
+          sudo apt-get install -y libglpk-dev
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')          
+
       - uses: actions/setup-java@v4
         with:
           distribution: corretto
           java-version: '8'
+
+      - name: Install libssh
+        if: runner.os == 'Linux'
+        run: |    
+          sudo apt-get install libssh-dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -65,15 +83,9 @@ jobs:
         run: |
           system("R CMD build . --no-build-vignettes --no-manual")
 
-      - name: Install package
-        shell: Rscript {0}
-        run: |
-          remotes::install_local(".", dependencies = TRUE, upgrade = "never", force = TRUE)
-
       - name: Run live database tests
         shell: Rscript {0}
         run: |
-          library(CohortGenerator)
           testthat::test_file(
             "tests/testthat/test-dbms-platforms.R",
             reporter = "summary"
