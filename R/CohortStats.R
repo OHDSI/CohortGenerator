@@ -358,7 +358,7 @@ computeCohortAttrition <- function(cohortInclusionResult,
     dplyr::mutate(requiredMask = 2^(.data$ruleSequence + 1) - 1)
 
   ruleRows <- result %>%
-    dplyr::inner_join(rules, by = "cohortDefinitionId") %>%
+    dplyr::inner_join(rules, by = "cohortDefinitionId", relationship = "many-to-many") %>%
     dplyr::filter(bitwAnd(.data$inclusionRuleMask, .data$requiredMask) == .data$requiredMask) %>%
     dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
     dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
@@ -370,7 +370,7 @@ computeCohortAttrition <- function(cohortInclusionResult,
     dplyr::select(.data$databaseId, .data$cohortDefinitionId, .data$modeId) %>%
     dplyr::distinct()
   zeroCountRuleRows <- cohortModes %>%
-    dplyr::inner_join(rules, by = "cohortDefinitionId") %>%
+    dplyr::inner_join(rules, by = "cohortDefinitionId", relationship = "many-to-many") %>%
     dplyr::select(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
     dplyr::left_join(ruleRows,
       by = c(
@@ -378,7 +378,8 @@ computeCohortAttrition <- function(cohortInclusionResult,
         "cohortDefinitionId",
         "modeId",
         "ruleSequence"
-      )
+      ),
+      relationship = "many-to-many"
     ) %>%
     dplyr::filter(is.na(.data$personCount)) %>%
     dplyr::mutate(

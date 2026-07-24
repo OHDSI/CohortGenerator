@@ -1,7 +1,6 @@
 library(CohortGenerator)
 library(testthat)
 
-
 getPostgresInfo <- function() {
   if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
     jdbcDriverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
@@ -118,6 +117,13 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
 
 test_that("Create schema and upload on Postgres", {
   skip_on_cran()
+  testthat::skip_if_not(
+    nzchar(Sys.getenv("CDM5_POSTGRESQL_USER")) &&
+      nzchar(Sys.getenv("CDM5_POSTGRESQL_PASSWORD")) &&
+      nzchar(Sys.getenv("CDM5_POSTGRESQL_SERVER")) &&
+      grepl("/", Sys.getenv("CDM5_POSTGRESQL_SERVER"), fixed = TRUE),
+    "Skipping PostgreSQL upload test because CDM5_POSTGRESQL_* environment variables are not configured for CI."
+  )
   unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
   dir.create(path = unzipFolder, recursive = TRUE)
   on.exit(unlink(unzipFolder, recursive = TRUE), add = TRUE)

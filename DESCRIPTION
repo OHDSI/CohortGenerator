@@ -41,9 +41,10 @@ Suggests:
   ggplot2,
   knitr,
   rmarkdown,
-  yaml,
   testthat,
+  vroom,
   withr,
+  yaml,
   zip
 License: Apache License
 VignetteBuilder: knitr

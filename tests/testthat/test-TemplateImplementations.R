@@ -34,14 +34,17 @@ test_that("createSnomedCohortTemplateDefinition", {
     cohortDatabaseSchema = "main"
   )
 
-  generateCohortSet(
-    connection = connection,
-    cdmDatabaseSchema = "main",
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortDefinitionSet = cohortDefinitionSet,
-    stopOnError = TRUE,
-    incremental = TRUE
+  expect_warning(
+    generateCohortSet(
+      connection = connection,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortDefinitionSet = cohortDefinitionSet,
+      stopOnError = TRUE,
+      incremental = TRUE
+    ),
+    regexp = "Input SQL has already been translated"
   )
   # check the count is consistent with expectations
   count <- getCohortCounts(
