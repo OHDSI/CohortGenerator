@@ -83,6 +83,11 @@ jobs:
         run: |
           system("R CMD build . --no-build-vignettes --no-manual")
 
+      - name: Install package
+        shell: Rscript {0}
+        run: |
+          remotes::install_local(".", dependencies = TRUE, upgrade = "never", force = TRUE)
+
       - name: Run live database tests
         shell: Rscript {0}
         run: |
