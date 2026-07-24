@@ -9,8 +9,6 @@ on:
       - 'inst/test-config/hades-database-platforms.yml'
       - '.github/workflows/database-platform-tests.yml'
   push:
-    branches:
-      - main
     paths:
       - 'R/**'
       - 'tests/**'
