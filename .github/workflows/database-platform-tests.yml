@@ -68,7 +68,10 @@ jobs:
         run: |
           tarball <- list.files(pattern = "^CohortGenerator_.*\\.tar\\.gz$", full.names = TRUE)
           stopifnot(length(tarball) == 1)
-          install.packages(tarball, repos = NULL, type = "source")
+          status <- system2("R", c("CMD", "INSTALL", "--no-test-load", tarball))
+          if (!identical(status, 0L)) {
+            stop("Package installation failed.")
+          }
 
       - name: Run live database tests
         shell: Rscript {0}
