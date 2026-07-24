@@ -85,6 +85,8 @@ jobs:
 
       - name: Run live database tests
         shell: Rscript {0}
+        with:
+          path: ${{ env.R_LIBS_USER }}
         run: |
           print(.libPaths())
           .libPaths(c(Sys.getenv("R_LIBS_USER"), .libPaths()))
