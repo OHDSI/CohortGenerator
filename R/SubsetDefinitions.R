@@ -411,7 +411,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
     checkmate::assertSubset(targetCohortIds, cohortDefinitionSet$cohortId)
   } else {
     targetCohortIds <- cohortDefinitionSet %>%
-      dplyr::filter(!.data$isSubset) %>%
+      dplyr::filter(!isSubset) %>%
       dplyr::select("cohortId") %>%
       dplyr::pull()
   }
@@ -445,7 +445,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
     if (overwriteExisting) {
       # Remove any cohorts that were created with this definition
       cohortDefinitionSet <- cohortDefinitionSet %>%
-        dplyr::filter(is.na(.data$subsetDefinitionId) | .data$subsetDefinitionId != subsetDefinitionCopy$definitionId)
+        dplyr::filter(is.na(subsetDefinitionId) | subsetDefinitionId != subsetDefinitionCopy$definitionId)
     } else {
       stop(
         "Existing definition of id ", subsetDefinitionCopy$definitionId,

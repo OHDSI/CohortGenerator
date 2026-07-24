@@ -172,8 +172,8 @@ test_that("Call runCohortGeneration and verify censoring of minimum cell counts"
   spec <- CohortGenerator::readCsv(
     file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
   ) %>%
-    dplyr::filter(tolower(.data$minCellCount) == "yes") %>%
-    dplyr::arrange(.data$tableName, .data$columnName)
+    dplyr::filter(tolower(minCellCount) == "yes") %>%
+    dplyr::arrange(tableName, columnName)
 
   for (i in 1:nrow(spec)) {
     data1 <- readr::read_csv(file = file.path(testOutputFolder1, paste0(spec$tableName[i], ".csv")), col_types = readr::cols(), lazy = F)

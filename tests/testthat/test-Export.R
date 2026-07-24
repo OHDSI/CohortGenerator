@@ -537,12 +537,12 @@ test_that("Export subset attrition honors results model primary key", {
   checkmate::expect_data_frame(subsetAttrition, min.rows = 1)
 
   primaryKey <- getResultsDataModelSpecifications() %>%
-    dplyr::filter(.data$tableName == "cg_cohort_subset_attrition" & .data$primaryKey == "Yes") %>%
-    dplyr::pull(.data$columnName) %>%
+    dplyr::filter(tableName == "cg_cohort_subset_attrition" & primaryKey == "Yes") %>%
+    dplyr::pull(columnName) %>%
     SqlRender::snakeCaseToCamelCase()
   duplicatePrimaryKeys <- subsetAttrition %>%
     dplyr::count(dplyr::across(dplyr::all_of(primaryKey)), name = "n") %>%
-    dplyr::filter(.data$n > 1)
+    dplyr::filter(n > 1)
 
   expect_equal(nrow(duplicatePrimaryKeys), 0)
   unlink(subsetStatsFolder, recursive = TRUE)

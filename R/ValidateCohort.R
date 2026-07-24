@@ -81,9 +81,9 @@ getCohortValidationCounts <- function(connectionDetails = NULL,
   ParallelLogger::logInfo(paste("Computed validation checks for", nrow(result), "cohorts"))
 
   result <- result |> dplyr::mutate(
-    valid = .data$overlappingErasCount == 0 &
-      .data$invalidDateCount == 0 &
-      .data$duplicateCount == 0
+    valid = overlappingErasCount == 0 &
+      invalidDateCount == 0 &
+      duplicateCount == 0
   )
 
   delta <- Sys.time() - start

@@ -276,10 +276,10 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   # Do not attempt to load subset definition
   if ("isSubset" %in% colnames(settings)) {
     subsetsToLoad <- settings %>%
-      dplyr::filter(.data$isSubset)
+      dplyr::filter(isSubset)
 
     settings <- settings %>%
-      dplyr::filter(!.data$isSubset)
+      dplyr::filter(!isSubset)
 
     loadSubsets <- TRUE
   }
@@ -390,7 +390,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
     }
     # Don't save templates as regular cohorts
     cohortDefinitionSet <- cohortDefinitionSet |>
-      dplyr::filter(!.data$isTemplatedCohort)
+      dplyr::filter(!isTemplatedCohort)
   }
 
   settingsFolder <- dirname(settingsFileName)

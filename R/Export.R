@@ -348,7 +348,7 @@ createEmptyResult <- function(tableName) {
   columns <- readCsv(
     file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
   ) |>
-    dplyr::filter(.data$tableName == !!tableName)
+    dplyr::filter(tableName == !!tableName)
 
   # Initialize an empty list to hold columns
   resultList <- list()
@@ -390,8 +390,8 @@ getPrimaryKey <- function(tableName) {
   columns <- readCsv(
     file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
   ) %>%
-    dplyr::filter(.data$tableName == !!tableName & tolower(.data$primaryKey) == "yes") %>%
-    dplyr::pull(.data$columnName) %>%
+    dplyr::filter(tableName == !!tableName & tolower(primaryKey) == "yes") %>%
+    dplyr::pull(columnName) %>%
     SqlRender::snakeCaseToCamelCase()
   return(columns)
 }
@@ -400,8 +400,8 @@ getColumnsToCensor <- function(tableName) {
   columns <- readCsv(
     file = system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
   ) %>%
-    dplyr::filter(.data$tableName == !!tableName & tolower(.data$minCellCount) == "yes") %>%
-    dplyr::pull(.data$columnName) %>%
+    dplyr::filter(tableName == !!tableName & tolower(minCellCount) == "yes") %>%
+    dplyr::pull(columnName) %>%
     SqlRender::snakeCaseToCamelCase()
   return(columns)
 }
