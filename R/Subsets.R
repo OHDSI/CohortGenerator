@@ -246,15 +246,15 @@ SubsetOperator <- R6::R6Class(
           next
         }
 
-        if (is.null(self[[field]]) & is.null(subsetOperatorB[[field]])) {
+        if (is.null(self[[field]]) && is.null(subsetOperatorB[[field]])) {
           next
         }
 
-        if (is.null(self[[field]]) & !is.null(subsetOperatorB[[field]])) {
+        if (is.null(self[[field]]) && !is.null(subsetOperatorB[[field]])) {
           return(FALSE)
         }
 
-        if (!is.null(self[[field]]) & is.null(subsetOperatorB[[field]])) {
+        if (!is.null(self[[field]]) && is.null(subsetOperatorB[[field]])) {
           return(FALSE)
         }
 
@@ -1002,8 +1002,8 @@ createLimitSubsetOperator <- function(name = NULL,
     limitTo <- "all"
   }
 
-  if (minimumCohortDuration == 0 && priorTime == 0 & followUpTime == 0 & limitTo == "all" &
-    is.null(maximumCohortDuration) & is.null(calendarStartDate) & is.null(calendarEndDate)) {
+  if (minimumCohortDuration == 0 && priorTime == 0 && followUpTime == 0 && limitTo == "all" &&
+    is.null(maximumCohortDuration) && is.null(calendarStartDate) && is.null(calendarEndDate)) {
     stop("No limit criteria specified")
   }
 

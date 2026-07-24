@@ -98,7 +98,7 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
     primaryKey <- specifications %>%
       dplyr::filter(tableName == !!tableName &
         primaryKey == "Yes") %>%
-      dplyr::select(columnName) %>%
+      dplyr::select(dplyr::all_of(c("columnName"))) |>
       dplyr::pull()
 
     if ("database_id" %in% primaryKey) {

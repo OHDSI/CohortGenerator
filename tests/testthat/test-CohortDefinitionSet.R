@@ -164,7 +164,7 @@ test_that("Call saveCohortDefinitionSet with missing json", {
   # Fill the cohort set using  cohorts included in this
   # package as an example
   cohortJsonFiles <- list.files(path = system.file("testdata/name/cohorts", package = "CohortGenerator"), full.names = TRUE)
-  for (i in 1:length(cohortJsonFiles)) {
+  for (i in seq_along(cohortJsonFiles)) {
     cohortJsonFileName <- cohortJsonFiles[i]
     cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
     cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)

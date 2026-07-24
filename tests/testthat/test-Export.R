@@ -120,7 +120,7 @@ test_that("Export cohort stats with databaseId", {
   # Verify the files are written to the file system and have the database_id
   # present
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
-  for (i in 1:length(exportedFiles)) {
+  for (i in seq_along(exportedFiles)) {
     data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
     if (basename(exportedFiles[i]) == "cohortInclusion.csv") {
       expect_false(toupper(c("databaseId")) %in% toupper(names(data)))
@@ -168,7 +168,7 @@ test_that("Export cohort stats with fileNamesInSnakeCase = TRUE", {
   # Verify the files are written to the file system and are in snake_case
   # present
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv")
-  for (i in 1:length(exportedFiles)) {
+  for (i in seq_along(exportedFiles)) {
     expect_true(isSnakeCase(tools::file_path_sans_ext(exportedFiles[i])))
   }
   unlink(cohortStatsFolder)
@@ -238,7 +238,7 @@ test_that("Export cohort stats with camelCase for column names", {
   # Verify the files are written to the file system and the columns are in
   # camel case format
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
-  for (i in 1:length(exportedFiles)) {
+  for (i in seq_along(exportedFiles)) {
     data <- CohortGenerator:::.readCsv(exportedFiles[i])
     expect_true(all(isCamelCase(names(data))))
   }
@@ -303,7 +303,7 @@ test_that("Export cohort stats with snake_case for column names", {
   # Verify the files are written to the file system and the columns are in
   # camel case format
   exportedFiles <- list.files(path = cohortStatsFolder, pattern = ".csv", full.names = TRUE)
-  for (i in 1:length(exportedFiles)) {
+  for (i in seq_along(exportedFiles)) {
     data <- CohortGenerator:::.readCsv(exportedFiles[i])
     expect_true(all(isSnakeCase(names(data))))
   }
@@ -410,7 +410,7 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
     fileName = character(),
     rowCountFirstPass = integer()
   )
-  for (i in 1:length(exportedFiles)) {
+  for (i in seq_along(exportedFiles)) {
     data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
     firstPassRowCounts <- rbind(
       firstPassRowCounts,
@@ -439,7 +439,7 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
     fileName = character(),
     rowCountSecondPass = integer()
   )
-  for (i in 1:length(exportedFiles)) {
+  for (i in seq_along(exportedFiles)) {
     data <- CohortGenerator:::.readCsv(file = exportedFiles[i])
     secondPassRowCounts <- rbind(
       secondPassRowCounts,
@@ -451,7 +451,7 @@ test_that("Export cohort stats multiple times in incremental mode - expect the s
   }
 
   compareRowCounts <- merge(firstPassRowCounts, secondPassRowCounts)
-  for (i in 1:nrow(compareRowCounts)) {
+  for (i in seq_len(nrow(compareRowCounts))) {
     expect_equal(compareRowCounts$rowCountFirstPass[i], compareRowCounts$rowCountSecondPass[i])
   }
 

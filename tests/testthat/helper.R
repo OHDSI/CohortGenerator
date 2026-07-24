@@ -24,7 +24,7 @@ generateSql <- function(cohortJsonFileName, generateStats = FALSE) {
 # definition
 getCohortsForTest <- function(cohorts, generateStats = FALSE) {
   cohortSql <- data.frame()
-  for (i in 1:nrow(cohorts)) {
+  for (i in seq_len(nrow(cohorts))) {
     cohortSql <- rbind(cohortSql, data.frame(sql = generateSql(cohorts$cohortJsonFile[i], generateStats)))
   }
   if (length(intersect(colnames(cohorts), c("sql"))) == 1) {
@@ -37,7 +37,7 @@ getCohortsForTest <- function(cohorts, generateStats = FALSE) {
 # This will gather all of the cohort JSON in the package for use in the tests
 cohortJsonFiles <- list.files(path = system.file("testdata/name/cohorts", package = "CohortGenerator"), full.names = TRUE)
 cohorts <- setNames(data.frame(matrix(ncol = 5, nrow = 0), stringsAsFactors = FALSE), c("atlasId", "cohortId", "cohortName", "json", "cohortJsonFile"))
-for (i in 1:length(cohortJsonFiles)) {
+for (i in seq_along(cohortJsonFiles)) {
   cohortJsonFileName <- cohortJsonFiles[i]
   cohortFullName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
   cohortJson <- readChar(cohortJsonFileName, file.info(cohortJsonFileName)$size)

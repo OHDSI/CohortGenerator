@@ -101,7 +101,7 @@ createCohortTables <- function(connectionDetails = NULL,
   })
   if (incremental) {
     tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
-    for (i in 1:length(cohortTableNames)) {
+    for (i in seq_along(cohortTableNames)) {
       if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
         createTableFlagList[i] <- FALSE
         rlang::inform(paste0("Table \"", cohortTableNames[i], "\" already exists and in incremental mode, so not recreating it."))
@@ -149,7 +149,7 @@ createCohortTables <- function(connectionDetails = NULL,
     logCreateTableMessage <- function(schema, tableName) {
       rlang::inform(paste0("- Created table ", schema, ".", tableName))
     }
-    for (i in 1:length(createTableFlagList)) {
+    for (i in seq_along(createTableFlagList)) {
       if (createTableFlagList[[i]]) {
         logCreateTableMessage(schema = cohortDatabaseSchema, tableName = cohortTableNames[i])
       }
@@ -215,7 +215,7 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
     x <- FALSE
   })
   tables <- DatabaseConnector::getTableNames(connection, cohortDatabaseSchema)
-  for (i in 1:length(cohortTableNames)) {
+  for (i in seq_along(cohortTableNames)) {
     if (toupper(cohortTableNames[i]) %in% toupper(tables)) {
       tableExistsFlagList[i] <- TRUE
     }
@@ -223,7 +223,7 @@ dropCohortStatsTables <- function(connectionDetails = NULL,
 
   if (!all(unlist(tableExistsFlagList, use.names = FALSE))) {
     errorMsg <- "The following tables have not been created: \n"
-    for (i in 1:length(cohortTableNames)) {
+    for (i in seq_along(cohortTableNames)) {
       if (!tableExistsFlagList[[i]]) {
         errorMsg <- paste0(errorMsg, "   - ", cohortTableNames[i], "\n")
       }
