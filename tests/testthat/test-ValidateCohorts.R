@@ -66,29 +66,29 @@ VALUES
   checkmate::expect_data_frame(validationCounts)
 
   expect_equal(
-    validationCounts |> dplyr::filter(cohortDefinitionId == 1) |> dplyr::pull("overlappingErasCount"), 1
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 1) |> dplyr::pull("overlappingErasCount"), 1
   )
 
   expect_equal(
-    validationCounts |> dplyr::filter(cohortDefinitionId == 2) |> dplyr::pull("invalidDateCount"), 2
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 2) |> dplyr::pull("invalidDateCount"), 2
   )
   expect_equal(
-    validationCounts |> dplyr::filter(cohortDefinitionId == 3) |> dplyr::pull("duplicateCount"), 1
-  )
-
-  expect_equal(
-    validationCounts |> dplyr::filter(cohortDefinitionId == 4) |> dplyr::pull("outsideObservationStartCount"), 1
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 3) |> dplyr::pull("duplicateCount"), 1
   )
 
   expect_equal(
-    validationCounts |> dplyr::filter(cohortDefinitionId == 4) |> dplyr::pull("outsideObservationEndCount"), 1
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 4) |> dplyr::pull("outsideObservationStartCount"), 1
+  )
+
+  expect_equal(
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 4) |> dplyr::pull("outsideObservationEndCount"), 1
   )
 
   expect_false(
-    all(validationCounts |> dplyr::filter(cohortDefinitionId != 5) |> dplyr::pull("valid"))
+    all(validationCounts |> dplyr::filter(.data$cohortDefinitionId != 5) |> dplyr::pull("valid"))
   )
 
   expect_true(
-    validationCounts |> dplyr::filter(cohortDefinitionId == 5) |> dplyr::pull("valid")
+    validationCounts |> dplyr::filter(.data$cohortDefinitionId == 5) |> dplyr::pull("valid")
   )
 })

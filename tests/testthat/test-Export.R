@@ -542,7 +542,7 @@ test_that("Export subset attrition honors results model primary key", {
     SqlRender::snakeCaseToCamelCase()
   duplicatePrimaryKeys <- subsetAttrition %>%
     dplyr::count(dplyr::across(dplyr::all_of(primaryKey)), name = "n") %>%
-    dplyr::filter(n > 1)
+    dplyr::filter(.data$n > 1)
 
   expect_equal(nrow(duplicatePrimaryKeys), 0)
   unlink(subsetStatsFolder, recursive = TRUE)

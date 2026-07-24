@@ -167,7 +167,7 @@ generateCohortSet <- function(connectionDetails = NULL,
 
   .checkCohortTables(connection, cohortDatabaseSchema, cohortTableNames)
   if ("isTemplatedCohort" %in% colnames(cohortDefinitionSet)) {
-    cohortDefinitionSet <- cohortDefinitionSet |> dplyr::filter(!isTemplatedCohort)
+    cohortDefinitionSet <- cohortDefinitionSet |> dplyr::filter(!.data$isTemplatedCohort)
 
 
     if (nrow(cohortDefinitionSet) == 0) {
@@ -215,12 +215,12 @@ generateCohortSet <- function(connectionDetails = NULL,
 
     uncomputedCohorts <- cohortDefinitionSet |>
       dplyr::left_join(computedChecksums, by = c("cohortId" = "cohortDefinitionId")) |>
-      dplyr::filter(checksum != lastChecksum | is.na(lastChecksum)) |> # only compute items where the stored checksum differs
+      dplyr::filter(.data$checksum != .data$lastChecksum | is.na(.data$lastChecksum)) |> # only compute items where the stored checksum differs
       dplyr::select(dplyr::all_of(colnames(cohortDefinitionSet)))
 
     computedCohorts <- cohortDefinitionSet |>
       dplyr::left_join(computedChecksums, by = c("cohortId" = "cohortDefinitionId")) |>
-      dplyr::filter(checksum == lastChecksum) |>
+      dplyr::filter(.data$checksum == .data$lastChecksum) |>
       dplyr::select("cohortId", "cohortName", "checksum", "startTime", "endTime") |>
       dplyr::mutate(generationStatus = "SKIPPED")
 
@@ -236,12 +236,12 @@ generateCohortSet <- function(connectionDetails = NULL,
   # Generate top level cohorts first
   if (isTRUE(attr(uncomputedCohorts, "hasSubsetDefinitions"))) {
     cohortsToGenerate <- uncomputedCohorts %>%
-      dplyr::filter(!isSubset) %>%
+      dplyr::filter(!.data$isSubset) %>%
       dplyr::select("cohortId") %>%
       dplyr::pull()
 
     subsetsToGenerate <- uncomputedCohorts %>%
-      dplyr::filter(isSubset) %>%
+      dplyr::filter(.data$isSubset) %>%
       dplyr::select("cohortId") %>%
       dplyr::pull()
   }

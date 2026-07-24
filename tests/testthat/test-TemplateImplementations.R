@@ -46,6 +46,7 @@ test_that("createSnomedCohortTemplateDefinition", {
     ),
     regexp = "Input SQL has already been translated"
   )
+  
   # check the count is consistent with expectations
   count <- getCohortCounts(
     connection = connection,

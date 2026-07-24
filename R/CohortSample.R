@@ -223,7 +223,7 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
   sampledCohorts <-
     base::Map(function(seed, targetCohortId) {
       sampledCohortDefinition <- cohortDefinitionSet %>%
-        dplyr::filter(cohortId == targetCohortId)
+        dplyr::filter(.data$cohortId == targetCohortId)
 
       sampledCohortDefinition$isSample <- TRUE
       sampledCohortDefinition$status <- "ungenerated"
@@ -259,8 +259,8 @@ sampleCohortDefinitionSet <- function(cohortDefinitionSet,
       sampleChecksum <- computeChecksum(paste0(sampledCohortDefinition$sql, n, seed, outputCohortId))
       cohortComputed <- computedChecksums |>
         dplyr::filter(
-          checksum == sampleChecksum,
-          cohortDefinitionId == outputCohortId
+          .data$checksum == sampleChecksum,
+          .data$cohortDefinitionId == outputCohortId
         ) |>
         dplyr::count() |>
         dplyr::pull() > 0

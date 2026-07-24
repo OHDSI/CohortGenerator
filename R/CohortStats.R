@@ -345,8 +345,8 @@ computeCohortAttrition <- function(cohortInclusionResult,
   }
 
   base <- result %>%
-    dplyr::group_by(databaseId, cohortDefinitionId, modeId) %>%
-    dplyr::summarise(personCount = sum(personCount, na.rm = TRUE), .groups = "drop") %>%
+    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId) %>%
+    dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
     dplyr::mutate(
       cohortEntry = 1L,
       ruleSequence = as.integer(-1)
@@ -359,9 +359,9 @@ computeCohortAttrition <- function(cohortInclusionResult,
 
   ruleRows <- result %>%
     dplyr::inner_join(rules, by = "cohortDefinitionId", relationship = "many-to-many") %>%
-    dplyr::filter(bitwAnd(inclusionRuleMask, requiredMask) == requiredMask) %>%
-    dplyr::group_by(databaseId, cohortDefinitionId, modeId, ruleSequence) %>%
-    dplyr::summarise(personCount = sum(personCount, na.rm = TRUE), .groups = "drop") %>%
+    dplyr::filter(bitwAnd(.data$inclusionRuleMask, .data$requiredMask) == .data$requiredMask) %>%
+    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
+    dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
     dplyr::mutate(
       cohortEntry = 0L
     )
@@ -389,7 +389,7 @@ computeCohortAttrition <- function(cohortInclusionResult,
 
   output <- dplyr::bind_rows(base, ruleRows, zeroCountRuleRows) %>%
     dplyr::select(all_of(emptyColumns)) %>%
-    dplyr::arrange(cohortDefinitionId, modeId, dplyr::desc(cohortEntry), ruleSequence)
+    dplyr::arrange(.data$cohortDefinitionId, .data$modeId, dplyr::desc(.data$cohortEntry), .data$ruleSequence)
 
   return(output)
 }
