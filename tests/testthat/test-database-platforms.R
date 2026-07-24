@@ -32,8 +32,8 @@ test_that("missing selected DBMS returns NULL", {
 
 test_that("unknown selected DBMS fails fast", {
   expect_error(
-    getDatabasePlatformConfig("oracle"),
-    "Database platform 'oracle' is not declared by CohortGenerator."
+    getDatabasePlatformConfig("foo"),
+    "Database platform 'foo' is not declared by CohortGenerator."
   )
 })
 
@@ -107,18 +107,21 @@ test_that("BigQuery is only supported on Windows", {
 })
 
 test_that("database test context is assembled from resolved settings", {
-  testthat::local_mocked_bindings(
-    resolveDatabasePlatformSettings = function(dbmsPlatform, jdbcDriverFolder = getJdbcDriverFolder()) {
-      list(
-        connectionDetails = list(dbms = dbmsPlatform),
-        cdmDatabaseSchema = "cdm_schema",
-        vocabularyDatabaseSchema = "vocab_schema",
-        cohortDatabaseSchema = "cohort_schema",
-        tempEmulationSchema = "temp_schema",
-        needsDrivers = TRUE,
-        needsWindowsOnly = TRUE
-      )
-    }
+  oldResolveDatabasePlatformSettings <- resolveDatabasePlatformSettings
+  resolveDatabasePlatformSettings <<- function(dbmsPlatform, jdbcDriverFolder = getJdbcDriverFolder()) {
+    list(
+      connectionDetails = list(dbms = dbmsPlatform),
+      cdmDatabaseSchema = "cdm_schema",
+      vocabularyDatabaseSchema = "vocab_schema",
+      cohortDatabaseSchema = "cohort_schema",
+      tempEmulationSchema = "temp_schema",
+      needsDrivers = TRUE,
+      needsWindowsOnly = TRUE
+    )
+  }
+  on.exit(
+    resolveDatabasePlatformSettings <<- oldResolveDatabasePlatformSettings,
+    add = TRUE
   )
 
   ctx <- getDatabaseTestContext("postgresql", jdbcDriverFolder = "C:/tmp")
