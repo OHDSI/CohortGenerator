@@ -48,6 +48,20 @@ jobs:
         with:
           r-version: release
 
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
@@ -71,39 +85,8 @@ jobs:
         run: |    
           sudo apt-get install libssh-dev
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: |
-            any::remotes
-            any::testthat
-          needs: check
-
-      - name: Build package
+      - name: Check
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-build-vignettes", "--ignore-vignettes", "--no-examples"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
-        run: |
-          system("R CMD build . --no-build-vignettes --no-manual")
-
-      - name: Install package
-        shell: Rscript {0}
-        run: |
-          tarball <- list.files(pattern = "^CohortGenerator_.*\\.tar\\.gz$", full.names = TRUE)
-          stopifnot(length(tarball) == 1)
-          lib <- Sys.getenv("R_LIBS_USER")
-          dir.create(lib, recursive = TRUE, showWarnings = FALSE)
-          status <- system2("R", c("CMD", "INSTALL", "--library", lib, tarball))
-          if (!identical(status, 0L)) {
-            stop("Package installation failed.")
-          }
-
-      - name: Run live database tests
-        shell: Rscript {0}
-        run: |
-          print(.libPaths())
-          print(Sys.getenv("R_LIBS_USER"))
-          .libPaths(c(Sys.getenv("R_LIBS_USER"), .libPaths()))
-          print(.libPaths())
-          library(CohortGenerator, lib.loc = Sys.getenv("R_LIBS_USER"))
-          testthat::test_file(
-            "tests/testthat/test-dbms-platforms.R",
-            reporter = "summary"
-          )
