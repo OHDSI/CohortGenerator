@@ -58,10 +58,22 @@ jobs:
           extra-packages: any::testthat
           needs: check
 
+      - name: Build package
+        shell: Rscript {0}
+        run: |
+          system("R CMD build . --no-build-vignettes --no-manual")
+
+      - name: Install package
+        shell: Rscript {0}
+        run: |
+          tarball <- list.files(pattern = "^CohortGenerator_.*\\.tar\\.gz$", full.names = TRUE)
+          stopifnot(length(tarball) == 1)
+          install.packages(tarball, repos = NULL, type = "source")
+
       - name: Run live database tests
         shell: Rscript {0}
         run: |
-          devtools::load_all(".")
+          library(CohortGenerator)
           testthat::test_file(
             "tests/testthat/test-dbms-platforms.R",
             reporter = "summary"
