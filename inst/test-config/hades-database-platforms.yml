@@ -10,7 +10,7 @@ platforms:
     required: false
     ci: none
     environmentPrefix: SQLITE
-    cdmVersion: "n/a"
+    cdmVersion: "5.4"
     connectionMode: local
     tempEmulationSchema: false
 
