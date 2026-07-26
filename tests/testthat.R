@@ -2,7 +2,7 @@ library(testthat)
 library(CohortGenerator)
 
 if (identical(tolower(Sys.getenv("HADES_DATABASE_TEST", unset = "false")), "true")) {
-  dbms <- getSelectedTestDbms()
+  dbms <- trimws(Sys.getenv("HADES_TEST_DBMS", unset = ""))
   if (!nzchar(dbms)) {
     stop("HADES_DATABASE_TEST is TRUE but HADES_TEST_DBMS is not set.", call. = FALSE)
   }
