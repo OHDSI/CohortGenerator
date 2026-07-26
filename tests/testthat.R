@@ -12,10 +12,7 @@ if (identical(tolower(Sys.getenv("HADES_DATABASE_TEST", unset = "false")), "true
       dbms
     )
   )
-  testthat::test_file(
-    file.path("tests", "testthat", "test-dbms-platforms.R"),
-    reporter = "summary"
-  )
+  testthat::test_dir("tests/testthat", filter = "dbms-platforms", reporter = "summary")
 } else {
   test_check("CohortGenerator")
 }
