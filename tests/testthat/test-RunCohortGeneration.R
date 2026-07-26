@@ -1,6 +1,8 @@
 library(testthat)
 library(CohortGenerator)
 
+skipIfLiveDatabaseTest()
+
 # Exception Handling -------------
 test_that("Call runCohortGeneration without connectionDetails", {
   expect_error(runCohortGeneration(), message = "(connection details)")

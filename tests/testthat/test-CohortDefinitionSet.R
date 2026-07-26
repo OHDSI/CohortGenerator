@@ -2,6 +2,8 @@ library(testthat)
 library(CohortGenerator)
 
 # getCohortDefinitionSet ---------
+skipIfLiveDatabaseTest()
+
 test_that("Call getCohortDefinitionSet with missing settingsFile", {
   exportFolder <- file.path(outputFolder, "export")
   expect_error(getCohortDefinitionSet(cohortDefinitionSet = file.path(exportFolder, "CohortsToCreate.csv")))

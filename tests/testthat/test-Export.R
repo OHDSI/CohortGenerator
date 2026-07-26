@@ -1,6 +1,8 @@
 library(testthat)
 library(CohortGenerator)
 
+skipIfLiveDatabaseTest()
+
 # export cohort stats tests --------------
 test_that("Export cohort stats with permanent tables", {
   cohortTableNames <- getCohortTableNames(cohortTable = "cohortStatsPerm")

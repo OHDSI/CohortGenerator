@@ -1,3 +1,5 @@
+skipIfLiveDatabaseTest()
+
 test_that("Subset definition", {
   cohortDefinitionSet <- getCohortDefinitionSet(
     settingsFileName = "testdata/name/Cohorts.csv",

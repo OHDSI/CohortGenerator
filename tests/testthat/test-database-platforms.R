@@ -1,3 +1,5 @@
+skipIfLiveDatabaseTest()
+
 test_that("database test config loads the full platform list", {
   config <- getDatabaseTestConfig()
 

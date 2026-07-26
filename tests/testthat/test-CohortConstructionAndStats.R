@@ -3,6 +3,8 @@ library(CohortGenerator)
 
 # Exception Handling -------------
 # generateCohortSet ---------
+skipIfLiveDatabaseTest()
+
 test_that("Call generateCohortSet without connection or connectionDetails", {
   expect_error(generateCohortSet(cohortDefinitionSet = getCohortsForTest(cohorts)),
     message = "(connection details)"

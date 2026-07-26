@@ -69,6 +69,12 @@ isCiDatabaseTest <- function() {
   )
 }
 
+skipIfLiveDatabaseTest <- function() {
+  if (isCiDatabaseTest()) {
+    testthat::skip("Skipping non-database tests in live database mode.")
+  }
+}
+
 getJdbcDriverFolder <- function() {
   if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
     Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
