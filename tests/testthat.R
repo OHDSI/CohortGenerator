@@ -13,7 +13,7 @@ if (identical(tolower(Sys.getenv("HADES_DATABASE_TEST", unset = "false")), "true
     )
   )
   testthat::test_file(
-    system.file("testthat", "test-dbms-platforms.R", package = "CohortGenerator"),
+    system.file("tests", "testthat", "test-dbms-platforms.R", package = "CohortGenerator"),
     reporter = "summary"
   )
 } else {
