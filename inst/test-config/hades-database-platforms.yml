@@ -2,7 +2,7 @@ schemaVersion: 1
 
 package: CohortGenerator
 
-databaseConnection: subset
+databaseConnection: all
 
 platforms:
   - dbms: sqlite

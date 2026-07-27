@@ -125,6 +125,18 @@ getSparkDatabaseEnvironmentVariables <- function() {
   )
 }
 
+normalizeSparkConnectionString <- function(connectionString) {
+  if (!nzchar(connectionString) || grepl("EnableArrow=0", connectionString, fixed = TRUE)) {
+    return(connectionString)
+  }
+
+  if (grepl(";$", connectionString)) {
+    paste0(connectionString, "EnableArrow=0")
+  } else {
+    paste0(connectionString, ";EnableArrow=0")
+  }
+}
+
 getSqlServerDatabaseEnvironmentVariables <- function() {
   c(
     "CDM5_SQL_SERVER_USER",
@@ -199,9 +211,21 @@ getSparkConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder()) 
     dbms = "spark",
     user = Sys.getenv("CDM5_SPARK_USER"),
     password = URLdecode(Sys.getenv("CDM5_SPARK_PASSWORD")),
-    connectionString = Sys.getenv("CDM5_SPARK_CONNECTION_STRING"),
+    connectionString = normalizeSparkConnectionString(Sys.getenv("CDM5_SPARK_CONNECTION_STRING")),
     pathToDriver = jdbcDriverFolder
   )
+}
+
+normalizeSnowflakeConnectionString <- function(connectionString) {
+  if (!nzchar(connectionString) || grepl("JDBC_QUERY_RESULT_FORMAT=JSON", connectionString, fixed = TRUE)) {
+    return(connectionString)
+  }
+
+  if (grepl("\\?", connectionString, fixed = TRUE)) {
+    paste0(connectionString, "&JDBC_QUERY_RESULT_FORMAT=JSON")
+  } else {
+    paste0(connectionString, "?JDBC_QUERY_RESULT_FORMAT=JSON")
+  }
 }
 
 getSqlServerConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
@@ -219,7 +243,7 @@ getSnowflakeConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder
     dbms = "snowflake",
     user = Sys.getenv("CDM_SNOWFLAKE_USER"),
     password = URLdecode(Sys.getenv("CDM_SNOWFLAKE_PASSWORD")),
-    connectionString = Sys.getenv("CDM_SNOWFLAKE_CONNECTION_STRING"),
+    connectionString = normalizeSnowflakeConnectionString(Sys.getenv("CDM_SNOWFLAKE_CONNECTION_STRING")),
     pathToDriver = jdbcDriverFolder
   )
 }

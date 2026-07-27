@@ -72,6 +72,36 @@ test_that("environment variables are mapped per platform", {
   )
 })
 
+test_that("Spark connection strings are normalized to disable Arrow when missing", {
+  expect_equal(
+    normalizeSparkConnectionString(
+      "jdbc:databricks://server:443/db;transportMode=http;ssl=1;AuthMech=3;httpPath=/sql/1.0/warehouses/68446dd1e8d16d66;"
+    ),
+    "jdbc:databricks://server:443/db;transportMode=http;ssl=1;AuthMech=3;httpPath=/sql/1.0/warehouses/68446dd1e8d16d66;EnableArrow=0"
+  )
+  expect_equal(
+    normalizeSparkConnectionString(
+      "jdbc:databricks://server:443/db;transportMode=http;ssl=1;AuthMech=3;EnableArrow=0;httpPath=/sql/1.0/warehouses/68446dd1e8d16d66;"
+    ),
+    "jdbc:databricks://server:443/db;transportMode=http;ssl=1;AuthMech=3;EnableArrow=0;httpPath=/sql/1.0/warehouses/68446dd1e8d16d66;"
+  )
+})
+
+test_that("Snowflake connection strings are normalized to request JSON results when missing", {
+  expect_equal(
+    normalizeSnowflakeConnectionString(
+      "jdbc:snowflake://server.snowflakecomputing.com?db=db&warehouse=wh"
+    ),
+    "jdbc:snowflake://server.snowflakecomputing.com?db=db&warehouse=wh&JDBC_QUERY_RESULT_FORMAT=JSON"
+  )
+  expect_equal(
+    normalizeSnowflakeConnectionString(
+      "jdbc:snowflake://server.snowflakecomputing.com?db=db&warehouse=wh&JDBC_QUERY_RESULT_FORMAT=JSON"
+    ),
+    "jdbc:snowflake://server.snowflakecomputing.com?db=db&warehouse=wh&JDBC_QUERY_RESULT_FORMAT=JSON"
+  )
+})
+
 test_that("validateDatabaseTestEnvironment reports missing variables locally", {
   withr::with_envvar(
     c(
