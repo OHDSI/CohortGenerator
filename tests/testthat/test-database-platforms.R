@@ -8,7 +8,7 @@ test_that("database test config loads the full platform list", {
   expect_equal(config$databaseConnection, "subset")
   expect_equal(
     vapply(config$platforms, function(platform) platform$dbms, character(1)),
-    c("sqlite", "postgresql", "sql server", "oracle", "redshift", "spark", "bigquery", "snowflake")
+    c("sqlite", "postgresql", "sql server", "oracle", "redshift", "spark", "bigquery", "snowflake", "iris")
   )
   expect_true(all(vapply(config$platforms, function(platform) isTRUE(platform$enabled), logical(1))))
 })
@@ -58,6 +58,16 @@ test_that("environment variables are mapped per platform", {
       "CDM5_SQL_SERVER_SERVER",
       "CDM5_SQL_SERVER_CDM_SCHEMA",
       "CDM5_SQL_SERVER_OHDSI_SCHEMA"
+    )
+  )
+  expect_setequal(
+    getRequiredDatabaseEnvironmentVariables("iris"),
+    c(
+      "CDM_IRIS_USER",
+      "CDM_IRIS_PASSWORD",
+      "CDM_IRIS_CONNECTION_STRING",
+      "CDM_IRIS_CDM_SCHEMA",
+      "CDM_IRIS_OHDSI_SCHEMA"
     )
   )
 })

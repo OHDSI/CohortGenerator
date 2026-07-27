@@ -77,3 +77,12 @@ platforms:
     cdmVersion: "5.4"
     connectionMode: connectionString
     tempEmulationSchema: true
+
+  - dbms: iris
+    enabled: true
+    required: true
+    ci: scheduled
+    environmentPrefix: CDM_IRIS
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    tempEmulationSchema: false

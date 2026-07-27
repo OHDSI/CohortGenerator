@@ -154,6 +154,16 @@ getSnowflakeDatabaseEnvironmentVariables <- function() {
   )
 }
 
+getIrisDatabaseEnvironmentVariables <- function() {
+  c(
+    "CDM_IRIS_USER",
+    "CDM_IRIS_PASSWORD",
+    "CDM_IRIS_CONNECTION_STRING",
+    "CDM_IRIS_CDM_SCHEMA",
+    "CDM_IRIS_OHDSI_SCHEMA"
+  )
+}
+
 getPostgresqlConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
   DatabaseConnector::createConnectionDetails(
     dbms = "postgresql",
@@ -210,6 +220,16 @@ getSnowflakeConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder
     user = Sys.getenv("CDM_SNOWFLAKE_USER"),
     password = URLdecode(Sys.getenv("CDM_SNOWFLAKE_PASSWORD")),
     connectionString = Sys.getenv("CDM_SNOWFLAKE_CONNECTION_STRING"),
+    pathToDriver = jdbcDriverFolder
+  )
+}
+
+getIrisConnectionDetails <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  DatabaseConnector::createConnectionDetails(
+    dbms = "iris",
+    user = Sys.getenv("CDM_IRIS_USER"),
+    password = URLdecode(Sys.getenv("CDM_IRIS_PASSWORD")),
+    connectionString = Sys.getenv("CDM_IRIS_CONNECTION_STRING"),
     pathToDriver = jdbcDriverFolder
   )
 }
@@ -319,6 +339,18 @@ getSnowflakeDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder(
   )
 }
 
+getIrisDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
+  list(
+    connectionDetails = getIrisConnectionDetails(jdbcDriverFolder),
+    cdmDatabaseSchema = Sys.getenv("CDM_IRIS_CDM_SCHEMA"),
+    vocabularyDatabaseSchema = Sys.getenv("CDM_IRIS_CDM_SCHEMA"),
+    cohortDatabaseSchema = Sys.getenv("CDM_IRIS_OHDSI_SCHEMA"),
+    tempEmulationSchema = NULL,
+    needsDrivers = TRUE,
+    needsWindowsOnly = FALSE
+  )
+}
+
 getBigQueryDatabaseSettings <- function(jdbcDriverFolder = getJdbcDriverFolder()) {
   list(
     connectionDetails = getBigQueryConnectionDetails(jdbcDriverFolder),
@@ -375,6 +407,7 @@ getRequiredDatabaseEnvironmentVariables <- function(dbmsPlatform) {
     "sql server" = getSqlServerDatabaseEnvironmentVariables(),
     bigquery = getBigQueryDatabaseEnvironmentVariables(),
     snowflake = getSnowflakeDatabaseEnvironmentVariables(),
+    iris = getIrisDatabaseEnvironmentVariables(),
     stop(sprintf("Unsupported DBMS '%s'.", dbmsPlatform), call. = FALSE)
   )
 }
@@ -423,6 +456,10 @@ resolveDatabasePlatformSettings <- function(dbmsPlatform, jdbcDriverFolder = get
 
   if (dbmsPlatform == "snowflake") {
     return(getSnowflakeDatabaseSettings(jdbcDriverFolder))
+  }
+
+  if (dbmsPlatform == "iris") {
+    return(getIrisDatabaseSettings(jdbcDriverFolder))
   }
 
   if (dbmsPlatform == "spark") {

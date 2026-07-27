@@ -39,6 +39,8 @@ jobs:
             environment: test-bigquery
           - dbms: snowflake
             environment: test-snowflake
+          - dbms: iris
+            environment: test-iris
 
     environment: ${{ matrix.environment }}
 
@@ -81,6 +83,11 @@ jobs:
       CDM_SNOWFLAKE_CONNECTION_STRING: ${{ secrets.CDM_SNOWFLAKE_CONNECTION_STRING }}
       CDM_SNOWFLAKE_PASSWORD: ${{ secrets.CDM_SNOWFLAKE_PASSWORD }}
       CDM_SNOWFLAKE_USER: ${{ secrets.CDM_SNOWFLAKE_USER }}
+      CDM_IRIS_CDM_SCHEMA: ${{ secrets.CDM_IRIS_CDM54_SCHEMA }}
+      CDM_IRIS_OHDSI_SCHEMA: ${{ secrets.CDM_IRIS_OHDSI_SCHEMA }}
+      CDM_IRIS_PASSWORD: ${{ secrets.CDM_IRIS_PASSWORD }}
+      CDM_IRIS_CONNECTION_STRING: ${{ secrets.CDM_IRIS_CONNECTION_STRING }}
+      CDM_IRIS_USER: ${{ secrets.CDM_IRIS_USER }}
 
     steps:
       - uses: actions/checkout@v4
@@ -137,4 +144,3 @@ jobs:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran", "--no-multiarch"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
-
