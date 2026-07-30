@@ -5,7 +5,7 @@ test_that("database test config loads the full platform list", {
 
   expect_equal(config$schemaVersion, 1)
   expect_equal(config$package, "CohortGenerator")
-  expect_equal(config$databaseConnection, "subset")
+  expect_equal(config$databaseConnection, "all")
   expect_equal(
     vapply(config$platforms, function(platform) platform$dbms, character(1)),
     c("sqlite", "postgresql", "sql server", "oracle", "redshift", "spark", "bigquery", "snowflake", "iris")

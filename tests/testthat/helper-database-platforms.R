@@ -221,7 +221,7 @@ normalizeSnowflakeConnectionString <- function(connectionString) {
     return(connectionString)
   }
 
-  if (grepl("\\?", connectionString, fixed = TRUE)) {
+  if (grepl("&", connectionString, fixed = TRUE)) {
     paste0(connectionString, "&JDBC_QUERY_RESULT_FORMAT=JSON")
   } else {
     paste0(connectionString, "?JDBC_QUERY_RESULT_FORMAT=JSON")
