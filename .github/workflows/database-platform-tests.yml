@@ -1,0 +1,146 @@
+# Workflow for live database platform tests.
+name: Database platform tests
+
+on:
+  pull_request:
+    paths:
+      - 'R/**'
+      - 'tests/**'
+      - 'inst/test-config/hades-database-platforms.yml'
+      - '.github/workflows/database-platform-tests.yml'
+  push:
+    paths:
+      - 'R/**'
+      - 'tests/**'
+      - 'inst/test-config/hades-database-platforms.yml'
+      - '.github/workflows/database-platform-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  database-test:
+    name: Database test (${{ matrix.dbms }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dbms: postgresql
+            environment: test-postgresql
+          - dbms: sql server
+            environment: test-sql-server
+          - dbms: oracle
+            environment: test-oracle
+          - dbms: redshift
+            environment: test-redshift
+          - dbms: spark
+            environment: test-spark
+          - dbms: bigquery
+            environment: test-bigquery
+          - dbms: snowflake
+            environment: test-snowflake
+          - dbms: iris
+            environment: test-iris
+
+    environment: ${{ matrix.environment }}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+      HADES_DATABASE_TEST: 'true'
+      HADES_TEST_DBMS: ${{ matrix.dbms }}
+
+      CDM5_POSTGRESQL_CDM_SCHEMA: ${{ secrets.CDM5_POSTGRESQL_CDM54_SCHEMA }}
+      CDM5_POSTGRESQL_OHDSI_SCHEMA: ${{ secrets.CDM5_POSTGRESQL_OHDSI_SCHEMA }}
+      CDM5_POSTGRESQL_PASSWORD: ${{ secrets.CDM5_POSTGRESQL_PASSWORD }}
+      CDM5_POSTGRESQL_SERVER: ${{ secrets.CDM5_POSTGRESQL_SERVER }}
+      CDM5_POSTGRESQL_USER: ${{ secrets.CDM5_POSTGRESQL_USER }}
+      CDM5_SQL_SERVER_CDM_SCHEMA: ${{ secrets.CDM5_SQL_SERVER_CDM54_SCHEMA }}
+      CDM5_SQL_SERVER_OHDSI_SCHEMA: ${{ secrets.CDM5_SQL_SERVER_OHDSI_SCHEMA }}
+      CDM5_SQL_SERVER_PASSWORD: ${{ secrets.CDM5_SQL_SERVER_PASSWORD }}
+      CDM5_SQL_SERVER_SERVER: ${{ secrets.CDM5_SQL_SERVER_SERVER }}
+      CDM5_SQL_SERVER_USER: ${{ secrets.CDM5_SQL_SERVER_USER }}
+      CDM5_ORACLE_CDM_SCHEMA: ${{ secrets.CDM5_ORACLE_CDM54_SCHEMA }}
+      CDM5_ORACLE_OHDSI_SCHEMA: ${{ secrets.CDM5_ORACLE_OHDSI_SCHEMA }}
+      CDM5_ORACLE_PASSWORD: ${{ secrets.CDM5_ORACLE_PASSWORD }}
+      CDM5_ORACLE_SERVER: ${{ secrets.CDM5_ORACLE_SERVER }}
+      CDM5_ORACLE_USER: ${{ secrets.CDM5_ORACLE_USER }}
+      CDM5_REDSHIFT_CDM_SCHEMA: ${{ secrets.CDM5_REDSHIFT_CDM54_SCHEMA }}
+      CDM5_REDSHIFT_OHDSI_SCHEMA: ${{ secrets.CDM5_REDSHIFT_OHDSI_SCHEMA }}
+      CDM5_REDSHIFT_PASSWORD: ${{ secrets.CDM5_REDSHIFT_PASSWORD }}
+      CDM5_REDSHIFT_SERVER: ${{ secrets.CDM5_REDSHIFT_SERVER }}
+      CDM5_REDSHIFT_USER: ${{ secrets.CDM5_REDSHIFT_USER }}
+      CDM5_SPARK_CDM_SCHEMA: ${{ secrets.CDM5_SPARK_CDM_SCHEMA }}
+      CDM5_SPARK_OHDSI_SCHEMA: ${{ secrets.CDM5_SPARK_OHDSI_SCHEMA }}
+      CDM5_SPARK_PASSWORD: ${{ secrets.CDM5_SPARK_PASSWORD }}
+      CDM5_SPARK_CONNECTION_STRING: ${{ secrets.CDM5_SPARK_CONNECTION_STRING }}
+      CDM5_SPARK_USER: ${{ secrets.CDM5_SPARK_USER }}
+      CDM_BIG_QUERY_CDM_SCHEMA: ${{ secrets.CDM_BIG_QUERY_CDM_SCHEMA }}
+      CDM_BIG_QUERY_OHDSI_SCHEMA: ${{ secrets.CDM_BIG_QUERY_OHDSI_SCHEMA }}
+      CDM_BIG_QUERY_CONNECTION_STRING: ${{ secrets.CDM_BIG_QUERY_CONNECTION_STRING }}
+      CDM_BIG_QUERY_KEY_FILE: ${{ secrets.CDM_BIG_QUERY_KEY_FILE }}
+      CDM_SNOWFLAKE_CDM53_SCHEMA: ${{ secrets.CDM_SNOWFLAKE_CDM53_SCHEMA }}
+      CDM_SNOWFLAKE_OHDSI_SCHEMA: ${{ secrets.CDM_SNOWFLAKE_OHDSI_SCHEMA }}
+      CDM_SNOWFLAKE_CONNECTION_STRING: ${{ secrets.CDM_SNOWFLAKE_CONNECTION_STRING }}
+      CDM_SNOWFLAKE_PASSWORD: ${{ secrets.CDM_SNOWFLAKE_PASSWORD }}
+      CDM_SNOWFLAKE_USER: ${{ secrets.CDM_SNOWFLAKE_USER }}
+      CDM_IRIS_CDM_SCHEMA: ${{ secrets.CDM_IRIS_CDM_SCHEMA }}
+      CDM_IRIS_OHDSI_SCHEMA: ${{ secrets.CDM_IRIS_OHDSI_SCHEMA }}
+      CDM_IRIS_PASSWORD: ${{ secrets.CDM_IRIS_PASSWORD }}
+      CDM_IRIS_CONNECTION_STRING: ${{ secrets.CDM_IRIS_CONNECTION_STRING }}
+      CDM_IRIS_USER: ${{ secrets.CDM_IRIS_USER }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+
+      - uses: r-lib/actions/setup-tinytex@v2
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y make
+          sudo apt-get install -y default-jdk
+          sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get install -y libssl-dev
+          sudo apt-get install -y libglpk-dev
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')          
+
+      - name: Install libssh
+        if: runner.os == 'Linux'
+        run: |    
+          sudo apt-get install libssh-dev
+
+      - name: Install dependencies
+        run: |
+          install.packages("cachem")
+          remotes::install_deps(dependencies = TRUE, INSTALL_opts=c("--no-multiarch"))
+          remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
+      - name: Check
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran", "--no-multiarch"), error_on = "warning", check_dir = "check")
+        shell: Rscript {0}

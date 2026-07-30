@@ -59,7 +59,7 @@ cohortDefinitionSet <- tibble::tibble(
 )
 
 # #Save to JSON
-cohortList <- lapply(1:length(cohortDefinitionSet$cohortId), function(i) {
+cohortList <- lapply(seq_along(cohortDefinitionSet$cohortId), function(i) {
   list(
     cohortId = cohortDefinitionSet$cohortId[i],
     cohortName = cohortDefinitionSet$cohortName[i],

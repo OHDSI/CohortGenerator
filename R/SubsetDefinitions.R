@@ -431,7 +431,7 @@ addCohortSubsetDefinition <- function(cohortDefinitionSet,
   # Remove any cohorts that use this id
   findSubsetIndexById <- function(existingSubsetDefinitions, id) {
     if (length(existingSubsetDefinitions)) {
-      for (i in 1:length(existingSubsetDefinitions)) {
+      for (i in seq_along(existingSubsetDefinitions)) {
         if (existingSubsetDefinitions[[i]]$definitionId == id) {
           return(i)
         }

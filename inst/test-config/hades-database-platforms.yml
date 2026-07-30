@@ -1,0 +1,88 @@
+schemaVersion: 1
+
+package: CohortGenerator
+
+databaseConnection: all
+
+platforms:
+  - dbms: sqlite
+    enabled: true
+    required: false
+    ci: none
+    environmentPrefix: SQLITE
+    cdmVersion: "5.4"
+    connectionMode: local
+    tempEmulationSchema: false
+
+  - dbms: postgresql
+    enabled: true
+    required: true
+    ci: pull-request
+    environmentPrefix: CDM5_POSTGRESQL
+    cdmVersion: "5.4"
+    connectionMode: server
+    tempEmulationSchema: false
+
+  - dbms: sql server
+    enabled: true
+    required: true
+    ci: pull-request
+    environmentPrefix: CDM5_SQL_SERVER
+    cdmVersion: "5.4"
+    connectionMode: server
+    tempEmulationSchema: false
+
+  - dbms: oracle
+    enabled: true
+    required: true
+    ci: pull-request
+    environmentPrefix: CDM5_ORACLE
+    cdmVersion: "5.4"
+    connectionMode: server
+    tempEmulationSchema: true
+
+  - dbms: redshift
+    enabled: true
+    required: true
+    ci: scheduled
+    environmentPrefix: CDM5_REDSHIFT
+    cdmVersion: "5.4"
+    connectionMode: server
+    tempEmulationSchema: false
+
+  - dbms: spark
+    enabled: true
+    required: true
+    ci: scheduled
+    environmentPrefix: CDM5_SPARK
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    tempEmulationSchema: true
+
+  - dbms: bigquery
+    enabled: true
+    required: true
+    ci: scheduled
+    environmentPrefix: CDM_BIG_QUERY
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    credentialMode: keyFile
+    tempEmulationSchema: true
+
+  - dbms: snowflake
+    enabled: true
+    required: true
+    ci: scheduled
+    environmentPrefix: CDM_SNOWFLAKE
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    tempEmulationSchema: true
+
+  - dbms: iris
+    enabled: true
+    required: true
+    ci: scheduled
+    environmentPrefix: CDM_IRIS
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    tempEmulationSchema: false

@@ -2,6 +2,8 @@ library(testthat)
 library(CohortGenerator)
 
 # isSnakeCase Tests ---------------
+skipIfLiveDatabaseTest()
+
 test_that("isSnakeCase returns TRUE with expected case", {
   expect_true(isSnakeCase("snake_case_test"))
 })

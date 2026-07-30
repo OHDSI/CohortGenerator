@@ -1,3 +1,5 @@
+skipIfLiveDatabaseTest()
+
 test_that("Cohort subset naming and instantitation", {
   cohortSubsetNamed <- createCohortSubsetOperator(
     cohortIds = c(11, 22),

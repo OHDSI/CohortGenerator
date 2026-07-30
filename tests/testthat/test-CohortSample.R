@@ -1,3 +1,5 @@
+skipIfLiveDatabaseTest()
+
 test_that("sampleCohortDefinitionSet", {
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)

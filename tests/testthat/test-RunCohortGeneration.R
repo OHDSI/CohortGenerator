@@ -1,6 +1,8 @@
 library(testthat)
 library(CohortGenerator)
 
+skipIfLiveDatabaseTest()
+
 # Exception Handling -------------
 test_that("Call runCohortGeneration without connectionDetails", {
   expect_error(runCohortGeneration(), message = "(connection details)")
@@ -175,7 +177,7 @@ test_that("Call runCohortGeneration and verify censoring of minimum cell counts"
     dplyr::filter(tolower(.data$minCellCount) == "yes") %>%
     dplyr::arrange(.data$tableName, .data$columnName)
 
-  for (i in 1:nrow(spec)) {
+  for (i in seq_len(nrow(spec))) {
     data1 <- readr::read_csv(file = file.path(testOutputFolder1, paste0(spec$tableName[i], ".csv")), col_types = readr::cols(), lazy = F)
     data2 <- readr::read_csv(file = file.path(testOutputFolder2, paste0(spec$tableName[i], ".csv")), col_types = readr::cols(), lazy = F)
     rowsBelowMinCellCount <- which(data1[[spec$columnName[i]]] < minCellCountForTest)

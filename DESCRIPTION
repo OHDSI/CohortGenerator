@@ -42,7 +42,9 @@ Suggests:
   knitr,
   rmarkdown,
   testthat,
+  vroom,
   withr,
+  yaml,
   zip
 License: Apache License
 VignetteBuilder: knitr

@@ -344,50 +344,51 @@ computeCohortAttrition <- function(cohortInclusionResult,
     return(empty)
   }
 
-  base <- result %>%
-    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId) %>%
-    dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
+  base <- result |>
+    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId) |>
+    dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") |>
     dplyr::mutate(
       cohortEntry = 1L,
       ruleSequence = as.integer(-1)
     )
 
-  rules <- cohortInclusion %>%
-    dplyr::select(.data$cohortDefinitionId, .data$ruleSequence) %>%
-    dplyr::distinct() %>%
+  rules <- cohortInclusion |>
+    dplyr::select(dplyr::all_of(c("cohortDefinitionId", "ruleSequence"))) |>
+    dplyr::distinct() |>
     dplyr::mutate(requiredMask = 2^(.data$ruleSequence + 1) - 1)
 
-  ruleRows <- result %>%
-    dplyr::inner_join(rules, by = "cohortDefinitionId") %>%
-    dplyr::filter(bitwAnd(.data$inclusionRuleMask, .data$requiredMask) == .data$requiredMask) %>%
-    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
-    dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") %>%
+  ruleRows <- result |>
+    dplyr::inner_join(rules, by = "cohortDefinitionId", relationship = "many-to-many") |>
+    dplyr::filter(bitwAnd(.data$inclusionRuleMask, .data$requiredMask) == .data$requiredMask) |>
+    dplyr::group_by(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) |>
+    dplyr::summarise(personCount = sum(.data$personCount, na.rm = TRUE), .groups = "drop") |>
     dplyr::mutate(
       cohortEntry = 0L
     )
 
-  cohortModes <- result %>%
-    dplyr::select(.data$databaseId, .data$cohortDefinitionId, .data$modeId) %>%
+  cohortModes <- result |>
+    dplyr::select(dplyr::all_of(c("databaseId", "cohortDefinitionId", "modeId"))) |>
     dplyr::distinct()
-  zeroCountRuleRows <- cohortModes %>%
-    dplyr::inner_join(rules, by = "cohortDefinitionId") %>%
-    dplyr::select(.data$databaseId, .data$cohortDefinitionId, .data$modeId, .data$ruleSequence) %>%
+  zeroCountRuleRows <- cohortModes |>
+    dplyr::inner_join(rules, by = "cohortDefinitionId", relationship = "many-to-many") |>
+    dplyr::select(dplyr::all_of(c("databaseId", "cohortDefinitionId", "modeId", "ruleSequence"))) |>
     dplyr::left_join(ruleRows,
       by = c(
         "databaseId",
         "cohortDefinitionId",
         "modeId",
         "ruleSequence"
-      )
-    ) %>%
-    dplyr::filter(is.na(.data$personCount)) %>%
+      ),
+      relationship = "many-to-many"
+    ) |>
+    dplyr::filter(is.na(.data$personCount)) |>
     dplyr::mutate(
       cohortEntry = 0L,
       personCount = 0L
     )
 
-  output <- dplyr::bind_rows(base, ruleRows, zeroCountRuleRows) %>%
-    dplyr::select(all_of(emptyColumns)) %>%
+  output <- dplyr::bind_rows(base, ruleRows, zeroCountRuleRows) |>
+    dplyr::select(all_of(emptyColumns)) |>
     dplyr::arrange(.data$cohortDefinitionId, .data$modeId, dplyr::desc(.data$cohortEntry), .data$ruleSequence)
 
   return(output)
@@ -426,7 +427,7 @@ getCohortInclusionRules <- function(cohortDefinitionSet) {
 
   # Remove any cohort definitions that do not include the JSON property
   cohortDefinitionSet <- cohortDefinitionSet[!(is.null(cohortDefinitionSet$json) | is.na(cohortDefinitionSet$json)), ]
-  for (i in 1:nrow(cohortDefinitionSet)) {
+  for (i in seq_len(nrow(cohortDefinitionSet))) {
     cohortDefinition <- ParallelLogger::convertJsonToSettings(json = cohortDefinitionSet$json[i])
     if (!is.null(cohortDefinition$InclusionRules)) {
       nrOfRules <- length(cohortDefinition$InclusionRules)

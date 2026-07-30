@@ -2,6 +2,8 @@ library(testthat)
 library(CohortGenerator)
 
 # getCohortTableNames ---------
+skipIfLiveDatabaseTest()
+
 test_that("Call getCohortTableNames with defaults", {
   expect_equal(
     getCohortTableNames(),

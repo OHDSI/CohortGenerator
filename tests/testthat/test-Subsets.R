@@ -1,3 +1,5 @@
+skipIfLiveDatabaseTest()
+
 test_that("Subset definition", {
   cohortDefinitionSet <- getCohortDefinitionSet(
     settingsFileName = "testdata/name/Cohorts.csv",
@@ -66,7 +68,7 @@ test_that("Subset definition", {
 
   expect_true(subsetDef$subsetOperators[[1]]$isEqualTo(subsetDef$subsetOperators[[1]]))
 
-  for (i in 1:length(subsetDef2$subsetOperators)) {
+  for (i in seq_along(subsetDef2$subsetOperators)) {
     item <- subsetDef2$subsetOperators[[i]]
     itemMatch <- subsetDef$subsetOperators[[i]]
     checkmate::expect_class(item, class(itemMatch))

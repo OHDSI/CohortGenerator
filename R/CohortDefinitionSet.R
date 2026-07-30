@@ -139,8 +139,6 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   xSubset <- x[, cohortDefinitionSetColumns]
   # Get the data types
   xDataTypes <- sapply(xSubset, typeof)
-  # Get the reference data types
-  cohortDefinitionSetDataTypes <- sapply(df, typeof)
   # Check if the data types match
   # NOTE: createEmptyCohortDefinitionSet() is the reference for the data
   # types. cohortId is declared as a numeric but an integer is also fine
@@ -151,7 +149,6 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
     dataType = xDataTypes
   )
   if (!dataTypesMatch && emitWarning) {
-    dataTypesMismatch <- setdiff(x = cohortDefinitionSetDataTypes, y = xDataTypes)
     # Create a column for the warning message
     cohortDefinitionSetSpec$columnNameWithDataType <- paste(cohortDefinitionSetSpec$columnName, cohortDefinitionSetSpec$dataType, sep = " == ")
     userSuppliedCohortDefinitionSetDataTypes <- paste(names(x[1 == 0, ]), "==", sapply(x[1 == 0, ], class), collapse = "\n")
@@ -165,7 +162,7 @@ checkAndFixCohortDefinitionSetDataTypes <- function(x, fixDataTypes = TRUE, emit
   # If fixDataTypes, change the data types of the data.frame to
   # match the specification
   if (!dataTypesMatch && fixDataTypes) {
-    for (i in 1:nrow(cohortDefinitionSetSpec)) {
+    for (i in seq_len(nrow(cohortDefinitionSetSpec))) {
       colName <- cohortDefinitionSetSpec$columnName[i]
       dataType <- paste0("as.", cohortDefinitionSetSpec$dataType[i])
       x[[colName]] <- do.call(what = dataType, args = as.list(x[[colName]]))
@@ -286,7 +283,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
 
   # Read the JSON/SQL files
   fileData <- data.frame()
-  for (i in 1:nrow(settings)) {
+  for (i in seq_len(nrow(settings))) {
     cohortFileNameRoot <- .getFileNameFromCohortDefinitionSet(
       cohortDefinitionSetRow = settings[i, ],
       cohortFileNameValue = cohortFileNameValue,
@@ -305,7 +302,7 @@ getCohortDefinitionSet <- function(settingsFileName = "Cohorts.csv",
   cohortDefinitionSet <- loadTemplateDefinitionsFolder(cohortDefinitionSet, templateFolder)
 
   # Loading cohort subset definitions with their associated targets
-  if (loadSubsets & nrow(subsetsToLoad) > 0) {
+  if (loadSubsets && nrow(subsetsToLoad) > 0) {
     if (dir.exists(subsetJsonFolder)) {
       rlang::inform("Loading Cohort Subset Definitions")
 
@@ -418,8 +415,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
 
   hasSubsets <- hasSubsetDefinitions(cohortDefinitionSet)
   # Export the SQL & JSON for each entry
-  for (i in 1:nrow(cohortDefinitionSet)) {
-    cohortId <- cohortDefinitionSet$cohortId[i]
+  for (i in seq_len(nrow(cohortDefinitionSet))) {
     cohortName <- .removeNonAsciiCharacters(cohortDefinitionSet$cohortName[i])
     json <- ifelse("json" %in% names(cohortDefinitionSet), .removeNonAsciiCharacters(cohortDefinitionSet$json[i]), "{}")
     sql <- cohortDefinitionSet$sql[i]
@@ -468,7 +464,7 @@ saveCohortDefinitionSet <- function(cohortDefinitionSet,
   # Create the list of arguments to pass to stri_sprintf
   # to create the file name
   argList <- list(format = cohortFileNameFormat)
-  for (j in 1:length(cohortFileNameValue)) {
+  for (j in seq_along(cohortFileNameValue)) {
     argList <- append(argList, cohortDefinitionSetRow[1, cohortFileNameValue[j]][[1]])
   }
   fileNameRoot <- do.call(stringi::stri_sprintf, argList)
