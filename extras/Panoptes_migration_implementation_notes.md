@@ -70,6 +70,15 @@ The first trusted live workflow should confirm all eight matrix jobs. Diagnose
 the rollout beginning with PostgreSQL, then SQL Server and Oracle, followed by
 the remaining platforms.
 
+The GitHub Actions workflows use `ubuntu-latest` for Linux jobs. Legacy manual
+system dependency installation, including an Ubuntu 22.04-specific
+`remotes::system_requirements()` call, was replaced by
+`r-lib/actions/setup-r-dependencies@v2`. This delegates package and system
+dependency resolution to the standard R action for the runner image actually
+selected. The explicit Java setup is Temurin 21. BigQuery remains on
+`windows-latest` because its runner and OS are part of the current Panoptes
+platform declaration, rather than an Ubuntu compatibility workaround.
+
 ## Verification results
 
 - The Panoptes declaration and complete workflow matrix validate successfully.
