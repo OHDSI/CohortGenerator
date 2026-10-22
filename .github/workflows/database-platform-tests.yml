@@ -59,7 +59,6 @@ jobs:
       HADES_CDM_SCHEMA: ${{ secrets.HADES_CDM_SCHEMA }}
       HADES_VOCABULARY_SCHEMA: ${{ secrets.HADES_VOCABULARY_SCHEMA }}
       HADES_WORK_SCHEMA: ${{ secrets.HADES_WORK_SCHEMA }}
-      DATABASECONNECTOR_JAR_FOLDER: ${{ runner.temp }}/jdbcDrivers
 
     steps:
       - uses: actions/checkout@v4
@@ -126,6 +125,8 @@ jobs:
         shell: Rscript {0}
 
       - name: Download JDBC driver
+        env:
+          DATABASECONNECTOR_JAR_FOLDER: ${{ runner.temp }}/jdbcDrivers
         run: |
           driverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
           dir.create(driverFolder, recursive = TRUE, showWarnings = FALSE)
@@ -137,6 +138,7 @@ jobs:
 
       - name: Check
         env:
+          DATABASECONNECTOR_JAR_FOLDER: ${{ runner.temp }}/jdbcDrivers
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran", "--no-multiarch"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
