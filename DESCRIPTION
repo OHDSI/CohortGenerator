@@ -40,7 +40,7 @@ Suggests:
   Eunomia,
   ggplot2,
   knitr,
-  Panoptes (>= 0.1.0),
+  Panoptes (>= 0.2.0),
   rmarkdown,
   testthat,
   vroom,

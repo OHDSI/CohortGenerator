@@ -39,7 +39,7 @@ The branch implements the following concepts:
 
 - a package-level declaration at `inst/test-config/hades-database-platforms.yml`;
 - `databaseConnection` values of `none`, `subset`, and `all`;
-- a nine-platform declaration: SQLite plus eight external DBMS platforms;
+- a ten-platform declaration: SQLite and DuckDB plus eight external DBMS platforms;
 - selection of one platform with `HADES_TEST_DBMS`;
 - explicit live-test intent with `HADES_DATABASE_TEST`;
 - local skip versus CI failure behavior for missing environment variables;
@@ -53,7 +53,7 @@ The branch implements the following concepts:
 - opt-out of ordinary test files while the focused live-database check runs; and
 - unit tests for configuration loading, selection, environment validation, context assembly, and connection-string normalization.
 
-The external matrix currently names PostgreSQL, SQL Server, Oracle, Redshift, Spark, BigQuery, Snowflake, and IRIS. SQLite remains the local database used by the ordinary package tests.
+The external matrix currently names PostgreSQL, SQL Server, Oracle, Redshift, Spark, BigQuery, Snowflake, and IRIS. SQLite and DuckDB are local platforms and do not require external workflow rows.
 
 ## Extraction Boundary
 

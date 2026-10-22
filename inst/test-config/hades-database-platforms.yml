@@ -13,6 +13,17 @@ platforms:
     os: any
     githubEnvironment: test-sqlite
 
+  - dbms: duckdb
+    enabled: true
+    required: false
+    cdmVersion: "5.4"
+    connectionMode: local
+    credentialMode: none
+    tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-duckdb
+
   - dbms: postgresql
     enabled: true
     required: true

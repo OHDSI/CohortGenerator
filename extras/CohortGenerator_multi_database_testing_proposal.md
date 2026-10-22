@@ -92,6 +92,7 @@ The declaration identifies CohortGenerator as `databaseConnection: all` and list
 | DBMS | Enabled | Required | Workflow coverage | Connection mode |
 |---|---:|---:|---|---|
 | SQLite | Yes | No | local only | `local` |
+| DuckDB | Yes | No | local only | `local` |
 | PostgreSQL | Yes | Yes | live workflow | `server` |
 | SQL Server | Yes | Yes | live workflow | `server` |
 | Oracle | Yes | Yes | live workflow | `server` |
@@ -174,7 +175,7 @@ list(
 )
 ```
 
-External platforms receive a generated cohort table name to reduce collision risk. SQLite continues to use Eunomia and the `main` schema in ordinary tests.
+External platforms receive a generated cohort table name to reduce collision risk. SQLite continues to use Eunomia and the `main` schema in ordinary tests, while DuckDB is available as an explicitly selected local platform.
 
 ### Focused live-database execution
 

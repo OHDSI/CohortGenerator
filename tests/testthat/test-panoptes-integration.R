@@ -8,8 +8,8 @@ test_that("Panoptes finds the installed CohortGenerator declaration", {
   expect_equal(
     vapply(config$platforms, `[[`, character(1), "dbms"),
     c(
-      "sqlite", "postgresql", "sql server", "oracle", "redshift",
-      "spark", "bigquery", "snowflake", "iris"
+      "sqlite", "duckdb", "postgresql", "sql server", "oracle",
+      "redshift", "spark", "bigquery", "snowflake", "iris"
     )
   )
 })

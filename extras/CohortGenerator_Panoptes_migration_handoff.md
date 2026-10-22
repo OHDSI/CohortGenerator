@@ -183,6 +183,17 @@ platforms:
     os: any
     githubEnvironment: test-sqlite
 
+  - dbms: duckdb
+    enabled: true
+    required: false
+    cdmVersion: "5.4"
+    connectionMode: local
+    credentialMode: none
+    tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-duckdb
+
   - dbms: postgresql
     enabled: true
     required: true
@@ -279,7 +290,7 @@ config <- Panoptes::readDatabaseTestConfig(
   path = "inst/test-config/hades-database-platforms.yml"
 )
 stopifnot(config$package == "CohortGenerator")
-stopifnot(length(config$platforms) == 9L)
+stopifnot(length(config$platforms) == 10L)
 ```
 
 ## Normalize environment variables
@@ -556,8 +567,8 @@ test_that("Panoptes finds the installed CohortGenerator declaration", {
   expect_equal(
     vapply(config$platforms, `[[`, character(1), "dbms"),
     c(
-      "sqlite", "postgresql", "sql server", "oracle", "redshift",
-      "spark", "bigquery", "snowflake", "iris"
+      "sqlite", "duckdb", "postgresql", "sql server", "oracle",
+      "redshift", "spark", "bigquery", "snowflake", "iris"
     )
   )
 })

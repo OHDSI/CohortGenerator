@@ -29,6 +29,13 @@
 - Consolidated the former split workflow rows into the complete
   `database-platform-tests.yml` matrix.
 
+## Panoptes 0.2.0 update
+
+- Raised the minimum Panoptes version to 0.2.0.
+- Added DuckDB as an enabled, optional local platform in the declaration.
+- Kept DuckDB out of the external database workflow matrix, alongside SQLite.
+- Updated consumer integration expectations from nine to ten platforms.
+
 ## Implementation decisions
 
 - No legacy environment-variable bridge was retained. Local and CI live tests
