@@ -22,43 +22,83 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Legacy secret names are mapped to Panoptes HADES_* variables below.
           - dbms: postgresql
             runner: ubuntu-latest
             environment: test-postgresql
+            user_secret: CDM5_POSTGRESQL_USER
+            password_secret: CDM5_POSTGRESQL_PASSWORD
+            server_secret: CDM5_POSTGRESQL_SERVER
+            cdm_schema_secret: CDM5_POSTGRESQL_CDM54_SCHEMA
+            work_schema_secret: CDM5_POSTGRESQL_OHDSI_SCHEMA
           - dbms: sql server
             runner: ubuntu-latest
             environment: test-sql-server
+            user_secret: CDM5_SQL_SERVER_USER
+            password_secret: CDM5_SQL_SERVER_PASSWORD
+            server_secret: CDM5_SQL_SERVER_SERVER
+            cdm_schema_secret: CDM5_SQL_SERVER_CDM54_SCHEMA
+            work_schema_secret: CDM5_SQL_SERVER_OHDSI_SCHEMA
           - dbms: oracle
             runner: ubuntu-latest
             environment: test-oracle
+            user_secret: CDM5_ORACLE_USER
+            password_secret: CDM5_ORACLE_PASSWORD
+            server_secret: CDM5_ORACLE_SERVER
+            cdm_schema_secret: CDM5_ORACLE_CDM54_SCHEMA
+            work_schema_secret: CDM5_ORACLE_OHDSI_SCHEMA
           - dbms: redshift
             runner: ubuntu-latest
             environment: test-redshift
+            user_secret: CDM5_REDSHIFT_USER
+            password_secret: CDM5_REDSHIFT_PASSWORD
+            server_secret: CDM5_REDSHIFT_SERVER
+            cdm_schema_secret: CDM5_REDSHIFT_CDM54_SCHEMA
+            work_schema_secret: CDM5_REDSHIFT_OHDSI_SCHEMA
           - dbms: spark
             runner: ubuntu-latest
             environment: test-spark
+            user_secret: CDM5_SPARK_USER
+            password_secret: CDM5_SPARK_PASSWORD
+            connection_string_secret: CDM5_SPARK_CONNECTION_STRING
+            cdm_schema_secret: CDM5_SPARK_CDM_SCHEMA
+            work_schema_secret: CDM5_SPARK_OHDSI_SCHEMA
           - dbms: bigquery
             runner: windows-latest
             environment: test-bigquery
+            connection_string_secret: CDM_BIG_QUERY_CONNECTION_STRING
+            key_file_secret: CDM_BIG_QUERY_KEY_FILE
+            cdm_schema_secret: CDM_BIG_QUERY_CDM_SCHEMA
+            work_schema_secret: CDM_BIG_QUERY_OHDSI_SCHEMA
           - dbms: snowflake
             runner: ubuntu-latest
             environment: test-snowflake
+            user_secret: CDM_SNOWFLAKE_USER
+            password_secret: CDM_SNOWFLAKE_PASSWORD
+            connection_string_secret: CDM_SNOWFLAKE_CONNECTION_STRING
+            cdm_schema_secret: CDM_SNOWFLAKE_CDM53_SCHEMA
+            work_schema_secret: CDM_SNOWFLAKE_OHDSI_SCHEMA
           - dbms: iris
             runner: ubuntu-latest
             environment: test-iris
+            user_secret: CDM_IRIS_USER
+            password_secret: CDM_IRIS_PASSWORD
+            connection_string_secret: CDM_IRIS_CONNECTION_STRING
+            cdm_schema_secret: CDM_IRIS_CDM_SCHEMA
+            work_schema_secret: CDM_IRIS_OHDSI_SCHEMA
 
     env:
       GITHUB_PAT: ${{ secrets.GH_TOKEN }}
       HADES_DATABASE_TEST: 'true'
       HADES_TEST_DBMS: ${{ matrix.dbms }}
-      HADES_DB_USER: ${{ secrets.HADES_DB_USER }}
-      HADES_DB_PASSWORD: ${{ secrets.HADES_DB_PASSWORD }}
-      HADES_DB_SERVER: ${{ secrets.HADES_DB_SERVER }}
-      HADES_DB_CONNECTION_STRING: ${{ secrets.HADES_DB_CONNECTION_STRING }}
-      HADES_DB_KEY_FILE: ${{ secrets.HADES_DB_KEY_FILE }}
-      HADES_CDM_SCHEMA: ${{ secrets.HADES_CDM_SCHEMA }}
-      HADES_VOCABULARY_SCHEMA: ${{ secrets.HADES_VOCABULARY_SCHEMA }}
-      HADES_WORK_SCHEMA: ${{ secrets.HADES_WORK_SCHEMA }}
+      HADES_DB_USER: ${{ secrets.HADES_DB_USER || secrets[matrix.user_secret] }}
+      HADES_DB_PASSWORD: ${{ secrets.HADES_DB_PASSWORD || secrets[matrix.password_secret] }}
+      HADES_DB_SERVER: ${{ secrets.HADES_DB_SERVER || secrets[matrix.server_secret] }}
+      HADES_DB_CONNECTION_STRING: ${{ secrets.HADES_DB_CONNECTION_STRING || secrets[matrix.connection_string_secret] }}
+      HADES_DB_KEY_FILE: ${{ secrets.HADES_DB_KEY_FILE || secrets[matrix.key_file_secret] }}
+      HADES_CDM_SCHEMA: ${{ secrets.HADES_CDM_SCHEMA || secrets[matrix.cdm_schema_secret] }}
+      HADES_VOCABULARY_SCHEMA: ${{ secrets.HADES_VOCABULARY_SCHEMA || secrets.HADES_CDM_SCHEMA || secrets[matrix.cdm_schema_secret] }}
+      HADES_WORK_SCHEMA: ${{ secrets.HADES_WORK_SCHEMA || secrets[matrix.work_schema_secret] }}
 
     steps:
       - uses: actions/checkout@v4

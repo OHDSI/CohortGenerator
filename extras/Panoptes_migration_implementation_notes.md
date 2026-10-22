@@ -56,6 +56,15 @@ secret names as applicable: `HADES_DB_USER`, `HADES_DB_PASSWORD`,
 `HADES_DB_SERVER`, `HADES_DB_CONNECTION_STRING`, `HADES_DB_KEY_FILE`,
 `HADES_CDM_SCHEMA`, `HADES_VOCABULARY_SCHEMA`, and `HADES_WORK_SCHEMA`.
 
+The existing CohortGenerator GitHub secret configuration uses the historical
+DBMS-specific names (for example, `CDM5_POSTGRESQL_USER`). The database workflow
+therefore records those secret names on each matrix row and maps them to the
+normalized `HADES_*` process variables expected by Panoptes. A normalized
+secret takes precedence when present, allowing each protected environment to
+be migrated independently. The legacy bridge can be removed after every
+protected environment has equivalent normalized secrets. Database-specific
+names should not be reintroduced into the R tests.
+
 The live database jobs cannot be exercised locally without those credentials.
 The first trusted live workflow should confirm all eight matrix jobs. Diagnose
 the rollout beginning with PostgreSQL, then SQL Server and Oracle, followed by
