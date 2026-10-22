@@ -1,6 +1,10 @@
 CohortGenerator 1.1.1
 =====================
 
+New Features
+
+- Uses Panoptes to declare and verify supported database platforms through one complete pull-request/manual compatibility workflow.
+
 Bug Fixes
 
 - Prevents duplicate cohort IDs bin `runCohortGeneration` (#275)

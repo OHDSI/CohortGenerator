@@ -1,4 +1,4 @@
-# Workflow for live database platform tests.
+# Live database tests for every enabled external platform.
 name: Database platform tests
 
 on:
@@ -7,90 +7,67 @@ on:
       - 'R/**'
       - 'tests/**'
       - 'inst/test-config/hades-database-platforms.yml'
-      - '.github/workflows/database-platform-tests.yml'
-  push:
-    paths:
-      - 'R/**'
-      - 'tests/**'
-      - 'inst/test-config/hades-database-platforms.yml'
+      - 'DESCRIPTION'
       - '.github/workflows/database-platform-tests.yml'
   workflow_dispatch:
 
 jobs:
   database-test:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     name: Database test (${{ matrix.dbms }})
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    environment: ${{ matrix.environment }}
 
     strategy:
       fail-fast: false
       matrix:
         include:
           - dbms: postgresql
+            runner: ubuntu-latest
             environment: test-postgresql
           - dbms: sql server
+            runner: ubuntu-latest
             environment: test-sql-server
           - dbms: oracle
+            runner: ubuntu-latest
             environment: test-oracle
           - dbms: redshift
+            runner: ubuntu-latest
             environment: test-redshift
           - dbms: spark
+            runner: ubuntu-latest
             environment: test-spark
           - dbms: bigquery
+            runner: windows-latest
             environment: test-bigquery
           - dbms: snowflake
+            runner: ubuntu-latest
             environment: test-snowflake
           - dbms: iris
+            runner: ubuntu-latest
             environment: test-iris
-
-    environment: ${{ matrix.environment }}
 
     env:
       GITHUB_PAT: ${{ secrets.GH_TOKEN }}
       HADES_DATABASE_TEST: 'true'
       HADES_TEST_DBMS: ${{ matrix.dbms }}
-
-      CDM5_POSTGRESQL_CDM_SCHEMA: ${{ secrets.CDM5_POSTGRESQL_CDM54_SCHEMA }}
-      CDM5_POSTGRESQL_OHDSI_SCHEMA: ${{ secrets.CDM5_POSTGRESQL_OHDSI_SCHEMA }}
-      CDM5_POSTGRESQL_PASSWORD: ${{ secrets.CDM5_POSTGRESQL_PASSWORD }}
-      CDM5_POSTGRESQL_SERVER: ${{ secrets.CDM5_POSTGRESQL_SERVER }}
-      CDM5_POSTGRESQL_USER: ${{ secrets.CDM5_POSTGRESQL_USER }}
-      CDM5_SQL_SERVER_CDM_SCHEMA: ${{ secrets.CDM5_SQL_SERVER_CDM54_SCHEMA }}
-      CDM5_SQL_SERVER_OHDSI_SCHEMA: ${{ secrets.CDM5_SQL_SERVER_OHDSI_SCHEMA }}
-      CDM5_SQL_SERVER_PASSWORD: ${{ secrets.CDM5_SQL_SERVER_PASSWORD }}
-      CDM5_SQL_SERVER_SERVER: ${{ secrets.CDM5_SQL_SERVER_SERVER }}
-      CDM5_SQL_SERVER_USER: ${{ secrets.CDM5_SQL_SERVER_USER }}
-      CDM5_ORACLE_CDM_SCHEMA: ${{ secrets.CDM5_ORACLE_CDM54_SCHEMA }}
-      CDM5_ORACLE_OHDSI_SCHEMA: ${{ secrets.CDM5_ORACLE_OHDSI_SCHEMA }}
-      CDM5_ORACLE_PASSWORD: ${{ secrets.CDM5_ORACLE_PASSWORD }}
-      CDM5_ORACLE_SERVER: ${{ secrets.CDM5_ORACLE_SERVER }}
-      CDM5_ORACLE_USER: ${{ secrets.CDM5_ORACLE_USER }}
-      CDM5_REDSHIFT_CDM_SCHEMA: ${{ secrets.CDM5_REDSHIFT_CDM54_SCHEMA }}
-      CDM5_REDSHIFT_OHDSI_SCHEMA: ${{ secrets.CDM5_REDSHIFT_OHDSI_SCHEMA }}
-      CDM5_REDSHIFT_PASSWORD: ${{ secrets.CDM5_REDSHIFT_PASSWORD }}
-      CDM5_REDSHIFT_SERVER: ${{ secrets.CDM5_REDSHIFT_SERVER }}
-      CDM5_REDSHIFT_USER: ${{ secrets.CDM5_REDSHIFT_USER }}
-      CDM5_SPARK_CDM_SCHEMA: ${{ secrets.CDM5_SPARK_CDM_SCHEMA }}
-      CDM5_SPARK_OHDSI_SCHEMA: ${{ secrets.CDM5_SPARK_OHDSI_SCHEMA }}
-      CDM5_SPARK_PASSWORD: ${{ secrets.CDM5_SPARK_PASSWORD }}
-      CDM5_SPARK_CONNECTION_STRING: ${{ secrets.CDM5_SPARK_CONNECTION_STRING }}
-      CDM5_SPARK_USER: ${{ secrets.CDM5_SPARK_USER }}
-      CDM_BIG_QUERY_CDM_SCHEMA: ${{ secrets.CDM_BIG_QUERY_CDM_SCHEMA }}
-      CDM_BIG_QUERY_OHDSI_SCHEMA: ${{ secrets.CDM_BIG_QUERY_OHDSI_SCHEMA }}
-      CDM_BIG_QUERY_CONNECTION_STRING: ${{ secrets.CDM_BIG_QUERY_CONNECTION_STRING }}
-      CDM_BIG_QUERY_KEY_FILE: ${{ secrets.CDM_BIG_QUERY_KEY_FILE }}
-      CDM_SNOWFLAKE_CDM53_SCHEMA: ${{ secrets.CDM_SNOWFLAKE_CDM53_SCHEMA }}
-      CDM_SNOWFLAKE_OHDSI_SCHEMA: ${{ secrets.CDM_SNOWFLAKE_OHDSI_SCHEMA }}
-      CDM_SNOWFLAKE_CONNECTION_STRING: ${{ secrets.CDM_SNOWFLAKE_CONNECTION_STRING }}
-      CDM_SNOWFLAKE_PASSWORD: ${{ secrets.CDM_SNOWFLAKE_PASSWORD }}
-      CDM_SNOWFLAKE_USER: ${{ secrets.CDM_SNOWFLAKE_USER }}
-      CDM_IRIS_CDM_SCHEMA: ${{ secrets.CDM_IRIS_CDM_SCHEMA }}
-      CDM_IRIS_OHDSI_SCHEMA: ${{ secrets.CDM_IRIS_OHDSI_SCHEMA }}
-      CDM_IRIS_PASSWORD: ${{ secrets.CDM_IRIS_PASSWORD }}
-      CDM_IRIS_CONNECTION_STRING: ${{ secrets.CDM_IRIS_CONNECTION_STRING }}
-      CDM_IRIS_USER: ${{ secrets.CDM_IRIS_USER }}
+      HADES_DB_USER: ${{ secrets.HADES_DB_USER }}
+      HADES_DB_PASSWORD: ${{ secrets.HADES_DB_PASSWORD }}
+      HADES_DB_SERVER: ${{ secrets.HADES_DB_SERVER }}
+      HADES_DB_CONNECTION_STRING: ${{ secrets.HADES_DB_CONNECTION_STRING }}
+      HADES_DB_KEY_FILE: ${{ secrets.HADES_DB_KEY_FILE }}
+      HADES_CDM_SCHEMA: ${{ secrets.HADES_CDM_SCHEMA }}
+      HADES_VOCABULARY_SCHEMA: ${{ secrets.HADES_VOCABULARY_SCHEMA }}
+      HADES_WORK_SCHEMA: ${{ secrets.HADES_WORK_SCHEMA }}
+      DATABASECONNECTOR_JAR_FOLDER: ${{ runner.temp }}/jdbcDrivers
 
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -118,25 +95,44 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y make
-          sudo apt-get install -y default-jdk
           sudo apt-get install -y libcurl4-openssl-dev
           sudo apt-get install -y libssl-dev
           sudo apt-get install -y libglpk-dev
           while read -r cmd
           do
             eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')          
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
 
       - name: Install libssh
         if: runner.os == 'Linux'
-        run: |    
-          sudo apt-get install libssh-dev
+        run: sudo apt-get install -y libssh-dev
 
       - name: Install dependencies
         run: |
           install.packages("cachem")
-          remotes::install_deps(dependencies = TRUE, INSTALL_opts=c("--no-multiarch"))
+          remotes::install_deps(dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
           remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
+      - name: Validate declared database matrix
+        run: |
+          config <- Panoptes::readDatabaseTestConfig(
+            path = "inst/test-config/hades-database-platforms.yml"
+          )
+          Panoptes::validateDatabaseTestWorkflow(
+            config,
+            ".github/workflows/database-platform-tests.yml"
+          )
+        shell: Rscript {0}
+
+      - name: Download JDBC driver
+        run: |
+          driverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
+          dir.create(driverFolder, recursive = TRUE, showWarnings = FALSE)
+          DatabaseConnector::downloadJdbcDrivers(
+            dbms = Sys.getenv("HADES_TEST_DBMS"),
+            pathToDriver = driverFolder
+          )
         shell: Rscript {0}
 
       - name: Check

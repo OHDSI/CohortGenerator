@@ -1,4 +1,4 @@
-skipIfLiveDatabaseTest()
+Panoptes::skipIfLiveDatabaseTest()
 
 test_that("sampleCohortDefinitionSet", {
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()

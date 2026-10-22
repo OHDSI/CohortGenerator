@@ -1,88 +1,102 @@
 schemaVersion: 1
-
 package: CohortGenerator
-
 databaseConnection: all
-
 platforms:
   - dbms: sqlite
     enabled: true
     required: false
-    ci: none
-    environmentPrefix: SQLITE
     cdmVersion: "5.4"
     connectionMode: local
+    credentialMode: none
     tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-sqlite
 
   - dbms: postgresql
     enabled: true
     required: true
-    ci: pull-request
-    environmentPrefix: CDM5_POSTGRESQL
     cdmVersion: "5.4"
     connectionMode: server
+    credentialMode: password
     tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-postgresql
 
   - dbms: sql server
     enabled: true
     required: true
-    ci: pull-request
-    environmentPrefix: CDM5_SQL_SERVER
     cdmVersion: "5.4"
     connectionMode: server
+    credentialMode: password
     tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-sql-server
 
   - dbms: oracle
     enabled: true
     required: true
-    ci: pull-request
-    environmentPrefix: CDM5_ORACLE
     cdmVersion: "5.4"
     connectionMode: server
+    credentialMode: password
     tempEmulationSchema: true
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-oracle
 
   - dbms: redshift
     enabled: true
     required: true
-    ci: scheduled
-    environmentPrefix: CDM5_REDSHIFT
     cdmVersion: "5.4"
     connectionMode: server
+    credentialMode: password
     tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-redshift
 
   - dbms: spark
     enabled: true
     required: true
-    ci: scheduled
-    environmentPrefix: CDM5_SPARK
     cdmVersion: "5.4"
     connectionMode: connectionString
+    credentialMode: password
     tempEmulationSchema: true
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-spark
 
   - dbms: bigquery
     enabled: true
     required: true
-    ci: scheduled
-    environmentPrefix: CDM_BIG_QUERY
     cdmVersion: "5.4"
     connectionMode: connectionString
     credentialMode: keyFile
     tempEmulationSchema: true
+    runner: windows-latest
+    os: windows
+    githubEnvironment: test-bigquery
 
   - dbms: snowflake
     enabled: true
     required: true
-    ci: scheduled
-    environmentPrefix: CDM_SNOWFLAKE
     cdmVersion: "5.4"
     connectionMode: connectionString
+    credentialMode: password
     tempEmulationSchema: true
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-snowflake
 
   - dbms: iris
     enabled: true
     required: true
-    ci: scheduled
-    environmentPrefix: CDM_IRIS
     cdmVersion: "5.4"
     connectionMode: connectionString
+    credentialMode: password
     tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-iris

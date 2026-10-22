@@ -1,7 +1,7 @@
 library(testthat)
 library(CohortGenerator)
 
-skipIfLiveDatabaseTest()
+Panoptes::skipIfLiveDatabaseTest()
 
 # Exception Handling -------------
 test_that("Call runCohortGeneration without connectionDetails", {

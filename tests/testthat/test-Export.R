@@ -1,7 +1,7 @@
 library(testthat)
 library(CohortGenerator)
 
-skipIfLiveDatabaseTest()
+Panoptes::skipIfLiveDatabaseTest()
 
 # export cohort stats tests --------------
 test_that("Export cohort stats with permanent tables", {

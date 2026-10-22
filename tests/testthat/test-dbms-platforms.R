@@ -1,18 +1,18 @@
 library(testthat)
 library(CohortGenerator)
 
-testPlatform <- function(dbmsDetails) {
-  cohortTableNames <- getCohortTableNames(cohortTable = dbmsDetails$cohortTable)
-  platformOutputFolder <- file.path(outputFolder, dbmsDetails$connectionDetails$dbms)
+testPlatform <- function(context) {
+  cohortTableNames <- getCohortTableNames(cohortTable = context$objectPrefix)
+  platformOutputFolder <- file.path(outputFolder, context$dbms)
   on.exit({
     dropCohortStatsTables(
-      connectionDetails = dbmsDetails$connectionDetails,
-      cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
+      connectionDetails = context$connectionDetails,
+      cohortDatabaseSchema = context$workDatabaseSchema,
       cohortTableNames = cohortTableNames,
       dropCohortTable = TRUE
     )
     unlink(platformOutputFolder, recursive = TRUE)
-  })
+  }, add = TRUE)
 
   cohortsWithStats <- getCohortDefinitionSet(
     settingsFileName = "testdata/name/Cohorts.csv",
@@ -66,17 +66,17 @@ testPlatform <- function(dbmsDetails) {
   ncSet <- getNegativeControlOutcomeCohortsForTest()
 
   runCohortGeneration(
-    connectionDetails = dbmsDetails$connectionDetails,
-    cdmDatabaseSchema = dbmsDetails$cdmDatabaseSchema,
-    cohortDatabaseSchema = dbmsDetails$cohortDatabaseSchema,
+    connectionDetails = context$connectionDetails,
+    cdmDatabaseSchema = context$cdmDatabaseSchema,
+    cohortDatabaseSchema = context$workDatabaseSchema,
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsWithSubsets,
     negativeControlOutcomeCohortSet = ncSet,
     occurrenceType = "first",
     detectOnDescendants = TRUE,
     outputFolder = platformOutputFolder,
-    databaseId = dbmsDetails$connectionDetails$dbms,
-    incremental = F
+    databaseId = context$dbms,
+    incremental = FALSE
   )
 
   # Check the output to verify the generation worked properly
@@ -101,13 +101,19 @@ test_that("platform specific create cohorts with stats, Incremental, get results
   skip_on_cran()
   # Note that these tests are designed to be quick and just test the platform in a general way
   # Sqlite completes the bulk of the packages testing
-  skipIfNoLiveDatabase()
-  dbmsPlatform <- getSelectedTestDbms()
-  dbmsDetails <- getPlatformConnectionDetails(dbmsPlatform)
-  if (is.null(dbmsDetails)) {
-    print(paste("No platform details available for", dbmsPlatform))
-  } else {
-    print(paste("Testing", dbmsPlatform))
-    testPlatform(dbmsDetails)
-  }
+  config <- Panoptes::readDatabaseTestConfig(package = "CohortGenerator")
+  Panoptes::skipIfNoLiveDatabase(config)
+  dbms <- Panoptes::getSelectedTestDbms(config)
+
+  Panoptes::withDatabaseTestContext(
+    config = config,
+    dbms = dbms,
+    legacyAliases = NULL,
+    verify = TRUE,
+    {
+      message("Testing ", context$dbms)
+      testPlatform(context)
+      Panoptes::requireDatabaseTestConnectionAttempted(context)
+    }
+  )
 })

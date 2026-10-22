@@ -1,4 +1,4 @@
-skipIfLiveDatabaseTest()
+Panoptes::skipIfLiveDatabaseTest()
 
 test_that("Subset definition", {
   cohortDefinitionSet <- getCohortDefinitionSet(

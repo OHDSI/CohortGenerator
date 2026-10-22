@@ -40,12 +40,14 @@ Suggests:
   Eunomia,
   ggplot2,
   knitr,
+  Panoptes (>= 0.1.0),
   rmarkdown,
   testthat,
   vroom,
   withr,
-  yaml,
   zip
+Remotes:
+  OHDSI/Panoptes
 License: Apache License
 VignetteBuilder: knitr
 URL: https://ohdsi.github.io/CohortGenerator/, https://github.com/OHDSI/CohortGenerator

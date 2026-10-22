@@ -1,4 +1,4 @@
-skipIfLiveDatabaseTest()
+Panoptes::skipIfLiveDatabaseTest()
 
 test_that("Validate cohorts functions as intended", {
   tConnectionDetails <- DatabaseConnector::createConnectionDetails("sqlite", server = ":memory:")

@@ -1,4 +1,4 @@
-skipIfLiveDatabaseTest()
+Panoptes::skipIfLiveDatabaseTest()
 
 connection <- DatabaseConnector::connect(connectionDetails)
 

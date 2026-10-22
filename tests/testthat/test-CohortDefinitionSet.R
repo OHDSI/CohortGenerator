@@ -2,7 +2,7 @@ library(testthat)
 library(CohortGenerator)
 
 # getCohortDefinitionSet ---------
-skipIfLiveDatabaseTest()
+Panoptes::skipIfLiveDatabaseTest()
 
 test_that("Call getCohortDefinitionSet with missing settingsFile", {
   exportFolder <- file.path(outputFolder, "export")

@@ -18,9 +18,9 @@ getPostgresInfo <- function() {
 
   postgresConnectionDetails <- DatabaseConnector::createConnectionDetails(
     dbms = "postgresql",
-    user = Sys.getenv("CDM5_POSTGRESQL_USER"),
-    password = URLdecode(Sys.getenv("CDM5_POSTGRESQL_PASSWORD")),
-    server = Sys.getenv("CDM5_POSTGRESQL_SERVER"),
+    user = Sys.getenv("HADES_DB_USER"),
+    password = URLdecode(Sys.getenv("HADES_DB_PASSWORD")),
+    server = Sys.getenv("HADES_DB_SERVER"),
     pathToDriver = jdbcDriverFolder
   )
 
@@ -117,12 +117,14 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
 
 test_that("Create schema and upload on Postgres", {
   skip_on_cran()
+  config <- Panoptes::readDatabaseTestConfig(package = "CohortGenerator")
   testthat::skip_if_not(
-    nzchar(Sys.getenv("CDM5_POSTGRESQL_USER")) &&
-      nzchar(Sys.getenv("CDM5_POSTGRESQL_PASSWORD")) &&
-      nzchar(Sys.getenv("CDM5_POSTGRESQL_SERVER")) &&
-      grepl("/", Sys.getenv("CDM5_POSTGRESQL_SERVER"), fixed = TRUE),
-    "Skipping PostgreSQL upload test because CDM5_POSTGRESQL_* environment variables are not configured for CI."
+    identical(Panoptes::getSelectedTestDbms(config), "postgresql") &&
+      nzchar(Sys.getenv("HADES_DB_USER")) &&
+      nzchar(Sys.getenv("HADES_DB_PASSWORD")) &&
+      nzchar(Sys.getenv("HADES_DB_SERVER")) &&
+      grepl("/", Sys.getenv("HADES_DB_SERVER"), fixed = TRUE),
+    "Skipping PostgreSQL upload test because the normalized PostgreSQL test environment is not selected and configured."
   )
   unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
   dir.create(path = unzipFolder, recursive = TRUE)

@@ -64,26 +64,3 @@ getNegativeControlOutcomeCohortsForTest <- function(setCohortIdToConceptId = TRU
   }
   invisible(negativeControlOutcomes)
 }
-
-
-getPlatformConnectionDetails <- function(dbmsPlatform) {
-  options("sqlRenderTempEmulationSchema" = NULL)
-  if (!isBigQuerySupportedOnCurrentPlatform(dbmsPlatform)) {
-    return(NULL)
-  }
-
-  jdbcDriverFolder <- getJdbcDriverFolder()
-  settings <- getDatabaseTestContext(dbmsPlatform, jdbcDriverFolder)
-  validateDatabaseTestEnvironment(dbmsPlatform)
-
-  if (isTRUE(settings$needsWindowsOnly) && .Platform$OS.type != "windows") {
-    return(NULL)
-  }
-
-  if (!identical(dbmsPlatform, "sqlite")) {
-    DatabaseConnector::downloadJdbcDrivers(dbmsPlatform, pathToDriver = jdbcDriverFolder)
-  }
-
-  options(sqlRenderTempEmulationSchema = settings$tempEmulationSchema)
-  assemblePlatformConnectionDetails(dbmsPlatform, settings)
-}

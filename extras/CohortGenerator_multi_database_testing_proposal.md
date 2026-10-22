@@ -17,7 +17,7 @@ Repository state inspected for this update:
 
 The original proposal has advanced from design into a working CohortGenerator prototype. The branch now has a declarative platform file, one-DBMS-per-process selection, a focused live-database test, CI-specific failure behavior, and a separate matrix workflow for external databases.
 
-The prototype is not yet a complete implementation of the declaration contract. Several YAML fields are not enforced at runtime, the workflow does not honor the declared CI tiers, and the BigQuery runner conflicts with the current platform restriction. Remote workflow outcomes and live credentials were not verified as part of this documentation update.
+The prototype is not yet a complete implementation of the declaration contract. Several YAML fields are not enforced at runtime, workflow rows are not validated against the declaration, and the BigQuery runner conflicts with the current platform restriction. Remote workflow outcomes and live credentials were not verified as part of this documentation update.
 
 ## Design Principles
 
@@ -46,14 +46,14 @@ The prototype and next implementation should continue to follow these principles
 | Database test context | Implemented as a named list | Stabilize and move the generic contract to the shared package |
 | Platform-specific helper decomposition | Implemented | Replace conditionals with tested internal adapters in the shared package |
 | One database-neutral behavior test | Implemented | Keep it in CohortGenerator during extraction |
-| Separate live-database workflow | Implemented | Align runners and declared CI tiers |
+| Separate live-database workflow | Implemented | Align runners and validate all enabled platforms |
 | Named matrix job per DBMS | Implemented | Derive or validate the matrix against YAML |
 | Remove secrets from normal checks | Implemented | Preserve this separation |
 | GitHub environment per DBMS | Implemented | Document and validate environment/secret mapping |
 | Full config validation | Not implemented | Add field, type, uniqueness, and cross-field validation |
 | Matrix/config drift check | Not implemented | Provide shared validation or matrix generation |
 | Normalized `HADES_*` credential variables | Not implemented | Add in the shared package with legacy aliases |
-| Pull-request versus scheduled tiers | Declared but not enforced | Split triggers/jobs or filter a generated matrix |
+| Workflow matrix coverage | Declared but not enforced | Validate one complete external-platform matrix |
 | Reusable HADES package/workflow | Not implemented | Follow the handoff plan |
 
 ## Current Branch Architecture
@@ -89,17 +89,17 @@ inst/test-config/hades-database-platforms.yml
 
 The declaration identifies CohortGenerator as `databaseConnection: all` and lists:
 
-| DBMS | Enabled | Required | Declared CI tier | Connection mode |
+| DBMS | Enabled | Required | Workflow coverage | Connection mode |
 |---|---:|---:|---|---|
-| SQLite | Yes | No | `none` | `local` |
-| PostgreSQL | Yes | Yes | `pull-request` | `server` |
-| SQL Server | Yes | Yes | `pull-request` | `server` |
-| Oracle | Yes | Yes | `pull-request` | `server` |
-| Redshift | Yes | Yes | `scheduled` | `server` |
-| Spark | Yes | Yes | `scheduled` | `connectionString` |
-| BigQuery | Yes | Yes | `scheduled` | `connectionString` plus key file |
-| Snowflake | Yes | Yes | `scheduled` | `connectionString` |
-| IRIS | Yes | Yes | `scheduled` | `connectionString` |
+| SQLite | Yes | No | local only | `local` |
+| PostgreSQL | Yes | Yes | live workflow | `server` |
+| SQL Server | Yes | Yes | live workflow | `server` |
+| Oracle | Yes | Yes | live workflow | `server` |
+| Redshift | Yes | Yes | live workflow | `server` |
+| Spark | Yes | Yes | live workflow | `connectionString` |
+| BigQuery | Yes | Yes | live workflow | `connectionString` plus key file |
+| Snowflake | Yes | Yes | live workflow | `connectionString` |
+| IRIS | Yes | Yes | live workflow | `connectionString` |
 
 The declaration also records the environment prefix, CDM version, and whether SqlRender temporary-table emulation is expected.
 
@@ -220,13 +220,13 @@ The new `.github/workflows/database-platform-tests.yml`:
 - sets `HADES_TEST_DBMS` to the matrix DBMS; and
 - runs `R CMD check` on Ubuntu.
 
-This achieves job isolation and clearer failure names. It does not yet implement the tiers written in the YAML file.
+This achieves job isolation and clearer failure names. The matrix must also be validated against the declaration.
 
 ## Gaps and Known Problems
 
 ### The configuration is descriptive rather than authoritative
 
-The runtime does not currently use most platform fields from YAML. In particular, connection construction does not enforce `enabled`, `required`, `ci`, `connectionMode`, `credentialMode`, `cdmVersion`, or `tempEmulationSchema` from the selected platform record.
+The runtime does not currently use most platform fields from YAML. In particular, connection construction does not enforce `enabled`, `required`, `connectionMode`, `credentialMode`, `cdmVersion`, or `tempEmulationSchema` from the selected platform record.
 
 The next implementation should either use each documented field or reject it. Parallel hard-coded policy in R and YAML will drift.
 
@@ -240,11 +240,11 @@ Validation must precede all connection construction and driver downloads.
 
 Any missing environment variable errors in explicit live CI. Optional-platform behavior is therefore not implemented even though the declaration can express it.
 
-### CI tier declarations are not enforced
+### Workflow coverage is not enforced
 
-PostgreSQL, SQL Server, and Oracle are marked `pull-request`; Redshift, Spark, BigQuery, Snowflake, and IRIS are marked `scheduled`. The workflow currently runs all eight for both pushes and pull requests, and it does not define a schedule.
+The workflow matrix contains all eight external platforms. Trigger policy belongs to CohortGenerator, while Panoptes validates that every enabled external platform appears with the declared runner and GitHub environment.
 
-The workflow should derive jobs from the declaration or validate a static matrix against the selected tier.
+The workflow should validate its static matrix against all enabled external platforms.
 
 ### BigQuery is selected on an incompatible runner
 
@@ -267,7 +267,7 @@ Still needed:
 - required platform fields;
 - field types;
 - canonical and unique DBMS names;
-- allowed CI tiers and connection modes;
+- allowed connection modes;
 - `reason` for disabled platforms;
 - valid combinations of credential and connection modes; and
 - consistency between `databaseConnection` and platform entries.
@@ -329,8 +329,7 @@ The current schema is a useful starting point. Before reuse, the following seman
 
 - `dbms`: canonical `DatabaseConnector` identifier.
 - `enabled`: whether the package currently claims and tests support.
-- `required`: whether absence or failure is allowed in the selected CI tier.
-- `ci`: automation tier.
+- `required`: whether absence or failure is allowed during explicit live CI.
 - `cdmVersion`: expected OMOP CDM version.
 - `connectionMode`: local, server, or connection string.
 - `credentialMode`: optional special credential handling.
@@ -348,7 +347,7 @@ For a selected platform, the shared implementation should execute these steps in
 2. fully validate the declaration;
 3. normalize and validate `HADES_TEST_DBMS`;
 4. resolve the selected platform record;
-5. enforce `enabled`, CI tier, required status, and runner compatibility;
+5. enforce `enabled`, required status, and runner compatibility;
 6. resolve normalized environment variables and legacy aliases;
 7. validate required values without exposing them;
 8. prepare temporary credentials and scoped options;
@@ -389,7 +388,7 @@ The first shared-package pull request should:
 2. add a representative configuration fixture;
 3. implement configuration discovery, parsing, and complete validation;
 4. define the database test context contract;
-5. test configuration and CI-tier semantics without credentials; and
+5. test configuration and required-platform semantics without credentials; and
 6. leave live connection adapters for the next pull request.
 
 Once that contract is reviewed, port PostgreSQL as the first adapter and migrate CohortGenerator incrementally.
@@ -400,8 +399,8 @@ Before this branch is considered a complete reference implementation:
 
 - all YAML fields used in the declared contract are enforced;
 - environment validation occurs before connection construction;
-- `required` and CI tiers affect behavior as documented;
-- the workflow has a scheduled path for scheduled platforms;
+- `required` affects explicit live-CI behavior as documented;
+- the workflow includes every enabled external platform;
 - each DBMS uses a compatible runner;
 - required jobs cannot pass without a connection attempt;
 - the matrix is derived from or validated against YAML;

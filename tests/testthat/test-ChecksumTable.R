@@ -1,4 +1,4 @@
-skipIfLiveDatabaseTest()
+Panoptes::skipIfLiveDatabaseTest()
 
 test_that("getLastGeneratedCohortChecksums throws error if no connection or connectionDetails provided", {
   expect_error(
