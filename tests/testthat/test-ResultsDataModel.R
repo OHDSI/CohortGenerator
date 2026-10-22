@@ -1,7 +1,6 @@
 library(CohortGenerator)
 library(testthat)
 
-
 getPostgresInfo <- function() {
   if (dir.exists(Sys.getenv("DATABASECONNECTOR_JAR_FOLDER"))) {
     jdbcDriverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
@@ -19,9 +18,9 @@ getPostgresInfo <- function() {
 
   postgresConnectionDetails <- DatabaseConnector::createConnectionDetails(
     dbms = "postgresql",
-    user = Sys.getenv("CDM5_POSTGRESQL_USER"),
-    password = URLdecode(Sys.getenv("CDM5_POSTGRESQL_PASSWORD")),
-    server = Sys.getenv("CDM5_POSTGRESQL_SERVER"),
+    user = Sys.getenv("HADES_DB_USER"),
+    password = URLdecode(Sys.getenv("HADES_DB_PASSWORD")),
+    server = Sys.getenv("HADES_DB_SERVER"),
     pathToDriver = jdbcDriverFolder
   )
 
@@ -99,7 +98,7 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
     primaryKey <- specifications %>%
       dplyr::filter(tableName == !!tableName &
         primaryKey == "Yes") %>%
-      dplyr::select(columnName) %>%
+      dplyr::select(dplyr::all_of(c("columnName"))) |>
       dplyr::pull()
 
     if ("database_id" %in% primaryKey) {
@@ -118,6 +117,15 @@ testUploadResults <- function(connectionDetails, resultsDatabaseSchema, resultsF
 
 test_that("Create schema and upload on Postgres", {
   skip_on_cran()
+  config <- Panoptes::readDatabaseTestConfig(package = "CohortGenerator")
+  testthat::skip_if_not(
+    identical(Panoptes::getSelectedTestDbms(config), "postgresql") &&
+      nzchar(Sys.getenv("HADES_DB_USER")) &&
+      nzchar(Sys.getenv("HADES_DB_PASSWORD")) &&
+      nzchar(Sys.getenv("HADES_DB_SERVER")) &&
+      grepl("/", Sys.getenv("HADES_DB_SERVER"), fixed = TRUE),
+    "Skipping PostgreSQL upload test because the normalized PostgreSQL test environment is not selected and configured."
+  )
   unzipFolder <- tempfile("unzipTempFolder", tmpdir = tempdir())
   dir.create(path = unzipFolder, recursive = TRUE)
   on.exit(unlink(unzipFolder, recursive = TRUE), add = TRUE)
@@ -185,4 +193,18 @@ test_that("Create schema and upload on Sqlite", {
   )
 
   on.exit(unlink(sqliteInfo$connectionDetails$server(), force = TRUE), add = TRUE)
+})
+
+test_that("resultsDataModelSpecification.csv has no parsing problems", {
+  file <- system.file("csv", "resultsDataModelSpecification.csv", package = "CohortGenerator")
+
+  dat <- readr::read_csv(
+    file = file,
+    col_types = readr::cols(),
+    lazy = FALSE,
+    progress = FALSE,
+    show_col_types = FALSE
+  )
+
+  expect_equal(nrow(vroom::problems(dat)), 0)
 })

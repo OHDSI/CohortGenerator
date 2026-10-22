@@ -1,3 +1,5 @@
+Panoptes::skipIfLiveDatabaseTest()
+
 test_that("addIndicationSubsetDefinition adds subset correctly for basic case", {
   # Setup initial cohortDefinitionSet
   cohortSet <- getCohortDefinitionSet(

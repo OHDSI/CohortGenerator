@@ -2,6 +2,8 @@ library(testthat)
 library(CohortGenerator)
 
 # getCohortTableNames ---------
+Panoptes::skipIfLiveDatabaseTest()
+
 test_that("Call getCohortTableNames with defaults", {
   expect_equal(
     getCohortTableNames(),

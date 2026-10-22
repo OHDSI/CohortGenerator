@@ -175,7 +175,7 @@ loadTestDataIntoDuckDb <- function() {
 saveCohortResultToCSV <- function() {
   # Generate cohort result
   result <- loadTestDataIntoDuckDb()
-  cohortList <- lapply(1:length(result$cohort_definition_id), function(i) {
+  cohortList <- lapply(seq_along(result$cohort_definition_id), function(i) {
     list(
       cohortId = result$cohort_definition_id[i],
       cohortName = result$cohort_name[i],

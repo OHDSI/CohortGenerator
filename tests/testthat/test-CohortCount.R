@@ -1,6 +1,8 @@
 library(testthat)
 library(CohortGenerator)
 
+Panoptes::skipIfLiveDatabaseTest()
+
 # Test Prep ----------------
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 cohortCounts <- Eunomia::createCohorts(

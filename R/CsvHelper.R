@@ -215,7 +215,7 @@ isFormattedForDatabaseUpload <- function(x, warn = TRUE) {
     # to provide a suggestion
     columnNameSuggestions <- c()
     if (length(problemColumns) > 0) {
-      for (i in 1:length(problemColumns)) {
+      for (i in seq_along(problemColumns)) {
         suggestion <- problemColumns[i]
         if (isCamelCase(suggestion)) {
           suggestion <- SqlRender::camelCaseToSnakeCase(suggestion)

@@ -1,0 +1,152 @@
+# Live database tests for every enabled external platform.
+name: Database platform tests
+
+on:
+  pull_request:
+    paths:
+      - 'R/**'
+      - 'tests/**'
+      - 'inst/test-config/hades-database-platforms.yml'
+      - 'DESCRIPTION'
+      - '.github/workflows/database-platform-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  database-test:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    name: Database test (${{ matrix.dbms }})
+    runs-on: ${{ matrix.runner }}
+    environment: ${{ matrix.environment }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Legacy secret names are mapped to Panoptes HADES_* variables below.
+          - dbms: postgresql
+            runner: ubuntu-latest
+            environment: test-postgresql
+            user_secret: CDM5_POSTGRESQL_USER
+            password_secret: CDM5_POSTGRESQL_PASSWORD
+            server_secret: CDM5_POSTGRESQL_SERVER
+            cdm_schema_secret: CDM5_POSTGRESQL_CDM54_SCHEMA
+            work_schema_secret: CDM5_POSTGRESQL_OHDSI_SCHEMA
+          - dbms: sql server
+            runner: ubuntu-latest
+            environment: test-sql-server
+            user_secret: CDM5_SQL_SERVER_USER
+            password_secret: CDM5_SQL_SERVER_PASSWORD
+            server_secret: CDM5_SQL_SERVER_SERVER
+            cdm_schema_secret: CDM5_SQL_SERVER_CDM54_SCHEMA
+            work_schema_secret: CDM5_SQL_SERVER_OHDSI_SCHEMA
+          - dbms: oracle
+            runner: ubuntu-latest
+            environment: test-oracle
+            user_secret: CDM5_ORACLE_USER
+            password_secret: CDM5_ORACLE_PASSWORD
+            server_secret: CDM5_ORACLE_SERVER
+            cdm_schema_secret: CDM5_ORACLE_CDM54_SCHEMA
+            work_schema_secret: CDM5_ORACLE_OHDSI_SCHEMA
+          - dbms: redshift
+            runner: ubuntu-latest
+            environment: test-redshift
+            user_secret: CDM5_REDSHIFT_USER
+            password_secret: CDM5_REDSHIFT_PASSWORD
+            server_secret: CDM5_REDSHIFT_SERVER
+            cdm_schema_secret: CDM5_REDSHIFT_CDM54_SCHEMA
+            work_schema_secret: CDM5_REDSHIFT_OHDSI_SCHEMA
+          - dbms: spark
+            runner: ubuntu-latest
+            environment: test-spark
+            user_secret: CDM5_SPARK_USER
+            password_secret: CDM5_SPARK_PASSWORD
+            connection_string_secret: CDM5_SPARK_CONNECTION_STRING
+            cdm_schema_secret: CDM5_SPARK_CDM_SCHEMA
+            work_schema_secret: CDM5_SPARK_OHDSI_SCHEMA
+          - dbms: bigquery
+            runner: windows-latest
+            environment: test-bigquery
+            connection_string_secret: CDM_BIG_QUERY_CONNECTION_STRING
+            key_file_secret: CDM_BIG_QUERY_KEY_FILE
+            cdm_schema_secret: CDM_BIG_QUERY_CDM_SCHEMA
+            work_schema_secret: CDM_BIG_QUERY_OHDSI_SCHEMA
+          - dbms: snowflake
+            runner: ubuntu-latest
+            environment: test-snowflake
+            user_secret: CDM_SNOWFLAKE_USER
+            password_secret: CDM_SNOWFLAKE_PASSWORD
+            connection_string_secret: CDM_SNOWFLAKE_CONNECTION_STRING
+            cdm_schema_secret: CDM_SNOWFLAKE_CDM53_SCHEMA
+            work_schema_secret: CDM_SNOWFLAKE_OHDSI_SCHEMA
+          - dbms: iris
+            runner: ubuntu-latest
+            environment: test-iris
+            user_secret: CDM_IRIS_USER
+            password_secret: CDM_IRIS_PASSWORD
+            connection_string_secret: CDM_IRIS_CONNECTION_STRING
+            cdm_schema_secret: CDM_IRIS_CDM_SCHEMA
+            work_schema_secret: CDM_IRIS_OHDSI_SCHEMA
+
+    env:
+      GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+      HADES_DATABASE_TEST: 'true'
+      HADES_TEST_DBMS: ${{ matrix.dbms }}
+      HADES_DB_USER: ${{ secrets.HADES_DB_USER || secrets[matrix.user_secret] }}
+      HADES_DB_PASSWORD: ${{ secrets.HADES_DB_PASSWORD || secrets[matrix.password_secret] }}
+      HADES_DB_SERVER: ${{ secrets.HADES_DB_SERVER || secrets[matrix.server_secret] }}
+      HADES_DB_CONNECTION_STRING: ${{ secrets.HADES_DB_CONNECTION_STRING || secrets[matrix.connection_string_secret] }}
+      HADES_DB_KEY_FILE: ${{ secrets.HADES_DB_KEY_FILE || secrets[matrix.key_file_secret] }}
+      HADES_CDM_SCHEMA: ${{ secrets.HADES_CDM_SCHEMA || secrets[matrix.cdm_schema_secret] }}
+      HADES_VOCABULARY_SCHEMA: ${{ secrets.HADES_VOCABULARY_SCHEMA || secrets.HADES_CDM_SCHEMA || secrets[matrix.cdm_schema_secret] }}
+      HADES_WORK_SCHEMA: ${{ secrets.HADES_WORK_SCHEMA || secrets[matrix.work_schema_secret] }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+
+      - uses: r-lib/actions/setup-tinytex@v2
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - name: Validate declared database matrix
+        run: |
+          config <- Panoptes::readDatabaseTestConfig(
+            path = "inst/test-config/hades-database-platforms.yml"
+          )
+          Panoptes::validateDatabaseTestWorkflow(
+            config,
+            ".github/workflows/database-platform-tests.yml"
+          )
+        shell: Rscript {0}
+
+      - name: Download JDBC driver
+        env:
+          DATABASECONNECTOR_JAR_FOLDER: ${{ runner.temp }}/jdbcDrivers
+        run: |
+          driverFolder <- Sys.getenv("DATABASECONNECTOR_JAR_FOLDER")
+          dir.create(driverFolder, recursive = TRUE, showWarnings = FALSE)
+          DatabaseConnector::downloadJdbcDrivers(
+            dbms = Sys.getenv("HADES_TEST_DBMS"),
+            pathToDriver = driverFolder
+          )
+        shell: Rscript {0}
+
+      - name: Check
+        env:
+          DATABASECONNECTOR_JAR_FOLDER: ${{ runner.temp }}/jdbcDrivers
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran", "--no-multiarch"), error_on = "warning", check_dir = "check")
+        shell: Rscript {0}

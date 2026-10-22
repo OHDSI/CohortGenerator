@@ -1,6 +1,8 @@
 library(testthat)
 library(CohortGenerator)
 
+Panoptes::skipIfLiveDatabaseTest()
+
 test_that("computeCohortAttrition returns attrition for each modeId", {
   cohortInclusionResult <- data.frame(
     databaseId = rep("Eunomia", 8),

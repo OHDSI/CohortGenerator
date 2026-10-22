@@ -1,3 +1,5 @@
+Panoptes::skipIfLiveDatabaseTest()
+
 connection <- DatabaseConnector::connect(connectionDetails)
 
 withr::defer(

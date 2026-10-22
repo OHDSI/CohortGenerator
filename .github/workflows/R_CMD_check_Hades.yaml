@@ -22,48 +22,19 @@ jobs:
         config:
           - {os: windows-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
           - {os: macOS-latest, r: 'release', rtools: '', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-22.04, r: 'release', rtools: ''}
+          - {os: ubuntu-latest, r: 'release', rtools: ''}
     env:
       GITHUB_PAT: ${{ secrets.GH_TOKEN }}
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
-      CDM5_ORACLE_CDM_SCHEMA: ${{ secrets.CDM5_ORACLE_CDM54_SCHEMA }}
-      CDM5_ORACLE_OHDSI_SCHEMA: ${{ secrets.CDM5_ORACLE_OHDSI_SCHEMA }}
-      CDM5_ORACLE_PASSWORD: ${{ secrets.CDM5_ORACLE_PASSWORD }}
-      CDM5_ORACLE_SERVER: ${{ secrets.CDM5_ORACLE_SERVER }}
-      CDM5_ORACLE_USER: ${{ secrets.CDM5_ORACLE_USER }}
-      CDM5_POSTGRESQL_CDM_SCHEMA: ${{ secrets.CDM5_POSTGRESQL_CDM54_SCHEMA }}
-      CDM5_POSTGRESQL_OHDSI_SCHEMA: ${{ secrets.CDM5_POSTGRESQL_OHDSI_SCHEMA }}
-      CDM5_POSTGRESQL_PASSWORD: ${{ secrets.CDM5_POSTGRESQL_PASSWORD }}
-      CDM5_POSTGRESQL_SERVER: ${{ secrets.CDM5_POSTGRESQL_SERVER }}
-      CDM5_POSTGRESQL_USER: ${{ secrets.CDM5_POSTGRESQL_USER }}
-      CDM5_SQL_SERVER_CDM_SCHEMA: ${{ secrets.CDM5_SQL_SERVER_CDM54_SCHEMA }}
-      CDM5_SQL_SERVER_OHDSI_SCHEMA: ${{ secrets.CDM5_SQL_SERVER_OHDSI_SCHEMA }}
-      CDM5_SQL_SERVER_PASSWORD: ${{ secrets.CDM5_SQL_SERVER_PASSWORD }}
-      CDM5_SQL_SERVER_SERVER: ${{ secrets.CDM5_SQL_SERVER_SERVER }}
-      CDM5_SQL_SERVER_USER: ${{ secrets.CDM5_SQL_SERVER_USER }}
-      CDM5_REDSHIFT_CDM_SCHEMA: ${{ secrets.CDM5_REDSHIFT_CDM54_SCHEMA }}
-      CDM5_REDSHIFT_OHDSI_SCHEMA: ${{ secrets.CDM5_REDSHIFT_OHDSI_SCHEMA }}
-      CDM5_REDSHIFT_PASSWORD: ${{ secrets.CDM5_REDSHIFT_PASSWORD }}
-      CDM5_REDSHIFT_SERVER: ${{ secrets.CDM5_REDSHIFT_SERVER }}
-      CDM5_REDSHIFT_USER: ${{ secrets.CDM5_REDSHIFT_USER }}
-      CDM_SNOWFLAKE_CDM53_SCHEMA: ${{ secrets.CDM_SNOWFLAKE_CDM53_SCHEMA }}
-      CDM_SNOWFLAKE_OHDSI_SCHEMA: ${{ secrets.CDM_SNOWFLAKE_OHDSI_SCHEMA }}
-      CDM_SNOWFLAKE_PASSWORD: ${{ secrets.CDM_SNOWFLAKE_PASSWORD }}
-      CDM_SNOWFLAKE_CONNECTION_STRING: ${{ secrets.CDM_SNOWFLAKE_CONNECTION_STRING }}
-      CDM_SNOWFLAKE_USER: ${{ secrets.CDM_SNOWFLAKE_USER }}
-      CDM5_SPARK_USER: ${{ secrets.CDM5_SPARK_USER }}
-      CDM5_SPARK_PASSWORD: ${{ secrets.CDM5_SPARK_PASSWORD }}
-      CDM5_SPARK_CONNECTION_STRING: ${{ secrets.CDM5_SPARK_CONNECTION_STRING }}
-      CDM5_SPARK_CDM_SCHEMA: ${{ secrets.CDM5_SPARK_CDM_SCHEMA }}
-      CDM5_SPARK_OHDSI_SCHEMA: ${{ secrets.CDM5_SPARK_OHDSI_SCHEMA }}
-      CDM_BIG_QUERY_CONNECTION_STRING: ${{ secrets.CDM_BIG_QUERY_CONNECTION_STRING }}
-      CDM_BIG_QUERY_KEY_FILE: ${{ secrets.CDM_BIG_QUERY_KEY_FILE }}
-      CDM_BIG_QUERY_CDM_SCHEMA: ${{ secrets.CDM_BIG_QUERY_CDM_SCHEMA }}
-      CDM_BIG_QUERY_OHDSI_SCHEMA: ${{ secrets.CDM_BIG_QUERY_OHDSI_SCHEMA }}
       
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -74,59 +45,13 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Query dependencies
-        run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
-
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v4
+      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
-
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install -y make
-          sudo apt-get install -y default-jdk
-          sudo apt-get install -y libcurl4-openssl-dev
-          sudo apt-get install -y libssl-dev
-          sudo apt-get install -y libglpk-dev
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
-          
-      - name: Setup Java
-        if: runner.os == 'macOS' || runner.os == 'Windows'
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'corretto'
-          java-version: '8'
-            
-      - name: Install libssh
-        if: runner.os == 'Linux'
-        run: |    
-          sudo apt-get install libssh-dev
-
-      - name: Install dependencies
-        run: |
-          install.packages("cachem")
-          remotes::install_deps(dependencies = TRUE, INSTALL_opts=c("--no-multiarch"))
-          remotes::install_cran("rcmdcheck")
-        shell: Rscript {0}
-        
-      - name: Install covr
-        if: runner.os == 'Linux'
-        run: |
-          remotes::install_cran("covr")
-          remotes::install_cran("xml2")
-        shell: Rscript {0}
+          extra-packages: |
+            any::rcmdcheck
+            any::covr
+            any::xml2
+          needs: check
         
       - name: Remove check folder if exists
         if: runner.os == 'macOS'

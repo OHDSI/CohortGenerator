@@ -189,7 +189,7 @@ generateCohortSet <- function(connectionDetails = NULL,
 
   if (isTRUE(attr(cohortDefinitionSet, "hasSubsetDefinitions"))) {
     cohortDefinitionSet$checksum <- ""
-    for (i in 1:nrow(cohortDefinitionSet)) {
+    for (i in seq_len(nrow(cohortDefinitionSet))) {
       # This implementation supports recursive definitions (subsetting subsets) because the subsets have to be added in order
       if (cohortDefinitionSet$subsetParent[i] != cohortDefinitionSet$cohortId[i]) {
         j <- which(cohortDefinitionSet$cohortId == cohortDefinitionSet$subsetParent[i])

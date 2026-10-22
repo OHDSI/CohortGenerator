@@ -1,0 +1,113 @@
+schemaVersion: 1
+package: CohortGenerator
+databaseConnection: all
+platforms:
+  - dbms: sqlite
+    enabled: true
+    required: false
+    cdmVersion: "5.4"
+    connectionMode: local
+    credentialMode: none
+    tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-sqlite
+
+  - dbms: duckdb
+    enabled: true
+    required: false
+    cdmVersion: "5.4"
+    connectionMode: local
+    credentialMode: none
+    tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-duckdb
+
+  - dbms: postgresql
+    enabled: true
+    required: true
+    cdmVersion: "5.4"
+    connectionMode: server
+    credentialMode: password
+    tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-postgresql
+
+  - dbms: sql server
+    enabled: true
+    required: true
+    cdmVersion: "5.4"
+    connectionMode: server
+    credentialMode: password
+    tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-sql-server
+
+  - dbms: oracle
+    enabled: true
+    required: true
+    cdmVersion: "5.4"
+    connectionMode: server
+    credentialMode: password
+    tempEmulationSchema: true
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-oracle
+
+  - dbms: redshift
+    enabled: true
+    required: true
+    cdmVersion: "5.4"
+    connectionMode: server
+    credentialMode: password
+    tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-redshift
+
+  - dbms: spark
+    enabled: true
+    required: true
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    credentialMode: password
+    tempEmulationSchema: true
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-spark
+
+  - dbms: bigquery
+    enabled: true
+    required: true
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    credentialMode: keyFile
+    tempEmulationSchema: true
+    runner: windows-latest
+    os: windows
+    githubEnvironment: test-bigquery
+
+  - dbms: snowflake
+    enabled: true
+    required: true
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    credentialMode: password
+    tempEmulationSchema: true
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-snowflake
+
+  - dbms: iris
+    enabled: true
+    required: true
+    cdmVersion: "5.4"
+    connectionMode: connectionString
+    credentialMode: password
+    tempEmulationSchema: false
+    runner: ubuntu-latest
+    os: any
+    githubEnvironment: test-iris

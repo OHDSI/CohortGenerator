@@ -133,7 +133,7 @@ exportCohortStatsTables <- function(connectionDetails,
     inclusionRules = inclusionRules
   )
 
-  for (i in 1:nrow(tablesToExport)) {
+  for (i in seq_len(nrow(tablesToExport))) {
     fileName <- ifelse(test = fileNamesInSnakeCase,
       yes = tablesToExport$fileName[i],
       no = SqlRender::snakeCaseToCamelCase(tablesToExport$fileName[i])
@@ -231,7 +231,7 @@ exportCohortSubsetStatsTables <- function(connectionDetails,
 }
 
 addSubsetColumns <- function(cohortDefinitionSet) {
-  if (nrow(cohortDefinitionSet) > 0 & !hasSubsetDefinitions(cohortDefinitionSet)) {
+  if (nrow(cohortDefinitionSet) > 0 && !hasSubsetDefinitions(cohortDefinitionSet)) {
     cohortDefinitionSet$isSubset <- 0
     cohortDefinitionSet$subsetDefinitionId <- NA
     cohortDefinitionSet$subsetParent <- cohortDefinitionSet$cohortId
@@ -241,7 +241,7 @@ addSubsetColumns <- function(cohortDefinitionSet) {
 }
 
 addTemplateColumns <- function(cohortDefinitionSet) {
-  if (nrow(cohortDefinitionSet) > 0 & !hasTemplateDefinitions(cohortDefinitionSet)) {
+  if (nrow(cohortDefinitionSet) > 0 && !hasTemplateDefinitions(cohortDefinitionSet)) {
     cohortDefinitionSet$isTemplatedCohort <- 0
   }
 

@@ -15,3 +15,4 @@ man-roxygen
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.lintr$

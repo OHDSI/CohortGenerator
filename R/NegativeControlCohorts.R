@@ -206,7 +206,7 @@ createNegativeControlOutcomesQuery <- function(connection,
                                                detectOnDescendants,
                                                negativeControlOutcomeCohortSet) {
   selectClause <- ""
-  for (i in 1:nrow(negativeControlOutcomeCohortSet)) {
+  for (i in seq_len(nrow(negativeControlOutcomeCohortSet))) {
     selectClause <- paste0(
       selectClause,
       "SELECT CAST(", negativeControlOutcomeCohortSet$cohortId[i], " AS BIGINT), ",
@@ -267,7 +267,7 @@ recordNcCohorts <- function(connection,
   "
 
   sql <- ""
-  for (i in 1:nrow(negativeControlOutcomeCohortSet)) {
+  for (i in seq_len(nrow(negativeControlOutcomeCohortSet))) {
     sql <- paste(sql, SqlRender::render(endSql,
       checksum = checksum,
       start_time = start,

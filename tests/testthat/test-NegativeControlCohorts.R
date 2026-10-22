@@ -2,6 +2,8 @@ library(testthat)
 library(dplyr)
 library(CohortGenerator)
 
+Panoptes::skipIfLiveDatabaseTest()
+
 # createEmptyNegativeControlOutcomeCohortSet ----------
 test_that("Call createEmptyNegativeControlOutcomeCohortSet in verbose mode", {
   expect_output(createEmptyNegativeControlOutcomeCohortSet(verbose = TRUE))
