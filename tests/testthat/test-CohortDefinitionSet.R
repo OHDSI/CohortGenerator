@@ -246,3 +246,17 @@ test_that("Call isCohortDefinitionSet with cohort definition set with incorrect 
 test_that("Call checkAndFixCohortDefinitionSetDataTypes with empty data.frame() and expect error", {
   expect_error(checkAndFixCohortDefinitionSetDataTypes(x = data.frame()))
 })
+
+test_that("Data type mismatch warning separates its heading from the column details", {
+  cohortDefinitionSet <- createEmptyCohortDefinitionSet()
+  cohortDefinitionSet$cohortName <- integer()
+
+  expect_warning(
+    checkAndFixCohortDefinitionSetDataTypes(
+      x = cohortDefinitionSet,
+      fixDataTypes = FALSE,
+      emitWarning = TRUE
+    ),
+    regexp = "expected data types:\nExpected column"
+  )
+})

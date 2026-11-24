@@ -410,7 +410,7 @@ generateCohort <- function(cohortId = NULL,
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
   }
-  rlang::inform(paste0(i, "/", nrow(cohortDefinitionSet), "- Generating cohort: ", cohortName, " (id = ", cohortId, ")"))
+  rlang::inform(paste0(i, "/", nrow(cohortDefinitionSet), " - Generating cohort: ", cohortName, " (id = ", cohortId, ")"))
   sql <- cohortDefinitionSet$sql[i]
 
   if (!isSubset) {

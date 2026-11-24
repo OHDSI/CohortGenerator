@@ -156,7 +156,7 @@ createCohortTables <- function(connectionDetails = NULL,
     }
 
     delta <- Sys.time() - start
-    rlang::inform(paste0("Creating cohort tables took ", round(delta, 2), attr(delta, "units")))
+    rlang::inform(paste("Creating cohort tables took", round(delta, 2), attr(delta, "units")))
   }
 }
 
