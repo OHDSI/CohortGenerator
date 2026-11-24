@@ -62,6 +62,12 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+
       - uses: r-lib/actions/setup-tinytex@v2
 
       - uses: r-lib/actions/setup-pandoc@v2

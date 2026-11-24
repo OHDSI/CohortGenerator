@@ -397,6 +397,93 @@ test_that("Insert cohort stats expected use-case", {
   DatabaseConnector::disconnect(conn)
 })
 
+test_that("Insert cohort stats only replaces supplied cohorts", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "stats_replace")
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)[2:3, ]
+  insertInclusionRuleNames(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortsWithStats,
+    cohortDatabaseSchema = "main",
+    cohortInclusionTable = cohortTableNames$cohortInclusionTable
+  )
+
+  updatedCohort <- cohortsWithStats[1, ]
+  cohortDefinition <- ParallelLogger::convertJsonToSettings(json = updatedCohort$json)
+  cohortDefinition$InclusionRules[[1]]$name <- "Updated rule name"
+  updatedCohort$json <- ParallelLogger::convertSettingsToJson(object = cohortDefinition)
+  insertInclusionRuleNames(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = updatedCohort,
+    cohortDatabaseSchema = "main",
+    cohortInclusionTable = cohortTableNames$cohortInclusionTable
+  )
+
+  conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  results <- DatabaseConnector::renderTranslateQuerySql(
+    connection = conn,
+    sql = "SELECT * FROM @cohort_database_schema.@table ORDER BY cohort_definition_id, rule_sequence",
+    cohort_database_schema = "main",
+    table = cohortTableNames$cohortInclusionTable,
+    snakeCaseToCamelCase = TRUE
+  )
+  DatabaseConnector::disconnect(conn)
+
+  expected <- rbind(
+    getCohortInclusionRules(updatedCohort),
+    getCohortInclusionRules(cohortsWithStats[2, ])
+  )
+  expect_equal(results, expected)
+})
+
+test_that("Insert cohort stats removes stale rules for supplied cohorts", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "stats_remove_stale")
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)[2:3, ]
+  insertInclusionRuleNames(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortsWithStats,
+    cohortDatabaseSchema = "main",
+    cohortInclusionTable = cohortTableNames$cohortInclusionTable
+  )
+
+  cohortWithoutRules <- cohortsWithStats[1, ]
+  cohortDefinition <- ParallelLogger::convertJsonToSettings(json = cohortWithoutRules$json)
+  cohortDefinition$InclusionRules <- list()
+  cohortWithoutRules$json <- ParallelLogger::convertSettingsToJson(object = cohortDefinition)
+  expect_warning(
+    insertInclusionRuleNames(
+      connectionDetails = connectionDetails,
+      cohortDefinitionSet = cohortWithoutRules,
+      cohortDatabaseSchema = "main",
+      cohortInclusionTable = cohortTableNames$cohortInclusionTable
+    ),
+    "No inclusion rules found"
+  )
+
+  conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  results <- DatabaseConnector::renderTranslateQuerySql(
+    connection = conn,
+    sql = "SELECT * FROM @cohort_database_schema.@table ORDER BY cohort_definition_id, rule_sequence",
+    cohort_database_schema = "main",
+    table = cohortTableNames$cohortInclusionTable,
+    snakeCaseToCamelCase = TRUE
+  )
+  DatabaseConnector::disconnect(conn)
+
+  expect_equal(results, getCohortInclusionRules(cohortsWithStats[2, ]))
+})
+
 test_that("Insert cohort stats missing connection info", {
   # Create the cohort tables
   cohortTableNames <- getCohortTableNames(cohortTable = "stats_missing_conn")
@@ -517,4 +604,33 @@ test_that("Insert cohort stats with INT64 for cohort_definition_id", {
   )
   expect_equal(results, cohortInclusionRules)
   DatabaseConnector::disconnect(conn)
+})
+
+test_that("Insert cohort stats uploads cohort IDs as INT64", {
+  cohortTableNames <- getCohortTableNames(cohortTable = "stats_upload_bigint")
+  createCohortTables(
+    connectionDetails = connectionDetails,
+    cohortDatabaseSchema = "main",
+    cohortTableNames = cohortTableNames
+  )
+
+  cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
+  insertedData <- NULL
+  testthat::local_mocked_bindings(
+    insertTable = function(..., data) {
+      insertedData <<- data
+    },
+    .package = "DatabaseConnector"
+  )
+
+  cohortInclusionRules <- insertInclusionRuleNames(
+    connectionDetails = connectionDetails,
+    cohortDefinitionSet = cohortsWithStats,
+    cohortDatabaseSchema = "main",
+    cohortInclusionTable = cohortTableNames$cohortInclusionTable
+  )
+
+  expect_type(cohortInclusionRules$cohortDefinitionId, "double")
+  expect_true(bit64::is.integer64(insertedData$cohortDefinitionId))
+  expect_equal(as.numeric(insertedData$cohortDefinitionId), cohortInclusionRules$cohortDefinitionId)
 })
