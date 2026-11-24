@@ -1,3 +1,12 @@
+CohortGenerator 1.1.2
+=====================
+
+Bug Fixes
+
+- Add the missing space in the `createCohortTables()` timing message (#281)
+- Improve spacing in cohort progress and data-type warning messages
+
+
 CohortGenerator 1.1.1
 =====================
 

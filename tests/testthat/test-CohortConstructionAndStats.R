@@ -148,13 +148,16 @@ test_that("Create cohorts with stats, Incremental = F, Gather Results", {
     cohortTableNames = cohortTableNames
   )
   cohortsWithStats <- getCohortsForTest(cohorts, generateStats = TRUE)
-  cohortsGenerated <- generateCohortSet(
-    connectionDetails = connectionDetails,
-    cdmDatabaseSchema = "main",
-    cohortDatabaseSchema = "main",
-    cohortTableNames = cohortTableNames,
-    cohortDefinitionSet = cohortsWithStats,
-    incremental = FALSE
+  expect_message(
+    cohortsGenerated <- generateCohortSet(
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = "main",
+      cohortDatabaseSchema = "main",
+      cohortTableNames = cohortTableNames,
+      cohortDefinitionSet = cohortsWithStats,
+      incremental = FALSE
+    ),
+    regexp = "1/4 - Generating cohort:"
   )
   expect_equal(nrow(cohortsGenerated), nrow(cohortsWithStats))
   rm(cohortsWithStats)

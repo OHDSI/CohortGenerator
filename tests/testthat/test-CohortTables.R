@@ -57,7 +57,8 @@ test_that("Create cohort tables with connectionDetails", {
     createCohortTables(
       connectionDetails = connectionDetails,
       cohortDatabaseSchema = "main"
-    )
+    ),
+    regexp = "Creating cohort tables took [0-9.]+ secs"
   )
 })
 
