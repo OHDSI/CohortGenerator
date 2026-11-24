@@ -21,6 +21,7 @@ Depends:
   R (>= 4.1.0),
   R6
 Imports:
+  bit64,
   checkmate,
   digest,
   dplyr,

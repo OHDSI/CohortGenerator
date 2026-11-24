@@ -3,6 +3,8 @@ CohortGenerator 1.1.1
 
 Bug Fixes
 
+- Preserve inclusion rule names for cohorts not supplied to `insertInclusionRuleNames()` (#282)
+- Fix insertion of inclusion rule names on Google BigQuery (#244)
 - Prevents duplicate cohort IDs bin `runCohortGeneration` (#275)
 - Fix backwards compatiblity for v0.x cohort subset operator (#276)
 

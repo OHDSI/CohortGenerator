@@ -22,7 +22,8 @@
 #' representation of each cohort, parse the InclusionRule property to obtain
 #' the inclusion rule name and sequence number and insert the values into the
 #' cohortInclusionTable. This function is only required when generating cohorts
-#' that include cohort statistics.
+#' that include cohort statistics. Existing inclusion rules are replaced only
+#' for the cohort IDs in the supplied cohort definition set.
 #'
 #' @template Connection
 #'
@@ -59,24 +60,35 @@ insertInclusionRuleNames <- function(connectionDetails = NULL,
 
   inclusionRules <- getCohortInclusionRules(cohortDefinitionSet)
 
-  # Remove any existing data to prevent duplication
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = "TRUNCATE TABLE @cohort_database_schema.@table;",
-    progressBar = FALSE,
-    reportOverallTime = FALSE,
-    cohort_database_schema = cohortDatabaseSchema,
-    table = cohortInclusionTable
-  )
+  # Remove existing data for the supplied cohorts to prevent duplication while
+  # preserving inclusion rules for cohorts that are not part of this call.
+  cohortIds <- unique(cohortDefinitionSet$cohortId)
+  # Keep batches below Oracle's limit of 1,000 expressions in an IN clause
+  # while avoiding one database round trip per cohort.
+  batchSize <- 500
+  for (start in seq.int(1, length(cohortIds), by = batchSize)) {
+    end <- min(start + batchSize - 1, length(cohortIds))
+    DatabaseConnector::renderTranslateExecuteSql(
+      connection = connection,
+      sql = "DELETE FROM @cohort_database_schema.@table WHERE cohort_definition_id IN (@cohort_ids);",
+      progressBar = FALSE,
+      reportOverallTime = FALSE,
+      cohort_database_schema = cohortDatabaseSchema,
+      table = cohortInclusionTable,
+      cohort_ids = cohortIds[start:end]
+    )
+  }
 
   # Insert the inclusion rules
   if (nrow(inclusionRules) > 0) {
     rlang::inform("Inserting inclusion rule names")
+    inclusionRulesToInsert <- inclusionRules
+    inclusionRulesToInsert$cohortDefinitionId <- bit64::as.integer64(inclusionRulesToInsert$cohortDefinitionId)
     DatabaseConnector::insertTable(
       connection = connection,
       databaseSchema = cohortDatabaseSchema,
       tableName = cohortInclusionTable,
-      data = inclusionRules,
+      data = inclusionRulesToInsert,
       dropTableIfExists = FALSE,
       createTable = FALSE,
       camelCaseToSnakeCase = TRUE
